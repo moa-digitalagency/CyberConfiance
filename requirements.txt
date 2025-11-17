@@ -34,3 +34,12 @@ gunicorn
 psycopg2-binary
 python-dotenv
 Werkzeug
+alembic
+Flask
+Flask-Admin
+Flask-Login
+Flask-SQLAlchemy
+gunicorn
+psycopg2-binary
+python-dotenv
+Werkzeug
