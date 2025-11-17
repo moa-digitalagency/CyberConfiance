@@ -28,27 +28,51 @@
     <div class="container">
         <div class="process-grid">
             <div class="process-item scroll-animate glass-card">
-                <div class="process-number">01 / RÈGLES</div>
-                <h3>Règles d'Or</h3>
+                <div class="process-number">01 / À PROPOS</div>
+                <h3><a href="{{ url_for('main.about') }}" style="color: inherit; text-decoration: none;">À propos</a></h3>
+                <p>Découvrez notre mission et notre engagement pour une culture de la cybersécurité accessible à tous.</p>
+            </div>
+            
+            <div class="process-item scroll-animate glass-card">
+                <div class="process-number">02 / RÈGLES</div>
+                <h3><a href="{{ url_for('main.rules') }}" style="color: inherit; text-decoration: none;">Règles d'Or</a></h3>
                 <p>20 règles essentielles pour renforcer votre sécurité numérique au quotidien et protéger vos informations.</p>
             </div>
             
             <div class="process-item scroll-animate glass-card">
-                <div class="process-number">02 / SCÉNARIOS</div>
-                <h3>Scénarios d'Attaque</h3>
+                <div class="process-number">03 / SCÉNARIOS</div>
+                <h3><a href="{{ url_for('main.scenarios') }}" style="color: inherit; text-decoration: none;">Scénarios d'Attaque</a></h3>
                 <p>Apprenez à reconnaître et à vous protéger contre le phishing, ransomware, deepfake et autres menaces actuelles.</p>
             </div>
             
             <div class="process-item scroll-animate glass-card">
-                <div class="process-number">03 / OUTILS</div>
-                <h3>Outils de Sécurité</h3>
+                <div class="process-number">04 / OUTILS</div>
+                <h3><a href="{{ url_for('main.tools') }}" style="color: inherit; text-decoration: none;">Outils de Sécurité</a></h3>
                 <p>Découvrez les outils essentiels pour protéger vos appareils, données et communications numériques.</p>
             </div>
             
             <div class="process-item scroll-animate glass-card">
-                <div class="process-number">04 / RESSOURCES</div>
-                <h3>Ressources & Formation</h3>
+                <div class="process-number">05 / GLOSSAIRE</div>
+                <h3><a href="{{ url_for('main.glossary') }}" style="color: inherit; text-decoration: none;">Glossaire</a></h3>
+                <p>Comprenez les termes techniques de la cybersécurité grâce à notre glossaire détaillé et accessible.</p>
+            </div>
+            
+            <div class="process-item scroll-animate glass-card">
+                <div class="process-number">06 / RESSOURCES</div>
+                <h3><a href="{{ url_for('main.resources') }}" style="color: inherit; text-decoration: none;">Ressources & Formation</a></h3>
                 <p>Accédez à des guides, vidéos et articles pour approfondir vos connaissances en cybersécurité.</p>
+            </div>
+            
+            <div class="process-item scroll-animate glass-card">
+                <div class="process-number">07 / ACTUALITÉS</div>
+                <h3><a href="{{ url_for('main.news') }}" style="color: inherit; text-decoration: none;">Actualités</a></h3>
+                <p>Restez informé des dernières nouvelles et tendances en matière de cybersécurité dans le monde.</p>
+            </div>
+            
+            <div class="process-item scroll-animate glass-card">
+                <div class="process-number">08 / CONTACT</div>
+                <h3><a href="{{ url_for('main.contact') }}" style="color: inherit; text-decoration: none;">Contact</a></h3>
+                <p>Posez vos questions, partagez vos préoccupations ou demandez des informations complémentaires.</p>
             </div>
         </div>
     </div>
