@@ -4,37 +4,74 @@
 
 {% block content %}
 <section class="hero">
+    <img src="{{ url_for('static', filename='img/hero-bg.jpg') }}" alt="Cybersecurity Background" class="hero-bg">
+    
     <div class="container hero-content">
-        <h1>🛡️ Bienvenue sur CyberConfiance</h1>
-        <p class="hero-subtitle">Votre plateforme de sensibilisation à la cybersécurité</p>
-        <p>Apprenez à protéger vos données et à naviguer en toute sécurité sur Internet</p>
-        <a href="{{ url_for('main.rules') }}" class="btn btn-primary">✨ Découvrir les règles d'or</a>
+        <h1>🛡️ Protégez Votre Monde Numérique</h1>
+        <p class="hero-subtitle">Devenez acteur de votre cybersécurité</p>
+        <p>La plateforme de référence pour maîtriser les bases de la sécurité en ligne et protéger vos données</p>
+        
+        <div class="hero-buttons">
+            <a href="{{ url_for('main.rules') }}" class="btn btn-primary">Commencer Maintenant</a>
+            <a href="{{ url_for('main.about') }}" class="btn btn-secondary">En savoir plus</a>
+        </div>
+    </div>
+    
+    <div class="scroll-indicator">
+        <span>⬇️</span>
+    </div>
+</section>
+
+<section class="stats-section">
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-number" data-target="1000" data-suffix="+">0+</div>
+                <div class="stat-label">Utilisateurs Protégés</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" data-target="50" data-suffix="+">0+</div>
+                <div class="stat-label">Ressources Disponibles</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" data-target="24" data-suffix="/7">0/7</div>
+                <div class="stat-label">Support Disponible</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" data-target="100" data-suffix="%">0%</div>
+                <div class="stat-label">Gratuit</div>
+            </div>
+        </div>
     </div>
 </section>
 
 <section class="features">
     <div class="container">
-        <h2>Nos Services</h2>
+        <h2 class="section-title">Nos Services</h2>
         <div class="features-grid">
             <div class="feature-card">
-                <h3>✨ Règles d'Or</h3>
-                <p>Découvrez les principes essentiels de la cybersécurité pour protéger vos données</p>
-                <a href="{{ url_for('main.rules') }}" class="btn btn-secondary">En savoir plus →</a>
+                <div class="feature-icon">✨</div>
+                <h3>Règles d'Or</h3>
+                <p>Découvrez les principes essentiels de la cybersécurité pour protéger vos données personnelles et professionnelles</p>
+                <a href="{{ url_for('main.rules') }}" class="btn btn-secondary">En savoir plus</a>
             </div>
             <div class="feature-card">
-                <h3>🎯 Scénarios</h3>
-                <p>Apprenez à identifier et à réagir aux menaces courantes du quotidien</p>
-                <a href="{{ url_for('main.scenarios') }}" class="btn btn-secondary">Explorer →</a>
+                <div class="feature-icon">🎯</div>
+                <h3>Scénarios Réels</h3>
+                <p>Apprenez à identifier et à réagir aux menaces courantes grâce à des cas pratiques du quotidien</p>
+                <a href="{{ url_for('main.scenarios') }}" class="btn btn-secondary">Explorer</a>
             </div>
             <div class="feature-card">
-                <h3>🔧 Outils</h3>
-                <p>Découvrez les outils essentiels pour renforcer votre sécurité numérique</p>
-                <a href="{{ url_for('main.tools') }}" class="btn btn-secondary">Voir les outils →</a>
+                <div class="feature-icon">🔧</div>
+                <h3>Outils Recommandés</h3>
+                <p>Découvrez les meilleurs outils pour renforcer votre sécurité numérique et celle de votre entreprise</p>
+                <a href="{{ url_for('main.tools') }}" class="btn btn-secondary">Voir les outils</a>
             </div>
             <div class="feature-card">
-                <h3>📚 Ressources</h3>
-                <p>Accédez à une bibliothèque complète de ressources éducatives</p>
-                <a href="{{ url_for('main.resources') }}" class="btn btn-secondary">Consulter →</a>
+                <div class="feature-icon">📚</div>
+                <h3>Ressources Éducatives</h3>
+                <p>Accédez à une bibliothèque complète de guides, tutoriels et documentation pour approfondir vos connaissances</p>
+                <a href="{{ url_for('main.resources') }}" class="btn btn-secondary">Consulter</a>
             </div>
         </div>
     </div>
