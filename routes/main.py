@@ -1,8 +1,9 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_user, logout_user, login_required
-from app.services import ContentService
-from app.models import Contact, User
-from app import db
+from services import ContentService
+from models import Contact, User
+import __init__ as app_module
+db = app_module.db
 
 bp = Blueprint('main', __name__)
 
@@ -23,7 +24,7 @@ def rules():
 
 @bp.route('/rules/<int:rule_id>')
 def rule_detail(rule_id):
-    from app.models import Rule
+    from models import Rule
     rule = Rule.query.get_or_404(rule_id)
     return render_template('rule_detail.html', rule=rule)
 

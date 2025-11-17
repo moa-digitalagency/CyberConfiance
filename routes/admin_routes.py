@@ -1,8 +1,10 @@
 from flask import Blueprint, render_template, redirect, url_for
 from flask_admin.contrib.sqla import ModelView
 from flask_login import current_user
-from app import db, admin
-from app.models import Article, Rule, Tool, Scenario, Resource, News, Contact, GlossaryTerm, User
+import __init__ as app_module
+db = app_module.db
+admin = app_module.admin
+from models import Article, Rule, Tool, Scenario, Resource, News, Contact, GlossaryTerm, User
 
 bp = Blueprint('admin_bp', __name__, url_prefix='/admin_bp')
 

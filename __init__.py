@@ -20,7 +20,7 @@ def create_app(config_class=Config):
     
     @login_manager.user_loader
     def load_user(user_id):
-        from app.models import User
+        from models import User
         return User.query.get(int(user_id))
     
     import re
@@ -33,7 +33,7 @@ def create_app(config_class=Config):
         clean = re.compile('<.*?>')
         return re.sub(clean, '', str(text))
     
-    from app.routes import main, admin_routes
+    from routes import main, admin_routes
     app.register_blueprint(main.bp)
     app.register_blueprint(admin_routes.bp)
     
@@ -44,7 +44,7 @@ def create_app(config_class=Config):
     return app
 
 def initialize_data():
-    from app.models import User, Rule, GlossaryTerm, Scenario, Tool, Resource, News
+    from models import User, Rule, GlossaryTerm, Scenario, Tool, Resource, News
     import os
     
     is_debug = os.environ.get('FLASK_DEBUG', 'False').lower() in ('true', '1', 't')

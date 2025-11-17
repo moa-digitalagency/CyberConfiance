@@ -1,5 +1,6 @@
-from app.models import Article, Rule, Tool, Scenario, Resource, News, Contact, GlossaryTerm
-from app import db
+from models import Article, Rule, Tool, Scenario, Resource, News, Contact, GlossaryTerm
+import __init__ as app_module
+db = app_module.db
 
 class ContentService:
     @staticmethod

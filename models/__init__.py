@@ -1,4 +1,5 @@
-from app import db
+import __init__ as app_module
+db = app_module.db
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
