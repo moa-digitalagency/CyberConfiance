@@ -1,0 +1,101 @@
+{
+  "scenarios": [
+    {
+      "id": 1,
+      "title": "Phishing par email",
+      "content": "Un utilisateur reçoit un email qui semble provenir de sa banque, lui demandant de cliquer sur un lien pour vérifier son compte. Le lien redirige vers un faux site qui vole les identifiants."
+    },
+    {
+      "id": 2,
+      "title": "Ransomware",
+      "content": "Un fichier malveillant s’installe sur l’ordinateur d’un utilisateur et chiffre tous ses fichiers. Les cybercriminels demandent une rançon pour les déchiffrer."
+    },
+    {
+      "id": 3,
+      "title": "Wi-Fi public non sécurisé",
+      "content": "Un utilisateur se connecte à un réseau Wi-Fi public non sécurisé et un pirate intercepte ses données personnelles."
+    },
+    {
+      "id": 4,
+      "title": "Deepfake",
+      "content": "Un vidéo falsifiée montre un dirigeant d’entreprise en train de donner des instructions frauduleuses, ce qui peut entraîner des pertes financières."
+    }
+  ],
+  "tools": [
+    {
+      "id": 1,
+      "title": "Clé de sécurité",
+      "content": "Un dispositif physique qui ajoute une couche d’authentification à deux facteurs."
+    },
+    {
+      "id": 2,
+      "title": "Disque dur crypté",
+      "content": "Un disque dur qui chiffre automatiquement toutes les données stockées."
+    },
+    {
+      "id": 3,
+      "title": "Filtre de confidentialité",
+      "content": "Un accessoire pour protéger l’écran des regards indiscrets."
+    },
+    {
+      "id": 4,
+      "title": "VPN",
+      "content": "Un service qui crypte la connexion Internet et protège les données."
+    }
+  ],
+  "glossary": [
+    {
+      "term": "2FA",
+      "definition": "Authentification à deux facteurs : méthode de sécurité qui exige deux preuves d’identité pour accéder à un compte."
+    },
+    {
+      "term": "Phishing",
+      "definition": "Technique de fraude visant à obtenir des informations personnelles en se faisant passer pour une entité de confiance."
+    },
+    {
+      "term": "Deepfake",
+      "definition": "Vidéo ou audio falsifié utilisant l’intelligence artificielle pour imiter une personne réelle."
+    },
+    {
+      "term": "Ransomware",
+      "definition": "Logiciel malveillant qui chiffre les fichiers d’un utilisateur et demande une rançon pour les déchiffrer."
+    }
+  ],
+  "resources": [
+    {
+      "id": 1,
+      "title": "Guide de cybersécurité",
+      "link": "/resources/guide.pdf",
+      "description": "Guide complet pour la sécurité numérique."
+    },
+    {
+      "id": 2,
+      "title": "Vidéo de sensibilisation",
+      "link": "/resources/video.mp4",
+      "description": "Vidéo explicative sur les bonnes pratiques de cybersécurité."
+    },
+    {
+      "id": 3,
+      "title": "Articles d’actualité",
+      "link": "/resources/articles",
+      "description": "Articles récents sur les menaces et les solutions en cybersécurité."
+    }
+  ],
+  "news": [
+    {
+      "id": 1,
+      "title": "Nouvelle menace détectée",
+      "content": "Une nouvelle variante de ransomware a été détectée dans plusieurs entreprises. Restez vigilant et mettez à jour vos logiciels."
+    },
+    {
+      "id": 2,
+      "title": "Formation en ligne disponible",
+      "content": "Une nouvelle formation en ligne sur la cybersécurité est désormais disponible sur notre site."
+    }
+  ],
+  "contact": {
+    "title": "Contact",
+    "content": "Pour toute question ou suggestion, n’hésitez pas à nous contacter via le formulaire ci-dessous ou par email à contact@cyberconfiance.com.",
+    "email": "contact@cyberconfiance.com"
+  }
+}

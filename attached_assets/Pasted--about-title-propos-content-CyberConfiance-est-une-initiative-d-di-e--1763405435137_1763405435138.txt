@@ -1,0 +1,108 @@
+{
+  "about": {
+    "title": "À propos",
+    "content": "CyberConfiance est une initiative dédiée à la sensibilisation et à la prévention en cybersécurité. Elle s'adresse aux dirigeants, décideurs, professionnels et citoyens soucieux de leur sécurité numérique. L'objectif est de fournir des outils, des conseils et des ressources pour naviguer en toute sécurité dans un monde numérique en constante évolution."
+  },
+  "rules": [
+    {
+      "id": 1,
+      "title": "Utilisez un mot de passe fort",
+      "content": "Un mot de passe fort doit contenir au moins 12 caractères, inclure des lettres majuscules et minuscules, des chiffres et des symboles. Évitez les mots du dictionnaire et les informations personnelles."
+    },
+    {
+      "id": 2,
+      "title": "Activez l’authentification à deux facteurs",
+      "content": "L’authentification à deux facteurs (2FA) ajoute une couche de sécurité supplémentaire en exigeant une seconde preuve d’identité lors de la connexion."
+    },
+    {
+      "id": 3,
+      "title": "Mettez à jour régulièrement vos logiciels",
+      "content": "Les mises à jour corrigent souvent des failles de sécurité. Configurez vos appareils pour qu’ils se mettent à jour automatiquement."
+    },
+    {
+      "id": 4,
+      "title": "Soyez vigilant face au phishing",
+      "content": "Ne cliquez pas sur des liens suspects dans les emails ou les messages. Vérifiez toujours l’adresse de l’expéditeur et l’URL avant de saisir vos identifiants."
+    },
+    {
+      "id": 5,
+      "title": "Utilisez un gestionnaire de mots de passe",
+      "content": "Un gestionnaire de mots de passe vous aide à stocker et générer des mots de passe uniques pour chaque compte."
+    },
+    {
+      "id": 6,
+      "title": "Sécurisez vos appareils mobiles",
+      "content": "Utilisez un code PIN, un motif ou une reconnaissance biométrique pour verrouiller vos appareils mobiles."
+    },
+    {
+      "id": 7,
+      "title": "Ne partagez pas vos informations personnelles",
+      "content": "Évitez de partager vos informations personnelles sur les réseaux sociaux ou les sites non sécurisés."
+    },
+    {
+      "id": 8,
+      "title": "Utilisez un antivirus",
+      "content": "Installez un antivirus fiable et assurez-vous qu’il est toujours à jour."
+    },
+    {
+      "id": 9,
+      "title": "Soyez prudent sur les réseaux Wi-Fi publics",
+      "content": "Évitez d’accéder à des comptes sensibles sur les réseaux Wi-Fi publics. Utilisez un VPN si nécessaire."
+    },
+    {
+      "id": 10,
+      "title": "Sauvegardez régulièrement vos données",
+      "content": "Effectuez des sauvegardes régulières de vos données importantes sur un support externe ou dans le cloud."
+    },
+    {
+      "id": 11,
+      "title": "Utilisez un pare-feu",
+      "content": "Un pare-feu bloque les connexions non autorisées à votre réseau."
+    },
+    {
+      "id": 12,
+      "title": "Évitez les logiciels piratés",
+      "content": "Les logiciels piratés peuvent contenir des malwares. Téléchargez uniquement des logiciels à partir de sources officielles."
+    },
+    {
+      "id": 13,
+      "title": "Formez vos collaborateurs",
+      "content": "Sensibilisez vos collaborateurs aux bonnes pratiques de cybersécurité."
+    },
+    {
+      "id": 14,
+      "title": "Utilisez des adresses email distinctes",
+      "content": "Utilisez une adresse email différente pour chaque service afin de limiter les risques en cas de fuite."
+    },
+    {
+      "id": 15,
+      "title": "Surveillez vos comptes",
+      "content": "Vérifiez régulièrement l’activité de vos comptes et activez les alertes de sécurité."
+    },
+    {
+      "id": 16,
+      "title": "Utilisez un gestionnaire de mots de passe",
+      "content": "Un gestionnaire de mots de passe vous aide à stocker et générer des mots de passe uniques pour chaque compte."
+    },
+    {
+      "id": 17,
+      "title": "Ne cliquez pas sur les pièces jointes suspectes",
+      "content": "Les pièces jointes peuvent contenir des virus. Vérifiez toujours l’expéditeur avant d’ouvrir une pièce jointe."
+    },
+    {
+      "id": 18,
+      "title": "Utilisez un VPN",
+      "content": "Un VPN crypte votre connexion et protège vos données lors de la navigation sur Internet."
+    },
+    {
+      "id": 19,
+      "title": "Évitez les sites non sécurisés",
+      "content": "Ne saisissez jamais vos identifiants sur des sites qui ne commencent pas par https://."
+    },
+    {
+      "id": 20,
+      "title": "Restez informé",
+      "content": "Suivez les actualités en cybersécurité pour rester au courant des nouvelles menaces et des meilleures pratiques."
+    }
+  ]
+}
