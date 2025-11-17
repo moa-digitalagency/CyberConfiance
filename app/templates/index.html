@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}CyberConfiance - L'IA à votre service{% endblock %}
+{% block title %}CyberConfiance - Sensibilisation et Prévention en Cybersécurité{% endblock %}
 
 {% block content %}
 <section class="hero">
@@ -8,47 +8,47 @@
     
     <div class="container hero-content">
         <h1>La cybersécurité<br>à votre service.</h1>
-        <p class="hero-subtitle">Nous transformons la manière dont vous protégez vos données<br>et naviguez sur Internet en toute sécurité.</p>
+        <p class="hero-subtitle">Sensibilisation et prévention pour naviguer en toute confiance<br>dans le monde numérique.</p>
         
         <div class="hero-buttons">
-            <a href="{{ url_for('main.rules') }}" class="btn btn-primary">Découvrir nos services</a>
-            <a href="{{ url_for('main.contact') }}" class="btn btn-secondary">Nous contacter</a>
+            <a href="{{ url_for('main.rules') }}" class="btn btn-primary">Découvrir les règles d'or</a>
+            <a href="{{ url_for('main.about') }}" class="btn btn-secondary">En savoir plus</a>
         </div>
     </div>
 </section>
 
 <section class="section">
     <div class="container">
-        <h2 class="section-title">Nous sommes votre Partenaire Cybersécurité 360°</h2>
-        <p class="section-subtitle">Nous transformons les entreprises en Leaders de la sécurité numérique</p>
+        <h2 class="section-title">Votre Accompagnement en Cybersécurité</h2>
+        <p class="section-subtitle">Une initiative dédiée à la sensibilisation et à la prévention pour protéger vos données et vos usages numériques</p>
     </div>
 </section>
 
 <section class="process-section">
     <div class="container">
         <div class="process-grid">
-            <div class="process-item scroll-animate">
-                <div class="process-number">01 / CONSEIL</div>
-                <h3>Conseil</h3>
-                <p>Audit de sécurité complet et recommandations personnalisées pour renforcer votre posture de cybersécurité.</p>
+            <div class="process-item scroll-animate glass-card">
+                <div class="process-number">01 / RÈGLES</div>
+                <h3>Règles d'Or</h3>
+                <p>20 règles essentielles pour renforcer votre sécurité numérique au quotidien et protéger vos informations.</p>
             </div>
             
-            <div class="process-item scroll-animate">
-                <div class="process-number">02 / CONSULTING</div>
-                <h3>Consulting</h3>
-                <p>Accompagnement stratégique dans la mise en place de vos politiques de sécurité et conformité.</p>
+            <div class="process-item scroll-animate glass-card">
+                <div class="process-number">02 / SCÉNARIOS</div>
+                <h3>Scénarios d'Attaque</h3>
+                <p>Apprenez à reconnaître et à vous protéger contre le phishing, ransomware, deepfake et autres menaces actuelles.</p>
             </div>
             
-            <div class="process-item scroll-animate">
-                <div class="process-number">03 / FORMATION</div>
-                <h3>Formation</h3>
-                <p>Programmes de sensibilisation sur mesure pour vos équipes et employés.</p>
+            <div class="process-item scroll-animate glass-card">
+                <div class="process-number">03 / OUTILS</div>
+                <h3>Outils de Sécurité</h3>
+                <p>Découvrez les outils essentiels pour protéger vos appareils, données et communications numériques.</p>
             </div>
             
-            <div class="process-item scroll-animate">
-                <div class="process-number">04 / DÉVELOPPEMENT</div>
-                <h3>Intégration & Développement</h3>
-                <p>Solutions techniques personnalisées pour sécuriser vos infrastructures et applications.</p>
+            <div class="process-item scroll-animate glass-card">
+                <div class="process-number">04 / RESSOURCES</div>
+                <h3>Ressources & Formation</h3>
+                <p>Accédez à des guides, vidéos et articles pour approfondir vos connaissances en cybersécurité.</p>
             </div>
         </div>
     </div>
@@ -56,25 +56,25 @@
 
 <section class="section">
     <div class="container">
-        <h2 class="section-title">Nos services</h2>
+        <h2 class="section-title">Notre Mission</h2>
         
         <div class="services-grid">
-            <div class="service-card scroll-animate">
-                <span class="service-icon">📊</span>
-                <h3>Audit & Conseil</h3>
-                <p>Évaluation complète de votre infrastructure de sécurité avec des recommandations actionnables.</p>
+            <div class="service-card scroll-animate glass-card">
+                <span class="service-icon">🎯</span>
+                <h3>Sensibilisation</h3>
+                <p>Informer sur les risques et menaces actuelles pour permettre à chacun de naviguer en toute sécurité.</p>
             </div>
             
-            <div class="service-card scroll-animate">
-                <span class="service-icon">🎓</span>
-                <h3>Formation</h3>
-                <p>Programmes de formation interactifs pour sensibiliser vos équipes aux meilleures pratiques.</p>
-            </div>
-            
-            <div class="service-card scroll-animate">
+            <div class="service-card scroll-animate glass-card">
                 <span class="service-icon">🛡️</span>
-                <h3>Solutions IA</h3>
-                <p>Outils intelligents pour détecter et prévenir les menaces en temps réel.</p>
+                <h3>Prévention</h3>
+                <p>Fournir des conseils pratiques et accessibles pour renforcer la protection de vos données.</p>
+            </div>
+            
+            <div class="service-card scroll-animate glass-card">
+                <span class="service-icon">📚</span>
+                <h3>Éducation</h3>
+                <p>Promouvoir une culture de la cybersécurité adaptée à tous les profils et niveaux.</p>
             </div>
         </div>
     </div>
@@ -83,14 +83,14 @@
 {% if rules %}
 <section class="projects-section section">
     <div class="container">
-        <h2 class="section-title">Nos Projets</h2>
+        <h2 class="section-title">Règles Essentielles</h2>
         
-        <div class="projects-list">
+        <div class="projects-list glass-card">
             {% for rule in rules[:3] %}
             <a href="{{ url_for('main.rules') }}" class="project-item scroll-animate">
                 <div class="project-info">
                     <h3>{{ rule.title }}</h3>
-                    <p>Cybersécurité - Best Practices</p>
+                    <p>Cybersécurité - Bonnes Pratiques</p>
                 </div>
                 <span class="project-arrow">→</span>
             </a>
@@ -102,14 +102,8 @@
 
 <section class="contact-section">
     <div class="container">
-        <h2>Nous contacter</h2>
+        <h2>Besoin d'informations ?</h2>
         <a href="mailto:contact@cyberconfiance.fr" class="contact-email">contact@cyberconfiance.fr</a>
-    </div>
-</section>
-
-<section class="section">
-    <div class="container">
-        <h2 class="section-title">Parlons-en.</h2>
     </div>
 </section>
 {% endblock %}
