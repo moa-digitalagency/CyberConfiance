@@ -1,124 +1,118 @@
 {% extends "base.html" %}
 
-{% block title %}CyberConfiance - Sensibilisation et Prévention en Cybersécurité{% endblock %}
+{% block title %}La Cyberconfiance{% endblock %}
 
 {% block content %}
-<section class="hero">
+<section class="hero" style="background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('{{ url_for('static', filename='img/hero-bg.jpg') }}'); background-size: cover; background-position: center;">
     <div class="glow-orb"></div>
     
     <div class="container hero-content">
-        <h1>La sécurité numérique<br>à votre service.</h1>
-        <p class="hero-subtitle">Sensibilisation et prévention pour naviguer en toute confiance<br>dans le monde numérique.</p>
+        <h1>Votre bouclier numérique en RDC</h1>
+        <p class="hero-subtitle">Sensibilisation, fact-checking et accompagnement en cybersécurité pour tous</p>
         
         <div class="hero-buttons">
-            <a href="{{ url_for('main.rules') }}" class="btn btn-primary">Découvrir les règles d'or</a>
-            <a href="{{ url_for('main.about') }}" class="btn btn-secondary">En savoir plus</a>
+            <a href="/fact-checking" class="btn btn-primary">Vérifier une information</a>
+            <a href="/consultation" class="btn btn-secondary">Demander une consultation</a>
+            <a href="/newsletter" class="btn btn-secondary">S'inscrire à la newsletter</a>
         </div>
     </div>
 </section>
 
-<section class="section">
+<section class="section mission-section">
     <div class="container">
-        <h2 class="section-title">Notre Mission</h2>
+        <h2 class="section-title">Notre mission</h2>
+        <p class="section-subtitle">Démocratiser la cybersécurité et lutter contre la désinformation en Afrique francophone grâce à l'éducation, la vérification d'informations et l'accompagnement professionnel.</p>
+    </div>
+</section>
+
+<section class="section pillars-section">
+    <div class="container">
+        <h2 class="section-title">Nos 3 piliers</h2>
         
         <div class="services-grid">
             <div class="service-card scroll-animate glass-card">
-                <span class="service-icon">🎯</span>
-                <h3>Sensibilisation</h3>
-                <p>Informer sur les risques et menaces actuelles pour permettre à chacun de naviguer en toute sécurité.</p>
+                <span class="service-icon">🎓</span>
+                <h3>Sensibilisation & Éducation</h3>
+                <p>Vulgarisation des concepts de cybersécurité pour tous les publics.</p>
             </div>
             
             <div class="service-card scroll-animate glass-card">
-                <span class="service-icon">🛡️</span>
-                <h3>Prévention</h3>
-                <p>Fournir des conseils pratiques et accessibles pour renforcer la protection de vos données.</p>
+                <span class="service-icon">✅</span>
+                <h3>Fact-checking & OSINT</h3>
+                <p>Vérification des informations et lutte contre les fake news.</p>
             </div>
             
             <div class="service-card scroll-animate glass-card">
-                <span class="service-icon">📚</span>
-                <h3>Éducation</h3>
-                <p>Promouvoir une culture de la cybersécurité adaptée à tous les profils et niveaux.</p>
+                <span class="service-icon">💼</span>
+                <h3>Cyberconsultation</h3>
+                <p>Accompagnement personnalisé pour protéger vos données et vos systèmes.</p>
             </div>
         </div>
     </div>
 </section>
 
-<section class="section">
+{% if news %}
+<section class="section news-section">
     <div class="container">
-        <h2 class="section-title">Votre Accompagnement en Cybersécurité</h2>
-        <p class="section-subtitle">Une initiative dédiée à la sensibilisation et à la prévention pour protéger vos données et vos usages numériques</p>
-    </div>
-</section>
-
-<section class="process-section">
-    <div class="container">
-        <div class="process-grid">
-            <div class="process-item scroll-animate glass-card">
-                <div class="process-number">01 / À PROPOS</div>
-                <h3><a href="{{ url_for('main.about') }}" style="color: inherit; text-decoration: none;">À propos</a></h3>
-                <p>Découvrez notre mission et notre engagement pour une culture de la cybersécurité accessible à tous.</p>
-            </div>
-            
-            <div class="process-item scroll-animate glass-card">
-                <div class="process-number">02 / RÈGLES</div>
-                <h3><a href="{{ url_for('main.rules') }}" style="color: inherit; text-decoration: none;">Règles d'Or</a></h3>
-                <p>20 règles essentielles pour renforcer votre sécurité numérique au quotidien et protéger vos informations.</p>
-            </div>
-            
-            <div class="process-item scroll-animate glass-card">
-                <div class="process-number">03 / SCÉNARIOS</div>
-                <h3><a href="{{ url_for('main.scenarios') }}" style="color: inherit; text-decoration: none;">Scénarios d'Attaque</a></h3>
-                <p>Apprenez à reconnaître et à vous protéger contre le phishing, ransomware, deepfake et autres menaces actuelles.</p>
-            </div>
-            
-            <div class="process-item scroll-animate glass-card">
-                <div class="process-number">04 / OUTILS</div>
-                <h3><a href="{{ url_for('main.tools') }}" style="color: inherit; text-decoration: none;">Outils de Sécurité</a></h3>
-                <p>Découvrez les outils essentiels pour protéger vos appareils, données et communications numériques.</p>
-            </div>
-            
-            <div class="process-item scroll-animate glass-card">
-                <div class="process-number">05 / GLOSSAIRE</div>
-                <h3><a href="{{ url_for('main.glossary') }}" style="color: inherit; text-decoration: none;">Glossaire</a></h3>
-                <p>Comprenez les termes techniques de la cybersécurité grâce à notre glossaire détaillé et accessible.</p>
-            </div>
-            
-            <div class="process-item scroll-animate glass-card">
-                <div class="process-number">06 / RESSOURCES</div>
-                <h3><a href="{{ url_for('main.resources') }}" style="color: inherit; text-decoration: none;">Ressources & Formation</a></h3>
-                <p>Accédez à des guides, vidéos et articles pour approfondir vos connaissances en cybersécurité.</p>
-            </div>
-            
-            <div class="process-item scroll-animate glass-card">
-                <div class="process-number">07 / ACTUALITÉS</div>
-                <h3><a href="{{ url_for('main.news') }}" style="color: inherit; text-decoration: none;">Actualités</a></h3>
-                <p>Restez informé des dernières nouvelles et tendances en matière de cybersécurité dans le monde.</p>
-            </div>
-            
-            <div class="process-item scroll-animate glass-card">
-                <div class="process-number">08 / CONTACT</div>
-                <h3><a href="{{ url_for('main.contact') }}" style="color: inherit; text-decoration: none;">Contact</a></h3>
-                <p>Posez vos questions, partagez vos préoccupations ou demandez des informations complémentaires.</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-{% if rules %}
-<section class="projects-section section">
-    <div class="container">
-        <h2 class="section-title">Règles Essentielles</h2>
+        <h2 class="section-title">Actualités cyber</h2>
         
-        <div class="projects-list glass-card">
-            {% for rule in rules[:3] %}
-            <a href="{{ url_for('main.rules') }}" class="project-item scroll-animate">
-                <div class="project-info">
-                    <h3>{{ rule.title }}</h3>
-                    <p>Cybersécurité - Bonnes Pratiques</p>
-                </div>
-                <span class="project-arrow">→</span>
-            </a>
+        <div class="news-grid">
+            {% for item in news %}
+            <div class="news-card glass-card scroll-animate">
+                <div class="news-date">{{ item.created_at.strftime('%d %b %Y') if item.created_at else '' }}</div>
+                <h3>{{ item.title }}</h3>
+                <p>{{ item.content[:150] }}...</p>
+                <a href="{{ url_for('main.news') }}" class="read-more">Lire la suite →</a>
+            </div>
             {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<section class="section testimonials-section">
+    <div class="container">
+        <h2 class="section-title">Ils nous font confiance</h2>
+        
+        <div class="testimonials-grid">
+            <div class="testimonial-card glass-card scroll-animate">
+                <p class="testimonial-content">"La Cyberconfiance m'a permis de mieux protéger les données de mes patients."</p>
+                <div class="testimonial-author">
+                    <strong>Dr. M. Kongo</strong>
+                    <span>Médecin</span>
+                </div>
+            </div>
+            
+            <div class="testimonial-card glass-card scroll-animate">
+                <p class="testimonial-content">"Grâce à leurs conseils, j'ai évité une cyberattaque majeure."</p>
+                <div class="testimonial-author">
+                    <strong>M. N. Mbemba</strong>
+                    <span>Entrepreneur</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% if resources %}
+<section class="section resources-section">
+    <div class="container">
+        <h2 class="section-title">Ressources utiles</h2>
+        
+        <div class="resources-grid">
+            <div class="resource-card glass-card scroll-animate">
+                <span class="resource-icon">📄</span>
+                <h3>Vade-mecum de cybersécurité</h3>
+                <p>20 règles d'or pour naviguer en sécurité.</p>
+                <a href="{{ url_for('main.rules') }}" class="btn btn-primary">Accéder</a>
+            </div>
+            
+            <div class="resource-card glass-card scroll-animate">
+                <span class="resource-icon">✓</span>
+                <h3>Checklist de sécurité</h3>
+                <p>Vérifiez vos pratiques en un clin d'œil.</p>
+                <a href="{{ url_for('main.resources') }}" class="btn btn-primary">Accéder</a>
+            </div>
         </div>
     </div>
 </section>
@@ -126,8 +120,37 @@
 
 <section class="contact-section">
     <div class="container">
-        <h2>Besoin d'informations ?</h2>
-        <a href="mailto:contact@cyberconfiance.fr" class="contact-email">contact@cyberconfiance.fr</a>
+        <h2>Contactez-nous</h2>
+        <p>Besoin d'aide ou de conseils personnalisés ?</p>
+        <a href="{{ url_for('main.contact') }}" class="btn btn-primary">Nous contacter</a>
+    </div>
+</section>
+
+<section class="section footer-newsletter">
+    <div class="container">
+        <div class="newsletter-box glass-card">
+            <h3>Restez informé</h3>
+            <p>Recevez nos conseils et alertes cyber chaque semaine.</p>
+            <form action="/newsletter" method="post" class="newsletter-form">
+                <input type="email" name="email" placeholder="Votre adresse email" required>
+                <button type="submit" class="btn btn-primary">S'inscrire</button>
+            </form>
+        </div>
+        
+        <div class="social-links">
+            <a href="https://facebook.com/lacyberconfiance" target="_blank" rel="noopener" title="Facebook">
+                <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+            </a>
+            <a href="https://instagram.com/lacyberconfiance" target="_blank" rel="noopener" title="Instagram">
+                <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+            </a>
+            <a href="https://twitter.com/cyberconfiance" target="_blank" rel="noopener" title="Twitter">
+                <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>
+            </a>
+            <a href="https://linkedin.com/company/la-cyberconfiance" target="_blank" rel="noopener" title="LinkedIn">
+                <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            </a>
+        </div>
     </div>
 </section>
 {% endblock %}
