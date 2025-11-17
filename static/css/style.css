@@ -25,7 +25,7 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     line-height: 1.6;
     color: var(--text-primary);
-    background: var(--bg-navy);
+    background: #000000;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -397,29 +397,27 @@ header {
 .vision-section {
     position: relative;
     overflow: hidden;
-    background: transparent;
+    background: #000000;
 }
 
 .mission-section {
-    background: transparent;
+    background: #000000;
 }
 
 .pillars-section {
-    background: transparent;
+    background: #000000;
 }
 
 .news-section {
-    background: transparent;
+    background: #000000;
 }
 
 .resources-section {
-    background: transparent;
+    background: #000000;
 }
 
 .newsletter-section {
-    background: var(--bg-navy-light);
-    border-top: 1px solid var(--border-subtle);
-    border-bottom: 1px solid var(--border-subtle);
+    background: #000000;
 }
 
 .process-section {
@@ -625,7 +623,7 @@ header {
 .contact-section {
     text-align: center;
     padding: 8rem 0;
-    background: transparent;
+    background: #000000;
     border: none;
     box-shadow: none;
 }
