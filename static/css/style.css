@@ -170,7 +170,7 @@ header {
 
 .hero {
     position: relative;
-    min-height: 42vh;
+    min-height: 60vh;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -239,7 +239,7 @@ header {
     position: relative;
     height: 1.4em;
     width: 100%;
-    margin-top: 0.5em;
+    margin-top: 0.2em;
     overflow: hidden;
 }
 
@@ -589,6 +589,7 @@ header {
 }
 
 .pillar-card {
+    text-align: center;
     padding: 2.5rem 2rem;
     background: linear-gradient(145deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 100%);
     backdrop-filter: blur(70px) saturate(190%);
@@ -659,7 +660,7 @@ header {
 .pillar-card p {
     color: var(--text-secondary);
     font-size: 0.85rem;
-    line-height: 1.6;
+    line-height: 1.7;
     letter-spacing: -0.1px;
 }
 
@@ -2386,36 +2387,6 @@ footer {
     color: var(--text-secondary);
 }
 
-/* 6 Pillars Grid */
-.pillars-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 2.5rem;
-    margin-top: 3rem;
-}
-
-.pillar-card {
-    text-align: center;
-    padding: 2.5rem 2rem;
-}
-
-.pillar-icon {
-    font-size: 3.5rem;
-    display: block;
-    margin-bottom: 1.5rem;
-    filter: drop-shadow(0 0 20px rgba(0, 102, 255, 0.3));
-}
-
-.pillar-card h3 {
-    font-size: 1.4rem;
-    margin-bottom: 1rem;
-    color: var(--text-primary);
-}
-
-.pillar-card p {
-    color: var(--text-secondary);
-    line-height: 1.7;
-}
 
 /* Section Spacing Adjustments */
 .section {
