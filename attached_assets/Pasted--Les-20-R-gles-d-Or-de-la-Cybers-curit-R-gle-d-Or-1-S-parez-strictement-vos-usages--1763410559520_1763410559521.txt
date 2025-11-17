@@ -1,0 +1,345 @@
+# Les 20 Règles d'Or de la Cybersécurité
+
+---
+
+## Règle d'Or 1 : Séparez strictement vos usages privés et professionnels
+
+### Pourquoi cette règle est importante ?
+Mélanger vos usages privés et professionnels augmente le risque d’exposition aux cybermenaces. Les appareils et comptes personnels sont souvent moins protégés que ceux utilisés pour le travail.
+
+### Exemples concrets
+- Un député utilise sa messagerie personnelle pour échanger des documents officiels. Un hacker accède à son compte via une attaque de phishing et publie les documents en ligne.
+- Une directrice d’entreprise connecte son ordinateur personnel à un réseau Wi-Fi non sécurisé pour accéder à un dossier confidentiel. Un malware infecte l’appareil, compromettant les données.
+
+### Risques associés
+- Exposition accrue aux cyberattaques.
+- Manque de contrôle sur les appareils personnels.
+- Violation des politiques de confidentialité.
+
+### Bonnes pratiques à adopter
+- Utilisez des appareils distincts pour vos activités professionnelles et personnelles.
+- Utilisez uniquement votre adresse professionnelle pour échanger des documents liés à votre fonction.
+- Évitez d’installer des applications non vérifiées sur vos appareils professionnels.
+- Ne partagez jamais vos identifiants professionnels sur des plateformes non sécurisées.
+
+---
+
+## Règle d'Or 2 : Protégez vos accès par des mots de passe complexes et uniques
+
+### Pourquoi cette règle est importante ?
+Les mots de passe sont la première ligne de défense contre les cyberattaques. Des mots de passe simples ou réutilisés facilitent la tâche des hackers.
+
+### Exemples concrets
+- Un député utilise le même mot de passe pour sa messagerie professionnelle et son compte sur un site de vente en ligne. Une fuite sur le site expose son mot de passe, permettant aux hackers d’accéder à ses e-mails professionnels.
+- Un cadre choisit un mot de passe simple comme 123456 pour son ordinateur. En quelques secondes, un hacker le devine et accède à des dossiers sensibles.
+
+### Risques associés
+- Attaques par force brute.
+- Fuites massives.
+- Usurpation d’identité.
+
+### Bonnes pratiques à adopter
+- Créez des mots de passe robustes (minimum 12 caractères, incluant majuscules, minuscules, chiffres et symboles).
+- Utilisez des mots de passe uniques pour chaque compte.
+- Utilisez un gestionnaire de mots de passe pour stocker vos identifiants de manière sécurisée.
+- Changez vos mots de passe tous les 3 à 6 mois, ou immédiatement en cas de suspicion de fuite.
+
+---
+
+## Règle d'Or 3 : Activez l’authentification à deux facteurs (2FA)
+
+### Pourquoi cette règle est importante ?
+L’authentification à deux facteurs renforce considérablement la sécurité de vos comptes. Même si un hacker parvient à voler votre mot de passe, il lui sera impossible d’accéder à vos comptes sans une seconde méthode de vérification.
+
+### Exemples concrets
+- Un hacker vole les identifiants d’un ministre via une attaque de phishing. Cependant, le ministre a activ le 2FA : le hacker est bloqué car il ne peut pas accéder au code temporaire envoy sur le téléphone du ministre.
+- Une organisation implémente le 2FA sur ses systèmes internes. Lorsqu’un employé perd son mot de passe, les hackers ne peuvent toujours pas accéder à ses fichiers.
+
+### Risques associés
+- Vol de mot de passe insuffisant.
+- Failles humaines.
+- Attaques massives.
+
+### Bonnes pratiques à adopter
+- Activez le 2FA sur tous vos comptes sensibles.
+- Choisissez une méthode sécurisée (applications d’authentification, clés USB physiques).
+- Formez vos collaborateurs à l’importance du 2FA et accompagnez-les dans sa configuration.
+
+---
+
+## Règle d'Or 4 : Protégez vos équipements physiques
+
+### Pourquoi cette règle est importante ?
+Vos appareils physiques contiennent des données sensibles. Les laisser sans protection ou les perdre peut avoir des conséquences graves.
+
+### Exemples concrets
+- Lors d’un déplacement, un député oublie son ordinateur portable dans un taxi. Cet appareil contient des fichiers stratégiques non chiffrés. Un voleur accède aux documents, causant un scandale.
+- Un cadre laisse son téléphone sans surveillance dans une salle de réunion. Une personne malveillante installe discrètement un logiciel espion, permettant d’espionner ses conversations.
+
+### Risques associés
+- Vol physique.
+- Accès non autorisé.
+- Espionnage ou sabotage.
+
+### Bonnes pratiques à adopter
+- Gardez vos appareils toujours sous votre contrôle.
+- Protégez vos appareils avec des codes de verrouillage et du chiffrement.
+- Utilisez des câbles de verrouillage pour vos ordinateurs portables.
+- Prenez des précautions lors des déplacements (sauvegardez vos données, transportez uniquement les fichiers nécessaires).
+
+---
+
+## Règle d'Or 5 : Verrouillez vos appareils et espaces de travail
+
+### Pourquoi cette règle est importante ?
+Un poste de travail non verrouillé ou un bureau ouvert peut permettre à des personnes mal intentionnées d’accéder à des données sensibles.
+
+### Exemples concrets
+- Un collaborateur oublie de verrouiller son ordinateur en quittant son poste. Un employé malveillant accède à des fichiers confidentiels et les transfère sur une cl USB.
+- Lors d’une réunion, un cadre laisse des documents classifiés sur son bureau non ferm à cl. Un visiteur non autorisé prend des photos de ces documents avec son téléphone.
+
+### Risques associés
+- Accès non autorisé.
+- Vol de données.
+- Sabotage.
+
+### Bonnes pratiques à adopter
+- Verrouillez systématiquement vos appareils.
+- Rangez toujours vos documents sensibles dans des tiroirs fermés à cl.
+- Installez des filtres de confidentialité sur vos écrans pour empêcher les regards indiscrets.
+- Utilisez des accessoires de verrouillage pour vos équipements.
+
+---
+
+## Règle d'Or 6 : Soyez vigilant avec les courriels et les liens non sollicités
+
+### Pourquoi cette règle est importante ?
+Le phishing ou hameçonnage est l’une des techniques les plus courantes utilisées par les cybercriminels pour voler des données sensibles.
+
+### Exemples concrets
+- Un cadre reçoit un e-mail prétendument envoy par son supérieur hiérarchique, lui demandant de valider un paiement urgent via un lien. En cliquant, il fournit ses identifiants, donnant accès au hacker à son compte professionnel.
+- Un employé ouvre une pièce jointe d’un e-mail prétendument envoy par un partenaire. Cette pièce jointe contient un ransomware qui chiffre toutes les données de son ordinateur.
+
+### Risques associés
+- Phishing.
+- Ransomware.
+- Usurpation d’identité.
+
+### Bonnes pratiques à adopter
+- Analysez l’expéditeur.
+- Soyez prudent avec les liens.
+- Vérifiez les pièces jointes.
+- Formez vos équipes à reconnaître les e-mails frauduleux.
+
+---
+
+## Règle d'Or 7 : Sauvegardez vos données régulièrement et de manière sécurisée
+
+### Pourquoi cette règle est importante ?
+Les sauvegardes régulières vous permettent de récupérer vos données en cas de perte, de vol ou de cyberattaque comme un ransomware.
+
+### Exemples concrets
+- Une entreprise publique est victime d’une attaque par ransomware qui chiffre tous ses fichiers. Heureusement, elle dispose de sauvegardes récentes stockées hors ligne, ce qui lui permet de restaurer ses données sans payer la rançon.
+- Un collaborateur efface accidentellement un document essentiel. Grâce à une sauvegarde automatique sur le cloud, il peut le récupérer en quelques minutes.
+
+### Risques associés
+- Perte définitive de données.
+- Chantage.
+- Paralysie des activités.
+
+### Bonnes pratiques à adopter
+- Établissez un plan de sauvegarde.
+- Stockez vos sauvegardes dans des endroits sécurisés.
+- Testez vos sauvegardes.
+- Protégez vos sauvegardes.
+
+---
+
+## Règle d'Or 8 : Évitez les réseaux publics non sécurisés
+
+### Pourquoi cette règle est importante ?
+Les réseaux Wi-Fi publics sont des terrains propices aux attaques informatiques. Ces réseaux, souvent non sécurisés, permettent aux hackers d’intercepter vos données.
+
+### Exemples concrets
+- Un fonctionnaire se connecte au Wi-Fi d’un aéroport pour consulter ses e-mails professionnels. Un hacker, utilisant un outil d’interception, capte ses identifiants et accède à sa messagerie.
+- Lors d’une réunion, un cadre utilise une borne de recharge USB publique. Cette borne a été modifiée pour injecter un logiciel espion sur les téléphones.
+
+### Risques associés
+- Vol de données sensibles.
+- Installation de logiciels malveillants.
+- Usurpation d’identité.
+
+### Bonnes pratiques à adopter
+- Évitez les réseaux Wi-Fi publics.
+- Utilisez un VPN.
+- Vérifiez le réseau.
+- Protégez vos appareils.
+
+---
+
+## Règle d'Or 9 : Faites preuve de vigilance lors de vos échanges téléphoniques ou en visioconférence
+
+### Pourquoi cette règle est importante ?
+Les communications téléphoniques et les visioconférences sont des cibles fréquentes pour les cybercriminels ou les espions.
+
+### Exemples concrets
+- Un cadre utilise une application de visioconférence gratuite pour discuter de stratégies d’entreprise. Sans le savoir, un tiers non autorisé accède à la réunion via un lien partagé.
+- Lors d’une réunion téléphonique, un téléphone mal configuré enregistre automatiquement la conversation. Ces enregistrements sont ensuite utilisés pour une attaque ciblée.
+
+### Risques associés
+- Écoute clandestine.
+- Intrusion dans des visioconférences.
+- Fuite de données sensibles.
+
+### Bonnes pratiques à adopter
+- Utilisez des outils sécurisés.
+- Protégez l’accès aux réunions.
+- Sensibilisez vos participants.
+- Désactivez l’enregistrement.
+
+---
+
+## Règle d'Or 10 : Veillez à la sécurité de votre smartphone
+
+### Pourquoi cette règle est importante ?
+Votre smartphone est une véritable mine d’or d’informations sensibles. C’est un outil puissant mais aussi une cible privilégiée des cybercriminels.
+
+### Exemples concrets
+- Un haut fonctionnaire installe une application de divertissement sur son téléphone professionnel. Cette application, issue d’une source non fiable, collecte en secret ses données et enregistre ses appels.
+
+### Risques associés
+- Vol de données.
+- Espionnage.
+- Usurpation d’identité.
+
+### Bonnes pratiques à adopter
+- Utilisez des applications uniquement depuis des sources fiables.
+- Vérifiez les autorisations demandées par les applications.
+- Activez le chiffrement des données de votre appareil.
+
+---
+
+## Règle d'Or 11 : Surveillez votre identité numérique sur les réseaux sociaux
+
+### Pourquoi cette règle est importante ?
+Les réseaux sociaux sont souvent utilisés comme des outils d’espionnage ou d’ingénierie sociale. Les informations que vous partagez publiquement peuvent être exploitées par des individus malveillants.
+
+### Exemples concrets
+- Un cadre publie régulièrement des photos de ses voyages sur ses réseaux sociaux. Des hackers exploitent les métadonnées des images (horaires et localisation) pour cibler son domicile lorsqu’il est à l’étranger.
+
+### Risques associés
+- Création de profils usurpés.
+- Ciblage d’attaques personnalisées.
+- Obtention d’informations sensibles.
+
+### Bonnes pratiques à adopter
+- Limitez la quantité d’informations personnelles partagées.
+- Désactivez l’enregistrement des métadonnées sur vos photos.
+- Surveillez régulièrement votre présence numérique.
+
+---
+
+## Règle d'Or 12 : Mettez à jour vos logiciels et appareils régulièrement
+
+### Pourquoi cette règle est importante ?
+Les mises à jour logicielles corrigent souvent des failles de sécurité découvertes par les développeurs ou exploitées par les hackers.
+
+### Exemples concrets
+- Un collaborateur utilise une version ancienne de Windows. Cette version contient une faille de sécurité exploitée par un ransomware, chiffrant toutes les données de son appareil.
+
+### Risques associés
+- Attaques par failles connues.
+- Usurpation d’identité.
+- Paralysie des activités.
+
+### Bonnes pratiques à adopter
+- Mettez à jour vos logiciels et appareils régulièrement.
+- Activez les mises à jour automatiques.
+- Vérifiez que vos appareils connectés sont également à jour.
+
+---
+
+## Règle d'Or 13 : Formez-vous et sensibilisez votre équipe aux bonnes pratiques de cybersécurité
+
+### Pourquoi cette règle est importante ?
+La cybersécurité ne repose pas uniquement sur des outils technologiques, mais aussi sur la vigilance et les connaissances des utilisateurs.
+
+### Exemples concrets
+- Un employé clique sur un lien de phishing parce qu’il n’a pas été formé à reconnaître un e-mail frauduleux. Cela donne aux hackers un accès à tout le réseau de l’entreprise.
+- Lors d’un déplacement, un cadre utilise un Wi-Fi public pour accéder à ses fichiers professionnels, ignorant les risques associés.
+
+### Risques associés
+- Erreurs humaines.
+- Diffusion insuffisante des bonnes pratiques.
+- Propagation des attaques.
+
+### Bonnes pratiques à adopter
+- Organisez des sessions de formation régulières.
+- Partagez des consignes claires.
+- Simulez des attaques pour évaluer la vigilance.
+- Mettez à jour les connaissances.
+- Encouragez la communication.
+
+---
+
+## Règle d'Or 14 : Installez des filtres de confidentialité sur vos écrans
+
+### Pourquoi cette règle est importante ?
+Lorsque vous travaillez dans des espaces publics ou même dans des bureaux partagés, vos écrans peuvent être facilement visibles par des personnes mal intentionnées.
+
+### Exemples concrets
+- Un cadre travaille sur un rapport confidentiel dans un avion. Un passager assis derrière lui prend discrètement des photos de l’écran avec son téléphone. Ces informations se retrouvent ensuite divulguées.
+
+### Risques associés
+- Espionnage visuel.
+- Fuite de données sensibles.
+- Usurpation d’identité.
+
+### Bonnes pratiques à adopter
+- Installez des filtres de confidentialité sur vos écrans.
+- Utilisez des écrans secondaires pour les présentations.
+- Protégez vos appareils.
+
+---
+
+## Règle d'Or 15 : Évitez d’utiliser des équipements non vérifiés
+
+### Pourquoi cette règle est importante ?
+Les équipements non vérifiés (clés USB, disques durs externes, tablettes, etc.) peuvent contenir des logiciels malveillants ou être conçus pour compromettre vos systèmes.
+
+### Exemples concrets
+- Un cadre utilise une clé USB offerte lors d’un événement. Cette clé contient un logiciel malveillant qui infecte son ordinateur.
+
+### Risques associés
+- Vol de données.
+- Installation de logiciels espions.
+- Propagation de ransomwares ou virus.
+
+### Bonnes pratiques à adopter
+- Utilisez uniquement des équipements vérifiés.
+- Désactivez l’exécution automatique des périphériques.
+- Protégez vos connexions.
+
+---
+
+## Règle d'Or 16 : Stockez vos données sensibles dans des espaces sécurisés
+
+### Pourquoi cette règle est importante ?
+Les données sensibles nécessitent un stockage sécurisé pour éviter les fuites ou les pertes.
+
+### Exemples concrets
+- Un haut fonctionnaire stocke des documents classifiés sur un disque dur externe non protégé. Ce disque est vol lors d’un déplacement, et les données tombent entre de mauvaises mains.
+
+### Risques associés
+- Vol ou perte physique.
+- Exposition aux attaques en ligne.
+- Accès non autorisé.
+
+### Bonnes pratiques à adopter
+- Chiffrez vos données sensibles.
+- Stockez vos données dans des espaces sécurisés.
+- Limitez l’accès aux données.
+
+---
+
+## Règle d'Or 17 : Ident
