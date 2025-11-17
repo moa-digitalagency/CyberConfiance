@@ -248,14 +248,21 @@ header {
 
 .hero-buttons {
     display: flex;
-    gap: 1.5rem;
+    gap: 1rem;
     justify-content: center;
     animation: fadeInUp 1s ease 0.4s backwards;
-    margin-bottom: 3rem;
+    margin-bottom: 2rem;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.hero-buttons .btn {
+    flex: 1;
 }
 
 .hero-newsletter {
-    max-width: 550px;
+    max-width: 700px;
     margin: 0 auto;
     animation: fadeInUp 1s ease 0.6s backwards;
 }
@@ -263,13 +270,11 @@ header {
 .hero-newsletter-form {
     display: flex;
     gap: 1rem;
-    flex-wrap: wrap;
-    justify-content: center;
+    align-items: stretch;
 }
 
 .hero-newsletter-form input[type="email"] {
     flex: 1;
-    min-width: 250px;
     padding: 1rem 1.5rem;
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -277,6 +282,9 @@ header {
     color: var(--text-primary);
     font-size: 0.95rem;
     transition: all 0.3s ease;
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    min-width: 0;
 }
 
 .hero-newsletter-form input[type="email"]:focus {
@@ -288,6 +296,30 @@ header {
 
 .hero-newsletter-form input[type="email"]::placeholder {
     color: var(--text-muted);
+}
+
+.hero-newsletter-form .btn {
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+    .hero-newsletter-form {
+        flex-direction: column;
+    }
+    
+    .hero-newsletter-form input[type="email"],
+    .hero-newsletter-form .btn {
+        width: 100%;
+    }
+    
+    .hero-buttons {
+        flex-direction: column;
+    }
+    
+    .hero-buttons .btn {
+        width: 100%;
+    }
 }
 
 .btn {
@@ -305,32 +337,38 @@ header {
 }
 
 .btn-primary {
-    background: var(--accent-blue);
+    background: rgba(59, 130, 246, 0.15);
     color: #ffffff;
-    box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .btn-primary:hover {
-    background: var(--accent-blue-light);
+    background: rgba(59, 130, 246, 0.25);
+    border-color: rgba(59, 130, 246, 0.5);
     transform: translateY(-2px);
-    box-shadow: 0 6px 30px rgba(59, 130, 246, 0.4);
+    box-shadow: 0 12px 48px rgba(59, 130, 246, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 .btn-secondary {
     background: rgba(255, 255, 255, 0.08);
     color: var(--text-primary);
     border: 1px solid rgba(255, 255, 255, 0.18);
-    backdrop-filter: blur(40px) saturate(150%);
-    -webkit-backdrop-filter: blur(40px) saturate(150%);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3),
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
                 inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 .btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.15);
     border-color: rgba(255, 255, 255, 0.3);
     transform: translateY(-2px);
-    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4),
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4),
                 inset 0 1px 0 rgba(255, 255, 255, 0.18);
 }
 
@@ -357,27 +395,33 @@ header {
 }
 
 .vision-section {
-    background: var(--bg-navy-dark);
+    background: transparent;
 }
 
 .mission-section {
     background: var(--bg-navy-light);
+    border-top: 1px solid var(--border-subtle);
+    border-bottom: 1px solid var(--border-subtle);
 }
 
 .pillars-section {
-    background: var(--bg-navy-dark);
+    background: transparent;
 }
 
 .news-section {
-    background: var(--bg-navy);
+    background: var(--bg-navy-light);
+    border-top: 1px solid var(--border-subtle);
+    border-bottom: 1px solid var(--border-subtle);
 }
 
 .resources-section {
-    background: var(--bg-navy-light);
+    background: transparent;
 }
 
 .newsletter-section {
-    background: var(--bg-navy-dark);
+    background: var(--bg-navy-light);
+    border-top: 1px solid var(--border-subtle);
+    border-bottom: 1px solid var(--border-subtle);
 }
 
 .process-section {
@@ -582,7 +626,10 @@ header {
 
 .contact-section {
     text-align: center;
-    padding: 12rem 0;
+    padding: 8rem 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
 }
 
 .contact-section h2 {
