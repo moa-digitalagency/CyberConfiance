@@ -1,0 +1,284 @@
+{
+  "rules": [
+    {
+      "id": 1,
+      "title": "Utilisez un mot de passe fort",
+      "summary": "Un mot de passe fort doit contenir au moins 12 caractères, inclure des lettres majuscules et minuscules, des chiffres et des symboles.",
+      "explanation": "Les mots de passe faibles sont faciles à deviner ou à cracker. Un mot de passe fort rend l’accès à vos comptes beaucoup plus difficile pour les pirates.",
+      "examples": [
+        "Mot de passe faible : 123456",
+        "Mot de passe fort : P@ssw0rd!2025"
+      ],
+      "best_practices": [
+        "Utilisez un gestionnaire de mots de passe.",
+        "Ne réutilisez pas le même mot de passe pour plusieurs comptes."
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Activez l’authentification à deux facteurs",
+      "summary": "L’authentification à deux facteurs (2FA) ajoute une couche de sécurité supplémentaire.",
+      "explanation": "Même si un pirate obtient votre mot de passe, il ne pourra pas accéder à votre compte sans la deuxième preuve d’identité.",
+      "examples": [
+        "Utilisation d’une application d’authentification (Google Authenticator).",
+        "Réception d’un code par SMS."
+      ],
+      "best_practices": [
+        "Privilégiez les applications d’authentification aux SMS.",
+        "Gardez vos codes de récupération dans un endroit sûr."
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Mettez à jour régulièrement vos logiciels",
+      "summary": "Les mises à jour corrigent souvent des failles de sécurité.",
+      "explanation": "Les pirates exploitent souvent des failles connues dans les logiciels non mis à jour.",
+      "examples": [
+        "Mise à jour automatique activée sur Windows.",
+        "Mise à jour manuelle des applications mobiles."
+      ],
+      "best_practices": [
+        "Configurez les mises à jour automatiques.",
+        "Vérifiez régulièrement la présence de mises à jour."
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Soyez vigilant face au phishing",
+      "summary": "Ne cliquez pas sur des liens suspects dans les emails ou les messages.",
+      "explanation": "Le phishing vise à voler vos identifiants en vous redirigeant vers des faux sites.",
+      "examples": [
+        "Email qui semble provenir de votre banque mais avec une adresse suspecte.",
+        "Message qui demande de cliquer sur un lien pour vérifier votre compte."
+      ],
+      "best_practices": [
+        "Vérifiez toujours l’adresse de l’expéditeur.",
+        "Ne saisissez jamais vos identifiants sur des sites non sécurisés."
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Utilisez un gestionnaire de mots de passe",
+      "summary": "Un gestionnaire de mots de passe vous aide à stocker et générer des mots de passe uniques.",
+      "explanation": "Il est difficile de se souvenir de nombreux mots de passe forts. Un gestionnaire les stocke de façon sécurisée.",
+      "examples": [
+        "Utilisation de LastPass ou Bitwarden.",
+        "Génération automatique de mots de passe complexes."
+      ],
+      "best_practices": [
+        "Choisissez un gestionnaire fiable.",
+        "Protégez votre gestionnaire avec un mot de passe fort."
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Sécurisez vos appareils mobiles",
+      "summary": "Utilisez un code PIN, un motif ou une reconnaissance biométrique pour verrouiller vos appareils mobiles.",
+      "explanation": "Un appareil non verrouillé peut être utilisé par n’importe qui.",
+      "examples": [
+        "Verrouillage par empreinte digitale.",
+        "Verrouillage par code PIN."
+      ],
+      "best_practices": [
+        "Activez le verrouillage automatique.",
+        "Ne laissez pas votre appareil sans surveillance."
+      ]
+    },
+    {
+      "id": 7,
+      "title": "Ne partagez pas vos informations personnelles",
+      "summary": "Évitez de partager vos informations personnelles sur les réseaux sociaux ou les sites non sécurisés.",
+      "explanation": "Les informations personnelles peuvent être utilisées pour voler votre identité ou pour du phishing.",
+      "examples": [
+        "Publication de votre date de naissance sur Facebook.",
+        "Partage de votre numéro de téléphone sur un site non sécurisé."
+      ],
+      "best_practices": [
+        "Limitez la visibilité de vos informations personnelles.",
+        "Ne partagez pas d’informations sensibles en ligne."
+      ]
+    },
+    {
+      "id": 8,
+      "title": "Utilisez un antivirus",
+      "summary": "Installez un antivirus fiable et assurez-vous qu’il est toujours à jour.",
+      "explanation": "Un antivirus détecte et bloque les logiciels malveillants.",
+      "examples": [
+        "Installation de Windows Defender.",
+        "Utilisation d’un antivirus payant comme Kaspersky."
+      ],
+      "best_practices": [
+        "Mettez à jour régulièrement votre antivirus.",
+        "Effectuez des analyses régulières."
+      ]
+    },
+    {
+      "id": 9,
+      "title": "Soyez prudent sur les réseaux Wi-Fi publics",
+      "summary": "Évitez d’accéder à des comptes sensibles sur les réseaux Wi-Fi publics.",
+      "explanation": "Les réseaux Wi-Fi publics sont souvent non sécurisés et peuvent être surveillés par des pirates.",
+      "examples": [
+        "Accès à votre compte bancaire sur un réseau Wi-Fi de café.",
+        "Utilisation d’un VPN pour sécuriser votre connexion."
+      ],
+      "best_practices": [
+        "Utilisez un VPN sur les réseaux publics.",
+        "Évitez les transactions sensibles sur les réseaux publics."
+      ]
+    },
+    {
+      "id": 10,
+      "title": "Sauvegardez régulièrement vos données",
+      "summary": "Effectuez des sauvegardes régulières de vos données importantes.",
+      "explanation": "Les sauvegardes permettent de récupérer vos données en cas de perte ou de ransomware.",
+      "examples": [
+        "Sauvegarde sur un disque dur externe.",
+        "Sauvegarde dans le cloud."
+      ],
+      "best_practices": [
+        "Automatisez vos sauvegardes.",
+        "Testez régulièrement la restauration de vos sauvegardes."
+      ]
+    },
+    {
+      "id": 11,
+      "title": "Utilisez un pare-feu",
+      "summary": "Un pare-feu bloque les connexions non autorisées à votre réseau.",
+      "explanation": "Un pare-feu filtre le trafic entrant et sortant pour protéger votre réseau.",
+      "examples": [
+        "Utilisation du pare-feu intégré de Windows.",
+        "Installation d’un pare-feu tiers."
+      ],
+      "best_practices": [
+        "Activez le pare-feu par défaut.",
+        "Configurez les règles de pare-feu selon vos besoins."
+      ]
+    },
+    {
+      "id": 12,
+      "title": "Évitez les logiciels piratés",
+      "summary": "Les logiciels piratés peuvent contenir des malwares.",
+      "explanation": "Les logiciels piratés ne sont pas vérifiés et peuvent être modifiés pour inclure des logiciels malveillants.",
+      "examples": [
+        "Téléchargement d’un logiciel gratuit sur un site non officiel.",
+        "Utilisation d’un logiciel cracké."
+      ],
+      "best_practices": [
+        "Téléchargez uniquement des logiciels à partir de sources officielles.",
+        "Vérifiez la légitimité des logiciels avant de les installer."
+      ]
+    },
+    {
+      "id": 13,
+      "title": "Formez vos collaborateurs",
+      "summary": "Sensibilisez vos collaborateurs aux bonnes pratiques de cybersécurité.",
+      "explanation": "Les collaborateurs sont souvent la première ligne de défense contre les cybermenaces.",
+      "examples": [
+        "Organisation de sessions de sensibilisation.",
+        "Diffusion de guides et de bonnes pratiques."
+      ],
+      "best_practices": [
+        "Organisez des formations régulières.",
+        "Mettez à jour les collaborateurs sur les nouvelles menaces."
+      ]
+    },
+    {
+      "id": 14,
+      "title": "Utilisez des adresses email distinctes",
+      "summary": "Utilisez une adresse email différente pour chaque service.",
+      "explanation": "Cela limite les risques en cas de fuite d’identifiants.",
+      "examples": [
+        "Adresse email personnelle pour les réseaux sociaux.",
+        "Adresse email professionnelle pour le travail."
+      ],
+      "best_practices": [
+        "Créez des adresses email spécifiques pour chaque service.",
+        "Utilisez des alias si possible."
+      ]
+    },
+    {
+      "id": 15,
+      "title": "Surveillez vos comptes",
+      "summary": "Vérifiez régulièrement l’activité de vos comptes et activez les alertes de sécurité.",
+      "explanation": "La surveillance permet de détecter rapidement toute activité suspecte.",
+      "examples": [
+        "Vérification des connexions récentes sur Google.",
+        "Activation des alertes de connexion sur Facebook."
+      ],
+      "best_practices": [
+        "Activez les alertes de sécurité.",
+        "Vérifiez régulièrement l’activité de vos comptes."
+      ]
+    },
+    {
+      "id": 16,
+      "title": "Ne cliquez pas sur les pièces jointes suspectes",
+      "summary": "Les pièces jointes peuvent contenir des virus.",
+      "explanation": "Les pièces jointes sont un vecteur courant de diffusion de malwares.",
+      "examples": [
+        "Pièce jointe dans un email non sollicité.",
+        "Pièce jointe dans un message d’un expéditeur inconnu."
+      ],
+      "best_practices": [
+        "Vérifiez toujours l’expéditeur avant d’ouvrir une pièce jointe.",
+        "Utilisez un antivirus pour analyser les pièces jointes."
+      ]
+    },
+    {
+      "id": 17,
+      "title": "Utilisez un VPN",
+      "summary": "Un VPN crypte votre connexion et protège vos données.",
+      "explanation": "Un VPN masque votre adresse IP et sécurise votre trafic.",
+      "examples": [
+        "Utilisation d’un VPN pour accéder à des sites bloqués.",
+        "Utilisation d’un VPN sur les réseaux publics."
+      ],
+      "best_practices": [
+        "Choisissez un VPN fiable.",
+        "Utilisez un VPN pour toutes vos connexions sensibles."
+      ]
+    },
+    {
+      "id": 18,
+      "title": "Évitez les sites non sécurisés",
+      "summary": "Ne saisissez jamais vos identifiants sur des sites qui ne commencent pas par https://.",
+      "explanation": "Les sites non sécurisés ne protègent pas vos données.",
+      "examples": [
+        "Saisie de vos identifiants sur un site http://.",
+        "Utilisation d’un site https:// pour les transactions sensibles."
+      ],
+      "best_practices": [
+        "Vérifiez toujours le protocole de sécurité.",
+        "Utilisez des extensions de navigateur pour détecter les sites non sécurisés."
+      ]
+    },
+    {
+      "id": 19,
+      "title": "Restez informé",
+      "summary": "Suivez les actualités en cybersécurité pour rester au courant des nouvelles menaces.",
+      "explanation": "Les menaces évoluent rapidement, il est important de rester informé.",
+      "examples": [
+        "Lecture d’articles sur les nouvelles menaces.",
+        "Suivi des comptes spécialisés sur les réseaux sociaux."
+      ],
+      "best_practices": [
+        "Abonnez-vous à des newsletters spécialisées.",
+        "Participez à des forums et des groupes de discussion."
+      ]
+    },
+    {
+      "id": 20,
+      "title": "Utilisez un gestionnaire de mots de passe",
+      "summary": "Un gestionnaire de mots de passe vous aide à stocker et générer des mots de passe uniques.",
+      "explanation": "Il est difficile de se souvenir de nombreux mots de passe forts. Un gestionnaire les stocke de façon sécurisée.",
+      "examples": [
+        "Utilisation de LastPass ou Bitwarden.",
+        "Génération automatique de mots de passe complexes."
+      ],
+      "best_practices": [
+        "Choisissez un gestionnaire fiable.",
+        "Protégez votre gestionnaire avec un mot de passe fort."
+      ]
+    }
+  ]
+}
