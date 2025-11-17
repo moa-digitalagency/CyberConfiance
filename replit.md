@@ -100,7 +100,28 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes (November 17, 2025)
 
-### Minimalist Redesign - ChatflowAI Style (Latest - November 17, 2025)
+### Enhanced Navigation and Homepage Sections (Latest - November 17, 2025)
+Complete navigation and homepage improvements:
+
+- **Navigation Menu Completed**: Added Glossaire, Ressources, and Actualités to main navigation menu - all 9 menu items now visible
+- **Advanced Glassmorphism Menu**: Enhanced header with advanced glassmorphism effects including:
+  - Backdrop blur (30px) with saturation boost (180%)
+  - Layered box shadows for depth
+  - Hover effects with blurred overlays on menu items
+  - Smooth transitions and transform effects
+- **Animated Security Background**: Implemented floating security elements background with:
+  - Animated symbols (🔒 🛡️ 🔐 ⚡ 🔑) and binary code (10101, 01010)
+  - 120-second slow floating animation
+  - Subtle opacity (0.03) for non-intrusive effect
+  - Continuous loop with translateY and translateX
+- **Complete Homepage Sections**: Added descriptive sections for ALL menu items on homepage:
+  - 8 sections in 3-column grid layout
+  - Each section links to corresponding page
+  - Sections: À propos, Règles, Scénarios, Outils, Glossaire, Ressources, Actualités, Contact
+  - Consistent glassmorphism styling on all cards
+  - Numbered sections (01-08) for clear organization
+
+### Minimalist Redesign - ChatflowAI Style (November 17, 2025)
 Complete platform redesign inspired by ChatflowAI's minimalist aesthetic:
 
 - **Pure Black Background (#000000)**: Ultra-minimal design with pure black background and subtle texture overlay
