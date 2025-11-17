@@ -221,8 +221,57 @@ header {
     font-weight: 400;
     margin-bottom: 2rem;
     letter-spacing: -3px;
-    line-height: 1.1;
+    line-height: 1.2;
     animation: fadeInUp 1s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.hero-title-static {
+    display: block;
+    font-weight: 300;
+    color: var(--text-secondary);
+}
+
+.hero-title-animated {
+    display: block;
+    position: relative;
+    height: 1.4em;
+    width: 100%;
+    margin-top: 0.5em;
+    overflow: hidden;
+}
+
+.hero-word {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-blue-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    opacity: 0;
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform, opacity;
+}
+
+.hero-word.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.hero-word.exit-up {
+    opacity: 0;
+    transform: translateY(-100%);
+}
+
+.hero-word.enter-down {
+    opacity: 0;
+    transform: translateY(100%);
 }
 
 .hero-subtitle {

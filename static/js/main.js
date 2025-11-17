@@ -62,3 +62,37 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+// Hero animated text
+document.addEventListener('DOMContentLoaded', function() {
+    const words = document.querySelectorAll('.hero-word');
+    if (words.length === 0) return;
+    
+    let currentIndex = 0;
+    
+    function animateWords() {
+        const currentWord = words[currentIndex];
+        const nextIndex = (currentIndex + 1) % words.length;
+        const nextWord = words[nextIndex];
+        
+        // Exit current word upward
+        currentWord.classList.remove('active');
+        currentWord.classList.add('exit-up');
+        
+        // Enter next word from bottom
+        nextWord.classList.remove('exit-up', 'enter-down');
+        nextWord.classList.add('enter-down');
+        
+        // Small delay then activate next word
+        setTimeout(() => {
+            nextWord.classList.remove('enter-down');
+            nextWord.classList.add('active');
+            currentWord.classList.remove('exit-up');
+        }, 50);
+        
+        currentIndex = nextIndex;
+    }
+    
+    // Start animation every 3 seconds
+    setInterval(animateWords, 3000);
+});
