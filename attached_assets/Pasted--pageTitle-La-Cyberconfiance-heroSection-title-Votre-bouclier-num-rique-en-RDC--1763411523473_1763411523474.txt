@@ -1,0 +1,127 @@
+ "pageTitle": "La Cyberconfiance",
+ "heroSection": {
+ "title": "Votre bouclier numérique en RDC",
+ "subtitle": "Sensibilisation, fact-checking et accompagnement en cybersécurité pour tous",
+ "callToAction": [
+ {
+ "text": "Vérifier une information",
+ "url": "/fact-checking"
+ },
+ {
+ "text": "Demander une consultation",
+ "url": "/consultation"
+ },
+ {
+ "text": "S'inscrire à la newsletter",
+ "url": "/newsletter"
+ }
+ ],
+ "backgroundImage": "hero-cyberconfiance.jpg"
+ },
+ "missionSection": {
+ "title": "Notre mission",
+ "content": "Démocratiser la cybersécurité et lutter contre la désinformation en Afrique francophone grâce à l'éducation, la vérification d'informations et l'accompagnement professionnel."
+ },
+ "pilarsSection": {
+ "title": "Nos3 piliers",
+ "items": [
+ {
+ "icon": "education",
+ "title": "Sensibilisation & Éducation",
+ "description": "Vulgarisation des concepts de cybersécurité pour tous les publics."
+ },
+ {
+ "icon": "fact-check",
+ "title": "Fact-checking & OSINT",
+ "description": "Vérification des informations et lutte contre les fake news."
+ },
+ {
+ "icon": "consulting",
+ "title": "Cyberconsultation",
+ "description": "Accompagnement personnalisé pour protéger vos données et vos systèmes."
+ }
+ ]
+ },
+ "newsSection": {
+ "title": "Actualités cyber",
+ "latestNews": [
+ {
+ "title": "Alerte phishing en RDC",
+ "summary": "Une nouvelle vague de phishing cible les utilisateurs congolais.",
+ "date": "2025-11-17",
+ "url": "/actualites/alerte-phishing-rdc"
+ },
+ {
+ "title": "Guide : Protéger vos mots de passe",
+ "summary": "Découvrez nos conseils pour créer des mots de passe solides.",
+ "date": "2025-11-15",
+ "url": "/guides/protection-mots-de-passe"
+ }
+ ]
+ },
+ "testimonialsSection": {
+ "title": "Ils nous font confiance",
+ "testimonials": [
+ {
+ "author": "Dr. M. Kongo",
+ "role": "Médecin",
+ "content": "La Cyberconfiance m'a permis de mieux protéger les données de mes patients."
+ },
+ {
+ "author": "M. N. Mbemba",
+ "role": "Entrepreneur",
+ "content": "Grâce à leurs conseils, j'ai évité une cyberattaque majeure."
+ }
+ ]
+ },
+ "resourcesSection": {
+ "title": "Ressources utiles",
+ "resources": [
+ {
+ "title": "Vade-mecum de cybersécurité",
+ "description": "20 règles d'or pour naviguer en sécurité.",
+ "url": "/ressources/vade-mecum",
+ "icon": "pdf"
+ },
+ {
+ "title": "Checklist de sécurité",
+ "description": "Vérifiez vos pratiques en un clin d'œil.",
+ "url": "/ressources/checklist",
+ "icon": "checklist"
+ }
+ ]
+ },
+ "contactSection": {
+ "title": "Contactez-nous",
+ "description": "Besoin d'aide ou de conseils personnalisés ?",
+ "callToAction": {
+ "text": "Nous contacter",
+ "url": "/contact"
+ }
+ },
+ "footer": {
+ "socialLinks": [
+ {
+ "platform": "Facebook",
+ "url": "https://facebook.com/lacyberconfiance"
+ },
+ {
+ "platform": "Instagram",
+ "url": "https://instagram.com/lacyberconfiance"
+ },
+ {
+ "platform": "Twitter",
+ "url": "https://twitter.com/cyberconfiance"
+ },
+ {
+ "platform": "LinkedIn",
+ "url": "https://linkedin.com/company/la-cyberconfiance"
+ }
+ ],
+ "newsletter": {
+ "title": "Restez informé",
+ "description": "Recevez nos conseils et alertes cyber chaque semaine.",
+ "formUrl": "/newsletter"
+ }
+ }
+}
