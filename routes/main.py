@@ -9,9 +9,9 @@ bp = Blueprint('main', __name__)
 
 @bp.route('/')
 def index():
-    latest_news = ContentService.get_latest_news(limit=3)
-    rules = ContentService.get_all_rules()[:6]
-    return render_template('index.html', news=latest_news, rules=rules)
+    latest_news = ContentService.get_latest_news(limit=2)
+    resources = ContentService.get_all_resources()[:2]
+    return render_template('index.html', news=latest_news, resources=resources)
 
 @bp.route('/about')
 def about():
