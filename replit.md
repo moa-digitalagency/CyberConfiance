@@ -49,9 +49,21 @@ Preferred communication style: Simple, everyday language.
 
 **Template Inheritance**: Jinja2 templates use a base template (`base.html`) that defines the common layout, navigation, and footer. All content pages extend this base, overriding the `content` and `title` blocks.
 
-**Static Assets**: CSS styling in `app/static/css/style.css` provides responsive design. JavaScript in `app/static/js/main.js` handles client-side interactions like auto-dismissing alerts.
+**Static Assets**: Modern dark-themed CSS in `app/static/css/style.css` with glassmorphism effects and responsive design. Enhanced JavaScript in `app/static/js/main.js` handles scroll animations, parallax effects, intersection observers, and interactive user feedback.
 
-**Responsive Design**: The CSS uses flexbox layouts and a mobile-first approach for responsive behavior across devices.
+**Design System**: Professional dark mode theme with:
+- Glassmorphism cards with backdrop blur effects
+- CSS custom properties (CSS variables) for consistent theming
+- Gradient accents (purple/blue/pink palette)
+- Smooth animations and transitions
+- Scroll-triggered animations using Intersection Observer API
+- Interactive hover effects and button animations
+- Parallax scrolling on hero section
+- Floating particles and visual effects
+
+**Typography**: Inter font family from Google Fonts for modern, clean readability
+
+**Responsive Design**: The CSS uses CSS Grid and Flexbox layouts with mobile-first approach for responsive behavior across devices.
 
 ### Content Management
 
@@ -88,6 +100,24 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes (November 17, 2025)
 
+### Design & UI Overhaul (Latest)
+- **Complete Dark Theme Redesign**: Professional dark mode with deep blue/purple color scheme
+- **Glassmorphism Effects**: Modern frosted glass cards with backdrop blur throughout the interface
+- **Advanced Animations**: 
+  - Scroll-triggered animations using Intersection Observer API
+  - Parallax effects on hero section
+  - Smooth fade-in and slide-up transitions for content
+  - Button ripple effects and hover animations
+  - Floating particles in hero banner
+- **Enhanced Typography**: Inter font family integration for modern, professional appearance
+- **Interactive Elements**: 
+  - Animated navigation with underline effects
+  - Gradient buttons with shimmer animations
+  - Glow effects on hover states
+  - Custom cursor glow effect
+- **Vivid Icons**: Updated emojis and icons throughout navigation and content cards for better visual engagement
+- **Improved Visual Hierarchy**: Gradient text headings, enhanced spacing, and modern card layouts
+
 ### Security Enhancements
 - Implemented Flask-Login authentication for admin panel access
 - Added SecureModelView to protect all Flask-Admin routes
@@ -101,4 +131,4 @@ Preferred communication style: Simple, everyday language.
 - Login/logout functionality
 - Sample data initialization for testing
 - Comprehensive README with deployment instructions
-- Responsive CSS design with professional styling
+- Modern, responsive design with professional dark theme and glassmorphism
