@@ -217,10 +217,10 @@ header {
 }
 
 .hero h1 {
-    font-size: 4.5rem;
+    font-size: 3.2rem;
     font-weight: 400;
-    margin-bottom: 2rem;
-    letter-spacing: -3px;
+    margin-bottom: 1.5rem;
+    letter-spacing: -2px;
     line-height: 1.2;
     animation: fadeInUp 1s ease;
     display: flex;
@@ -275,11 +275,11 @@ header {
 }
 
 .hero-subtitle {
-    font-size: 1.3rem;
+    font-size: 1.05rem;
     color: var(--text-secondary);
     font-weight: 300;
-    margin-bottom: 3rem;
-    letter-spacing: -0.5px;
+    margin-bottom: 2.5rem;
+    letter-spacing: -0.3px;
     line-height: 1.6;
     animation: fadeInUp 1s ease 0.2s backwards;
 }
@@ -374,15 +374,15 @@ header {
 .btn {
     display: inline-flex;
     align-items: center;
-    padding: 1rem 2rem;
-    font-size: 0.95rem;
+    padding: 0.85rem 1.75rem;
+    font-size: 0.9rem;
     font-weight: 500;
     text-decoration: none;
     border-radius: 10px;
     transition: all 0.3s ease;
     cursor: pointer;
     border: none;
-    letter-spacing: -0.3px;
+    letter-spacing: -0.2px;
 }
 
 .btn-primary {
@@ -422,24 +422,24 @@ header {
 }
 
 .section {
-    padding: 3rem 0;
+    padding: 2.5rem 0;
     position: relative;
 }
 
 .section-title {
-    font-size: 2.5rem;
+    font-size: 2rem;
     font-weight: 400;
-    margin-bottom: 1.2rem;
-    letter-spacing: -1.5px;
+    margin-bottom: 1rem;
+    letter-spacing: -1px;
     line-height: 1.2;
 }
 
 .section-subtitle {
-    font-size: 1.1rem;
+    font-size: 0.95rem;
     color: var(--text-secondary);
     font-weight: 300;
-    margin-bottom: 3rem;
-    letter-spacing: -0.5px;
+    margin-bottom: 2.5rem;
+    letter-spacing: -0.3px;
     max-width: 700px;
 }
 
@@ -464,12 +464,12 @@ header {
 }
 
 .vision-item {
-    padding: 4rem 3.5rem;
+    padding: 3rem 2.5rem;
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
     backdrop-filter: blur(80px) saturate(200%);
     -webkit-backdrop-filter: blur(80px) saturate(200%);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 28px;
+    border-radius: 24px;
     transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
@@ -524,18 +524,18 @@ header {
 }
 
 .vision-item h3 {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     font-weight: 500;
-    margin-bottom: 1.2rem;
+    margin-bottom: 1rem;
     letter-spacing: -0.5px;
     color: var(--text-primary);
 }
 
 .vision-item p {
     color: var(--text-secondary);
-    font-size: 1rem;
-    line-height: 1.8;
-    letter-spacing: -0.2px;
+    font-size: 0.9rem;
+    line-height: 1.7;
+    letter-spacing: -0.1px;
 }
 
 .vision-icon {
@@ -589,12 +589,12 @@ header {
 }
 
 .pillar-card {
-    padding: 3.5rem 3rem;
+    padding: 2.5rem 2rem;
     background: linear-gradient(145deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 100%);
     backdrop-filter: blur(70px) saturate(190%);
     -webkit-backdrop-filter: blur(70px) saturate(190%);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 24px;
+    border-radius: 20px;
     transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
@@ -649,18 +649,18 @@ header {
 }
 
 .pillar-card h3 {
-    font-size: 1.4rem;
+    font-size: 1.2rem;
     font-weight: 500;
-    margin-bottom: 1rem;
-    letter-spacing: -0.5px;
+    margin-bottom: 0.8rem;
+    letter-spacing: -0.3px;
     color: var(--text-primary);
 }
 
 .pillar-card p {
     color: var(--text-secondary);
-    font-size: 0.95rem;
-    line-height: 1.7;
-    letter-spacing: -0.2px;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    letter-spacing: -0.1px;
 }
 
 .pillar-icon {
@@ -1121,22 +1121,22 @@ footer {
 }
 
 .page-header {
-    padding: 10rem 0 4rem;
+    padding: 8rem 0 3rem;
     text-align: center;
     margin-top: 80px;
 }
 
 .page-header h1 {
-    font-size: 3.5rem;
+    font-size: 2.8rem;
     font-weight: 400;
-    margin-bottom: 1rem;
-    letter-spacing: -2px;
+    margin-bottom: 0.8rem;
+    letter-spacing: -1.5px;
 }
 
 .page-header p {
-    font-size: 1.2rem;
+    font-size: 1rem;
     color: var(--text-secondary);
-    letter-spacing: -0.5px;
+    letter-spacing: -0.3px;
 }
 
 .about-section {
@@ -1146,8 +1146,8 @@ footer {
 }
 
 .about-card {
-    padding: 3rem;
-    border-radius: 20px;
+    padding: 2.5rem;
+    border-radius: 18px;
     background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(40px) saturate(150%);
     -webkit-backdrop-filter: blur(40px) saturate(150%);
@@ -1157,26 +1157,26 @@ footer {
 }
 
 .about-card h2 {
-    font-size: 2rem;
+    font-size: 1.7rem;
     font-weight: 500;
-    margin-bottom: 1.5rem;
-    letter-spacing: -1px;
+    margin-bottom: 1.2rem;
+    letter-spacing: -0.8px;
     color: var(--accent-blue);
 }
 
 .about-card h3 {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     font-weight: 500;
-    margin-bottom: 1rem;
-    letter-spacing: -0.8px;
+    margin-bottom: 0.8rem;
+    letter-spacing: -0.5px;
     color: var(--accent-blue);
 }
 
 .about-card p {
     color: var(--text-secondary);
-    line-height: 1.8;
-    font-size: 1rem;
-    margin-bottom: 1rem;
+    line-height: 1.7;
+    font-size: 0.9rem;
+    margin-bottom: 0.8rem;
 }
 
 .about-card ul {
@@ -1207,13 +1207,13 @@ footer {
 
 .about-cta {
     text-align: center;
-    padding: 4rem 3rem !important;
+    padding: 3rem 2.5rem !important;
 }
 
 .about-cta .lead {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     color: var(--text-primary);
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
     font-weight: 300;
 }
 
@@ -1222,7 +1222,7 @@ footer {
 }
 
 .content-section {
-    padding: 4rem 0;
+    padding: 3rem 0;
 }
 
 .rules-list, .scenarios-list, .news-list, .resources-list, .glossary-list {
@@ -1233,7 +1233,7 @@ footer {
 }
 
 .rule-item, .scenario-item, .news-item, .resource-item, .glossary-item {
-    padding: 3rem;
+    padding: 2.5rem;
     border-bottom: 1px solid var(--border-subtle);
     transition: all 0.3s ease;
 }
@@ -1251,10 +1251,10 @@ footer {
 
 .rule-item h3, .scenario-item h3, .news-item h3,
 .resource-item h3, .glossary-item h3 {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     font-weight: 500;
-    margin-bottom: 1rem;
-    letter-spacing: -0.8px;
+    margin-bottom: 0.8rem;
+    letter-spacing: -0.5px;
 }
 
 .rule-item p, .scenario-item p, .news-item p,
@@ -2341,8 +2341,8 @@ footer {
     backdrop-filter: blur(20px) saturate(150%);
     -webkit-backdrop-filter: blur(20px) saturate(150%);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 20px;
-    padding: 2.5rem;
+    border-radius: 18px;
+    padding: 2rem;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
                 inset 0 1px 0 rgba(255, 255, 255, 0.1);
