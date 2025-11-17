@@ -3,42 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}CyberConfiance - Sensibilisation à la Cybersécurité{% endblock %}</title>
+    <title>{% block title %}CyberConfiance - Cybersécurité{% endblock %}</title>
     <meta name="description" content="{% block description %}Plateforme de sensibilisation à la cybersécurité{% endblock %}">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <div class="nav-overlay"></div>
-    
     <header>
         <nav class="navbar">
             <div class="container">
                 <div class="logo">
-                    <a href="{{ url_for('main.index') }}">
-                        <span class="logo-icon">🛡️</span>
-                        <span>CyberConfiance</span>
-                    </a>
+                    <a href="{{ url_for('main.index') }}">CyberConfiance</a>
                 </div>
-                
-                <div class="hamburger">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-                
                 <ul class="nav-menu">
-                    <li><a href="{{ url_for('main.index') }}">🏠 Accueil</a></li>
-                    <li><a href="{{ url_for('main.about') }}">ℹ️ À propos</a></li>
-                    <li><a href="{{ url_for('main.rules') }}">✨ Règles d'or</a></li>
-                    <li><a href="{{ url_for('main.scenarios') }}">🎯 Scénarios</a></li>
-                    <li><a href="{{ url_for('main.tools') }}">🔧 Outils</a></li>
-                    <li><a href="{{ url_for('main.glossary') }}">📖 Glossaire</a></li>
-                    <li><a href="{{ url_for('main.resources') }}">📚 Ressources</a></li>
-                    <li><a href="{{ url_for('main.news') }}">📰 Actualités</a></li>
-                    <li><a href="{{ url_for('main.contact') }}">💬 Contact</a></li>
+                    <li><a href="{{ url_for('main.index') }}">Accueil</a></li>
+                    <li><a href="{{ url_for('main.about') }}">À propos</a></li>
+                    <li><a href="{{ url_for('main.rules') }}">Règles</a></li>
+                    <li><a href="{{ url_for('main.scenarios') }}">Scénarios</a></li>
+                    <li><a href="{{ url_for('main.tools') }}">Outils</a></li>
+                    <li><a href="{{ url_for('main.contact') }}">Contact</a></li>
                 </ul>
             </div>
         </nav>
@@ -60,8 +42,14 @@
 
     <footer>
         <div class="container">
-            <p>&copy; 2024 CyberConfiance. Tous droits réservés.</p>
-            <p>Sensibilisation à la cybersécurité pour tous.</p>
+            <div class="footer-content">
+                <p class="footer-text">© 2024 CyberConfiance. Tous droits réservés.</p>
+                <ul class="footer-links">
+                    <li><a href="{{ url_for('main.about') }}">À propos</a></li>
+                    <li><a href="{{ url_for('main.contact') }}">Contact</a></li>
+                    <li><a href="{{ url_for('main.news') }}">Actualités</a></li>
+                </ul>
+            </div>
         </div>
     </footer>
 

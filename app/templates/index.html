@@ -1,116 +1,115 @@
 {% extends "base.html" %}
 
-{% block title %}CyberConfiance - Accueil{% endblock %}
+{% block title %}CyberConfiance - L'IA à votre service{% endblock %}
 
 {% block content %}
 <section class="hero">
-    <img src="{{ url_for('static', filename='img/hero-bg.jpg') }}" alt="Cybersecurity Background" class="hero-bg">
+    <div class="glow-orb"></div>
     
     <div class="container hero-content">
-        <h1>🛡️ Protégez Votre Monde Numérique</h1>
-        <p class="hero-subtitle">Devenez acteur de votre cybersécurité</p>
-        <p>La plateforme de référence pour maîtriser les bases de la sécurité en ligne et protéger vos données</p>
+        <h1>La cybersécurité<br>à votre service.</h1>
+        <p class="hero-subtitle">Nous transformons la manière dont vous protégez vos données<br>et naviguez sur Internet en toute sécurité.</p>
         
         <div class="hero-buttons">
-            <a href="{{ url_for('main.rules') }}" class="btn btn-primary">Commencer Maintenant</a>
-            <a href="{{ url_for('main.about') }}" class="btn btn-secondary">En savoir plus</a>
-        </div>
-    </div>
-    
-    <div class="scroll-indicator">
-        <span>⬇️</span>
-    </div>
-</section>
-
-<section class="stats-section">
-    <div class="container">
-        <div class="stats-grid">
-            <div class="stat-item">
-                <div class="stat-number" data-target="1000" data-suffix="+">0+</div>
-                <div class="stat-label">Utilisateurs Protégés</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number" data-target="50" data-suffix="+">0+</div>
-                <div class="stat-label">Ressources Disponibles</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number" data-target="24" data-suffix="/7">0/7</div>
-                <div class="stat-label">Support Disponible</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number" data-target="100" data-suffix="%">0%</div>
-                <div class="stat-label">Gratuit</div>
-            </div>
+            <a href="{{ url_for('main.rules') }}" class="btn btn-primary">Découvrir nos services</a>
+            <a href="{{ url_for('main.contact') }}" class="btn btn-secondary">Nous contacter</a>
         </div>
     </div>
 </section>
 
-<section class="features">
+<section class="section">
     <div class="container">
-        <h2 class="section-title">Nos Services</h2>
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="feature-icon">✨</div>
-                <h3>Règles d'Or</h3>
-                <p>Découvrez les principes essentiels de la cybersécurité pour protéger vos données personnelles et professionnelles</p>
-                <a href="{{ url_for('main.rules') }}" class="btn btn-secondary">En savoir plus</a>
+        <h2 class="section-title">Nous sommes votre Partenaire Cybersécurité 360°</h2>
+        <p class="section-subtitle">Nous transformons les entreprises en Leaders de la sécurité numérique</p>
+    </div>
+</section>
+
+<section class="process-section">
+    <div class="container">
+        <div class="process-grid">
+            <div class="process-item scroll-animate">
+                <div class="process-number">01 / CONSEIL</div>
+                <h3>Conseil</h3>
+                <p>Audit de sécurité complet et recommandations personnalisées pour renforcer votre posture de cybersécurité.</p>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon">🎯</div>
-                <h3>Scénarios Réels</h3>
-                <p>Apprenez à identifier et à réagir aux menaces courantes grâce à des cas pratiques du quotidien</p>
-                <a href="{{ url_for('main.scenarios') }}" class="btn btn-secondary">Explorer</a>
+            
+            <div class="process-item scroll-animate">
+                <div class="process-number">02 / CONSULTING</div>
+                <h3>Consulting</h3>
+                <p>Accompagnement stratégique dans la mise en place de vos politiques de sécurité et conformité.</p>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon">🔧</div>
-                <h3>Outils Recommandés</h3>
-                <p>Découvrez les meilleurs outils pour renforcer votre sécurité numérique et celle de votre entreprise</p>
-                <a href="{{ url_for('main.tools') }}" class="btn btn-secondary">Voir les outils</a>
+            
+            <div class="process-item scroll-animate">
+                <div class="process-number">03 / FORMATION</div>
+                <h3>Formation</h3>
+                <p>Programmes de sensibilisation sur mesure pour vos équipes et employés.</p>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon">📚</div>
-                <h3>Ressources Éducatives</h3>
-                <p>Accédez à une bibliothèque complète de guides, tutoriels et documentation pour approfondir vos connaissances</p>
-                <a href="{{ url_for('main.resources') }}" class="btn btn-secondary">Consulter</a>
+            
+            <div class="process-item scroll-animate">
+                <div class="process-number">04 / DÉVELOPPEMENT</div>
+                <h3>Intégration & Développement</h3>
+                <p>Solutions techniques personnalisées pour sécuriser vos infrastructures et applications.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <h2 class="section-title">Nos services</h2>
+        
+        <div class="services-grid">
+            <div class="service-card scroll-animate">
+                <span class="service-icon">📊</span>
+                <h3>Audit & Conseil</h3>
+                <p>Évaluation complète de votre infrastructure de sécurité avec des recommandations actionnables.</p>
+            </div>
+            
+            <div class="service-card scroll-animate">
+                <span class="service-icon">🎓</span>
+                <h3>Formation</h3>
+                <p>Programmes de formation interactifs pour sensibiliser vos équipes aux meilleures pratiques.</p>
+            </div>
+            
+            <div class="service-card scroll-animate">
+                <span class="service-icon">🛡️</span>
+                <h3>Solutions IA</h3>
+                <p>Outils intelligents pour détecter et prévenir les menaces en temps réel.</p>
             </div>
         </div>
     </div>
 </section>
 
 {% if rules %}
-<section class="rules-preview">
+<section class="projects-section section">
     <div class="container">
-        <h2>Quelques Règles d'Or</h2>
-        <div class="rules-grid">
-            {% for rule in rules %}
-            <div class="rule-card">
-                <h3>{{ rule.title }}</h3>
-                <p>{{ rule.description[:150] }}...</p>
-            </div>
+        <h2 class="section-title">Nos Projets</h2>
+        
+        <div class="projects-list">
+            {% for rule in rules[:3] %}
+            <a href="{{ url_for('main.rules') }}" class="project-item scroll-animate">
+                <div class="project-info">
+                    <h3>{{ rule.title }}</h3>
+                    <p>Cybersécurité - Best Practices</p>
+                </div>
+                <span class="project-arrow">→</span>
+            </a>
             {% endfor %}
         </div>
-        <a href="{{ url_for('main.rules') }}" class="btn btn-primary">Voir toutes les règles</a>
     </div>
 </section>
 {% endif %}
 
-{% if news %}
-<section class="news-preview">
+<section class="contact-section">
     <div class="container">
-        <h2>Dernières Actualités</h2>
-        <div class="news-grid">
-            {% for item in news %}
-            <div class="news-card">
-                <h3>{{ item.title }}</h3>
-                <p>{{ item.content[:200] }}...</p>
-                {% if item.url %}
-                <a href="{{ item.url }}" target="_blank" class="btn btn-secondary">Lire plus</a>
-                {% endif %}
-            </div>
-            {% endfor %}
-        </div>
-        <a href="{{ url_for('main.news') }}" class="btn btn-primary">Toutes les actualités</a>
+        <h2>Nous contacter</h2>
+        <a href="mailto:contact@cyberconfiance.fr" class="contact-email">contact@cyberconfiance.fr</a>
     </div>
 </section>
-{% endif %}
+
+<section class="section">
+    <div class="container">
+        <h2 class="section-title">Parlons-en.</h2>
+    </div>
+</section>
 {% endblock %}
