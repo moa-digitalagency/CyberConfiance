@@ -1,203 +1,54 @@
 # CyberConfiance
 
 ## Overview
-
-CyberConfiance is a French-language cybersecurity awareness platform built with Flask. The application provides educational content about cybersecurity best practices through multiple content types: golden rules, threat scenarios, security tools, glossary terms, resources, and news. It features a public-facing website for content consumption and a secure admin panel for content management.
-
-The platform targets general users seeking to improve their cybersecurity knowledge, from beginners to intermediate users, with content presented in accessible, everyday language.
+CyberConfiance is a French-language Flask-based cybersecurity awareness platform. It offers educational content on best practices, threat scenarios, security tools, and news through a public website and an admin panel for content management. The platform aims to educate general users, from beginners to intermediate, in accessible language, enhancing their cybersecurity knowledge.
 
 ## User Preferences
-
 Preferred communication style: Simple, everyday language.
 
 ## System Architecture
 
 ### Application Structure
-
-**Modular Flask Application**: The application follows a factory pattern with blueprints for separation of concerns. The `create_app()` function in `app/__init__.py` initializes all components (database, admin panel, authentication) and registers route blueprints.
-
-**Routing Strategy**: Two main blueprints separate public routes (`main.py`) and admin routes (`admin_routes.py`). Public routes handle content display pages, while admin routes configure Flask-Admin model views with authentication checks.
-
-**Service Layer Pattern**: The `ContentService` class in `app/services/__init__.py` provides static methods for data retrieval operations, abstracting database queries from route handlers. This centralizes business logic and simplifies route handlers.
+The application uses a modular Flask architecture with a factory pattern and blueprints for public and admin routes. A `ContentService` class centralizes data retrieval logic, abstracting database interactions from route handlers.
 
 ### Data Architecture
-
-**ORM Pattern**: SQLAlchemy manages all database operations through model classes defined in `app/models/__init__.py`. Models include:
-- User (authentication and authorization)
-- Article (blog-style content)
-- Rule (cybersecurity best practices)
-- Tool (recommended security tools)
-- Scenario (threat scenarios and solutions)
-- Resource (educational materials)
-- News (cybersecurity news items)
-- Contact (contact form submissions)
-- GlossaryTerm (terminology definitions)
-
-**Database Schema**: PostgreSQL database with relationships managed through SQLAlchemy ORM. The schema supports timestamped records (`created_at`, `updated_at`), ordering fields, and content publication states.
+SQLAlchemy ORM manages PostgreSQL database operations. The schema includes models for `User`, `Article`, `Rule`, `Tool`, `Scenario`, `Resource`, `News`, `Contact`, and `GlossaryTerm`, supporting timestamps and content publication states.
 
 ### Authentication & Authorization
-
-**Flask-Login Integration**: User authentication uses Flask-Login with session-based authentication. The `User` model implements `UserMixin` for compatibility.
-
-**Password Security**: Passwords are hashed using Werkzeug's `generate_password_hash` and `check_password_hash` functions. The User model provides `set_password()` and `check_password()` methods.
-
-**Admin Access Control**: Flask-Admin views extend `SecureModelView`, which overrides `is_accessible()` to verify both authentication status and admin privileges. Non-admin users are redirected to the login page.
-
-**Environment-Based Initialization**: In development mode (`FLASK_DEBUG=True`), a default admin account is created with username "admin" and password "admin123". In production, the `ADMIN_PASSWORD` environment variable must be set to define the admin password securely.
+Flask-Login handles session-based authentication with Werkzeug for secure password hashing. Flask-Admin views are protected by `SecureModelView`, ensuring only authenticated administrators can access content management features. A default admin account is created in development, with production requiring the `ADMIN_PASSWORD` environment variable.
 
 ### Frontend Architecture
-
-**Template Inheritance**: Jinja2 templates use a base template (`base.html`) that defines the common layout, navigation, and footer. All content pages extend this base, overriding the `content` and `title` blocks.
-
-**Static Assets**: Modern dark-themed CSS in `app/static/css/style.css` with glassmorphism effects and responsive design. Enhanced JavaScript in `app/static/js/main.js` handles scroll animations, parallax effects, intersection observers, and interactive user feedback.
-
-**Design System**: Professional dark mode theme with:
-- Glassmorphism cards with backdrop blur effects
-- CSS custom properties (CSS variables) for consistent theming
-- Gradient accents (purple/blue/pink palette)
-- Smooth animations and transitions
-- Scroll-triggered animations using Intersection Observer API
-- Interactive hover effects and button animations
-- Parallax scrolling on hero section
-- Floating particles and visual effects
-
-**Typography**: Inter font family from Google Fonts for modern, clean readability
-
-**Responsive Design**: The CSS uses CSS Grid and Flexbox layouts with mobile-first approach for responsive behavior across devices.
+Jinja2 templates use a base layout (`base.html`) for consistency. The design features a professional dark theme with glassmorphism effects, CSS custom properties, gradient accents, smooth animations, scroll-triggered effects, and parallax scrolling. Typography uses the Inter font, and the design is fully responsive with CSS Grid and Flexbox. Navigation includes dropdown menus with enhanced glassmorphism.
 
 ### Content Management
+Flask-Admin provides CRUD operations for all content models via an intuitive interface. A `published` field in the `Article` model supports a draft/published workflow.
 
-**Flask-Admin Interface**: The admin panel provides CRUD operations for all content models through automatically generated views. Each model view is registered with the Flask-Admin instance and protected by authentication checks.
-
-**Content Publication Workflow**: The Article model includes a `published` boolean field to support draft/published workflows, allowing admins to prepare content before making it public.
+### UI/UX Decisions
+The platform features a minimalist design inspired by ChatflowAI, utilizing a pure black background, colorful glow orb effects, minimalist typography (San Francisco / System Font stack with negative letter-spacing), and a simplified color palette (black, white, grays, and vibrant accents). UI elements are clean with subtle borders and generous spacing. Animations are subtle and scroll-triggered. Recent enhancements include edge-to-edge hero layouts, elaborated SVG icons, alternating section backgrounds, and individual pages for rules with a responsive grid display.
 
 ## External Dependencies
 
 ### Core Framework
 - **Flask 3.0.0**: Web application framework
-- **Werkzeug 3.1.3**: WSGI utilities including password hashing
+- **Werkzeug 3.1.3**: WSGI utilities and password hashing
 
 ### Database
-- **PostgreSQL**: Primary data store (configured via `DATABASE_URL` environment variable)
-- **Flask-SQLAlchemy 3.1.1**: ORM layer for database operations
-- **psycopg2-binary 2.9.9**: PostgreSQL adapter for Python
-- **Alembic 1.13.0**: Database migration tool (configured but migrations directory not yet populated)
+- **PostgreSQL**: Primary data store
+- **Flask-SQLAlchemy 3.1.1**: ORM for database operations
+- **psycopg2-binary 2.9.9**: PostgreSQL adapter
+- **Alembic 1.13.0**: Database migration tool
 
 ### Authentication & Admin
 - **Flask-Login 0.6.3**: User session management
-- **Flask-Admin 1.6.1**: Administrative interface with Bootstrap 3 theme
+- **Flask-Admin 1.6.1**: Administrative interface
 
 ### Deployment & Configuration
-- **python-dotenv 1.0.0**: Environment variable management from `.env` files
+- **python-dotenv 1.0.0**: Environment variable management
 - **gunicorn 21.2.0**: Production WSGI HTTP server
 
 ### Environment Variables
-- `DATABASE_URL`: PostgreSQL connection string (required)
-- `SECRET_KEY`: Flask session encryption key (defaults to development value)
-- `FLASK_DEBUG`: Debug mode toggle (defaults to False)
-- `ADMIN_PASSWORD`: Admin account password (required in production, defaults to "admin123" in development)
-- `PORT`: Application port (defaults to 5000)
-
-## Recent Changes (November 17, 2025)
-
-### Navigation Redesign with Dropdown Menus (Latest - November 17, 2025)
-Complete navigation system overhaul with dropdown menus and homepage redesign:
-
-- **Dropdown Navigation Menus**: Implemented two-level navigation with dropdown menus
-  - Services dropdown: Sensibilisation & Éducation, Fact-Checking & OSINT, Cyberconsultation
-  - Outils dropdown: 20 Règles d'Or, Scénarios, Glossaire, Outils Essentiels, Méthodologie OSINT, Ressources
-  - Desktop: Hover-activated dropdowns with smooth animations
-  - Mobile: Toggle-activated dropdowns with JavaScript
-  - Enhanced glassmorphism styling on dropdown menus with backdrop blur
-- **New Service Pages**: Created 3 comprehensive service pages:
-  - `/services/sensibilisation`: Sensibilisation & Éducation programs and workshops
-  - `/services/factchecking`: Fact-Checking & OSINT verification services
-  - `/services/cyberconsultation`: Cyberconsultation services with pricing tiers
-- **New Tools Page**: Created OSINT methodology page:
-  - `/outils/methodologie-osint`: 5-step OSINT methodology guide with recommended tools
-- **Homepage Redesign**:
-  - Hero section: Removed background image for cleaner, minimalist look
-  - New "Vision et Objectifs" section with two-column layout
-  - Expanded from 3 to 6 pillars: Sensibilisation, Éducation, Fact-Checking, OSINT, Cyberconsultation, Outils Essentiels
-  - Removed testimonials section for streamlined content flow
-- **Enhanced Glassmorphism**: Applied stronger glassmorphism effects throughout with `.glass-card-enhanced` class
-- **Responsive Design**: Dropdown menus adapt to mobile with toggle functionality
-- **URL Generation**: All navigation links use Flask's `url_for()` for reliable route resolution
-
-### Rules System with Individual Pages (November 17, 2025)
-Complete overhaul of the rules display system:
-
-- **Individual Rule Pages**: New route `/rules/<id>` to display complete details of each rule
-- **Grid Layout**: Rules page now shows cards in a 3-column responsive grid (2 columns on tablet, 1 on mobile)
-- **Clean Previews**: Each card displays:
-  - Rule number (01, 02, etc.)
-  - Title
-  - Clean 150-character description (HTML tags automatically stripped)
-  - "En savoir plus →" link with hover animation
-- **Interactive Cards**: Clickable cards with hover effects (lift animation, border glow)
-- **Detail Pages**: Full rule content displayed in glassmorphism card with:
-  - "← Retour aux règles" back link
-  - Complete rule description with HTML support (safe rendering)
-  - Proper formatting for headings, lists, and paragraphs
-- **Custom Jinja Filter**: `striptags` filter added to remove HTML before text truncation
-- **Navigation Cleanup**: Removed "Glossaire" and "Ressources" from main navigation menu (7 items total)
-
-### Enhanced Navigation and Homepage Sections (November 17, 2025)
-Complete navigation and homepage improvements:
-
-- **Navigation Menu Completed**: Added Glossaire, Ressources, and Actualités to main navigation menu - all 9 menu items now visible
-- **Advanced Glassmorphism Menu**: Enhanced header with advanced glassmorphism effects including:
-  - Backdrop blur (30px) with saturation boost (180%)
-  - Layered box shadows for depth
-  - Hover effects with blurred overlays on menu items
-  - Smooth transitions and transform effects
-- **Animated Security Background**: Implemented floating security elements background with:
-  - Animated symbols (🔒 🛡️ 🔐 ⚡ 🔑) and binary code (10101, 01010)
-  - 120-second slow floating animation
-  - Subtle opacity (0.03) for non-intrusive effect
-  - Continuous loop with translateY and translateX
-- **Complete Homepage Sections**: Added descriptive sections for ALL menu items on homepage:
-  - 8 sections in 3-column grid layout
-  - Each section links to corresponding page
-  - Sections: À propos, Règles, Scénarios, Outils, Glossaire, Ressources, Actualités, Contact
-  - Consistent glassmorphism styling on all cards
-  - Numbered sections (01-08) for clear organization
-
-### Minimalist Redesign - ChatflowAI Style (November 17, 2025)
-Complete platform redesign inspired by ChatflowAI's minimalist aesthetic:
-
-- **Pure Black Background (#000000)**: Ultra-minimal design with pure black background and subtle texture overlay
-- **Colorful Glow Orb Effect**: Animated blob with radial gradient (green, purple, pink) in hero section with pulsing animation
-- **Minimalist Typography**:
-  - San Francisco / System Font stack
-  - Negative letter-spacing (-2px to -3px) for modern look
-  - Large font sizes (5rem for hero h1)
-  - Ultra-generous spacing between sections
-- **Classic Horizontal Navigation**: Replaced hamburger menu with horizontal navigation bar featuring subtle borders
-- **Simplified Color Palette**:
-  - Primary: Black (#000000), White (#ffffff)
-  - Grays: #999999, #666666, #1a1a1a
-  - Accents: Green (#00ff88), Purple (#9945ff), Pink (#ff00ff)
-- **Minimal UI Elements**:
-  - Cards with subtle 1px borders (#1a1a1a)
-  - Process grid with 2x2 layout separated by thin lines
-  - Interactive project list with hover effects
-  - Clean, borderless buttons with simple hover states
-- **Refined Animations**: Subtle scroll-triggered fade-ins without excessive motion
-- **Generous White Space**: Large padding (8rem sections) for breathing room
-- **Monochromatic Design**: Focus on typography and spacing over color
-
-### Security Enhancements
-- Implemented Flask-Login authentication for admin panel access
-- Added SecureModelView to protect all Flask-Admin routes
-- User model with Werkzeug password hashing
-- Runtime security check on every startup detects default admin credentials in production mode
-- Production deployment configured with gunicorn
-
-### Application Features Completed
-- All 8 database models implemented (User, Article, Rule, Tool, Scenario, Resource, News, Contact, GlossaryTerm)
-- 9 public pages (home, about, rules, scenarios, tools, glossary, resources, news, contact)
-- Login/logout functionality
-- Sample data initialization for testing
-- Comprehensive README with deployment instructions
-- Modern, responsive design with professional dark theme and glassmorphism
+- `DATABASE_URL`: PostgreSQL connection string
+- `SECRET_KEY`: Flask session encryption key
+- `FLASK_DEBUG`: Debug mode toggle
+- `ADMIN_PASSWORD`: Admin account password
+- `PORT`: Application port
