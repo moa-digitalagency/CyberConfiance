@@ -27,13 +27,16 @@ Flask-Admin provides CRUD operations for all content models via an intuitive int
 The platform features a minimalist design inspired by ChatflowAI, utilizing a pure black background, colorful glow orb effects, minimalist typography (San Francisco / System Font stack with negative letter-spacing), and a simplified color palette (black, white, grays, and vibrant accents). UI elements are clean with subtle borders and generous spacing. Animations are subtle and scroll-triggered.
 
 **Recent Design Updates (Nov 2025):**
-- Reduced hero section height from 85vh to 42vh (50% reduction) for more compact layout
+- Hero section height: 60vh (increased from previous 42vh for better visual balance)
+- Dynamic hero text now includes: "En Afrique", "Dirigeants d'entreprise", "Décideurs publics", "Citoyens curieux"
+- Reduced spacing between "Votre bouclier numérique" and dynamic text (margin-top: 0.2em)
 - Removed all emojis from service pages (Sensibilisation, Fact-Checking, Cyberconsultation)
 - Standardized page headers across all pages using `page-header` component
 - Unified font sizes (hero title: 3.2rem, section titles: 2rem, body text: 0.95rem)
 - Removed newsletter section decorative elements for cleaner design
-- Consistent glassmorphism styling across pillar cards and content sections
+- Consistent glassmorphism styling across pillar cards and content sections (text-align: center)
 - Responsive grid displays for rules (3 columns), scenarios/tools (2 columns), and glossary
+- All 20 règles d'or from VADE MECUM PDF now populated with complete content including risks and solutions
 
 ## External Dependencies
 
