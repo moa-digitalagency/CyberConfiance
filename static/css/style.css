@@ -1,13 +1,14 @@
 :root {
-    --bg-black: #000000;
-    --bg-dark: #0a0a0a;
+    --bg-navy: #0a1628;
+    --bg-navy-light: #0f1f35;
+    --bg-navy-dark: #050b14;
     --text-primary: #ffffff;
-    --text-secondary: #999999;
-    --text-muted: #666666;
-    --border-subtle: #1a1a1a;
-    --accent-blue: #0066FF;
-    --accent-blue-light: #3385FF;
-    --accent-blue-dark: #0052CC;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --border-subtle: #1e293b;
+    --accent-blue: #3b82f6;
+    --accent-blue-light: #60a5fa;
+    --accent-blue-dark: #2563eb;
 }
 
 * {
@@ -24,7 +25,7 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     line-height: 1.6;
     color: var(--text-primary);
-    background: var(--bg-black);
+    background: var(--bg-navy);
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -54,14 +55,14 @@ body {
 }
 
 .background-animation::after {
-    content: '🔒 10101 🛡️ 01010 🔐 11001 ⚡ 00110 🔑 10011 🛡️ 01101 🔒 11010 🔐 00101 🔑 10110 ⚡ 01001 🛡️ 11100 🔒 00011 🔐 10101 🔑 01010 🛡️ 11001 ⚡ 00110 🔒 10011 🔐 01101 🛡️ 11010 🔑 00101 ⚡ 10110 🔒 01001 🛡️ 11100 🔐 00011';
+    content: '◆ 10101 ▲ 01010 ◆ 11001 ● 00110 ▼ 10011 ◆ 01101 ■ 11010 ● 00101 ▲ 10110 ◆ 01001 ▼ 11100 ■ 00011 ● 10101 ◆ 01010 ▲ 11001 ● 00110 ■ 10011 ◆ 01101 ▼ 11010 ● 00101 ▲ 10110 ■ 01001 ◆ 11100 ● 00011';
     position: absolute;
     top: -100%;
     left: 0;
     width: 200%;
     height: 200%;
     font-size: 1.2rem;
-    opacity: 0.03;
+    opacity: 0.04;
     line-height: 3;
     word-wrap: break-word;
     animation: float-security 120s linear infinite;
@@ -89,13 +90,12 @@ header {
     left: 0;
     right: 0;
     z-index: 1000;
-    background: rgba(10, 10, 10, 0.4);
+    background: rgba(10, 22, 40, 0.8);
     backdrop-filter: blur(60px) saturate(180%);
     -webkit-backdrop-filter: blur(60px) saturate(180%);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4),
-                inset 0 1px 0 rgba(255, 255, 255, 0.15),
-                0 4px 16px rgba(0, 102, 255, 0.05);
+    border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .navbar {
@@ -251,6 +251,43 @@ header {
     gap: 1.5rem;
     justify-content: center;
     animation: fadeInUp 1s ease 0.4s backwards;
+    margin-bottom: 3rem;
+}
+
+.hero-newsletter {
+    max-width: 550px;
+    margin: 0 auto;
+    animation: fadeInUp 1s ease 0.6s backwards;
+}
+
+.hero-newsletter-form {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.hero-newsletter-form input[type="email"] {
+    flex: 1;
+    min-width: 250px;
+    padding: 1rem 1.5rem;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+.hero-newsletter-form input[type="email"]:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.12);
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.hero-newsletter-form input[type="email"]::placeholder {
+    color: var(--text-muted);
 }
 
 .btn {
@@ -268,15 +305,15 @@ header {
 }
 
 .btn-primary {
-    background: rgba(255, 255, 255, 0.95);
-    color: var(--bg-black);
-    box-shadow: 0 4px 20px rgba(255, 255, 255, 0.15);
+    background: var(--accent-blue);
+    color: #ffffff;
+    box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
 }
 
 .btn-primary:hover {
-    background: var(--text-primary);
+    background: var(--accent-blue-light);
     transform: translateY(-2px);
-    box-shadow: 0 6px 30px rgba(255, 255, 255, 0.25);
+    box-shadow: 0 6px 30px rgba(59, 130, 246, 0.4);
 }
 
 .btn-secondary {
@@ -298,7 +335,7 @@ header {
 }
 
 .section {
-    padding: 5rem 0;
+    padding: 3rem 0;
     position: relative;
 }
 
@@ -319,8 +356,32 @@ header {
     max-width: 700px;
 }
 
+.vision-section {
+    background: var(--bg-navy-dark);
+}
+
+.mission-section {
+    background: var(--bg-navy-light);
+}
+
+.pillars-section {
+    background: var(--bg-navy-dark);
+}
+
+.news-section {
+    background: var(--bg-navy);
+}
+
+.resources-section {
+    background: var(--bg-navy-light);
+}
+
+.newsletter-section {
+    background: var(--bg-navy-dark);
+}
+
 .process-section {
-    background: var(--bg-dark);
+    background: var(--bg-navy-light);
     border-top: 1px solid var(--border-subtle);
     border-bottom: 1px solid var(--border-subtle);
 }
@@ -346,7 +407,7 @@ header {
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.15);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12),
-                0 4px 16px rgba(0, 102, 255, 0.1);
+                0 4px 16px rgba(59, 130, 246, 0.1);
 }
 
 .process-number {
@@ -385,7 +446,7 @@ header {
     border-radius: 20px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4),
                 inset 0 1px 0 rgba(255, 255, 255, 0.15),
-                0 4px 24px rgba(0, 102, 255, 0.08);
+                0 4px 24px rgba(59, 130, 246, 0.08);
 }
 
 .service-card {
@@ -404,18 +465,35 @@ header {
 
 .service-card:hover {
     background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(0, 102, 255, 0.4);
+    border-color: rgba(59, 130, 246, 0.4);
     transform: translateY(-8px);
-    box-shadow: 0 12px 48px rgba(0, 102, 255, 0.2),
+    box-shadow: 0 12px 48px rgba(59, 130, 246, 0.2),
                 inset 0 1px 0 rgba(255, 255, 255, 0.2),
                 0 8px 32px rgba(0, 0, 0, 0.5);
 }
 
-.service-icon {
-    font-size: 2rem;
+.service-icon,
+.pillar-icon,
+.vision-icon,
+.resource-icon {
     margin-bottom: 1.5rem;
     display: block;
+    color: var(--accent-blue);
     opacity: 0.9;
+}
+
+.service-icon svg,
+.pillar-icon svg,
+.vision-icon svg,
+.resource-icon svg {
+    stroke: var(--accent-blue);
+    transition: all 0.3s ease;
+}
+
+.pillar-card:hover .pillar-icon svg,
+.service-card:hover .service-icon svg {
+    stroke: var(--accent-blue-light);
+    transform: scale(1.1);
 }
 
 .service-card h3 {
@@ -433,7 +511,7 @@ header {
 }
 
 .projects-section {
-    background: var(--bg-black);
+    background: var(--bg-navy);
 }
 
 .projects-list {
@@ -697,7 +775,7 @@ footer {
 
 .rule-item:hover, .scenario-item:hover, .news-item:hover,
 .resource-item:hover, .glossary-item:hover {
-    background: var(--bg-dark);
+    background: var(--bg-navy-light);
     padding-left: 4rem;
 }
 
@@ -776,7 +854,7 @@ footer {
 .contact-form {
     max-width: 600px;
     margin: 3rem auto;
-    background: var(--bg-black);
+    background: var(--bg-navy-dark);
     border: 1px solid var(--border-subtle);
     padding: 3rem;
     border-radius: 12px;
@@ -803,7 +881,7 @@ footer {
     border-radius: 8px;
     font-family: inherit;
     font-size: 0.95rem;
-    background: var(--bg-black);
+    background: var(--bg-navy);
     color: var(--text-primary);
     transition: all 0.3s ease;
     letter-spacing: -0.3px;
