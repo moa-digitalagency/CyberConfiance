@@ -100,7 +100,31 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes (November 17, 2025)
 
-### Rules System with Individual Pages (Latest - November 17, 2025)
+### Navigation Redesign with Dropdown Menus (Latest - November 17, 2025)
+Complete navigation system overhaul with dropdown menus and homepage redesign:
+
+- **Dropdown Navigation Menus**: Implemented two-level navigation with dropdown menus
+  - Services dropdown: Sensibilisation & Éducation, Fact-Checking & OSINT, Cyberconsultation
+  - Outils dropdown: 20 Règles d'Or, Scénarios, Glossaire, Outils Essentiels, Méthodologie OSINT, Ressources
+  - Desktop: Hover-activated dropdowns with smooth animations
+  - Mobile: Toggle-activated dropdowns with JavaScript
+  - Enhanced glassmorphism styling on dropdown menus with backdrop blur
+- **New Service Pages**: Created 3 comprehensive service pages:
+  - `/services/sensibilisation`: Sensibilisation & Éducation programs and workshops
+  - `/services/factchecking`: Fact-Checking & OSINT verification services
+  - `/services/cyberconsultation`: Cyberconsultation services with pricing tiers
+- **New Tools Page**: Created OSINT methodology page:
+  - `/outils/methodologie-osint`: 5-step OSINT methodology guide with recommended tools
+- **Homepage Redesign**:
+  - Hero section: Removed background image for cleaner, minimalist look
+  - New "Vision et Objectifs" section with two-column layout
+  - Expanded from 3 to 6 pillars: Sensibilisation, Éducation, Fact-Checking, OSINT, Cyberconsultation, Outils Essentiels
+  - Removed testimonials section for streamlined content flow
+- **Enhanced Glassmorphism**: Applied stronger glassmorphism effects throughout with `.glass-card-enhanced` class
+- **Responsive Design**: Dropdown menus adapt to mobile with toggle functionality
+- **URL Generation**: All navigation links use Flask's `url_for()` for reliable route resolution
+
+### Rules System with Individual Pages (November 17, 2025)
 Complete overhaul of the rules display system:
 
 - **Individual Rule Pages**: New route `/rules/<id>` to display complete details of each rule
