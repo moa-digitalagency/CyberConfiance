@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 
-{% block title %}La Cyberconfiance{% endblock %}
+{% block title %}La Cyberconfiance - Votre bouclier numérique en RDC{% endblock %}
 
 {% block content %}
-<section class="hero" style="background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('{{ url_for('static', filename='img/hero-bg.jpg') }}'); background-size: cover; background-position: center;">
+<section class="hero">
     <div class="glow-orb"></div>
     
     <div class="container hero-content">
@@ -18,6 +18,26 @@
     </div>
 </section>
 
+<section class="section vision-section">
+    <div class="container">
+        <div class="vision-box glass-card-enhanced">
+            <h2 class="section-title">Vision et Objectifs</h2>
+            <div class="vision-content">
+                <div class="vision-item">
+                    <span class="vision-icon">🎯</span>
+                    <h3>Notre Vision</h3>
+                    <p>Faire de l'Afrique francophone un espace numérique sûr et informé, où chaque citoyen dispose des outils et connaissances pour se protéger contre les cybermenaces et la désinformation.</p>
+                </div>
+                <div class="vision-item">
+                    <span class="vision-icon">🚀</span>
+                    <h3>Nos Objectifs</h3>
+                    <p>Sensibiliser 100 000 personnes d'ici 2026, vérifier et déconstruire les fake news, accompagner les professionnels dans la sécurisation de leurs systèmes d'information.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 <section class="section mission-section">
     <div class="container">
         <h2 class="section-title">Notre mission</h2>
@@ -27,25 +47,43 @@
 
 <section class="section pillars-section">
     <div class="container">
-        <h2 class="section-title">Nos 3 piliers</h2>
+        <h2 class="section-title">Nos 6 piliers</h2>
         
-        <div class="services-grid">
-            <div class="service-card scroll-animate glass-card">
-                <span class="service-icon">🎓</span>
-                <h3>Sensibilisation & Éducation</h3>
-                <p>Vulgarisation des concepts de cybersécurité pour tous les publics.</p>
+        <div class="pillars-grid">
+            <div class="pillar-card scroll-animate glass-card-enhanced">
+                <span class="pillar-icon">📢</span>
+                <h3>Sensibilisation</h3>
+                <p>Informer et alerter le grand public sur les risques cyber actuels et émergents.</p>
             </div>
             
-            <div class="service-card scroll-animate glass-card">
-                <span class="service-icon">✅</span>
-                <h3>Fact-checking & OSINT</h3>
-                <p>Vérification des informations et lutte contre les fake news.</p>
+            <div class="pillar-card scroll-animate glass-card-enhanced">
+                <span class="pillar-icon">🎓</span>
+                <h3>Éducation</h3>
+                <p>Former et transmettre les bonnes pratiques pour une hygiène numérique optimale.</p>
             </div>
             
-            <div class="service-card scroll-animate glass-card">
-                <span class="service-icon">💼</span>
+            <div class="pillar-card scroll-animate glass-card-enhanced">
+                <span class="pillar-icon">✅</span>
+                <h3>Fact-Checking</h3>
+                <p>Vérifier les informations et lutter activement contre la désinformation en ligne.</p>
+            </div>
+            
+            <div class="pillar-card scroll-animate glass-card-enhanced">
+                <span class="pillar-icon">🔍</span>
+                <h3>OSINT</h3>
+                <p>Utiliser les techniques d'investigation en sources ouvertes pour analyser les menaces.</p>
+            </div>
+            
+            <div class="pillar-card scroll-animate glass-card-enhanced">
+                <span class="pillar-icon">💼</span>
                 <h3>Cyberconsultation</h3>
-                <p>Accompagnement personnalisé pour protéger vos données et vos systèmes.</p>
+                <p>Accompagner les organisations dans la sécurisation de leurs systèmes d'information.</p>
+            </div>
+            
+            <div class="pillar-card scroll-animate glass-card-enhanced">
+                <span class="pillar-icon">🛠️</span>
+                <h3>Outils Essentiels</h3>
+                <p>Fournir des ressources pratiques et des outils adaptés à tous les profils.</p>
             </div>
         </div>
     </div>
@@ -58,7 +96,7 @@
         
         <div class="news-grid">
             {% for item in news %}
-            <div class="news-card glass-card scroll-animate">
+            <div class="news-card glass-card-enhanced scroll-animate">
                 <div class="news-date">{{ item.created_at.strftime('%d %b %Y') if item.created_at else '' }}</div>
                 <h3>{{ item.title }}</h3>
                 <p>{{ item.content[:150] }}...</p>
@@ -70,30 +108,6 @@
 </section>
 {% endif %}
 
-<section class="section testimonials-section">
-    <div class="container">
-        <h2 class="section-title">Ils nous font confiance</h2>
-        
-        <div class="testimonials-grid">
-            <div class="testimonial-card glass-card scroll-animate">
-                <p class="testimonial-content">"La Cyberconfiance m'a permis de mieux protéger les données de mes patients."</p>
-                <div class="testimonial-author">
-                    <strong>Dr. M. Kongo</strong>
-                    <span>Médecin</span>
-                </div>
-            </div>
-            
-            <div class="testimonial-card glass-card scroll-animate">
-                <p class="testimonial-content">"Grâce à leurs conseils, j'ai évité une cyberattaque majeure."</p>
-                <div class="testimonial-author">
-                    <strong>M. N. Mbemba</strong>
-                    <span>Entrepreneur</span>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
 {% if resources %}
 <section class="section resources-section">
     <div class="container">
@@ -101,7 +115,7 @@
         
         <div class="resources-grid">
             {% for resource in resources %}
-            <div class="resource-card glass-card scroll-animate">
+            <div class="resource-card glass-card-enhanced scroll-animate">
                 <span class="resource-icon">📄</span>
                 <h3>{{ resource.title }}</h3>
                 <p>{{ resource.description if resource.description else 'Ressource de cybersécurité' }}</p>
@@ -113,7 +127,7 @@
 </section>
 {% endif %}
 
-<section class="contact-section">
+<section class="contact-section glass-card-enhanced">
     <div class="container">
         <h2>Contactez-nous</h2>
         <p>Besoin d'aide ou de conseils personnalisés ?</p>
@@ -123,7 +137,7 @@
 
 <section class="section footer-newsletter">
     <div class="container">
-        <div class="newsletter-box glass-card">
+        <div class="newsletter-box glass-card-enhanced">
             <h3>Restez informé</h3>
             <p>Recevez nos conseils et alertes cyber chaque semaine.</p>
             <form action="/newsletter" method="post" class="newsletter-form">
