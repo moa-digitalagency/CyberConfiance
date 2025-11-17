@@ -33,6 +33,13 @@ def create_app(config_class=Config):
         clean = re.compile('<.*?>')
         return re.sub(clean, '', str(text))
     
+    @app.after_request
+    def add_header(response):
+        response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '0'
+        return response
+    
     from routes import main, admin_routes
     app.register_blueprint(main.bp)
     app.register_blueprint(admin_routes.bp)
