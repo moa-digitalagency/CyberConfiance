@@ -100,23 +100,40 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes (November 17, 2025)
 
-### Design & UI Overhaul (Latest)
+### Design & UI Overhaul (Latest - November 17, 2025)
 - **Complete Dark Theme Redesign**: Professional dark mode with deep blue/purple color scheme
 - **Glassmorphism Effects**: Modern frosted glass cards with backdrop blur throughout the interface
+- **Hero Section with Real Photo Background**: 
+  - Full-screen hero with professional cybersecurity stock photo
+  - Dynamic gradient overlay for text readability
+  - Parallax scrolling effect on background image
+  - Animated scroll indicator
+  - Dual call-to-action buttons
+  - Floating particles animation
+- **Hamburger Menu Navigation (Desktop & Mobile)**:
+  - Animated hamburger icon with X transformation
+  - Side-sliding menu panel from right
+  - Backdrop overlay with blur effect
+  - Staggered menu item animations
+  - Fixed header that becomes more opaque on scroll
+- **Statistics Section**:
+  - Animated counters that increment on scroll
+  - 4-column grid layout
+  - Gradient text for numbers
 - **Advanced Animations**: 
   - Scroll-triggered animations using Intersection Observer API
-  - Parallax effects on hero section
+  - Parallax effects on hero background image
   - Smooth fade-in and slide-up transitions for content
-  - Button ripple effects and hover animations
-  - Floating particles in hero banner
+  - Button shimmer effects and hover animations
+  - Floating icon animations on feature cards
 - **Enhanced Typography**: Inter font family integration for modern, professional appearance
 - **Interactive Elements**: 
-  - Animated navigation with underline effects
+  - Animated hamburger menu with smooth transitions
   - Gradient buttons with shimmer animations
   - Glow effects on hover states
-  - Custom cursor glow effect
+  - Feature icons with floating animation
 - **Vivid Icons**: Updated emojis and icons throughout navigation and content cards for better visual engagement
-- **Improved Visual Hierarchy**: Gradient text headings, enhanced spacing, and modern card layouts
+- **Improved Visual Hierarchy**: Gradient text headings, enhanced spacing, modern card layouts, and full-screen hero section
 
 ### Security Enhancements
 - Implemented Flask-Login authentication for admin panel access
