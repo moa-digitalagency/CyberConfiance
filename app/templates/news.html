@@ -5,34 +5,27 @@
 {% block content %}
 <section class="page-header">
     <div class="container">
-        <h1>📰 Actualités Cybersécurité</h1>
-        <p>Les dernières nouvelles en matière de cybersécurité</p>
+        <h1>Actualités</h1>
+        <p>Les dernières nouvelles et tendances en cybersécurité</p>
     </div>
 </section>
 
 <section class="content-section">
     <div class="container">
         {% if news %}
-        <div class="news-list">
+        <div class="news-grid">
             {% for item in news %}
-            <div class="news-item">
+            <div class="news-card glass-card">
+                {% if item.published_date %}
+                <div class="news-date">{{ item.published_date.strftime('%d %B %Y') }}</div>
+                {% endif %}
                 <h3>{{ item.title }}</h3>
-                {% if item.source %}
-                <p class="news-meta">Source: {{ item.source }}
-                    {% if item.published_date %}
-                    | {{ item.published_date.strftime('%d/%m/%Y') }}
-                    {% endif %}
-                </p>
-                {% endif %}
                 <p>{{ item.content }}</p>
-                {% if item.url %}
-                <a href="{{ item.url }}" target="_blank" class="btn btn-secondary">Lire l'article complet</a>
-                {% endif %}
             </div>
             {% endfor %}
         </div>
         {% else %}
-        <p>Aucune actualité disponible pour le moment. Revenez bientôt!</p>
+        <p>Aucune actualité disponible pour le moment.</p>
         {% endif %}
     </div>
 </section>

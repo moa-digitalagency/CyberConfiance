@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 
-{% block title %}Outils - CyberConfiance{% endblock %}
+{% block title %}Outils de Sécurité - CyberConfiance{% endblock %}
 
 {% block content %}
 <section class="page-header">
     <div class="container">
-        <h1>🛠️ Outils de Cybersécurité</h1>
-        <p>Découvrez les outils recommandés pour renforcer votre sécurité en ligne</p>
+        <h1>Outils de Sécurité</h1>
+        <p>Découvrez les outils essentiels pour protéger vos appareils et données</p>
     </div>
 </section>
 
@@ -15,20 +15,32 @@
         {% if tools %}
         <div class="tools-grid">
             {% for tool in tools %}
-            <div class="tool-card">
+            <div class="tool-card glass-card">
                 <h3>{{ tool.name }}</h3>
-                {% if tool.category %}
-                <span class="category-badge">{{ tool.category }}</span>
+                <p class="tool-description">{{ tool.description }}</p>
+                
+                {% if tool.usage %}
+                <div class="tool-usage">
+                    <h4>Utilisation</h4>
+                    <p>{{ tool.usage }}</p>
+                </div>
                 {% endif %}
-                <p>{{ tool.description }}</p>
-                {% if tool.url %}
-                <a href="{{ tool.url }}" target="_blank" class="btn btn-primary">Visiter le site</a>
+                
+                {% if tool.recommended_brands %}
+                <div class="tool-brands">
+                    <h4>Marques recommandées</h4>
+                    <ul>
+                        {% for brand in tool.recommended_brands %}
+                        <li>{{ brand }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
                 {% endif %}
             </div>
             {% endfor %}
         </div>
         {% else %}
-        <p>Aucun outil disponible pour le moment. Revenez bientôt!</p>
+        <p>Aucun outil disponible pour le moment.</p>
         {% endif %}
     </div>
 </section>

@@ -1,0 +1,69 @@
+{
+  "contact": {
+    "title": "Contact",
+    "description": "Pour toute question, suggestion ou demande de partenariat, n’hésitez pas à nous contacter via le formulaire ci-dessous ou par email. Nous sommes à votre disposition pour toute demande d’information ou de collaboration.",
+    "form": {
+      "fields": [
+        {
+          "name": "name",
+          "label": "Nom",
+          "type": "text",
+          "required": true,
+          "placeholder": "Votre nom"
+        },
+        {
+          "name": "email",
+          "label": "Email",
+          "type": "email",
+          "required": true,
+          "placeholder": "votre.email@exemple.com"
+        },
+        {
+          "name": "subject",
+          "label": "Sujet",
+          "type": "text",
+          "required": true,
+          "placeholder": "Objet de votre message"
+        },
+        {
+          "name": "message",
+          "label": "Message",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "Votre message"
+        }
+      ],
+      "submit_button": "Envoyer",
+      "success_message": "Votre message a bien été envoyé. Nous vous répondrons dans les plus brefs délais.",
+      "error_message": "Une erreur est survenue lors de l’envoi de votre message. Veuillez réessayer."
+    },
+    "coordinates": {
+      "email": "contact@cyberconfiance.com",
+      "phone": "+33 1 23 45 67 89",
+      "address": "123 Rue de la Cybersécurité, 75000 Paris, France"
+    },
+    "social_media": [
+      {
+        "name": "Twitter",
+        "url": "https://twitter.com/cyberconfiance",
+        "icon": "twitter"
+      },
+      {
+        "name": "LinkedIn",
+        "url": "https://linkedin.com/company/cyberconfiance",
+        "icon": "linkedin"
+      },
+      {
+        "name": "Facebook",
+        "url": "https://facebook.com/cyberconfiance",
+        "icon": "facebook"
+      },
+      {
+        "name": "Instagram",
+        "url": "https://instagram.com/cyberconfiance",
+        "icon": "instagram"
+      }
+    ],
+    "additional_info": "Vous pouvez également nous suivre sur nos réseaux sociaux pour rester informé des dernières actualités et conseils en cybersécurité. Pour toute demande de partenariat ou de collaboration, merci de préciser votre demande dans le champ message."
+  }
+}

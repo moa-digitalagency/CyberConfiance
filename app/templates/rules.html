@@ -5,8 +5,8 @@
 {% block content %}
 <section class="page-header">
     <div class="container">
-        <h1>📋 Règles d'Or de la Cybersécurité</h1>
-        <p>Les principes essentiels pour protéger vos données et votre vie privée en ligne</p>
+        <h1>Règles Essentielles</h1>
+        <p>20 règles d'or pour renforcer votre sécurité numérique au quotidien</p>
     </div>
 </section>
 
@@ -15,14 +15,26 @@
         {% if rules %}
         <div class="rules-list">
             {% for rule in rules %}
-            <div class="rule-item">
-                <h3>{{ loop.index }}. {{ rule.title }}</h3>
-                <p>{{ rule.description }}</p>
+            <div class="rule-item glass-card">
+                <div class="rule-number">{{ "{:02d}".format(loop.index) }}</div>
+                <h3>{{ rule.title }}</h3>
+                <p class="rule-summary">{{ rule.summary }}</p>
+                <div class="rule-details">
+                    <p>{{ rule.explanation }}</p>
+                    {% if rule.best_practices %}
+                    <h4>Bonnes Pratiques</h4>
+                    <ul>
+                        {% for practice in rule.best_practices %}
+                        <li>{{ practice }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </div>
             </div>
             {% endfor %}
         </div>
         {% else %}
-        <p>Aucune règle disponible pour le moment. Revenez bientôt!</p>
+        <p>Aucune règle disponible pour le moment.</p>
         {% endif %}
     </div>
 </section>

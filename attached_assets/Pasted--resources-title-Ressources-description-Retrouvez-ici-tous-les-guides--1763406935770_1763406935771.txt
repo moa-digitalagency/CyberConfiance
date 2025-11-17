@@ -1,0 +1,81 @@
+{
+  "resources": {
+    "title": "Ressources",
+    "description": "Retrouvez ici tous les guides, vidéos, articles et formations pour approfondir vos connaissances en cybersécurité.",
+    "guides": [
+      {
+        "title": "Guide de cybersécurité pour les dirigeants",
+        "link": "/resources/guide-dirigeants.pdf",
+        "description": "Guide complet pour les dirigeants d’entreprise sur les bonnes pratiques de cybersécurité."
+      },
+      {
+        "title": "Guide de cybersécurité pour les citoyens",
+        "link": "/resources/guide-citoyens.pdf",
+        "description": "Guide pratique pour les citoyens soucieux de leur sécurité numérique."
+      },
+      {
+        "title": "Guide de cybersécurité pour les professionnels de la santé",
+        "link": "/resources/guide-sante.pdf",
+        "description": "Guide adapté aux professionnels de la santé confrontés à des données sensibles."
+      }
+    ],
+    "videos": [
+      {
+        "title": "Vidéo de sensibilisation à la cybersécurité",
+        "link": "/resources/video-sensibilisation.mp4",
+        "description": "Vidéo explicative sur les bonnes pratiques de cybersécurité."
+      },
+      {
+        "title": "Vidéo sur les 20 règles d’or",
+        "link": "/resources/video-regles.mp4",
+        "description": "Vidéo détaillée sur les 20 règles d’or de la cybersécurité."
+      },
+      {
+        "title": "Vidéo sur les scénarios de cybermenaces",
+        "link": "/resources/video-scenarios.mp4",
+        "description": "Vidéo illustrant les principaux scénarios de cybermenaces."
+      }
+    ],
+    "articles": [
+      {
+        "title": "Les dernières menaces en cybersécurité",
+        "link": "/resources/article-menaces.html",
+        "description": "Article sur les dernières menaces et tendances en cybersécurité."
+      },
+      {
+        "title": "Comment protéger ses données personnelles",
+        "link": "/resources/article-protection.html",
+        "description": "Article sur les meilleures pratiques pour protéger ses données personnelles."
+      },
+      {
+        "title": "Les outils essentiels pour la cybersécurité",
+        "link": "/resources/article-outils.html",
+        "description": "Article sur les outils physiques et numériques recommandés pour la cybersécurité."
+      }
+    ],
+    "formations": [
+      {
+        "title": "Formation en ligne sur la cybersécurité",
+        "link": "/resources/formation-en-ligne.html",
+        "description": "Formation en ligne pour approfondir vos connaissances en cybersécurité."
+      },
+      {
+        "title": "Formation sur les 20 règles d’or",
+        "link": "/resources/formation-regles.html",
+        "description": "Formation détaillée sur les 20 règles d’or de la cybersécurité."
+      },
+      {
+        "title": "Formation sur les scénarios de cybermenaces",
+        "link": "/resources/formation-scenarios.html",
+        "description": "Formation sur les principaux scénarios de cybermenaces et leurs solutions."
+      }
+    ],
+    "downloads": [
+      {
+        "title": "Vade-mecum complet",
+        "link": "/resources/vade-mecum.pdf",
+        "description": "Téléchargez le vade-mecum complet pour la sécurité numérique."
+      }
+    ]
+  }
+}
