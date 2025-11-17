@@ -21,6 +21,12 @@ def rules():
     all_rules = ContentService.get_all_rules()
     return render_template('rules.html', rules=all_rules)
 
+@bp.route('/rules/<int:rule_id>')
+def rule_detail(rule_id):
+    from app.models import Rule
+    rule = Rule.query.get_or_404(rule_id)
+    return render_template('rule_detail.html', rule=rule)
+
 @bp.route('/scenarios')
 def scenarios():
     all_scenarios = ContentService.get_all_scenarios()

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}{{ rule.title }} - CyberConfiance{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <a href="{{ url_for('main.rules') }}" class="back-link">← Retour aux règles</a>
+        <h1>{{ rule.title }}</h1>
+    </div>
+</section>
+
+<section class="content-section">
+    <div class="container">
+        <div class="rule-detail-content glass-card">
+            <div class="rule-content">
+                {{ rule.description|safe }}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

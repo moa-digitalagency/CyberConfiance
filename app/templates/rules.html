@@ -13,24 +13,14 @@
 <section class="content-section">
     <div class="container">
         {% if rules %}
-        <div class="rules-list">
+        <div class="rules-grid">
             {% for rule in rules %}
-            <div class="rule-item glass-card">
+            <a href="{{ url_for('main.rule_detail', rule_id=rule.id) }}" class="rule-card glass-card">
                 <div class="rule-number">{{ "{:02d}".format(loop.index) }}</div>
                 <h3>{{ rule.title }}</h3>
-                <p class="rule-summary">{{ rule.summary }}</p>
-                <div class="rule-details">
-                    <p>{{ rule.explanation }}</p>
-                    {% if rule.best_practices %}
-                    <h4>Bonnes Pratiques</h4>
-                    <ul>
-                        {% for practice in rule.best_practices %}
-                        <li>{{ practice }}</li>
-                        {% endfor %}
-                    </ul>
-                    {% endif %}
-                </div>
-            </div>
+                <p class="rule-description">{{ (rule.description|striptags)[:150] }}{% if (rule.description|striptags)|length > 150 %}...{% endif %}</p>
+                <span class="read-more">En savoir plus →</span>
+            </a>
             {% endfor %}
         </div>
         {% else %}

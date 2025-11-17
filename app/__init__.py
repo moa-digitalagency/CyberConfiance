@@ -23,6 +23,16 @@ def create_app(config_class=Config):
         from app.models import User
         return User.query.get(int(user_id))
     
+    import re
+    
+    @app.template_filter('striptags')
+    def strip_tags(text):
+        """Remove HTML tags from a string"""
+        if not text:
+            return ''
+        clean = re.compile('<.*?>')
+        return re.sub(clean, '', str(text))
+    
     from app.routes import main, admin_routes
     app.register_blueprint(main.bp)
     app.register_blueprint(admin_routes.bp)

@@ -100,7 +100,25 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes (November 17, 2025)
 
-### Enhanced Navigation and Homepage Sections (Latest - November 17, 2025)
+### Rules System with Individual Pages (Latest - November 17, 2025)
+Complete overhaul of the rules display system:
+
+- **Individual Rule Pages**: New route `/rules/<id>` to display complete details of each rule
+- **Grid Layout**: Rules page now shows cards in a 3-column responsive grid (2 columns on tablet, 1 on mobile)
+- **Clean Previews**: Each card displays:
+  - Rule number (01, 02, etc.)
+  - Title
+  - Clean 150-character description (HTML tags automatically stripped)
+  - "En savoir plus →" link with hover animation
+- **Interactive Cards**: Clickable cards with hover effects (lift animation, border glow)
+- **Detail Pages**: Full rule content displayed in glassmorphism card with:
+  - "← Retour aux règles" back link
+  - Complete rule description with HTML support (safe rendering)
+  - Proper formatting for headings, lists, and paragraphs
+- **Custom Jinja Filter**: `striptags` filter added to remove HTML before text truncation
+- **Navigation Cleanup**: Removed "Glossaire" and "Ressources" from main navigation menu (7 items total)
+
+### Enhanced Navigation and Homepage Sections (November 17, 2025)
 Complete navigation and homepage improvements:
 
 - **Navigation Menu Completed**: Added Glossaire, Ressources, and Actualités to main navigation menu - all 9 menu items now visible
