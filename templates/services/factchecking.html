@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Fact-Checking & OSINT - CyberConfiance{% endblock %}
+
+{% block content %}
+<section class="hero" style="min-height: 40vh;">
+    <div class="container hero-content">
+        <h1>✅ Fact-Checking & OSINT</h1>
+        <p class="hero-subtitle">Vérifier les informations et lutter activement contre la désinformation en ligne</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="glass-card-enhanced">
+            <h2 class="section-title">La lutte contre la désinformation</h2>
+            <p style="font-size: 1.1rem; line-height: 1.8; color: var(--text-secondary); text-align: center; max-width: 800px; margin: 0 auto;">
+                Dans un contexte où les fake news se propagent rapidement, nous utilisons les techniques OSINT (Open Source Intelligence) pour vérifier les informations et protéger la population contre la manipulation.
+            </p>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <h2 class="section-title">Nos services de vérification</h2>
+        
+        <div class="pillars-grid" style="grid-template-columns: repeat(2, 1fr);">
+            <div class="pillar-card glass-card-enhanced scroll-animate">
+                <span class="pillar-icon">🔍</span>
+                <h3>Vérification d'informations</h3>
+                <p>Soumettez une information suspecte et nous vérifions sa véracité en utilisant des sources fiables et des techniques d'investigation.</p>
+            </div>
+            
+            <div class="pillar-card glass-card-enhanced scroll-animate">
+                <span class="pillar-icon">🛡️</span>
+                <h3>Détection de manipulations</h3>
+                <p>Identification des images truquées, vidéos deepfake et fausses informations circulant sur les réseaux sociaux.</p>
+            </div>
+            
+            <div class="pillar-card glass-card-enhanced scroll-animate">
+                <span class="pillar-icon">📊</span>
+                <h3>Rapports d'analyse</h3>
+                <p>Études approfondies sur les campagnes de désinformation touchant la RDC et l'Afrique francophone.</p>
+            </div>
+            
+            <div class="pillar-card glass-card-enhanced scroll-animate">
+                <span class="pillar-icon">🎓</span>
+                <h3>Formation OSINT</h3>
+                <p>Apprenez les techniques d'investigation en sources ouvertes pour vérifier vous-même les informations.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="glass-card-enhanced" style="padding: 3rem;">
+            <h2 class="section-title">Comment soumettre une vérification ?</h2>
+            
+            <div style="max-width: 700px; margin: 0 auto; text-align: left;">
+                <div style="margin-bottom: 2rem;">
+                    <h3 style="color: var(--accent-blue); margin-bottom: 0.5rem;">1. Collectez l'information</h3>
+                    <p style="color: var(--text-secondary);">Capturez l'image, la vidéo ou le texte que vous souhaitez faire vérifier.</p>
+                </div>
+                
+                <div style="margin-bottom: 2rem;">
+                    <h3 style="color: var(--accent-blue); margin-bottom: 0.5rem;">2. Contactez-nous</h3>
+                    <p style="color: var(--text-secondary);">Envoyez votre demande via notre formulaire de contact avec le maximum de détails.</p>
+                </div>
+                
+                <div style="margin-bottom: 2rem;">
+                    <h3 style="color: var(--accent-blue); margin-bottom: 0.5rem;">3. Recevez l'analyse</h3>
+                    <p style="color: var(--text-secondary);">Nous vous répondons sous 24-48h avec notre verdict et les preuves.</p>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 3rem;">
+                <a href="{{ url_for('main.contact') }}" class="btn btn-primary">Soumettre une vérification</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

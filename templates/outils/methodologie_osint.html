@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}Méthodologie OSINT - CyberConfiance{% endblock %}
+
+{% block content %}
+<section class="hero" style="min-height: 40vh;">
+    <div class="container hero-content">
+        <h1>🔍 Méthodologie OSINT</h1>
+        <p class="hero-subtitle">Techniques d'investigation en sources ouvertes pour analyser les menaces</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="glass-card-enhanced">
+            <h2 class="section-title">Qu'est-ce que l'OSINT ?</h2>
+            <p style="font-size: 1.1rem; line-height: 1.8; color: var(--text-secondary); text-align: center; max-width: 800px; margin: 0 auto;">
+                L'OSINT (Open Source Intelligence) est l'art de collecter, analyser et exploiter des informations publiquement accessibles pour obtenir du renseignement. Ces techniques sont utilisées par les journalistes, enquêteurs et professionnels de la cybersécurité.
+            </p>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <h2 class="section-title">Notre méthodologie en 5 étapes</h2>
+        
+        <div style="max-width: 900px; margin: 0 auto;">
+            <div class="glass-card-enhanced scroll-animate" style="margin-bottom: 2rem;">
+                <div style="display: flex; align-items: start; gap: 2rem;">
+                    <span style="font-size: 3rem; flex-shrink: 0;">1️⃣</span>
+                    <div>
+                        <h3 style="color: var(--accent-blue); font-size: 1.6rem; margin-bottom: 0.5rem;">Définir l'objectif</h3>
+                        <p style="color: var(--text-secondary); line-height: 1.7;">Identifier clairement ce que vous cherchez : vérifier une information, tracer un compte suspect, analyser une image, etc.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass-card-enhanced scroll-animate" style="margin-bottom: 2rem;">
+                <div style="display: flex; align-items: start; gap: 2rem;">
+                    <span style="font-size: 3rem; flex-shrink: 0;">2️⃣</span>
+                    <div>
+                        <h3 style="color: var(--accent-blue); font-size: 1.6rem; margin-bottom: 0.5rem;">Collecter les données</h3>
+                        <p style="color: var(--text-secondary); line-height: 1.7;">Utiliser les moteurs de recherche, réseaux sociaux, bases de données publiques et outils spécialisés pour rassembler l'information.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass-card-enhanced scroll-animate" style="margin-bottom: 2rem;">
+                <div style="display: flex; align-items: start; gap: 2rem;">
+                    <span style="font-size: 3rem; flex-shrink: 0;">3️⃣</span>
+                    <div>
+                        <h3 style="color: var(--accent-blue); font-size: 1.6rem; margin-bottom: 0.5rem;">Analyser et croiser</h3>
+                        <p style="color: var(--text-secondary); line-height: 1.7;">Comparer les sources, vérifier la cohérence et chercher des contradictions ou confirmations.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass-card-enhanced scroll-animate" style="margin-bottom: 2rem;">
+                <div style="display: flex; align-items: start; gap: 2rem;">
+                    <span style="font-size: 3rem; flex-shrink: 0;">4️⃣</span>
+                    <div>
+                        <h3 style="color: var(--accent-blue); font-size: 1.6rem; margin-bottom: 0.5rem;">Évaluer la fiabilité</h3>
+                        <p style="color: var(--text-secondary); line-height: 1.7;">Vérifier la crédibilité des sources, l'authenticité des documents et la pertinence des informations.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass-card-enhanced scroll-animate">
+                <div style="display: flex; align-items: start; gap: 2rem;">
+                    <span style="font-size: 3rem; flex-shrink: 0;">5️⃣</span>
+                    <div>
+                        <h3 style="color: var(--accent-blue); font-size: 1.6rem; margin-bottom: 0.5rem;">Produire le rapport</h3>
+                        <p style="color: var(--text-secondary); line-height: 1.7;">Synthétiser les résultats, documenter les sources et présenter des conclusions claires et vérifiables.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <h2 class="section-title">Outils OSINT recommandés</h2>
+        
+        <div class="pillars-grid">
+            <div class="pillar-card glass-card-enhanced scroll-animate">
+                <span class="pillar-icon">🔍</span>
+                <h3>Google Dorking</h3>
+                <p>Techniques de recherche avancées pour trouver des informations précises sur Google.</p>
+            </div>
+            
+            <div class="pillar-card glass-card-enhanced scroll-animate">
+                <span class="pillar-icon">🖼️</span>
+                <h3>Recherche d'images inversée</h3>
+                <p>TinEye, Google Images pour vérifier l'origine et l'authenticité des photos.</p>
+            </div>
+            
+            <div class="pillar-card glass-card-enhanced scroll-animate">
+                <span class="pillar-icon">🗺️</span>
+                <h3>Géolocalisation</h3>
+                <p>Google Earth, Mapillary pour situer et vérifier des lieux.</p>
+            </div>
+            
+            <div class="pillar-card glass-card-enhanced scroll-animate">
+                <span class="pillar-icon">📱</span>
+                <h3>Analyse de réseaux sociaux</h3>
+                <p>Outils pour investiguer les profils Facebook, Twitter, Instagram, etc.</p>
+            </div>
+            
+            <div class="pillar-card glass-card-enhanced scroll-animate">
+                <span class="pillar-icon">🌐</span>
+                <h3>WHOIS & DNS</h3>
+                <p>Identifier les propriétaires de sites web et analyser l'infrastructure.</p>
+            </div>
+            
+            <div class="pillar-card glass-card-enhanced scroll-animate">
+                <span class="pillar-icon">📊</span>
+                <h3>Maltego</h3>
+                <p>Plateforme professionnelle pour cartographier les connexions et relations.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="glass-card-enhanced" style="text-align: center;">
+            <h2>Vous voulez apprendre l'OSINT ?</h2>
+            <p style="font-size: 1.1rem; color: var(--text-secondary); margin: 1.5rem 0;">
+                Nous proposons des formations pratiques sur les techniques d'investigation en sources ouvertes.
+            </p>
+            <a href="{{ url_for('main.contact') }}" class="btn btn-primary" style="margin-top: 1rem;">Demander une formation</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

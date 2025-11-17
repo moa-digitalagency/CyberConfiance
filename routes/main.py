@@ -94,3 +94,19 @@ def logout():
     logout_user()
     flash('Déconnexion réussie.', 'success')
     return redirect(url_for('main.index'))
+
+@bp.route('/services/sensibilisation')
+def service_sensibilisation():
+    return render_template('services/sensibilisation.html')
+
+@bp.route('/services/factchecking')
+def service_factchecking():
+    return render_template('services/factchecking.html')
+
+@bp.route('/services/cyberconsultation')
+def service_cyberconsultation():
+    return render_template('services/cyberconsultation.html')
+
+@bp.route('/outils/methodologie-osint')
+def osint_methodology():
+    return render_template('outils/methodologie_osint.html')
