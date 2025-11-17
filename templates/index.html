@@ -100,19 +100,14 @@
         <h2 class="section-title">Ressources utiles</h2>
         
         <div class="resources-grid">
+            {% for resource in resources %}
             <div class="resource-card glass-card scroll-animate">
                 <span class="resource-icon">📄</span>
-                <h3>Vade-mecum de cybersécurité</h3>
-                <p>20 règles d'or pour naviguer en sécurité.</p>
-                <a href="{{ url_for('main.rules') }}" class="btn btn-primary">Accéder</a>
+                <h3>{{ resource.title }}</h3>
+                <p>{{ resource.description if resource.description else 'Ressource de cybersécurité' }}</p>
+                <a href="{{ resource.url }}" class="btn btn-primary">Accéder</a>
             </div>
-            
-            <div class="resource-card glass-card scroll-animate">
-                <span class="resource-icon">✓</span>
-                <h3>Checklist de sécurité</h3>
-                <p>Vérifiez vos pratiques en un clin d'œil.</p>
-                <a href="{{ url_for('main.resources') }}" class="btn btn-primary">Accéder</a>
-            </div>
+            {% endfor %}
         </div>
     </div>
 </section>
