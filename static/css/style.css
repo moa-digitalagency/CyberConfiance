@@ -170,7 +170,7 @@ header {
 
 .hero {
     position: relative;
-    min-height: 85vh;
+    min-height: 42vh;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -837,15 +837,6 @@ header {
     background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.3), transparent);
 }
 
-.newsletter-section::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.3), transparent);
-}
 
 .process-section {
     background: var(--bg-navy-light);
