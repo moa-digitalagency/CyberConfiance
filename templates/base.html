@@ -21,9 +21,9 @@
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle">Services <span class="arrow">▼</span></a>
                         <ul class="dropdown-menu">
-                            <li><a href="/services/sensibilisation">Sensibilisation & Éducation</a></li>
-                            <li><a href="/services/factchecking">Fact-Checking & OSINT</a></li>
-                            <li><a href="/services/cyberconsultation">Cyberconsultation</a></li>
+                            <li><a href="{{ url_for('main.service_sensibilisation') }}">Sensibilisation & Éducation</a></li>
+                            <li><a href="{{ url_for('main.service_factchecking') }}">Fact-Checking & OSINT</a></li>
+                            <li><a href="{{ url_for('main.service_cyberconsultation') }}">Cyberconsultation</a></li>
                         </ul>
                     </li>
                     <li class="dropdown">
@@ -33,7 +33,7 @@
                             <li><a href="{{ url_for('main.scenarios') }}">Scénarios de Cybermenaces</a></li>
                             <li><a href="{{ url_for('main.glossary') }}">Glossaire</a></li>
                             <li><a href="{{ url_for('main.tools') }}">Outils Essentiels</a></li>
-                            <li><a href="/outils/methodologie-osint">Méthodologie OSINT</a></li>
+                            <li><a href="{{ url_for('main.osint_methodology') }}">Méthodologie OSINT</a></li>
                             <li><a href="{{ url_for('main.resources') }}">Ressources</a></li>
                         </ul>
                     </li>
