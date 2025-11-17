@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Règles d'Or - CyberConfiance{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1>📋 Règles d'Or de la Cybersécurité</h1>
+        <p>Les principes essentiels pour protéger vos données et votre vie privée en ligne</p>
+    </div>
+</section>
+
+<section class="content-section">
+    <div class="container">
+        {% if rules %}
+        <div class="rules-list">
+            {% for rule in rules %}
+            <div class="rule-item">
+                <h3>{{ loop.index }}. {{ rule.title }}</h3>
+                <p>{{ rule.description }}</p>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p>Aucune règle disponible pour le moment. Revenez bientôt!</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

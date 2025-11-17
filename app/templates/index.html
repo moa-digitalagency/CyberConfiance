@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}CyberConfiance - Accueil{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="container">
+        <h1>🔒 Bienvenue sur CyberConfiance</h1>
+        <p class="hero-subtitle">Votre plateforme de sensibilisation à la cybersécurité</p>
+        <p>Apprenez à protéger vos données et à naviguer en toute sécurité sur Internet</p>
+        <a href="{{ url_for('main.rules') }}" class="btn btn-primary">Découvrir les règles d'or</a>
+    </div>
+</section>
+
+<section class="features">
+    <div class="container">
+        <h2>Nos Services</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <h3>📋 Règles d'Or</h3>
+                <p>Découvrez les principes essentiels de la cybersécurité</p>
+                <a href="{{ url_for('main.rules') }}" class="btn btn-secondary">En savoir plus</a>
+            </div>
+            <div class="feature-card">
+                <h3>🎭 Scénarios</h3>
+                <p>Apprenez à identifier et à réagir aux menaces courantes</p>
+                <a href="{{ url_for('main.scenarios') }}" class="btn btn-secondary">Explorer</a>
+            </div>
+            <div class="feature-card">
+                <h3>🛠️ Outils</h3>
+                <p>Découvrez les outils pour renforcer votre sécurité</p>
+                <a href="{{ url_for('main.tools') }}" class="btn btn-secondary">Voir les outils</a>
+            </div>
+            <div class="feature-card">
+                <h3>📚 Ressources</h3>
+                <p>Accédez à une bibliothèque de ressources éducatives</p>
+                <a href="{{ url_for('main.resources') }}" class="btn btn-secondary">Consulter</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% if rules %}
+<section class="rules-preview">
+    <div class="container">
+        <h2>Quelques Règles d'Or</h2>
+        <div class="rules-grid">
+            {% for rule in rules %}
+            <div class="rule-card">
+                <h3>{{ rule.title }}</h3>
+                <p>{{ rule.description[:150] }}...</p>
+            </div>
+            {% endfor %}
+        </div>
+        <a href="{{ url_for('main.rules') }}" class="btn btn-primary">Voir toutes les règles</a>
+    </div>
+</section>
+{% endif %}
+
+{% if news %}
+<section class="news-preview">
+    <div class="container">
+        <h2>Dernières Actualités</h2>
+        <div class="news-grid">
+            {% for item in news %}
+            <div class="news-card">
+                <h3>{{ item.title }}</h3>
+                <p>{{ item.content[:200] }}...</p>
+                {% if item.url %}
+                <a href="{{ item.url }}" target="_blank" class="btn btn-secondary">Lire plus</a>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        <a href="{{ url_for('main.news') }}" class="btn btn-primary">Toutes les actualités</a>
+    </div>
+</section>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Scénarios - CyberConfiance{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1>🎭 Scénarios de Cyberattaques</h1>
+        <p>Apprenez à identifier et à vous protéger contre les menaces courantes</p>
+    </div>
+</section>
+
+<section class="content-section">
+    <div class="container">
+        {% if scenarios %}
+        <div class="scenarios-list">
+            {% for scenario in scenarios %}
+            <div class="scenario-item">
+                <div class="scenario-header">
+                    <h3>{{ scenario.title }}</h3>
+                    {% if scenario.severity %}
+                    <span class="severity-badge severity-{{ scenario.severity }}">{{ scenario.severity }}</span>
+                    {% endif %}
+                </div>
+                <p class="scenario-description">{{ scenario.description }}</p>
+                {% if scenario.threat_type %}
+                <p><strong>Type de menace:</strong> {{ scenario.threat_type }}</p>
+                {% endif %}
+                {% if scenario.solution %}
+                <div class="scenario-solution">
+                    <h4>Solution:</h4>
+                    <p>{{ scenario.solution }}</p>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p>Aucun scénario disponible pour le moment. Revenez bientôt!</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Glossaire - CyberConfiance{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1>📖 Glossaire de la Cybersécurité</h1>
+        <p>Comprenez les termes essentiels de la cybersécurité</p>
+    </div>
+</section>
+
+<section class="content-section">
+    <div class="container">
+        {% if terms %}
+        <div class="glossary-list">
+            {% for term in terms %}
+            <div class="glossary-item">
+                <h3>{{ term.term }}</h3>
+                <p>{{ term.definition }}</p>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p>Aucun terme disponible pour le moment. Revenez bientôt!</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

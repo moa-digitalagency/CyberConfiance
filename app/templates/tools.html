@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Outils - CyberConfiance{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1>🛠️ Outils de Cybersécurité</h1>
+        <p>Découvrez les outils recommandés pour renforcer votre sécurité en ligne</p>
+    </div>
+</section>
+
+<section class="content-section">
+    <div class="container">
+        {% if tools %}
+        <div class="tools-grid">
+            {% for tool in tools %}
+            <div class="tool-card">
+                <h3>{{ tool.name }}</h3>
+                {% if tool.category %}
+                <span class="category-badge">{{ tool.category }}</span>
+                {% endif %}
+                <p>{{ tool.description }}</p>
+                {% if tool.url %}
+                <a href="{{ tool.url }}" target="_blank" class="btn btn-primary">Visiter le site</a>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p>Aucun outil disponible pour le moment. Revenez bientôt!</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

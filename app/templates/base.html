@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CyberConfiance - Sensibilisation à la Cybersécurité{% endblock %}</title>
+    <meta name="description" content="{% block description %}Plateforme de sensibilisation à la cybersécurité{% endblock %}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="container">
+                <div class="logo">
+                    <a href="{{ url_for('main.index') }}">🔒 CyberConfiance</a>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="{{ url_for('main.index') }}">Accueil</a></li>
+                    <li><a href="{{ url_for('main.about') }}">À propos</a></li>
+                    <li><a href="{{ url_for('main.rules') }}">Règles d'or</a></li>
+                    <li><a href="{{ url_for('main.scenarios') }}">Scénarios</a></li>
+                    <li><a href="{{ url_for('main.tools') }}">Outils</a></li>
+                    <li><a href="{{ url_for('main.glossary') }}">Glossaire</a></li>
+                    <li><a href="{{ url_for('main.resources') }}">Ressources</a></li>
+                    <li><a href="{{ url_for('main.news') }}">Actualités</a></li>
+                    <li><a href="{{ url_for('main.contact') }}">Contact</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="container">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 CyberConfiance. Tous droits réservés.</p>
+            <p>Sensibilisation à la cybersécurité pour tous.</p>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

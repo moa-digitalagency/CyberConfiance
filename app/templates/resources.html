@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Ressources - CyberConfiance{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1>📚 Ressources Éducatives</h1>
+        <p>Une bibliothèque de ressources pour approfondir vos connaissances</p>
+    </div>
+</section>
+
+<section class="content-section">
+    <div class="container">
+        {% if resources %}
+        <div class="resources-list">
+            {% for resource in resources %}
+            <div class="resource-item">
+                <h3>{{ resource.title }}</h3>
+                {% if resource.resource_type %}
+                <span class="type-badge">{{ resource.resource_type }}</span>
+                {% endif %}
+                {% if resource.description %}
+                <p>{{ resource.description }}</p>
+                {% endif %}
+                <a href="{{ resource.url }}" target="_blank" class="btn btn-primary">Accéder à la ressource</a>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p>Aucune ressource disponible pour le moment. Revenez bientôt!</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
