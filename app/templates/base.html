@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
+    <div class="background-animation"></div>
     <header>
         <div class="container">
             <nav class="navbar">
@@ -20,6 +21,9 @@
                     <li><a href="{{ url_for('main.rules') }}">Règles</a></li>
                     <li><a href="{{ url_for('main.scenarios') }}">Scénarios</a></li>
                     <li><a href="{{ url_for('main.tools') }}">Outils</a></li>
+                    <li><a href="{{ url_for('main.glossary') }}">Glossaire</a></li>
+                    <li><a href="{{ url_for('main.resources') }}">Ressources</a></li>
+                    <li><a href="{{ url_for('main.news') }}">Actualités</a></li>
                     <li><a href="{{ url_for('main.contact') }}">Contact</a></li>
                 </ul>
             </nav>
