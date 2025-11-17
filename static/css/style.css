@@ -399,9 +399,7 @@ header {
 }
 
 .mission-section {
-    background: var(--bg-navy-light);
-    border-top: 1px solid var(--border-subtle);
-    border-bottom: 1px solid var(--border-subtle);
+    background: transparent;
 }
 
 .pillars-section {
@@ -409,9 +407,7 @@ header {
 }
 
 .news-section {
-    background: var(--bg-navy-light);
-    border-top: 1px solid var(--border-subtle);
-    border-bottom: 1px solid var(--border-subtle);
+    background: transparent;
 }
 
 .resources-section {
