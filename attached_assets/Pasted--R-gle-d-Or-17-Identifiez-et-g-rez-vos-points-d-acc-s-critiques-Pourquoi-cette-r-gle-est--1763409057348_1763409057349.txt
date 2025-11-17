@@ -1,0 +1,83 @@
+## Règle d'Or 17 : Identifiez et gérez vos points d’accès critiques
+
+### Pourquoi cette règle est importante ?
+Les points d’accès critiques sont des portes d’entrée privilégiées pour les cybercriminels. Identifier et sécuriser ces points réduit considérablement les risques d’intrusion.
+
+### Exemples concrets
+- Un administrateur réseau oublie de sécuriser un port d’accès à distance. Un hacker exploite cette faille pour accéder à l’ensemble du système.
+- Un cadre utilise un mot de passe faible pour accéder à un serveur central. Ce mot de passe est deviné, permettant au hacker de compromettre toutes les données stockées.
+
+### Risques associés
+- Intrusion massive.
+- Vol de données sensibles.
+- Paralysie des activités.
+
+### Bonnes pratiques à adopter
+- Identifiez tous les points d’accès critiques (ports, serveurs, comptes administrateurs).
+- Appliquez des mots de passe robustes et uniques.
+- Activez l’authentification à deux facteurs.
+- Surveillez régulièrement les accès et les tentatives de connexion.
+
+---
+
+## Règle d'Or 18 : Soyez prudent avec les demandes d’informations sensibles
+
+### Pourquoi cette règle est importante ?
+Les cybercriminels utilisent souvent des techniques d’ingénierie sociale pour obtenir des informations sensibles. Être vigilant face à ces demandes est essentiel.
+
+### Exemples concrets
+- Un collaborateur reçoit un appel d’un prétendu technicien informatique qui demande son mot de passe pour résoudre un problème. Le collaborateur fournit l’information, permettant au hacker d’accéder à son compte.
+- Un cadre reçoit un e-mail d’un prétendu partenaire qui demande des informations confidentielles. Le cadre répond sans vérifier l’identité de l’expéditeur, exposant l’entreprise à un risque.
+
+### Risques associés
+- Vol d’identifiants.
+- Usurpation d’identité.
+- Fuite de données sensibles.
+
+### Bonnes pratiques à adopter
+- Vérifiez toujours l’identité de la personne qui demande des informations.
+- Ne communiquez jamais d’informations sensibles par téléphone ou e-mail sans vérification.
+- Sensibilisez vos équipes à l’ingénierie sociale.
+
+---
+
+## Règle d'Or 19 : Utilisez des outils de chiffrement pour vos communications
+
+### Pourquoi cette règle est importante ?
+Le chiffrement protège vos communications contre l’espionnage et les interceptions. Il garantit la confidentialité et l’intégrité de vos échanges.
+
+### Exemples concrets
+- Un cadre utilise une messagerie non chiffrée pour discuter de stratégies d’entreprise. Un hacker intercepte la conversation et obtient des informations stratégiques.
+- Une organisation utilise un service de messagerie chiffrée pour échanger des documents sensibles. Les données restent protégées même en cas d’interception.
+
+### Risques associés
+- Espionnage.
+- Fuite de données sensibles.
+- Usurpation d’identité.
+
+### Bonnes pratiques à adopter
+- Utilisez des outils de messagerie chiffrée (Signal, ProtonMail, etc.).
+- Activez le chiffrement des e-mails et des fichiers.
+- Sensibilisez vos équipes à l’importance du chiffrement.
+
+---
+
+## Règle d'Or 20 : Réagissez rapidement en cas d’incident de sécurité
+
+### Pourquoi cette règle est importante ?
+Réagir rapidement en cas d’incident limite les dégâts et permet de contenir la menace avant qu’elle ne se propage.
+
+### Exemples concrets
+- Un collaborateur découvre qu’un fichier a été chiffré par un ransomware. Il alerte immédiatement l’équipe informatique, qui isole le poste et empêche la propagation du malware.
+- Un cadre reçoit un e-mail suspect. Il le signale à l’équipe de sécurité, qui bloque l’expéditeur et analyse le contenu pour éviter une attaque.
+
+### Risques associés
+- Propagation de la menace.
+- Perte de données.
+- Paralysie des activités.
+
+### Bonnes pratiques à adopter
+- Mettez en place un plan de réponse aux incidents.
+- Formez vos équipes à la détection et à la gestion des incidents.
+- Alertez rapidement les responsables en cas de suspicion.
+- Documentez chaque incident pour améliorer la prévention.
