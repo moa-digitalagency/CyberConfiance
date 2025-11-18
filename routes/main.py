@@ -122,8 +122,21 @@ def analyze_breach():
     result = HaveIBeenPwnedService.check_email_breach(email)
     
     if result.get('error'):
-        flash(f"Erreur: {result['error']}", 'error')
-        return redirect(url_for('main.index'))
+        recommendations = {
+            'level': 'error',
+            'title': 'Erreur de configuration',
+            'message': result['error'],
+            'recommendations': [
+                'La clé API Have I Been Pwned n\'est pas configurée.',
+                'Pour utiliser cette fonctionnalité, configurez HIBP_API_KEY dans les secrets.',
+                'En production, cette variable est obligatoire.',
+                'Obtenez une clé sur: https://haveibeenpwned.com/API/Key (~$3.50/mois)'
+            ]
+        }
+        return render_template('breach_analysis.html', 
+                             email=email,
+                             result={'breaches': [], 'count': 0, 'error': result['error']}, 
+                             recommendations=recommendations)
     
     recommendations = HaveIBeenPwnedService.get_breach_recommendations(result['count'])
     
