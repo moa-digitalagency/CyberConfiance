@@ -1,8 +1,9 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_user, logout_user, login_required
 from services import ContentService, HaveIBeenPwnedService
-from models import Contact, User
+from models import Contact, User, BreachAnalysis
 import __init__ as app_module
+import json
 db = app_module.db
 
 bp = Blueprint('main', __name__)
@@ -175,6 +176,23 @@ def analyze_breach():
         if result['count'] > 10:
             print(f"\n... et {result['count'] - 10} autre(s) fuite(s)")
         print(f"{'='*80}\n")
+    
+    try:
+        breach_names = [breach.get('Name', 'Inconnu') for breach in result.get('breaches', [])]
+        analysis = BreachAnalysis(
+            email=email,
+            breach_count=result.get('count', 0),
+            risk_level=recommendations.get('level', 'unknown'),
+            breaches_found=json.dumps(breach_names),
+            ip_address=request.remote_addr,
+            user_agent=request.headers.get('User-Agent', '')[:500]
+        )
+        db.session.add(analysis)
+        db.session.commit()
+        print(f"✅ Analyse enregistrée: {email} - {result.get('count', 0)} breach(es)")
+    except Exception as e:
+        print(f"⚠️ Erreur lors de l'enregistrement de l'analyse: {str(e)}")
+        db.session.rollback()
     
     return render_template('breach_analysis.html', 
                          email=email,
