@@ -102,17 +102,6 @@ def initialize_data():
         terms = [GlossaryTerm(term=item["term"], definition=item["definition"]) for item in glossary_data]
         db.session.add_all(terms)
     
-    if Tool.query.count() == 0:
-        tools_data = [
-            {"title": "Clé de sécurité", "content": "Un dispositif physique qui ajoute une couche d'authentification à deux facteurs."},
-            {"title": "Disque dur crypté", "content": "Un disque dur qui chiffre automatiquement toutes les données stockées."},
-            {"title": "Filtre de confidentialité", "content": "Un accessoire pour protéger l'écran des regards indiscrets."},
-            {"title": "VPN", "content": "Un service qui crypte la connexion Internet et protège les données."},
-        ]
-        
-        tools = [Tool(name=t["title"], description=t["content"]) for t in tools_data]
-        db.session.add_all(tools)
-    
     if Resource.query.count() == 0:
         resources_data = [
             {"title": "Guide de cybersécurité", "link": "/resources/guide.pdf", "description": "Guide complet pour la sécurité numérique."},
