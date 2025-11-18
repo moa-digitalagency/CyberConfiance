@@ -13,7 +13,7 @@
 <section class="section">
     <div class="container">
         <div class="glass-card-enhanced">
-            <h2 class="section-title">Un accompagnement sur mesure</h2>
+            <h2 class="section-title" style="text-align: center;">Un accompagnement sur mesure</h2>
             <p style="font-size: 0.95rem; line-height: 1.7; color: var(--text-secondary); text-align: center; max-width: 800px; margin: 0 auto;">
                 Que vous soyez une PME, une grande entreprise ou un particulier, nous vous aidons à sécuriser vos systèmes d'information et à protéger vos données contre les cybermenaces.
             </p>
@@ -23,7 +23,7 @@
 
 <section class="section">
     <div class="container">
-        <h2 class="section-title">Nos services de consultation</h2>
+        <h2 class="section-title" style="text-align: center;">Nos services de consultation</h2>
         
         <div class="pillars-grid">
             <div class="pillar-card scroll-animate">
@@ -59,34 +59,4 @@
     </div>
 </section>
 
-<section class="section">
-    <div class="container">
-        <div class="glass-card-enhanced">
-            <h2 class="section-title">Nos tarifs</h2>
-            
-            <div class="pillars-grid" style="grid-template-columns: repeat(3, 1fr); margin-top: 3rem;">
-                <div class="glass-card scroll-animate" style="text-align: center; padding: 2.5rem 2rem;">
-                    <h3 style="color: var(--accent-blue); font-size: 1.8rem; margin-bottom: 1rem;">Consultation unique</h3>
-                    <p style="font-size: 2.5rem; font-weight: bold; color: var(--text-primary); margin: 1rem 0;">$50</p>
-                    <p style="color: var(--text-secondary); margin-bottom: 2rem;">Session d'une heure pour analyser vos besoins</p>
-                    <a href="{{ url_for('main.contact') }}" class="btn btn-primary">Réserver</a>
-                </div>
-                
-                <div class="glass-card-enhanced scroll-animate" style="text-align: center; padding: 2.5rem 2rem; border: 2px solid var(--accent-blue);">
-                    <h3 style="color: var(--accent-blue); font-size: 1.8rem; margin-bottom: 1rem;">Audit complet</h3>
-                    <p style="font-size: 2.5rem; font-weight: bold; color: var(--text-primary); margin: 1rem 0;">$500</p>
-                    <p style="color: var(--text-secondary); margin-bottom: 2rem;">Analyse approfondie + rapport détaillé + plan d'action</p>
-                    <a href="{{ url_for('main.contact') }}" class="btn btn-primary">Demander un devis</a>
-                </div>
-                
-                <div class="glass-card scroll-animate" style="text-align: center; padding: 2.5rem 2rem;">
-                    <h3 style="color: var(--accent-blue); font-size: 1.8rem; margin-bottom: 1rem;">Accompagnement continu</h3>
-                    <p style="font-size: 2.5rem; font-weight: bold; color: var(--text-primary); margin: 1rem 0;">Sur devis</p>
-                    <p style="color: var(--text-secondary); margin-bottom: 2rem;">Support mensuel personnalisé selon vos besoins</p>
-                    <a href="{{ url_for('main.contact') }}" class="btn btn-primary">Nous contacter</a>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
 {% endblock %}

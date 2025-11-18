@@ -12,12 +12,67 @@
     </div>
 </section>
 
+<section class="filters-section">
+    <div class="container">
+        <div class="filters-container">
+            <div class="search-filter">
+                <input type="text" id="searchInput" placeholder="Rechercher un outil..." class="search-input">
+                <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="m21 21-4.35-4.35"/>
+                </svg>
+            </div>
+            
+            <div class="filter-group">
+                <label class="filter-label">Type d'outil</label>
+                <select id="typeFilter" class="filter-select">
+                    <option value="">Tous les types</option>
+                    <option value="Logiciel">Logiciel</option>
+                    <option value="Application">Application</option>
+                    <option value="Service">Service</option>
+                    <option value="Matériel">Matériel</option>
+                    <option value="Fonctionnalité">Fonctionnalité</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label class="filter-label">Règle d'or</label>
+                <select id="ruleFilter" class="filter-select">
+                    <option value="">Toutes les règles</option>
+                    {% for i in range(1, 21) %}
+                    <option value="{{ i }}">Règle {{ i }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label class="filter-label">Scénario</label>
+                <select id="scenarioFilter" class="filter-select">
+                    <option value="">Tous les scénarios</option>
+                    {% for i in range(1, 11) %}
+                    <option value="{{ i }}">Scénario {{ i }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <button id="resetFilters" class="btn-reset">Réinitialiser</button>
+        </div>
+        
+        <div id="resultsCount" class="results-count"></div>
+    </div>
+</section>
+
 <section class="tools-section-modern">
     <div class="container">
         {% if tools %}
-        <div class="tools-grid-modern">
+        <div class="tools-grid-modern" id="toolsGrid">
             {% for tool in tools %}
-            <article class="tool-card-modern">
+            <article class="tool-card-modern" 
+                     data-type="{{ tool.type or '' }}"
+                     data-rules="{{ tool.related_rules or '' }}"
+                     data-scenarios="{{ tool.related_scenarios or '' }}"
+                     data-name="{{ tool.name.lower() }}"
+                     data-description="{{ tool.description.lower() }}">
                 <div class="tool-header-modern">
                     <div class="tool-icon-wrapper">
                         <svg class="tool-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -92,11 +147,29 @@
             </article>
             {% endfor %}
         </div>
+        
+        <div id="noResults" class="empty-state" style="display: none;">
+            <p>Aucun outil ne correspond à vos critères de recherche.</p>
+        </div>
         {% else %}
         <div class="empty-state">
             <p>Aucun outil disponible pour le moment.</p>
         </div>
         {% endif %}
+    </div>
+</section>
+
+<section class="section cta-section">
+    <div class="container">
+        <div class="glass-card-enhanced" style="text-align: center; padding: 3rem 2rem;">
+            <h2 style="font-size: 2rem; margin-bottom: 1rem;">Besoin d'aide pour choisir les bons outils ?</h2>
+            <p style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 2rem; max-width: 700px; margin-left: auto; margin-right: auto;">
+                Nos experts en cybersécurité peuvent vous accompagner dans la sélection et la mise en place des outils adaptés à vos besoins spécifiques.
+            </p>
+            <a href="{{ url_for('main.contact') }}" class="btn btn-primary" style="font-size: 1.1rem; padding: 1rem 2.5rem;">
+                Demander une consultation
+            </a>
+        </div>
     </div>
 </section>
 
@@ -127,8 +200,112 @@
     line-height: 1.8;
 }
 
+.filters-section {
+    padding: 0 0 40px;
+}
+
+.filters-container {
+    background: rgba(15, 31, 53, 0.6);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 16px;
+    padding: 2rem;
+    backdrop-filter: blur(20px);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    align-items: flex-end;
+}
+
+.search-filter {
+    flex: 1;
+    min-width: 250px;
+    position: relative;
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.875rem 1rem 0.875rem 3rem;
+    background: rgba(10, 22, 40, 0.8);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 12px;
+    color: var(--text-primary);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    pointer-events: none;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-width: 180px;
+}
+
+.filter-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.filter-select {
+    padding: 0.875rem 1rem;
+    background: rgba(10, 22, 40, 0.8);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 12px;
+    color: var(--text-primary);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.btn-reset {
+    padding: 0.875rem 1.5rem;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 12px;
+    color: #f87171;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-reset:hover {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.5);
+}
+
+.results-count {
+    margin-top: 1.5rem;
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    text-align: center;
+}
+
 .tools-section-modern {
-    padding: 40px 0 120px;
+    padding: 40px 0 60px;
 }
 
 .tools-grid-modern {
@@ -361,6 +538,10 @@
     font-size: 1.125rem;
 }
 
+.cta-section {
+    padding: 40px 0 120px;
+}
+
 @media (max-width: 768px) {
     .page-title-modern {
         font-size: 2rem;
@@ -368,6 +549,16 @@
     
     .page-subtitle-modern {
         font-size: 1rem;
+    }
+    
+    .filters-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .search-filter,
+    .filter-group {
+        min-width: 100%;
     }
     
     .tools-grid-modern {
@@ -384,4 +575,86 @@
     }
 }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    const typeFilter = document.getElementById('typeFilter');
+    const ruleFilter = document.getElementById('ruleFilter');
+    const scenarioFilter = document.getElementById('scenarioFilter');
+    const resetButton = document.getElementById('resetFilters');
+    const toolCards = document.querySelectorAll('.tool-card-modern');
+    const resultsCount = document.getElementById('resultsCount');
+    const noResults = document.getElementById('noResults');
+    const toolsGrid = document.getElementById('toolsGrid');
+    
+    function filterTools() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const selectedType = typeFilter.value;
+        const selectedRule = ruleFilter.value;
+        const selectedScenario = scenarioFilter.value;
+        
+        let visibleCount = 0;
+        
+        toolCards.forEach(card => {
+            const name = card.dataset.name || '';
+            const description = card.dataset.description || '';
+            const type = card.dataset.type || '';
+            const rules = card.dataset.rules || '';
+            const scenarios = card.dataset.scenarios || '';
+            
+            let show = true;
+            
+            if (searchTerm && !name.includes(searchTerm) && !description.includes(searchTerm)) {
+                show = false;
+            }
+            
+            if (selectedType && type !== selectedType) {
+                show = false;
+            }
+            
+            if (selectedRule && !rules.includes(selectedRule)) {
+                show = false;
+            }
+            
+            if (selectedScenario && !scenarios.includes(selectedScenario)) {
+                show = false;
+            }
+            
+            if (show) {
+                card.style.display = 'block';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        
+        if (visibleCount === 0) {
+            toolsGrid.style.display = 'none';
+            noResults.style.display = 'block';
+            resultsCount.textContent = '';
+        } else {
+            toolsGrid.style.display = 'grid';
+            noResults.style.display = 'none';
+            resultsCount.textContent = `${visibleCount} outil${visibleCount > 1 ? 's' : ''} trouvé${visibleCount > 1 ? 's' : ''}`;
+        }
+    }
+    
+    function resetFilters() {
+        searchInput.value = '';
+        typeFilter.value = '';
+        ruleFilter.value = '';
+        scenarioFilter.value = '';
+        filterTools();
+    }
+    
+    searchInput.addEventListener('input', filterTools);
+    typeFilter.addEventListener('change', filterTools);
+    ruleFilter.addEventListener('change', filterTools);
+    scenarioFilter.addEventListener('change', filterTools);
+    resetButton.addEventListener('click', resetFilters);
+    
+    filterTools();
+});
+</script>
 {% endblock %}

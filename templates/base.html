@@ -16,6 +16,11 @@
                 <div class="logo">
                     <a href="{{ url_for('main.index') }}">CyberConfiance</a>
                 </div>
+                <button class="mobile-menu-toggle" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
                 <ul class="nav-menu">
                     <li><a href="{{ url_for('main.index') }}">Accueil</a></li>
                     <li><a href="{{ url_for('main.about') }}">À propos</a></li>
@@ -63,11 +68,6 @@
         <div class="container">
             <div class="footer-content">
                 <p class="footer-text">© 2024 CyberConfiance. Tous droits réservés.</p>
-                <ul class="footer-links">
-                    <li><a href="{{ url_for('main.about') }}">À propos</a></li>
-                    <li><a href="{{ url_for('main.contact') }}">Contact</a></li>
-                    <li><a href="{{ url_for('main.news') }}">Actualités</a></li>
-                </ul>
             </div>
         </div>
     </footer>
