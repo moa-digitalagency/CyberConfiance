@@ -447,6 +447,32 @@ header {
     max-width: 700px;
 }
 
+.page-header-modern {
+    padding: 140px 0 80px;
+    text-align: center;
+}
+
+.header-content-centered {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.page-title-modern {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #fff 0%, #60a5fa 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.page-subtitle-modern {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    line-height: 1.8;
+}
+
 .vision-section {
     position: relative;
     overflow: hidden;
