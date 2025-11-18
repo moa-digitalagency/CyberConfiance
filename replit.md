@@ -77,6 +77,29 @@ The platform features a minimalist design inspired by ChatflowAI, utilizing a pu
 - Idempotent seeding via `seed_attack_types()` function in `utils/seed_data.py`
 - Responsive grid layout (auto-fill minmax 300px) matching platform aesthetic
 
+**New Feature - Quiz de Sécurité Numérique (Nov 18, 2025):**
+- Interactive security assessment quiz with 15 questions based on the 20 golden security rules
+- Questions cover common tools and habits (Gmail, WhatsApp, VPN, public WiFi, password managers, etc.)
+- Three-axis scoring system evaluating users across:
+  - **Vigilance** (🛡️): Awareness and threat detection capabilities
+  - **Sécurité** (🔒): Technical security practices and tools usage
+  - **Hygiène Numérique** (✨): Digital hygiene and privacy habits
+- Personalized recommendations engine that:
+  - Calculates overall security score (0-100%)
+  - Identifies weak areas based on user responses
+  - Suggests priority security rules to implement
+  - Recommends relevant security tools from the catalog
+- Integration with Have I Been Pwned API for email breach analysis post-quiz
+- Two-step interface:
+  1. **Quiz interface** (`templates/outils/quiz.html`): Multi-question form with progress tracking and navigation
+  2. **Results page** (`templates/outils/quiz_results.html`): Detailed score breakdown, recommendations, and optional email breach check
+- Client-side JavaScript (`static/js/quiz.js`) for smooth question navigation and form validation
+- Server-side score calculation via `QuizService` class in `services/quiz_service.py`
+- JSON-based question storage (`data/quiz_questions.json`) for easy content updates
+- Session-based data persistence (primitives only, no ORM objects) for multi-step flow
+- Comprehensive CSS styling matching platform's glassmorphism aesthetic
+- Accessible via `/quiz` route with link in "Outils" navigation menu
+
 ## External Dependencies
 
 ### Core Framework
