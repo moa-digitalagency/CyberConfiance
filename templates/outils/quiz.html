@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Quiz de Sécurité Numérique - CyberConfiance{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1>🎯 Quiz de Sécurité Numérique</h1>
+        <p class="subtitle">Évaluez votre niveau de sécurité et obtenez des recommandations personnalisées</p>
+    </div>
+</section>
+
+<section class="quiz-container">
+    <div class="container">
+        <div class="quiz-intro">
+            <div class="quiz-card">
+                <h2>À propos de ce quiz</h2>
+                <p>Ce quiz vous aidera à évaluer votre niveau de cybersécurité actuel selon trois axes principaux :</p>
+                <div class="quiz-metrics">
+                    <div class="metric">
+                        <span class="metric-icon">👁️</span>
+                        <h3>Vigilance</h3>
+                        <p>Votre capacité à identifier et éviter les menaces</p>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-icon">🔒</span>
+                        <h3>Sécurité</h3>
+                        <p>Les protections techniques que vous avez mises en place</p>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-icon">✨</span>
+                        <h3>Hygiène</h3>
+                        <p>Vos bonnes pratiques au quotidien</p>
+                    </div>
+                </div>
+                <p><strong>Durée estimée :</strong> 5-7 minutes</p>
+                <p><strong>Questions :</strong> {{ quiz_data.questions|length }} questions précises</p>
+            </div>
+        </div>
+
+        <form method="POST" action="{{ url_for('main.quiz') }}" id="quizForm" class="quiz-form">
+            <input type="hidden" name="action" value="submit_quiz">
+            
+            <div class="quiz-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressBar"></div>
+                </div>
+                <span class="progress-text">Question <span id="currentQuestion">1</span> sur {{ quiz_data.questions|length }}</span>
+            </div>
+
+            {% for question in quiz_data.questions %}
+            <div class="question-card" data-question="{{ loop.index }}" {% if loop.index > 1 %}style="display: none;"{% endif %}>
+                <div class="question-number">Question {{ loop.index }} / {{ quiz_data.questions|length }}</div>
+                <h3 class="question-title">{{ question.question }}</h3>
+                <p class="question-description">{{ question.description }}</p>
+                
+                <div class="options-container">
+                    {% for option in question.options %}
+                    <label class="option-label">
+                        <input type="radio" name="question_{{ question.id }}" value="{{ option.value }}" required>
+                        <span class="option-text">{{ option.text }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+
+                <div class="question-nav">
+                    {% if loop.index > 1 %}
+                    <button type="button" class="btn-secondary" onclick="previousQuestion()">← Précédent</button>
+                    {% endif %}
+                    {% if loop.index < quiz_data.questions|length %}
+                    <button type="button" class="btn-primary" onclick="nextQuestion()">Suivant →</button>
+                    {% else %}
+                    <button type="submit" class="btn-success">✓ Voir mes résultats</button>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </form>
+    </div>
+</section>
+
+<script src="{{ url_for('static', filename='js/quiz.js') }}"></script>
+{% endblock %}
