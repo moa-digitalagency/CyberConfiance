@@ -134,76 +134,106 @@ def attack_types():
 @bp.route('/quiz', methods=['GET', 'POST'])
 def quiz():
     if request.method == 'POST':
-        action = request.form.get('action')
+        answers = {}
+        quiz_data = QuizService.load_quiz_data()
         
-        if action == 'submit_quiz':
-            answers = {}
-            quiz_data = QuizService.load_quiz_data()
-            
-            for question in quiz_data['questions']:
-                question_id = str(question['id'])
-                answer = request.form.get(f'question_{question_id}')
-                if answer:
-                    answers[question_id] = answer
-            
-            scores = QuizService.calculate_scores(answers)
-            recommendations = QuizService.get_recommendations(scores['overall_score'], answers)
-            
-            session['quiz_data'] = {
-                'scores': scores,
-                'answers': answers,
-                'overall_score': scores['overall_score']
-            }
-            
-            return render_template('outils/quiz_results.html',
-                                 scores=scores,
-                                 recommendations=recommendations)
+        for question in quiz_data['questions']:
+            question_id = str(question['id'])
+            answer = request.form.get(f'question_{question_id}')
+            if answer:
+                answers[question_id] = answer
         
-        elif action == 'analyze_email':
-            email = request.form.get('email')
-            
-            if not email:
-                flash('Veuillez fournir une adresse email.', 'error')
-                return redirect(url_for('main.quiz'))
-            
-            quiz_data = session.get('quiz_data', {})
-            scores = quiz_data.get('scores', {})
-            overall_score = quiz_data.get('overall_score', 50)
-            answers = quiz_data.get('answers', {})
-            
-            recommendations = QuizService.get_recommendations(overall_score, answers)
-            
-            hibp_result = HaveIBeenPwnedService.check_email_breach(email)
-            
-            if not hibp_result.get('error'):
-                try:
-                    breach_names = [breach.get('Name', 'Inconnu') for breach in hibp_result.get('breaches', [])]
-                    risk_level = recommendations.get('level', {}).get('key', 'unknown') if isinstance(recommendations.get('level'), dict) else 'unknown'
-                    analysis = BreachAnalysis(
-                        email=email,
-                        breach_count=hibp_result.get('count', 0),
-                        risk_level=risk_level,
-                        breaches_found=json.dumps(breach_names),
-                        ip_address=request.remote_addr,
-                        user_agent=request.headers.get('User-Agent', '')[:500]
-                    )
-                    db.session.add(analysis)
-                    db.session.commit()
-                except Exception as e:
-                    print(f"⚠️ Erreur lors de l'enregistrement de l'analyse: {str(e)}")
-                    db.session.rollback()
-            
-            hibp_recommendations = HaveIBeenPwnedService.get_breach_recommendations(hibp_result.get('count', 0))
-            
-            return render_template('outils/quiz_results.html',
-                                 scores=scores,
-                                 recommendations=recommendations,
-                                 email=email,
-                                 hibp_result=hibp_result,
-                                 hibp_recommendations=hibp_recommendations)
+        scores = QuizService.calculate_scores(answers)
+        
+        session['quiz_data'] = {
+            'scores': scores,
+            'answers': answers,
+            'overall_score': scores['overall_score']
+        }
+        
+        return render_template('outils/quiz_email.html')
     
     quiz_data = QuizService.load_quiz_data()
     return render_template('outils/quiz.html', quiz_data=quiz_data)
+
+@bp.route('/quiz/submit-email', methods=['POST'])
+def quiz_submit_email():
+    email = request.form.get('email')
+    
+    if not email:
+        flash('Veuillez fournir une adresse email.', 'error')
+        return redirect(url_for('main.quiz'))
+    
+    quiz_data = session.get('quiz_data', {})
+    if not quiz_data:
+        flash('Session expirée. Veuillez reprendre le quiz.', 'error')
+        return redirect(url_for('main.quiz'))
+    
+    scores = quiz_data.get('scores', {})
+    overall_score = quiz_data.get('overall_score', 50)
+    answers = quiz_data.get('answers', {})
+    
+    hibp_result = HaveIBeenPwnedService.check_email_breach(email)
+    
+    hibp_summary = {
+        'breach_count': hibp_result.get('count', 0),
+        'breaches': [],
+        'error': hibp_result.get('error')
+    }
+    
+    if not hibp_result.get('error') and hibp_result.get('breaches'):
+        for breach in hibp_result.get('breaches', [])[:10]:
+            hibp_summary['breaches'].append({
+                'name': breach.get('Name', 'Inconnu'),
+                'date': breach.get('BreachDate', ''),
+                'data_classes': breach.get('DataClasses', []),
+                'pwn_count': breach.get('PwnCount', 0)
+            })
+    
+    try:
+        from models import QuizResult
+        quiz_result = QuizResult(
+            email=email,
+            overall_score=overall_score,
+            category_scores=scores,
+            answers=answers,
+            hibp_summary=hibp_summary,
+            ip_address=request.remote_addr,
+            user_agent=request.headers.get('User-Agent', '')[:500]
+        )
+        db.session.add(quiz_result)
+        db.session.commit()
+        
+        session.pop('quiz_data', None)
+        
+        return redirect(url_for('main.quiz_result_detail', result_id=quiz_result.id))
+    except Exception as e:
+        print(f"Erreur lors de l'enregistrement du résultat: {str(e)}")
+        db.session.rollback()
+        flash('Une erreur est survenue lors de l\'enregistrement de vos résultats.', 'error')
+        return redirect(url_for('main.quiz'))
+
+@bp.route('/quiz/results/<int:result_id>')
+def quiz_result_detail(result_id):
+    from models import QuizResult
+    quiz_result = QuizResult.query.get_or_404(result_id)
+    
+    recommendations = QuizService.get_recommendations(
+        quiz_result.overall_score,
+        quiz_result.answers
+    )
+    
+    hibp_recommendations = HaveIBeenPwnedService.get_breach_recommendations(
+        quiz_result.hibp_summary.get('breach_count', 0) if quiz_result.hibp_summary else 0
+    )
+    
+    return render_template('outils/quiz_results.html',
+                         quiz_result=quiz_result,
+                         scores=quiz_result.category_scores,
+                         recommendations=recommendations,
+                         email=quiz_result.email,
+                         hibp_result=quiz_result.hibp_summary,
+                         hibp_recommendations=hibp_recommendations)
 
 @bp.route('/analyze-breach', methods=['POST'])
 def analyze_breach():

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Entrez votre email - CyberConfiance{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header" style="text-align: center; margin-bottom: 3rem;">
+        <h1 style="font-size: 2.5rem; margin-bottom: 1rem;">Quiz terminé</h1>
+        <p style="font-size: 1.1rem; color: var(--text-secondary);">Entrez votre email pour voir vos résultats personnalisés</p>
+    </div>
+
+    <div class="email-form-card" style="max-width: 600px; margin: 0 auto;">
+        <div style="background: rgba(15, 31, 53, 0.6); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 12px; padding: 3rem; backdrop-filter: blur(10px);">
+            <h2 style="text-align: center; color: var(--text-primary); margin-bottom: 1.5rem; font-size: 1.8rem;">
+                Recevez vos résultats détaillés
+            </h2>
+            
+            <p style="color: var(--text-secondary); text-align: center; margin-bottom: 2rem; line-height: 1.6;">
+                Nous allons analyser votre adresse email avec Have I Been Pwned pour vérifier si elle apparaît dans des fuites de données connues, et vous fournir des recommandations personnalisées.
+            </p>
+
+            <form method="POST" action="{{ url_for('main.quiz_submit_email') }}">
+                <div class="form-group">
+                    <label for="email" style="display: block; color: var(--text-primary); margin-bottom: 0.5rem; font-weight: 500;">
+                        Votre adresse email
+                    </label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        required 
+                        placeholder="exemple@email.com"
+                        style="width: 100%; padding: 0.875rem; background: rgba(59, 130, 246, 0.05); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 8px; color: var(--text-primary); font-size: 1rem;"
+                    >
+                </div>
+
+                <button type="submit" class="btn-primary" style="width: 100%; margin-top: 1rem;">
+                    Voir mes résultats
+                </button>
+
+                <p style="color: var(--text-muted); font-size: 0.85rem; text-align: center; margin-top: 1.5rem; line-height: 1.5;">
+                    Vos données sont utilisées uniquement pour générer vos résultats et ne seront pas partagées avec des tiers.
+                </p>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

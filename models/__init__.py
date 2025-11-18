@@ -177,3 +177,19 @@ class AttackType(db.Model):
     
     def __repr__(self):
         return f'<AttackType {self.name_fr}>'
+
+class QuizResult(db.Model):
+    __tablename__ = 'quiz_results'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(200), nullable=False)
+    overall_score = db.Column(db.Integer, nullable=False)
+    category_scores = db.Column(db.JSON, nullable=False)
+    answers = db.Column(db.JSON, nullable=False)
+    hibp_summary = db.Column(db.JSON)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    ip_address = db.Column(db.String(50))
+    user_agent = db.Column(db.String(500))
+    
+    def __repr__(self):
+        return f'<QuizResult {self.email} - Score: {self.overall_score}%>'

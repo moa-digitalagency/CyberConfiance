@@ -5,7 +5,8 @@
 {% block content %}
 <section class="page-header">
     <div class="container">
-        <h1>📊 Vos Résultats de Sécurité Numérique</h1>
+        <h1>Vos Résultats de Sécurité Numérique</h1>
+        <p class="subtitle">Analyse complète de votre niveau de cybersécurité</p>
     </div>
 </section>
 
@@ -24,38 +25,99 @@
             <div class="scores-grid">
                 <div class="score-item">
                     <div class="score-header">
-                        <span class="score-icon">👁️</span>
                         <h3>Vigilance</h3>
                     </div>
                     <div class="score-bar">
-                        <div class="score-fill" style="width: {{ scores.percentages.vigilance }}%; background: linear-gradient(90deg, #3b82f6, #60a5fa)"></div>
-                        <span class="score-percentage">{{ scores.percentages.vigilance }}%</span>
+                        <div class="score-fill" style="width: {{ scores.percentages.vigilance }}%; background: linear-gradient(90deg, #3b82f6, #60a5fa)">
+                            <span class="score-percentage">{{ scores.percentages.vigilance }}%</span>
+                        </div>
                     </div>
                 </div>
 
                 <div class="score-item">
                     <div class="score-header">
-                        <span class="score-icon">🔒</span>
                         <h3>Sécurité</h3>
                     </div>
                     <div class="score-bar">
-                        <div class="score-fill" style="width: {{ scores.percentages.security }}%; background: linear-gradient(90deg, #10b981, #34d399)"></div>
-                        <span class="score-percentage">{{ scores.percentages.security }}%</span>
+                        <div class="score-fill" style="width: {{ scores.percentages.security }}%; background: linear-gradient(90deg, #10b981, #34d399)">
+                            <span class="score-percentage">{{ scores.percentages.security }}%</span>
+                        </div>
                     </div>
                 </div>
 
                 <div class="score-item">
                     <div class="score-header">
-                        <span class="score-icon">✨</span>
                         <h3>Hygiène Numérique</h3>
                     </div>
                     <div class="score-bar">
-                        <div class="score-fill" style="width: {{ scores.percentages.hygiene }}%; background: linear-gradient(90deg, #8b5cf6, #a78bfa)"></div>
-                        <span class="score-percentage">{{ scores.percentages.hygiene }}%</span>
+                        <div class="score-fill" style="width: {{ scores.percentages.hygiene }}%; background: linear-gradient(90deg, #8b5cf6, #a78bfa)">
+                            <span class="score-percentage">{{ scores.percentages.hygiene }}%</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        {% if hibp_result %}
+        <div class="breach-results-card">
+            <h2>Analyse de Sécurité Email: {{ email }}</h2>
+            
+            {% if hibp_result.error %}
+            <div class="alert alert-error">
+                <h3>Service temporairement indisponible</h3>
+                <p>{{ hibp_result.error }}</p>
+            </div>
+            {% elif hibp_result.breach_count == 0 %}
+            <div class="alert alert-success">
+                <h3>Aucune fuite détectée</h3>
+                <p>Votre adresse email n'apparaît dans aucune base de données de fuites connues. C'est excellent pour votre sécurité!</p>
+            </div>
+            {% else %}
+            <div class="alert alert-{{ 'danger' if hibp_result.breach_count > 5 else 'warning' }}">
+                <h3>{{ hibp_result.breach_count }} fuite{% if hibp_result.breach_count > 1 %}s{% endif %} de données détectée{% if hibp_result.breach_count > 1 %}s{% endif %}</h3>
+                <p>Votre adresse email apparaît dans {{ hibp_result.breach_count }} base{% if hibp_result.breach_count > 1 %}s{% endif %} de données compromises.</p>
+            </div>
+
+            {% if hibp_result.breaches %}
+            <div class="breaches-list">
+                <h3>Détails des fuites de données</h3>
+                <div class="breaches-grid">
+                    {% for breach in hibp_result.breaches %}
+                    <div class="breach-item">
+                        <div class="breach-header">
+                            <h4>{{ breach.name }}</h4>
+                            <span class="breach-date">{{ breach.date }}</span>
+                        </div>
+                        {% if breach.pwn_count %}
+                        <p><strong>{{ "{:,}".format(breach.pwn_count) }}</strong> comptes compromis</p>
+                        {% endif %}
+                        {% if breach.data_classes %}
+                        <div class="data-classes">
+                            <strong>Données compromises:</strong>
+                            {% for data_class in breach.data_classes %}
+                            <span class="data-class-tag">{{ data_class }}</span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if hibp_recommendations %}
+            <div class="hibp-recommendations">
+                <h3>Recommandations de sécurité</h3>
+                <ul>
+                    {% for recommendation in hibp_recommendations.recommendations %}
+                    <li>{{ recommendation }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+            {% endif %}
+        </div>
+        {% endif %}
 
         <div class="recommendations-card">
             <div class="recommendation-header" style="border-left: 4px solid {{ recommendations.level.color }}">
@@ -65,7 +127,7 @@
 
             {% if recommendations.priority_rules %}
             <div class="priority-rules">
-                <h3>📚 Règles d'Or Recommandées</h3>
+                <h3>Règles d'Or Recommandées</h3>
                 <div class="rules-grid">
                     {% for rule in recommendations.priority_rules %}
                     <a href="{{ url_for('main.rule_detail', rule_id=rule.id) }}" class="rule-card">
@@ -81,7 +143,7 @@
 
             {% if recommendations.weak_areas %}
             <div class="weak-areas">
-                <h3>⚠️ Points d'Attention</h3>
+                <h3>Points d'Attention</h3>
                 <ul class="weak-areas-list">
                     {% for area in recommendations.weak_areas[:5] %}
                     <li>
@@ -95,7 +157,7 @@
 
             {% if recommendations.suggested_tools %}
             <div class="suggested-tools">
-                <h3>🛠️ Outils Recommandés</h3>
+                <h3>Outils Recommandés</h3>
                 <div class="tools-grid">
                     {% for tool in recommendations.suggested_tools %}
                     <div class="tool-card">
@@ -110,75 +172,6 @@
             </div>
             {% endif %}
         </div>
-
-        {% if not email %}
-        <div class="email-analysis-card">
-            <h2>📧 Analyse de Votre Email</h2>
-            <p>Vérifiez si votre adresse email a été compromise dans des fuites de données connues.</p>
-            
-            <form method="POST" action="{{ url_for('main.quiz') }}" class="email-form">
-                <input type="hidden" name="action" value="analyze_email">
-                <div class="form-group">
-                    <label for="email">Votre adresse email</label>
-                    <input type="email" id="email" name="email" required placeholder="exemple@email.com">
-                </div>
-                <button type="submit" class="btn-primary">Analyser mon email</button>
-                <p class="privacy-note">🔒 Votre email est analysé de manière confidentielle et n'est pas partagé.</p>
-            </form>
-        </div>
-        {% else %}
-        <div class="breach-results-card">
-            <h2>📧 Analyse de {{ email }}</h2>
-            
-            {% if hibp_result.error %}
-            <div class="alert alert-error">
-                <p>{{ hibp_result.error }}</p>
-            </div>
-            {% elif hibp_result.count == 0 %}
-            <div class="alert alert-success">
-                <h3>✅ Aucune fuite détectée</h3>
-                <p>Votre adresse email n'apparaît dans aucune base de données de fuites connues.</p>
-            </div>
-            {% else %}
-            <div class="alert alert-{{ hibp_recommendations.level }}">
-                <h3>{{ hibp_recommendations.title }}</h3>
-                <p>{{ hibp_recommendations.message }}</p>
-            </div>
-
-            <div class="breaches-list">
-                <h3>Fuites détectées ({{ hibp_result.count }})</h3>
-                <div class="breaches-grid">
-                    {% for breach in hibp_result.breaches[:10] %}
-                    <div class="breach-item">
-                        <div class="breach-header">
-                            <h4>{{ breach.Name }}</h4>
-                            <span class="breach-date">{{ breach.BreachDate }}</span>
-                        </div>
-                        <p>{{ breach.Description | safe }}</p>
-                        {% if breach.DataClasses %}
-                        <div class="data-classes">
-                            <strong>Données compromises :</strong>
-                            {% for data_class in breach.DataClasses %}
-                            <span class="data-class-tag">{{ data_class }}</span>
-                            {% endfor %}
-                        </div>
-                        {% endif %}
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-
-            <div class="hibp-recommendations">
-                <h3>Recommandations</h3>
-                <ul>
-                    {% for recommendation in hibp_recommendations.recommendations %}
-                    <li>{{ recommendation }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-            {% endif %}
-        </div>
-        {% endif %}
 
         <div class="actions-card">
             <a href="{{ url_for('main.quiz') }}" class="btn-secondary">Refaire le quiz</a>

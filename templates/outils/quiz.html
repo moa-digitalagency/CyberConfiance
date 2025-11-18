@@ -5,7 +5,7 @@
 {% block content %}
 <section class="page-header">
     <div class="container">
-        <h1>🎯 Quiz de Sécurité Numérique</h1>
+        <h1>Quiz de Sécurité Numérique</h1>
         <p class="subtitle">Évaluez votre niveau de sécurité et obtenez des recommandations personnalisées</p>
     </div>
 </section>
@@ -18,17 +18,14 @@
                 <p>Ce quiz vous aidera à évaluer votre niveau de cybersécurité actuel selon trois axes principaux :</p>
                 <div class="quiz-metrics">
                     <div class="metric">
-                        <span class="metric-icon">👁️</span>
                         <h3>Vigilance</h3>
                         <p>Votre capacité à identifier et éviter les menaces</p>
                     </div>
                     <div class="metric">
-                        <span class="metric-icon">🔒</span>
                         <h3>Sécurité</h3>
                         <p>Les protections techniques que vous avez mises en place</p>
                     </div>
                     <div class="metric">
-                        <span class="metric-icon">✨</span>
                         <h3>Hygiène</h3>
                         <p>Vos bonnes pratiques au quotidien</p>
                     </div>
@@ -39,7 +36,6 @@
         </div>
 
         <form method="POST" action="{{ url_for('main.quiz') }}" id="quizForm" class="quiz-form">
-            <input type="hidden" name="action" value="submit_quiz">
             
             <div class="quiz-progress">
                 <div class="progress-bar">
@@ -70,7 +66,7 @@
                     {% if loop.index < quiz_data.questions|length %}
                     <button type="button" class="btn-primary" onclick="nextQuestion()">Suivant →</button>
                     {% else %}
-                    <button type="submit" class="btn-success">✓ Voir mes résultats</button>
+                    <button type="submit" class="btn-success">Voir mes résultats</button>
                     {% endif %}
                 </div>
             </div>
