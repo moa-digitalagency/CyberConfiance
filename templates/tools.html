@@ -12,6 +12,20 @@
     </div>
 </section>
 
+<section class="section cta-section" style="padding: 40px 0 20px;">
+    <div class="container">
+        <div class="glass-card-enhanced" style="text-align: center; padding: 2rem;">
+            <h2 style="font-size: 1.5rem; margin-bottom: 0.75rem;">Besoin d'aide pour choisir les bons outils ?</h2>
+            <p style="font-size: 1rem; color: var(--text-secondary); margin-bottom: 1.5rem; max-width: 700px; margin-left: auto; margin-right: auto;">
+                Nos consultants en cybersécurité peuvent vous accompagner dans la sélection des meilleurs outils selon votre niveau de confidentialité voulu. Nous vous aidons également à apprendre à les utiliser et à faire une transition fluide pour ne pas revenir aux mauvaises habitudes.
+            </p>
+            <a href="{{ url_for('main.contact') }}" class="btn btn-primary" style="padding: 0.75rem 2rem; text-align: center;">
+                Demander une consultation
+            </a>
+        </div>
+    </div>
+</section>
+
 <section class="filters-section">
     <div class="container">
         <div class="filters-container">
@@ -49,19 +63,9 @@
                 <label class="filter-label">Scénario</label>
                 <select id="scenarioFilter" class="filter-select">
                     <option value="">Tous les scénarios</option>
-                    {% for i in range(1, 11) %}
+                    {% for i in range(1, 12) %}
                     <option value="{{ i }}">Scénario {{ i }}</option>
                     {% endfor %}
-                </select>
-            </div>
-
-            <div class="filter-group">
-                <label class="filter-label">Tag</label>
-                <select id="tagFilter" class="filter-select">
-                    <option value="">Tous les tags</option>
-                    <option value="essentiel">Essentiel</option>
-                    <option value="recommandé">Recommandé</option>
-                    <option value="avancé">Avancé</option>
                 </select>
             </div>
             
@@ -170,19 +174,6 @@
     </div>
 </section>
 
-<section class="section cta-section">
-    <div class="container">
-        <div class="glass-card-enhanced" style="text-align: center; padding: 3rem 2rem;">
-            <h2 style="font-size: 2rem; margin-bottom: 1rem;">Besoin d'aide pour choisir les bons outils ?</h2>
-            <p style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 2rem; max-width: 800px; margin-left: auto; margin-right: auto;">
-                Nos experts en cybersécurité peuvent vous accompagner dans la sélection des meilleurs outils selon votre niveau de confidentialité voulu. Nous vous aidons également à apprendre à les utiliser et à faire une transition fluide pour ne pas revenir aux mauvaises habitudes.
-            </p>
-            <a href="{{ url_for('main.contact') }}" class="btn btn-primary" style="font-size: 1.1rem; padding: 1rem 2.5rem; text-align: center;">
-                Demander une consultation
-            </a>
-        </div>
-    </div>
-</section>
 
 <style>
 .page-header-modern {
@@ -593,7 +584,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const typeFilter = document.getElementById('typeFilter');
     const ruleFilter = document.getElementById('ruleFilter');
     const scenarioFilter = document.getElementById('scenarioFilter');
-    const tagFilter = document.getElementById('tagFilter');
     const resetButton = document.getElementById('resetFilters');
     const toolCards = document.querySelectorAll('.tool-card-modern');
     const resultsCount = document.getElementById('resultsCount');
@@ -605,7 +595,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const selectedType = typeFilter.value;
         const selectedRule = ruleFilter.value;
         const selectedScenario = scenarioFilter.value;
-        const selectedTag = tagFilter.value;
         
         let visibleCount = 0;
         
@@ -615,7 +604,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const type = card.dataset.type || '';
             const rules = card.dataset.rules || '';
             const scenarios = card.dataset.scenarios || '';
-            const tags = card.dataset.tags || '';
             
             let show = true;
             
@@ -627,16 +615,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 show = false;
             }
             
-            if (selectedRule && !rules.includes(selectedRule)) {
-                show = false;
+            if (selectedRule) {
+                const ruleIds = rules.split(',').map(r => r.trim());
+                if (!ruleIds.includes(selectedRule)) {
+                    show = false;
+                }
             }
             
-            if (selectedScenario && !scenarios.includes(selectedScenario)) {
-                show = false;
-            }
-
-            if (selectedTag && !tags.toLowerCase().includes(selectedTag)) {
-                show = false;
+            if (selectedScenario) {
+                const scenarioIds = scenarios.split(',').map(s => s.trim());
+                if (!scenarioIds.includes(selectedScenario)) {
+                    show = false;
+                }
             }
             
             if (show) {
@@ -663,7 +653,6 @@ document.addEventListener('DOMContentLoaded', function() {
         typeFilter.value = '';
         ruleFilter.value = '';
         scenarioFilter.value = '';
-        tagFilter.value = '';
         filterTools();
     }
     
@@ -671,7 +660,6 @@ document.addEventListener('DOMContentLoaded', function() {
     typeFilter.addEventListener('change', filterTools);
     ruleFilter.addEventListener('change', filterTools);
     scenarioFilter.addEventListener('change', filterTools);
-    tagFilter.addEventListener('change', filterTools);
     resetButton.addEventListener('click', resetFilters);
     
     filterTools();
