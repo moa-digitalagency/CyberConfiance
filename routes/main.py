@@ -146,6 +146,11 @@ def analyze_breach():
     recommendations = HaveIBeenPwnedService.get_breach_recommendations(result['count'])
     data_scenarios = HaveIBeenPwnedService.get_data_breach_scenarios()
     
+    # DEBUG: Voir ce qui est envoyé au template
+    print(f"DEBUG - result.get('breaches'): {bool(result.get('breaches'))}")
+    print(f"DEBUG - result['count']: {result.get('count', 0)}")
+    print(f"DEBUG - Nombre de breaches: {len(result.get('breaches', []))}")
+    
     # Log détaillé pour l'admin (console serveur uniquement)
     if result.get('breaches'):
         print(f"\n{'='*80}")
