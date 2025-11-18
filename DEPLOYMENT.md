@@ -15,6 +15,21 @@ Avant de déployer l'application en production, vous **devez** configurer les se
      3. Nom: `ADMIN_PASSWORD`
      4. Valeur: Votre mot de passe sécurisé (minimum 12 caractères recommandés)
 
+2. **HIBP_API_KEY** (OBLIGATOIRE)
+   - Description: Clé API Have I Been Pwned pour la fonctionnalité "Vérifiez si votre email a été compromis"
+   - Importance: Essentielle - cette fonctionnalité est utilisée sur la page d'accueil
+   - Coût: ~$3.50/mois
+   - Comment obtenir:
+     1. Allez sur https://haveibeenpwned.com/API/Key
+     2. Entrez votre email et vérifiez-le
+     3. Achetez une clé API (commence à $3.50/mois)
+     4. Copiez la clé reçue par email
+   - Comment configurer dans Replit:
+     1. Allez dans l'onglet "Deployments"
+     2. Cliquez sur "Add deployment secret"
+     3. Nom: `HIBP_API_KEY`
+     4. Valeur: Votre clé API reçue par email
+
 ### Variables recommandées
 
 2. **DATABASE_URL**
@@ -29,13 +44,7 @@ Avant de déployer l'application en production, vous **devez** configurer les se
 
 ### Variables optionnelles (fonctionnalités avancées)
 
-4. **HIBP_API_KEY**
-   - Description: Clé API Have I Been Pwned pour vérifier si des emails ont été compromis
-   - Coût: ~$3.50/mois
-   - Comment obtenir: https://haveibeenpwned.com/API/Key
-   - Note: La vérification de mots de passe est GRATUITE et ne nécessite pas de clé API
-
-5. **SECRET_KEY**
+4. **SECRET_KEY**
    - Description: Clé secrète Flask pour signer les sessions
    - Par défaut: Générée automatiquement si absente
    - Recommandation: Définir une clé fixe en production pour persistance des sessions

@@ -10,6 +10,7 @@ import sys
 # Liste des variables d'environnement requises pour le déploiement
 REQUIRED_ENV_VARS = {
     'ADMIN_PASSWORD': 'Mot de passe administrateur (requis en production)',
+    'HIBP_API_KEY': 'Clé API Have I Been Pwned pour vérifier les emails compromis (~$3.50/mois - https://haveibeenpwned.com/API/Key)',
 }
 
 # Variables optionnelles mais recommandées
@@ -20,7 +21,6 @@ RECOMMENDED_ENV_VARS = {
 
 # Variables optionnelles pour fonctionnalités avancées
 OPTIONAL_ENV_VARS = {
-    'HIBP_API_KEY': 'Clé API Have I Been Pwned pour vérifier les emails compromis (~$3.50/mois)',
     'SECRET_KEY': 'Clé secrète Flask pour les sessions (générée automatiquement si absente)',
 }
 

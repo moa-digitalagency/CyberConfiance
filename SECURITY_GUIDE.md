@@ -12,11 +12,12 @@ CyberConfiance intègre l'API **Have I Been Pwned** pour protéger vos utilisate
 - **Base de données**: Plus de 800 millions de mots de passe compromis
 - **Mise à jour**: Régulièrement mise à jour avec de nouvelles fuites
 
-#### 📧 Vérification d'emails (OPTIONNEL - Payant)
+#### 📧 Vérification d'emails (OBLIGATOIRE en production - Payant)
 - **Coût**: ~$3.50/mois
 - **Fonctionnalité**: Vérifie si une adresse email a été compromise dans des fuites
-- **Configuration**: Nécessite une clé API HIBP_API_KEY
+- **Configuration**: Nécessite une clé API HIBP_API_KEY (obligatoire en production)
 - **Obtenir une clé**: https://haveibeenpwned.com/API/Key
+- **Note**: Cette fonctionnalité est utilisée sur la page d'accueil avec le bouton "Analyser"
 
 ---
 
