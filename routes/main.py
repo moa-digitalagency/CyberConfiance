@@ -100,6 +100,20 @@ def logout():
 def service_sensibilisation():
     return render_template('services/sensibilisation.html')
 
+@bp.route('/programme/<slug>')
+def programme_detail(slug):
+    programmes = {
+        'ateliers-communautaires': 'Ateliers communautaires',
+        'campagnes-reseaux-sociaux': 'Campagnes sur réseaux sociaux',
+        'webinaires-videos': 'Webinaires et vidéos',
+        'guides-pratiques': 'Guides pratiques',
+        'formations-entreprises': 'Formations entreprises',
+        'partenariats-educatifs': 'Partenariats éducatifs'
+    }
+    
+    programme_title = programmes.get(slug, 'Programme')
+    return render_template('programme_detail.html', programme_title=programme_title)
+
 @bp.route('/services/factchecking')
 def service_factchecking():
     return render_template('services/factchecking.html')

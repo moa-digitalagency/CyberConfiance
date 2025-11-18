@@ -15,9 +15,40 @@
 <section class="content-section">
     <div class="container">
         {% if scenarios %}
-        <div class="scenarios-grid">
+        <div class="filters-container">
+            <div class="filter-group">
+                <input type="text" id="search-input" class="filter-input" placeholder="🔍 Rechercher un scénario...">
+            </div>
+            <div class="filter-group">
+                <label for="severity-filter" class="filter-label">Sévérité :</label>
+                <select id="severity-filter" class="filter-select">
+                    <option value="">Toutes</option>
+                    <option value="critique">Critique</option>
+                    <option value="élevé">Élevé</option>
+                    <option value="moyen">Moyen</option>
+                    <option value="faible">Faible</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="rule-filter" class="filter-label">Règle d'or :</label>
+                <select id="rule-filter" class="filter-select">
+                    <option value="">Toutes</option>
+                    {% for i in range(1, 21) %}
+                    <option value="{{ i }}">Règle {{ i }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button id="reset-filters" class="btn btn-secondary" style="padding: 0.7rem 1.5rem; font-size: 0.9rem;">Réinitialiser</button>
+        </div>
+        <div id="no-results" class="no-results" style="display: none;">
+            <p>Aucun scénario ne correspond à vos critères de recherche.</p>
+        </div>
+        <div class="scenarios-grid" id="scenarios-grid">
             {% for scenario in scenarios %}
-            <div class="scenario-card glass-card">
+            <div class="scenario-card glass-card" 
+                 data-title="{{ scenario.title|lower }}" 
+                 data-severity="{{ scenario.severity|lower if scenario.severity else '' }}"
+                 data-rules="">
                 <h3>{{ scenario.title }}</h3>
                 <div class="scenario-description">{{ scenario.description|safe }}</div>
                 
@@ -46,25 +77,30 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const scenarioCards = document.querySelectorAll('.scenario-card');
+    const searchInput = document.getElementById('search-input');
+    const severityFilter = document.getElementById('severity-filter');
+    const ruleFilter = document.getElementById('rule-filter');
+    const resetButton = document.getElementById('reset-filters');
+    const noResults = document.getElementById('no-results');
+    const scenariosGrid = document.getElementById('scenarios-grid');
     
+    // Extraire les règles et les stocker dans les data attributes
     scenarioCards.forEach(card => {
         const descriptionDiv = card.querySelector('.scenario-description');
         const rulesContainer = card.querySelector('.scenario-rules-links');
         
         if (!descriptionDiv || !rulesContainer) return;
         
-        // Lire le contenu texte
         const description = descriptionDiv.textContent;
-        
-        // Chercher le pattern "Règles d'or appliquées :" suivi de nombres
         const match = description.match(/Règles d['']or appliquées[^:]*:\s*([0-9,\s]+)/i);
         
         if (match && match[1]) {
-            // Extraire les numéros
             const ruleNumbers = match[1].trim().split(/[,\s]+/).filter(n => n && !isNaN(n));
             
             if (ruleNumbers.length > 0) {
-                // Trouver et supprimer l'élément <p> qui contient "Règles d'or appliquées"
+                // Stocker les règles dans data-rules
+                card.setAttribute('data-rules', ruleNumbers.join(','));
+                
                 const paragraphs = descriptionDiv.querySelectorAll('p');
                 paragraphs.forEach(p => {
                     if (p.textContent.includes("Règles d'or appliquées") || p.textContent.includes("Règles d'or appliquées")) {
@@ -72,7 +108,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 });
                 
-                // Créer le HTML avec les bons liens vers /rules/{id}
                 let html = '<h4>Règles d\'or à appliquer :</h4><div class="rules-buttons">';
                 ruleNumbers.forEach(num => {
                     html += `<a href="/rules/${num}" class="rule-link-button">Règle ${num}</a>`;
@@ -82,6 +117,53 @@ document.addEventListener('DOMContentLoaded', function() {
                 rulesContainer.style.display = 'block';
             }
         }
+    });
+    
+    // Fonction de filtrage
+    function filterScenarios() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        const selectedSeverity = severityFilter.value.toLowerCase();
+        const selectedRule = ruleFilter.value;
+        let visibleCount = 0;
+        
+        scenarioCards.forEach(card => {
+            const title = card.getAttribute('data-title') || '';
+            const severity = card.getAttribute('data-severity') || '';
+            const rules = card.getAttribute('data-rules') || '';
+            const description = card.querySelector('.scenario-description').textContent.toLowerCase();
+            
+            const matchesSearch = !searchTerm || title.includes(searchTerm) || description.includes(searchTerm);
+            const matchesSeverity = !selectedSeverity || severity === selectedSeverity;
+            const matchesRule = !selectedRule || rules.split(',').includes(selectedRule);
+            
+            if (matchesSearch && matchesSeverity && matchesRule) {
+                card.style.display = '';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        
+        if (visibleCount === 0) {
+            noResults.style.display = 'block';
+            scenariosGrid.style.display = 'none';
+        } else {
+            noResults.style.display = 'none';
+            scenariosGrid.style.display = 'grid';
+        }
+    }
+    
+    // Événements de filtrage
+    searchInput.addEventListener('input', filterScenarios);
+    severityFilter.addEventListener('change', filterScenarios);
+    ruleFilter.addEventListener('change', filterScenarios);
+    
+    // Réinitialiser les filtres
+    resetButton.addEventListener('click', function() {
+        searchInput.value = '';
+        severityFilter.value = '';
+        ruleFilter.value = '';
+        filterScenarios();
     });
 });
 </script>
