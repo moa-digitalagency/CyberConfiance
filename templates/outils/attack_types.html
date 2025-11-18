@@ -3,172 +3,387 @@
 {% block title %}Types d'Attaques - CyberConfiance{% endblock %}
 
 {% block content %}
-<section class="page-header">
+<section class="page-header-modern">
     <div class="container">
-        <h1>Types d'Attaques Informatiques</h1>
-        <p>Apprenez à reconnaître et à prévenir les différentes formes d'attaques cybernétiques</p>
+        <div class="header-content-centered">
+            <h1 class="page-title-modern">Types d'Attaques Informatiques</h1>
+            <p class="page-subtitle-modern">Apprenez à reconnaître et à prévenir les différentes formes d'attaques cybernétiques</p>
+        </div>
     </div>
 </section>
 
-<section class="content-section">
+<section class="filters-section-attacks">
+    <div class="container">
+        <div class="filters-container-attacks">
+            <button class="filter-btn-attack active" data-category="all">Toutes</button>
+            <button class="filter-btn-attack" data-category="AI">IA</button>
+            <button class="filter-btn-attack" data-category="Web">Web</button>
+            <button class="filter-btn-attack" data-category="Network">Réseau</button>
+            <button class="filter-btn-attack" data-category="Data">Données</button>
+            <button class="filter-btn-attack" data-category="Social">Social</button>
+        </div>
+        <div id="attackResultsCount" class="results-count-attacks"></div>
+    </div>
+</section>
+
+<section class="attacks-section-modern">
     <div class="container">
         {% if attacks %}
-        <div class="filters-section" style="margin-bottom: 2rem;">
-            <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
-                <button class="filter-btn active" data-category="all">Toutes</button>
-                <button class="filter-btn" data-category="AI">IA</button>
-                <button class="filter-btn" data-category="Web">Web</button>
-                <button class="filter-btn" data-category="Network">Réseau</button>
-                <button class="filter-btn" data-category="Data">Données</button>
-                <button class="filter-btn" data-category="Social">Social</button>
-            </div>
-        </div>
-        
-        <div class="attacks-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+        <div class="attacks-grid-modern" id="attacksGrid">
             {% for attack in attacks %}
-            <div class="attack-card glass-card" data-category="{{ attack.category or 'Web' }}" data-severity="{{ attack.severity or 'Moyen' }}">
-                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
-                    <h3 style="margin: 0; flex: 1;">{{ attack.name_fr }}</h3>
-                    {% if attack.severity %}
-                    <span class="severity-badge severity-{{ attack.severity|lower }}" style="margin-left: 0.5rem;">{{ attack.severity }}</span>
-                    {% endif %}
-                </div>
-                
-                {% if attack.name_en %}
-                <div style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem; font-style: italic;">
-                    {{ attack.name_en }}
-                </div>
-                {% endif %}
-                
-                <div class="attack-description" style="color: var(--text-secondary); line-height: 1.6; margin-bottom: 1rem;">
-                    {{ attack.description_fr|safe }}
-                </div>
-                
-                {% if attack.prevention %}
-                <div class="attack-prevention" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(59, 130, 246, 0.2);">
-                    <h4 style="font-size: 0.95rem; margin-bottom: 0.5rem; color: var(--accent-color);">💡 Comment se protéger :</h4>
-                    <div style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5;">
-                        {{ attack.prevention|safe }}
+            <article class="attack-card-modern" data-category="{{ attack.category or 'Web' }}" data-severity="{{ attack.severity or 'Moyen' }}">
+                <div class="attack-header-modern">
+                    <div class="attack-icon-wrapper">
+                        <svg class="attack-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                            <line x1="12" y1="9" x2="12" y2="13"/>
+                            <line x1="12" y1="17" x2="12.01" y2="17"/>
+                        </svg>
+                    </div>
+                    <div class="attack-header-content">
+                        <div class="attack-title-row">
+                            <h3 class="attack-title-modern">{{ attack.name_fr }}</h3>
+                            {% if attack.severity %}
+                            <span class="severity-badge-modern severity-{{ attack.severity|lower }}">{{ attack.severity }}</span>
+                            {% endif %}
+                        </div>
+                        {% if attack.name_en %}
+                        <div class="attack-subtitle">{{ attack.name_en }}</div>
+                        {% endif %}
                     </div>
                 </div>
+                
+                <div class="attack-description-modern">{{ attack.description_fr|safe }}</div>
+                
+                {% if attack.prevention %}
+                <div class="attack-prevention-modern">
+                    <div class="prevention-header">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            <path d="m9 12 2 2 4-4"/>
+                        </svg>
+                        <span class="prevention-title">Comment se protéger</span>
+                    </div>
+                    <div class="prevention-text">{{ attack.prevention|safe }}</div>
+                </div>
                 {% endif %}
-            </div>
+            </article>
             {% endfor %}
         </div>
         
-        <div class="no-results" style="display: none; text-align: center; padding: 3rem; color: var(--text-secondary);">
+        <div id="noAttackResults" class="empty-state-attacks" style="display: none;">
             <p>Aucun type d'attaque ne correspond à ce filtre.</p>
         </div>
         {% else %}
-        <p style="text-align: center; color: var(--text-secondary);">Aucun type d'attaque disponible pour le moment.</p>
+        <div class="empty-state-attacks">
+            <p>Aucun type d'attaque disponible pour le moment.</p>
+        </div>
         {% endif %}
     </div>
 </section>
 
 <style>
-.filter-btn {
-    padding: 0.6rem 1.5rem;
+.page-header-modern {
+    padding: 140px 0 80px;
+    text-align: center;
+}
+
+.header-content-centered {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.page-title-modern {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #fff 0%, #60a5fa 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.page-subtitle-modern {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    line-height: 1.8;
+}
+
+.filters-section-attacks {
+    padding: 0 0 40px;
+}
+
+.filters-container-attacks {
+    background: rgba(15, 31, 53, 0.6);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 16px;
+    padding: 2rem;
+    backdrop-filter: blur(20px);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.filter-btn-attack {
+    padding: 0.75rem 1.75rem;
     background: rgba(59, 130, 246, 0.1);
     border: 1px solid rgba(59, 130, 246, 0.3);
     border-radius: 20px;
     color: var(--text-primary);
     cursor: pointer;
     transition: all 0.3s ease;
+    font-size: 0.95rem;
+    font-weight: 500;
 }
 
-.filter-btn:hover {
+.filter-btn-attack:hover {
     background: rgba(59, 130, 246, 0.2);
     border-color: rgba(59, 130, 246, 0.5);
+    transform: translateY(-2px);
 }
 
-.filter-btn.active {
+.filter-btn-attack.active {
     background: rgba(59, 130, 246, 0.3);
-    border-color: var(--accent-color);
-    color: var(--accent-color);
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
 }
 
-.severity-badge {
-    padding: 0.25rem 0.75rem;
+.results-count-attacks {
+    margin-top: 1.5rem;
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    text-align: center;
+}
+
+.attacks-section-modern {
+    padding: 40px 0 60px;
+}
+
+.attacks-grid-modern {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    animation: fadeIn 0.5s ease-in;
+}
+
+.attack-card-modern {
+    background: rgba(15, 31, 53, 0.6);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 16px;
+    padding: 2rem;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(20px);
+}
+
+.attack-card-modern:hover {
+    transform: translateY(-4px);
+    border-color: rgba(59, 130, 246, 0.4);
+    box-shadow: 0 12px 40px rgba(59, 130, 246, 0.15);
+}
+
+.attack-header-modern {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.attack-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(251, 146, 60, 0.2));
     border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.attack-icon {
+    color: #f87171;
+}
+
+.attack-header-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+}
+
+.attack-title-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.attack-title-modern {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.attack-subtitle {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.severity-badge-modern {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
     font-size: 0.75rem;
     font-weight: 600;
     text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-radius: 12px;
     white-space: nowrap;
 }
 
-.severity-critique, .severity-critical, .severity-élevé, .severity-high {
-    background: rgba(239, 68, 68, 0.2);
+.severity-critique, .severity-élevé {
+    background: rgba(239, 68, 68, 0.15);
     color: #ef4444;
     border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
-.severity-moyen, .severity-medium {
-    background: rgba(251, 191, 36, 0.2);
+.severity-moyen {
+    background: rgba(251, 191, 36, 0.15);
     color: #fbbf24;
     border: 1px solid rgba(251, 191, 36, 0.3);
 }
 
-.severity-faible, .severity-low {
-    background: rgba(34, 197, 94, 0.2);
+.severity-faible {
+    background: rgba(34, 197, 94, 0.15);
     color: #22c55e;
     border: 1px solid rgba(34, 197, 94, 0.3);
 }
 
-.attack-card {
-    padding: 1.5rem;
-    transition: all 0.3s ease;
+.attack-description-modern {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
 }
 
-.attack-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15);
+.attack-prevention-modern {
+    background: rgba(10, 22, 40, 0.5);
+    border-left: 3px solid rgba(34, 197, 94, 0.5);
+    border-radius: 8px;
+    padding: 1rem;
 }
 
-.attack-card h3 {
-    font-size: 1.15rem;
+.prevention-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.prevention-header svg {
+    color: #22c55e;
+    flex-shrink: 0;
+}
+
+.prevention-title {
+    font-size: 0.875rem;
+    font-weight: 600;
     color: var(--text-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-.attacks-grid {
-    animation: fadeIn 0.5s ease-in;
+.prevention-text {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.empty-state-attacks {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--text-muted);
+    font-size: 1.125rem;
 }
 
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+@media (max-width: 768px) {
+    .page-title-modern {
+        font-size: 2rem;
+    }
+    
+    .page-subtitle-modern {
+        font-size: 1rem;
+    }
+    
+    .filters-container-attacks {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .filter-btn-attack {
+        width: 100%;
+    }
+    
+    .attacks-grid-modern {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .attack-card-modern {
+        padding: 1.5rem;
+    }
+}
 </style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const filterBtns = document.querySelectorAll('.filter-btn');
-    const attackCards = document.querySelectorAll('.attack-card');
-    const noResults = document.querySelector('.no-results');
+    const filterBtns = document.querySelectorAll('.filter-btn-attack');
+    const attackCards = document.querySelectorAll('.attack-card-modern');
+    const noResults = document.getElementById('noAttackResults');
+    const attacksGrid = document.getElementById('attacksGrid');
+    const resultsCount = document.getElementById('attackResultsCount');
+    
+    function filterAttacks() {
+        const activeBtn = document.querySelector('.filter-btn-attack.active');
+        const category = activeBtn ? activeBtn.dataset.category : 'all';
+        let visibleCount = 0;
+        
+        attackCards.forEach(card => {
+            if (category === 'all' || card.dataset.category === category) {
+                card.style.display = 'block';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        
+        if (visibleCount === 0) {
+            attacksGrid.style.display = 'none';
+            noResults.style.display = 'block';
+            resultsCount.textContent = '';
+        } else {
+            attacksGrid.style.display = 'grid';
+            noResults.style.display = 'none';
+            resultsCount.textContent = `${visibleCount} type${visibleCount > 1 ? 's' : ''} d'attaque${visibleCount > 1 ? 's' : ''}`;
+        }
+    }
     
     filterBtns.forEach(btn => {
         btn.addEventListener('click', function() {
             filterBtns.forEach(b => b.classList.remove('active'));
             this.classList.add('active');
-            
-            const category = this.dataset.category;
-            let visibleCount = 0;
-            
-            attackCards.forEach(card => {
-                if (category === 'all' || card.dataset.category === category) {
-                    card.style.display = 'block';
-                    visibleCount++;
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-            
-            if (visibleCount === 0) {
-                noResults.style.display = 'block';
-            } else {
-                noResults.style.display = 'none';
-            }
+            filterAttacks();
         });
     });
+    
+    filterAttacks();
 });
 </script>
 {% endblock %}
