@@ -43,6 +43,17 @@
                     </div>
                 </div>
                 {% endif %}
+                
+                {% if tool.related_scenarios %}
+                <div class="tool-related">
+                    <h4>Scénarios associés</h4>
+                    <div class="rules-buttons">
+                        {% for scenario_id in tool.get_related_scenario_ids() %}
+                        <a href="{{ url_for('main.scenarios') }}#scenario-{{ scenario_id }}" class="rule-link-button">Scénario {{ scenario_id }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
             </div>
             {% endfor %}
         </div>
