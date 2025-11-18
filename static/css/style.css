@@ -118,6 +118,18 @@ header {
     color: var(--accent-blue);
 }
 
+.logo-img {
+    height: 40px;
+    width: auto;
+    transition: all 0.3s ease;
+    filter: brightness(1);
+}
+
+.logo a:hover .logo-img {
+    filter: brightness(1.2);
+    transform: scale(1.05);
+}
+
 .nav-menu {
     display: flex;
     list-style: none;

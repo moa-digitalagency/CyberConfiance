@@ -14,7 +14,9 @@
         <div class="container">
             <nav class="navbar">
                 <div class="logo">
-                    <a href="{{ url_for('main.index') }}">CyberConfiance</a>
+                    <a href="{{ url_for('main.index') }}">
+                        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="CyberConfiance" class="logo-img">
+                    </a>
                 </div>
                 <button class="mobile-menu-toggle" aria-label="Toggle menu">
                     <span></span>
