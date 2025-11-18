@@ -12,56 +12,15 @@
 
 <section class="content-section">
     <div class="container">
-        {% if resources %}
-        <div class="resources-sections">
-            <div class="resource-category glass-card">
-                <h2>Guides</h2>
-                <div class="resource-list">
-                    {% for resource in resources %}
-                    {% if resource.resource_type == 'Guide' %}
-                    <div class="resource-item">
-                        <h3>{{ resource.title }}</h3>
-                        <p>{{ resource.description }}</p>
-                        <a href="{{ resource.url }}" class="resource-link">Télécharger →</a>
-                    </div>
-                    {% endif %}
-                    {% endfor %}
-                </div>
-            </div>
-            
-            <div class="resource-category glass-card">
-                <h2>Vidéos</h2>
-                <div class="resource-list">
-                    {% for resource in resources %}
-                    {% if resource.resource_type == 'Vidéo' %}
-                    <div class="resource-item">
-                        <h3>{{ resource.title }}</h3>
-                        <p>{{ resource.description }}</p>
-                        <a href="{{ resource.url }}" class="resource-link">Regarder →</a>
-                    </div>
-                    {% endif %}
-                    {% endfor %}
-                </div>
-            </div>
-            
-            <div class="resource-category glass-card">
-                <h2>Articles</h2>
-                <div class="resource-list">
-                    {% for resource in resources %}
-                    {% if resource.resource_type == 'Article' %}
-                    <div class="resource-item">
-                        <h3>{{ resource.title }}</h3>
-                        <p>{{ resource.description }}</p>
-                        <a href="{{ resource.url }}" class="resource-link">Lire →</a>
-                    </div>
-                    {% endif %}
-                    {% endfor %}
-                </div>
-            </div>
+        <div class="glass-card" style="text-align: center; padding: 3rem;">
+            <h2 style="color: var(--accent-blue); margin-bottom: 1rem;">En cours de développement</h2>
+            <p style="font-size: 1.2rem; color: var(--text-secondary);">
+                Nous travaillons actuellement sur cette section pour vous proposer des ressources de qualité : guides, vidéos et articles sur la cybersécurité.
+            </p>
+            <p style="margin-top: 1.5rem; color: var(--text-secondary);">
+                Revenez bientôt pour découvrir nos contenus !
+            </p>
         </div>
-        {% else %}
-        <p>Aucune ressource disponible pour le moment.</p>
-        {% endif %}
     </div>
 </section>
 {% endblock %}

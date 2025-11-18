@@ -59,10 +59,26 @@ class Tool(db.Model):
     description = db.Column(db.Text, nullable=False)
     category = db.Column(db.String(50))
     url = db.Column(db.String(500))
+    use_case = db.Column(db.Text)
+    dangers = db.Column(db.Text)
+    related_rules = db.Column(db.String(100))
+    related_scenarios = db.Column(db.String(100))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     def __repr__(self):
         return f'<Tool {self.name}>'
+    
+    def get_related_rule_ids(self):
+        """Get list of related rule IDs"""
+        if not self.related_rules:
+            return []
+        return [int(x.strip()) for x in self.related_rules.split(',') if x.strip().isdigit()]
+    
+    def get_related_scenario_ids(self):
+        """Get list of related scenario IDs"""
+        if not self.related_scenarios:
+            return []
+        return [int(x.strip()) for x in self.related_scenarios.split(',') if x.strip().isdigit()]
 
 class Scenario(db.Model):
     __tablename__ = 'scenarios'
