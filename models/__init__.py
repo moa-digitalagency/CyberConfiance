@@ -58,6 +58,7 @@ class Tool(db.Model):
     name = db.Column(db.String(200), nullable=False)
     description = db.Column(db.Text, nullable=False)
     category = db.Column(db.String(50))
+    type = db.Column(db.String(50))
     url = db.Column(db.String(500))
     use_case = db.Column(db.Text)
     dangers = db.Column(db.Text)

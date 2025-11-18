@@ -137,6 +137,7 @@ def seed_tools(db):
             # Update existing tool
             existing_tool.description = tool_data['description']
             existing_tool.category = tool_data.get('category', '')
+            existing_tool.type = tool_data.get('type', '')
             existing_tool.url = tool_data.get('url', '')
             existing_tool.use_case = tool_data.get('use_case', '')
             existing_tool.dangers = tool_data.get('dangers', '')
@@ -149,6 +150,7 @@ def seed_tools(db):
                 name=tool_data['name'],
                 description=tool_data['description'],
                 category=tool_data.get('category', ''),
+                type=tool_data.get('type', ''),
                 url=tool_data.get('url', ''),
                 use_case=tool_data.get('use_case', ''),
                 dangers=tool_data.get('dangers', ''),

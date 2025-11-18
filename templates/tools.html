@@ -24,7 +24,12 @@
                             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                         </svg>
                     </div>
-                    <h3 class="tool-title-modern">{{ tool.name }}</h3>
+                    <div class="tool-header-content">
+                        <h3 class="tool-title-modern">{{ tool.name }}</h3>
+                        {% if tool.type %}
+                        <span class="tool-type-badge tool-type-{{ tool.type.lower() }}">{{ tool.type }}</span>
+                        {% endif %}
+                    </div>
                 </div>
                 
                 <p class="tool-description-modern">{{ tool.description }}</p>
@@ -147,7 +152,7 @@
 
 .tool-header-modern {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 1rem;
     margin-bottom: 1.25rem;
 }
@@ -167,11 +172,62 @@
     color: var(--accent-blue-light);
 }
 
+.tool-header-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+}
+
 .tool-title-modern {
     font-size: 1.5rem;
     font-weight: 600;
     color: var(--text-primary);
     margin: 0;
+}
+
+.tool-type-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-radius: 12px;
+    width: fit-content;
+}
+
+.tool-type-logiciel {
+    background: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.tool-type-application {
+    background: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.tool-type-service {
+    background: rgba(147, 51, 234, 0.15);
+    color: #c084fc;
+    border: 1px solid rgba(147, 51, 234, 0.3);
+}
+
+.tool-type-matériel,
+.tool-type-materiel {
+    background: rgba(251, 146, 60, 0.15);
+    color: #fb923c;
+    border: 1px solid rgba(251, 146, 60, 0.3);
+}
+
+.tool-type-fonctionnalité,
+.tool-type-fonctionnalite {
+    background: rgba(236, 72, 153, 0.15);
+    color: #f472b6;
+    border: 1px solid rgba(236, 72, 153, 0.3);
 }
 
 .tool-description-modern {
