@@ -27,6 +27,19 @@ Avant de déployer l'application en production, vous **devez** configurer les se
    - Par défaut: False
    - Valeurs possibles: `True` ou `False`
 
+### Variables optionnelles (fonctionnalités avancées)
+
+4. **HIBP_API_KEY**
+   - Description: Clé API Have I Been Pwned pour vérifier si des emails ont été compromis
+   - Coût: ~$3.50/mois
+   - Comment obtenir: https://haveibeenpwned.com/API/Key
+   - Note: La vérification de mots de passe est GRATUITE et ne nécessite pas de clé API
+
+5. **SECRET_KEY**
+   - Description: Clé secrète Flask pour signer les sessions
+   - Par défaut: Générée automatiquement si absente
+   - Recommandation: Définir une clé fixe en production pour persistance des sessions
+
 ## Vérification automatique
 
 L'application vérifie automatiquement les variables d'environnement au démarrage:

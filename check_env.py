@@ -18,6 +18,12 @@ RECOMMENDED_ENV_VARS = {
     'DATABASE_URL': 'URL de la base de données PostgreSQL',
 }
 
+# Variables optionnelles pour fonctionnalités avancées
+OPTIONAL_ENV_VARS = {
+    'HIBP_API_KEY': 'Clé API Have I Been Pwned pour vérifier les emails compromis (~$3.50/mois)',
+    'SECRET_KEY': 'Clé secrète Flask pour les sessions (générée automatiquement si absente)',
+}
+
 def check_environment_variables():
     """Vérifie que toutes les variables d'environnement requises sont définies."""
     missing_vars = []
@@ -50,6 +56,15 @@ def check_environment_variables():
         if not value:
             missing_recommended.append((var_name, description))
             print(f"⚠️  {var_name}: Non défini - {description}")
+        else:
+            print(f"✅ {var_name}: Configuré")
+    
+    # Vérifier les variables optionnelles
+    print("\nVariables optionnelles (fonctionnalités avancées):")
+    for var_name, description in OPTIONAL_ENV_VARS.items():
+        value = os.environ.get(var_name)
+        if not value:
+            print(f"ℹ️  {var_name}: Non défini - {description}")
         else:
             print(f"✅ {var_name}: Configuré")
     
