@@ -161,3 +161,19 @@ class BreachAnalysis(db.Model):
     
     def __repr__(self):
         return f'<BreachAnalysis {self.email} - {self.breach_count} breaches>'
+
+class AttackType(db.Model):
+    __tablename__ = 'attack_types'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    name_en = db.Column(db.String(200), nullable=False)
+    name_fr = db.Column(db.String(200), nullable=False)
+    description_fr = db.Column(db.Text, nullable=False)
+    category = db.Column(db.String(50))
+    severity = db.Column(db.String(20))
+    prevention = db.Column(db.Text)
+    order = db.Column(db.Integer, default=0)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    def __repr__(self):
+        return f'<AttackType {self.name_fr}>'

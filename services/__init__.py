@@ -1,4 +1,4 @@
-from models import Article, Rule, Tool, Scenario, Resource, News, Contact, GlossaryTerm
+from models import Article, Rule, Tool, Scenario, Resource, News, Contact, GlossaryTerm, AttackType
 import __init__ as app_module
 import os
 import requests
@@ -213,3 +213,7 @@ class ContentService:
         db.session.add(contact)
         db.session.commit()
         return contact
+    
+    @staticmethod
+    def get_all_attack_types():
+        return AttackType.query.order_by(AttackType.order, AttackType.name_fr).all()

@@ -112,6 +112,11 @@ def service_cyberconsultation():
 def osint_methodology():
     return render_template('outils/methodologie_osint.html')
 
+@bp.route('/outils/types-attaques')
+def attack_types():
+    all_attacks = ContentService.get_all_attack_types()
+    return render_template('outils/attack_types.html', attacks=all_attacks)
+
 @bp.route('/analyze-breach', methods=['POST'])
 def analyze_breach():
     email = request.form.get('email')
