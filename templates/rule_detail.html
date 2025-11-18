@@ -5,7 +5,7 @@
 {% block content %}
 <section class="page-header">
     <div class="container">
-        <div class="rule-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;">
+        <div class="rule-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0;">
             <a href="{{ url_for('main.rules') }}" class="back-link">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M19 12H5M12 19l-7-7 7-7"/>
@@ -14,7 +14,7 @@
             </a>
             <div class="rule-number">Règle {{ rule.order }}/20</div>
         </div>
-        <h1 style="margin-top: 0;">{{ rule.title }}</h1>
+        <h1 style="margin-top: 0.5rem;">{{ rule.title }}</h1>
     </div>
 </section>
 

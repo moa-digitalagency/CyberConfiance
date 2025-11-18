@@ -1,15 +1,18 @@
 # CyberConfiance
 
-Plateforme de sensibilisation à la cybersécurité avec backend Flask, panel admin, et base de données PostgreSQL.
+Plateforme de sensibilisation et de prévention en cybersécurité pour l'Afrique francophone. Initiative créée par Aisance KALONJI pour démocratiser les bonnes pratiques de sécurité numérique.
 
 ## Fonctionnalités
 
-- Architecture modulaire (models, routes, services, utils)
-- Panel admin sécurisé pour la gestion du contenu
-- Base de données PostgreSQL
-- Pages publiques: Accueil, À propos, Règles d'or, Scénarios, Outils, Glossaire, Ressources, Actualités, Contact
-- Interface responsive et moderne
-- Authentification sécurisée avec Flask-Login
+- **20 Règles d'Or de Cybersécurité** : Guide pratique des bonnes pratiques essentielles
+- **Scénarios de Cybermenaces** : Exemples concrets et solutions adaptées
+- **Outils Essentiels** : Catalogue d'outils de sécurité avec filtres avancés
+- **Méthodologie OSINT** : Techniques d'investigation en sources ouvertes
+- **Services** : Sensibilisation, Fact-checking et Cyberconsultation
+- **Glossaire** : Termes techniques expliqués simplement
+- **Panel Admin** : Gestion complète du contenu via interface sécurisée
+- **Architecture Moderne** : Flask, PostgreSQL, interface responsive
+- **Authentification Sécurisée** : Protection par Flask-Login
 
 ## Installation
 
@@ -64,17 +67,22 @@ gunicorn --bind=0.0.0.0:5000 --reuse-port main:app
 ## Structure du Projet
 
 ```
-├── app/
-│   ├── __init__.py           # Initialisation Flask
-│   ├── models/               # Modèles de base de données
-│   ├── routes/               # Routes et contrôleurs
-│   ├── services/             # Logique métier
-│   ├── utils/                # Utilitaires
-│   ├── static/               # CSS, JS, images
-│   └── templates/            # Templates HTML
-├── main.py                   # Point d'entrée
-├── config.py                 # Configuration
-└── requirements.txt          # Dépendances Python
+├── __init__.py              # Initialisation Flask et configuration app
+├── models/                  # Modèles de base de données (User, Rule, Tool, etc.)
+├── routes/                  # Routes et contrôleurs (main, admin_routes)
+├── services/                # Logique métier
+├── utils/                   # Utilitaires et seed data
+├── data/                    # Données JSON pour seed (rules, tools, scenarios, glossary)
+├── static/                  # Ressources statiques
+│   ├── css/                 # Styles CSS
+│   ├── js/                  # JavaScript
+│   └── img/                 # Images
+├── templates/               # Templates HTML (Jinja2)
+│   ├── services/            # Pages de services
+│   └── outils/              # Pages d'outils spécialisés
+├── main.py                  # Point d'entrée de l'application
+├── config.py                # Configuration et variables d'environnement
+└── requirements.txt         # Dépendances Python
 ```
 
 ## Sécurité
