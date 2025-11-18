@@ -65,8 +65,8 @@ class HaveIBeenPwnedService:
                 'title': 'Aucune fuite détectée',
                 'message': 'Votre adresse email n\'apparaît dans aucune base de données de fuites connues.',
                 'recommendations': [
-                    '🔐 Sécurité proactive : Utilisez des mots de passe forts et uniques pour chaque service, activez l\'authentification à deux facteurs (2FA) sur tous vos comptes importants.',
-                    '⚠️ Vigilance constante : Restez attentif aux emails de phishing et vérifiez régulièrement l\'activité de vos comptes pour détecter tout comportement suspect.'
+                    'Sécurité proactive : Utilisez des mots de passe forts et uniques pour chaque service, activez l\'authentification à deux facteurs (2FA) sur tous vos comptes importants.',
+                    'Vigilance constante : Restez attentif aux emails de phishing et vérifiez régulièrement l\'activité de vos comptes pour détecter tout comportement suspect.'
                 ]
             }
         elif breach_count <= 3:
@@ -75,10 +75,10 @@ class HaveIBeenPwnedService:
                 'title': 'Fuites détectées - Action recommandée',
                 'message': f'Votre email apparaît dans {breach_count} base(s) de données de fuites.',
                 'recommendations': [
-                    '🚨 Actions immédiates : Changez tous les mots de passe des services compromis. Créez des mots de passe forts et uniques pour chaque compte (utilisez un gestionnaire de mots de passe).',
-                    '🛡️ Renforcement de la sécurité : Activez l\'authentification à deux facteurs (2FA) sur tous vos comptes, particulièrement ceux liés à vos finances, réseaux sociaux et emails.',
-                    '💳 Surveillance financière : Si cet email est utilisé pour vos comptes bancaires ou services de paiement, surveillez vos transactions et relevés de carte. Contactez votre banque en cas d\'activité suspecte.',
-                    '📧 Protection anti-phishing : Redoublez de vigilance face aux emails suspects, surtout ceux demandant des informations personnelles ou des actions urgentes.'
+                    'Actions immédiates : Changez tous les mots de passe des services compromis. Créez des mots de passe forts et uniques pour chaque compte (utilisez un gestionnaire de mots de passe).',
+                    'Renforcement de la sécurité : Activez l\'authentification à deux facteurs (2FA) sur tous vos comptes, particulièrement ceux liés à vos finances, réseaux sociaux et emails.',
+                    'Surveillance financière : Si cet email est utilisé pour vos comptes bancaires ou services de paiement, surveillez vos transactions et relevés de carte. Contactez votre banque en cas d\'activité suspecte.',
+                    'Protection anti-phishing : Redoublez de vigilance face aux emails suspects, surtout ceux demandant des informations personnelles ou des actions urgentes.'
                 ]
             }
         else:
@@ -87,10 +87,10 @@ class HaveIBeenPwnedService:
                 'title': 'Alerte sécurité - Action immédiate requise',
                 'message': f'ATTENTION: Votre email apparaît dans {breach_count} bases de données de fuites!',
                 'recommendations': [
-                    '🔥 URGENT - Sécurisation des comptes : Changez IMMÉDIATEMENT tous vos mots de passe en utilisant un gestionnaire de mots de passe. Activez l\'authentification à deux facteurs (2FA) sur TOUS vos comptes sans exception.',
-                    '💰 Protection financière critique : Si cet email est lié à des comptes bancaires, services de paiement ou crypto-monnaies, contactez immédiatement vos institutions financières. Vérifiez tous vos relevés, bloquez votre carte si nécessaire et surveillez votre crédit.',
-                    '🆔 Gestion de l\'identité : Envisagez sérieusement de créer une nouvelle adresse email pour vos comptes sensibles (banque, santé, administration). Surveillez l\'utilisation frauduleuse de votre identité.',
-                    '⚠️ Vigilance maximale : Vous êtes une cible de choix pour le phishing et les arnaques. Ne cliquez jamais sur des liens suspects, vérifiez l\'identité de tout contact inattendu et signalez toute activité suspecte.'
+                    'URGENT - Sécurisation des comptes : Changez IMMÉDIATEMENT tous vos mots de passe en utilisant un gestionnaire de mots de passe. Activez l\'authentification à deux facteurs (2FA) sur TOUS vos comptes sans exception.',
+                    'Protection financière critique : Si cet email est lié à des comptes bancaires, services de paiement ou crypto-monnaies, contactez immédiatement vos institutions financières. Vérifiez tous vos relevés, bloquez votre carte si nécessaire et surveillez votre crédit.',
+                    'Gestion de l\'identité : Envisagez sérieusement de créer une nouvelle adresse email pour vos comptes sensibles (banque, santé, administration). Surveillez l\'utilisation frauduleuse de votre identité.',
+                    'Vigilance maximale : Vous êtes une cible de choix pour le phishing et les arnaques. Ne cliquez jamais sur des liens suspects, vérifiez l\'identité de tout contact inattendu et signalez toute activité suspecte.'
                 ]
             }
     
@@ -101,82 +101,66 @@ class HaveIBeenPwnedService:
         """
         return {
             'Email addresses': {
-                'icon': '📧',
                 'risk': 'Moyen',
                 'scenario': 'Les pirates peuvent vous envoyer des emails de phishing personnalisés, s\'inscrire à des services en votre nom, ou vendre votre adresse à des spammeurs.'
             },
             'Passwords': {
-                'icon': '🔑',
                 'risk': 'Critique',
                 'scenario': 'Si vous réutilisez ce mot de passe ailleurs, les pirates peuvent accéder à tous ces comptes. Changement immédiat requis.'
             },
             'Names': {
-                'icon': '👤',
                 'risk': 'Faible',
                 'scenario': 'Combiné à d\'autres données, votre nom permet des attaques de phishing ciblées et l\'usurpation d\'identité.'
             },
             'Phone numbers': {
-                'icon': '📱',
                 'risk': 'Élevé',
                 'scenario': 'Les pirates peuvent vous envoyer des SMS de phishing, vous appeler en se faisant passer pour votre banque, ou effectuer un SIM swapping pour prendre contrôle de vos comptes.'
             },
             'Physical addresses': {
-                'icon': '🏠',
                 'risk': 'Moyen',
                 'scenario': 'Votre adresse peut servir à de l\'usurpation d\'identité, des arnaques postales, ou des cambriolages en croisant avec d\'autres données publiques.'
             },
             'Dates of birth': {
-                'icon': '🎂',
                 'risk': 'Élevé',
                 'scenario': 'Élément clé pour l\'usurpation d\'identité. Combiné à votre nom, permet d\'ouvrir des comptes bancaires, contracter des crédits, ou accéder à vos dossiers médicaux.'
             },
             'Credit cards': {
-                'icon': '💳',
                 'risk': 'Critique',
                 'scenario': 'Utilisation frauduleuse immédiate pour des achats en ligne. Contactez votre banque IMMÉDIATEMENT pour bloquer la carte et surveiller vos transactions.'
             },
             'Bank account numbers': {
-                'icon': '🏦',
                 'risk': 'Critique',
                 'scenario': 'Les pirates peuvent effectuer des prélèvements, créer des chèques frauduleux, ou usurper votre identité financière. Alertez votre banque sans délai.'
             },
             'Social security numbers': {
-                'icon': '🆔',
                 'risk': 'Critique',
                 'scenario': 'Le Saint Graal de l\'usurpation d\'identité. Permet d\'ouvrir des comptes, contracter des prêts, accéder aux services sociaux, et détruire votre crédit pendant des années.'
             },
             'IP addresses': {
-                'icon': '🌐',
                 'risk': 'Faible',
                 'scenario': 'Révèle votre localisation approximative et fournisseur Internet. Peut servir à des attaques ciblées ou tracer vos activités en ligne.'
             },
             'Geographic locations': {
-                'icon': '📍',
                 'risk': 'Moyen',
                 'scenario': 'Révèle vos habitudes et lieux fréquentés. Risque de harcèlement, cambriolage, ou ciblage publicitaire abusif.'
             },
             'Usernames': {
-                'icon': '👁️',
                 'risk': 'Faible',
                 'scenario': 'Permet de retrouver vos autres comptes en ligne et construire un profil détaillé de votre présence numérique pour des attaques ciblées.'
             },
             'Security questions and answers': {
-                'icon': '❓',
                 'risk': 'Élevé',
                 'scenario': 'Les pirates peuvent réinitialiser vos mots de passe en répondant à ces questions. Changez immédiatement vos questions de sécurité sur tous vos comptes.'
             },
             'Partial credit card data': {
-                'icon': '💳',
                 'risk': 'Élevé',
                 'scenario': 'Même partielles, ces données combinées à d\'autres fuites permettent de reconstituer le numéro complet ou de valider des transactions.'
             },
             'Personal health data': {
-                'icon': '🏥',
                 'risk': 'Critique',
                 'scenario': 'Chantage possible, discrimination à l\'embauche ou pour les assurances, usurpation d\'identité médicale pour obtenir des prescriptions ou soins.'
             },
             'Biometric data': {
-                'icon': '👆',
                 'risk': 'Critique',
                 'scenario': 'Contrairement aux mots de passe, vous ne pouvez pas changer vos empreintes digitales. Risque permanent d\'usurpation d\'identité biométrique.'
             }

@@ -98,13 +98,12 @@
                     <div class="breach-details">
                         {% if breach.get('DataClasses') %}
                         <div class="breach-detail-item">
-                            <strong>⚠️ Données compromises ({{ breach.get('DataClasses', [])|length }}):</strong>
+                            <strong>Données compromises ({{ breach.get('DataClasses', [])|length }}):</strong>
                             <div class="data-classes-detailed">
                                 {% for data_class in breach.get('DataClasses', []) %}
-                                {% set scenario = data_scenarios.get(data_class, {'icon': '⚠️', 'risk': 'Inconnu', 'scenario': 'Type de donnée non documenté.'}) %}
+                                {% set scenario = data_scenarios.get(data_class, {'risk': 'Inconnu', 'scenario': 'Type de donnée non documenté.'}) %}
                                 <div class="data-class-scenario">
                                     <div class="data-class-header">
-                                        <span class="data-class-icon">{{ scenario.icon }}</span>
                                         <span class="data-class-name">{{ data_class }}</span>
                                         <span class="risk-badge risk-{{ scenario.risk|lower|replace('é', 'e')|replace(' ', '-') }}">{{ scenario.risk }}</span>
                                     </div>
@@ -413,14 +412,11 @@
     margin-bottom: 0.75rem;
 }
 
-.data-class-icon {
-    font-size: 1.5rem;
-}
-
 .data-class-name {
     font-weight: 500;
     color: var(--text-primary);
     flex: 1;
+    font-size: 1.05rem;
 }
 
 .risk-badge {
