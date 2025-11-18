@@ -2016,6 +2016,25 @@ footer {
     gap: 2rem;
 }
 
+.tools-grid-homepage {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.fact-checking-grid {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.osint-methodology-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
 .tool-card {
     padding: 3rem;
     border-radius: 20px;
@@ -2235,6 +2254,7 @@ footer {
     border: 1px solid rgba(255, 255, 255, 0.12);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4),
                 inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    text-align: left;
 }
 
 .contact-info h2 {
@@ -2243,16 +2263,19 @@ footer {
     margin-bottom: 1.5rem;
     color: var(--accent-blue);
     letter-spacing: -1px;
+    text-align: left;
 }
 
 .contact-info p {
     color: var(--text-secondary);
     line-height: 1.8;
     margin-bottom: 2rem;
+    text-align: left;
 }
 
 .contact-details {
     margin-top: 2rem;
+    text-align: left;
 }
 
 .contact-item {
@@ -2260,6 +2283,7 @@ footer {
     display: flex;
     align-items: flex-start;
     gap: 1rem;
+    text-align: left;
 }
 
 .contact-item svg {
@@ -2370,16 +2394,20 @@ footer {
     }
     
     .hero h1 {
-        font-size: 3rem;
-        letter-spacing: -2px;
+        font-size: 2.2rem;
+        letter-spacing: -1.5px;
     }
     
     .hero-subtitle {
-        font-size: 1.1rem;
+        font-size: 1rem;
     }
     
     .section-title {
-        font-size: 2.5rem;
+        font-size: 1.8rem;
+    }
+    
+    .page-title-modern {
+        font-size: 2.2rem;
     }
     
     .nav-menu {
@@ -2401,13 +2429,20 @@ footer {
     .rules-grid,
     .scenarios-grid,
     .tools-grid,
+    .tools-grid-homepage,
     .glossary-grid,
     .news-grid {
         grid-template-columns: 1fr;
     }
     
-    .pillars-grid {
-        grid-template-columns: repeat(2, 1fr);
+    .pillars-grid,
+    .fact-checking-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .osint-methodology-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
     }
     
     .vision-content {
