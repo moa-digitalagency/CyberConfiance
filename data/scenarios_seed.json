@@ -1,26 +1,79 @@
 [
   {
-    "title": "Le piège du Wi-Fi public",
-    "description": "<p>Vous êtes dans un café et vous connectez votre ordinateur au Wi-Fi gratuit pour travailler. Sans le savoir, un pirate a créé un faux point d'accès avec un nom similaire à celui du café. Toutes vos communications passent par son ordinateur.</p><h3>Les risques</h3><ul><li>Interception de vos mots de passe et données bancaires</li><li>Vol de fichiers sensibles transmis sur le réseau</li><li>Installation à distance de logiciels malveillants</li></ul><h3>Comment se protéger</h3><ul><li>Vérifiez toujours le nom exact du réseau auprès du personnel</li><li>Utilisez systématiquement un VPN sur les réseaux publics</li><li>Désactivez le partage de fichiers et la découverte de réseau</li><li>Privilégiez votre connexion 4G/5G pour les opérations sensibles</li></ul>",
+    "title": "Scénario 1 : Le piège du Wi-Fi public",
+    "description": "<h3>Contexte</h3><p>Au cours d'un déplacement officiel à Nairobi, le ministre James connecte son ordinateur portable au Wi-Fi gratuit d'un café pour envoyer un document confidentiel à son équipe. Ce qu'il ignore, c'est que ce réseau Wi-Fi est compromis par un hacker local, qui utilise un outil d'interception des données en temps réel. Quelques heures plus tard, le document confidentiel se retrouve publié sur des plateformes en ligne.</p><h3>Risques</h3><ul><li>Vol d'informations sensibles</li><li>Compromission de la confidentialité</li></ul><h3>Comment se protéger</h3><ul><li>N'utilisez jamais un Wi-Fi public pour des communications sensibles</li><li>Si nécessaire, utilisez un VPN (Réseau Privé Virtuel) pour chiffrer vos connexions sur internet</li><li>Préparez toujours une sauvegarde hors ligne de vos documents pour limiter l'impact en cas de fuite</li></ul><p><strong>Règles d'or appliquées :</strong> 8, 7</p>",
     "severity": "Élevé",
-    "threat_type": "Man-in-the-Middle"
+    "threat_type": "Man-in-the-Middle",
+    "solution": "Utilisez un VPN pour chiffrer vos connexions et évitez les réseaux Wi-Fi publics pour les communications sensibles."
   },
   {
-    "title": "L'email du directeur (CEO Fraud)",
-    "description": "<p>Vous recevez un email urgent de votre directeur vous demandant de faire un virement de 50 000€ immédiatement pour finaliser une acquisition confidentielle. L'adresse email ressemble à celle de votre directeur, le ton est autoritaire et pressant.</p><h3>Les risques</h3><ul><li>Perte financière importante et immédiate</li><li>Compromission de la crédibilité professionnelle</li><li>Exposition à des poursuites judiciaires</li></ul><h3>Comment se protéger</h3><ul><li>Vérifiez systématiquement l'adresse email complète de l'expéditeur</li><li>Contactez directement votre supérieur par téléphone pour confirmer</li><li>Méfiez-vous des demandes urgentes contournant les procédures normales</li><li>Établissez un protocole de double validation pour les virements importants</li></ul>",
+    "title": "Scénario 2 : Le faux appel urgent",
+    "description": "<h3>Contexte</h3><p>Clara, directrice d'une entreprise publique, reçoit un appel téléphonique d'une voix qu'elle identifie comme celle de son PDG. Celui-ci demande un transfert de 100 000 dollars pour un projet urgent et fournit des informations crédibles. Clara, pressée, effectue le transfert sans vérifier. Quelques heures plus tard, elle découvre que la voix était générée par une IA utilisant des enregistrements audios précédents de son PDG.</p><h3>Risques</h3><ul><li>Perte financière</li><li>Manipulation par clonage vocal</li></ul><h3>Comment se protéger</h3><ul><li>Vérifiez toujours par un autre canal (e-mail sécurisé, messagerie chiffrée) avant d'agir sur une demande urgente</li><li>Formez votre équipe à reconnaître les techniques d'ingénierie sociale et d'IA</li></ul><p><strong>Règles d'or appliquées :</strong> 19, 9, 13</p>",
     "severity": "Critique",
-    "threat_type": "Ingénierie sociale"
+    "threat_type": "Ingénierie sociale (IA)",
+    "solution": "Vérifiez toujours par un autre canal avant d'agir sur une demande urgente et formez vos équipes aux techniques d'IA."
   },
   {
-    "title": "Le ransomware : vos données prises en otage",
-    "description": "<p>En ouvrant une pièce jointe d'un email qui semblait provenir de votre banque, un logiciel malveillant s'installe et chiffre tous vos fichiers. Un message apparaît exigeant 5 000€ en Bitcoin pour récupérer vos données.</p><h3>Les risques</h3><ul><li>Perte définitive de toutes vos données importantes</li><li>Arrêt complet de votre activité professionnelle</li><li>Paiement de rançon sans garantie de récupération</li><li>Vol de données avant chiffrement (double extorsion)</li></ul><h3>Comment se protéger</h3><ul><li>Maintenez des sauvegardes régulières hors ligne (règle 3-2-1)</li><li>Ne cliquez jamais sur les pièces jointes suspectes</li><li>Gardez votre antivirus et système à jour</li><li>Formez-vous à reconnaître les emails de phishing</li><li>Isolez immédiatement tout appareil infecté du réseau</li></ul>",
+    "title": "Scénario 3 : Deepfake politique",
+    "description": "<h3>Contexte</h3><p>Une vidéo circulant sur les réseaux sociaux montre un député dans une réunion privée où il semble tenir des propos incendiaires sur des sujets sensibles. Cette vidéo devient virale en quelques heures, déclenchant un tollé public. Après enquête, il s'avère que la vidéo est un deepfake conçu pour nuire à sa réputation et manipuler l'opinion publique.</p><h3>Risques</h3><ul><li>Manipulation de l'opinion publique</li><li>Perte de crédibilité</li></ul><h3>Comment se protéger</h3><ul><li>Surveillez régulièrement votre identité numérique et signalez tout contenu suspect</li><li>Préparez un plan de réponse rapide pour contester et démonter des deepfakes</li></ul><p><strong>Règles d'or appliquées :</strong> 19, 11, 20</p>",
     "severity": "Critique",
-    "threat_type": "Malware"
+    "threat_type": "Deepfake / Désinformation",
+    "solution": "Surveillez votre identité numérique et préparez un plan de réponse rapide pour contester les deepfakes."
   },
   {
-    "title": "La clé USB piégée",
-    "description": "<p>Vous trouvez une clé USB dans le parking de votre entreprise avec une étiquette 'Salaires 2024 - Confidentiel'. Par curiosité, vous la branchez sur votre ordinateur professionnel pour voir ce qu'elle contient.</p><h3>Les risques</h3><ul><li>Installation automatique de malwares sur votre système</li><li>Vol de données sensibles de l'entreprise</li><li>Compromission du réseau entier de l'organisation</li><li>Création d'une porte dérobée pour les pirates</li></ul><h3>Comment se protéger</h3><ul><li>Ne branchez jamais de clés USB trouvées ou d'origine inconnue</li><li>Désactivez l'exécution automatique des périphériques USB</li><li>Scannez toute clé USB externe avec un antivirus avant ouverture</li><li>Signalez immédiatement au service IT toute clé USB suspecte trouvée</li><li>Utilisez des stations de quarantaine pour analyser les supports inconnus</li></ul>",
+    "title": "Scénario 4 : Hameçonnage par e-mail (Phishing)",
+    "description": "<h3>Contexte</h3><p>Un conseiller reçoit un e-mail apparemment envoyé par son supérieur, demandant de cliquer sur un lien pour télécharger un rapport urgent. En cliquant, le conseiller installe un malware (un logiciel malveillant) qui permet aux hackers d'accéder à son ordinateur et de voler des informations confidentielles.</p><h3>Risques</h3><ul><li>Installation de logiciels malveillants</li><li>Vol de données sensibles</li></ul><h3>Comment se protéger</h3><ul><li>Vérifiez toujours l'adresse e-mail de l'expéditeur</li><li>Ne cliquez jamais sur des liens ou n'ouvrez pas de pièces jointes suspectes sans confirmation</li></ul><p><strong>Règles d'or appliquées :</strong> 6, 13</p>",
     "severity": "Élevé",
-    "threat_type": "Malware physique"
+    "threat_type": "Phishing",
+    "solution": "Vérifiez l'adresse e-mail de l'expéditeur et ne cliquez jamais sur des liens suspects sans confirmation."
+  },
+  {
+    "title": "Scénario 5 : Manipulation via les réseaux sociaux",
+    "description": "<h3>Contexte</h3><p>Un gouverneur partage innocemment une photo de sa famille sur les réseaux sociaux. Un hacker exploite les métadonnées de l'image (ex : les données de localisation GPS d'où la photo est prise) pour planifier une attaque ciblée contre lui, accédant à sa résidence et volant des appareils contenant des informations sensibles.</p><h3>Risques</h3><ul><li>Compromission de la vie privée</li><li>Exploitation des informations personnelles</li></ul><h3>Comment se protéger</h3><ul><li>Limitez la quantité d'informations personnelles partagées sur les réseaux sociaux</li><li>Désactivez l'enregistrement des métadonnées sur vos photos</li></ul><p><strong>Règles d'or appliquées :</strong> 11</p>",
+    "severity": "Élevé",
+    "threat_type": "Exploitation de métadonnées",
+    "solution": "Limitez les informations personnelles partagées et désactivez l'enregistrement des métadonnées sur vos photos."
+  },
+  {
+    "title": "Scénario 6 : Intrusion via appareils connectés",
+    "description": "<h3>Contexte</h3><p>Lors d'une réunion confidentielle dans une salle privée, une caméra de surveillance connectée utilisée dans la salle est piratée par un groupe de hackers qui se sont connectés au réseau local du bâtiment. Ces derniers accèdent aux discussions et enregistrent des informations critiques.</p><h3>Risques</h3><ul><li>Espionnage industriel ou gouvernemental</li><li>Fuite d'informations sensibles</li></ul><h3>Comment se protéger</h3><ul><li>Déconnectez les appareils non nécessaires lors de réunions sensibles</li><li>Faites régulièrement vérifier vos appareils connectés par des experts en cybersécurité</li></ul><p><strong>Règles d'or appliquées :</strong> 15, 4</p>",
+    "severity": "Critique",
+    "threat_type": "IoT / Appareils connectés",
+    "solution": "Déconnectez les appareils non nécessaires lors de réunions sensibles et faites vérifier régulièrement vos appareils."
+  },
+  {
+    "title": "Scénario 7 : Ransomware ciblant une administration publique",
+    "description": "<h3>Contexte</h3><p>Une mairie voit son système informatique bloqué par un ransomware. Un logiciel malveillant (malware) qui crypte les fichiers sous réserve d'une rançon. Les hackers demandent une rançon de 10 000 dollars pour débloquer les fichiers, mais même après paiement, les données restent inaccessibles.</p><h3>Risques</h3><ul><li>Paralysie des activités administratives</li><li>Perte de données critiques</li></ul><h3>Comment se protéger</h3><ul><li>Sauvegardez régulièrement vos données hors ligne</li><li>Mettez en place un plan de réponse aux incidents</li></ul><p><strong>Règles d'or appliquées :</strong> 7, 18, 20</p>",
+    "severity": "Critique",
+    "threat_type": "Ransomware",
+    "solution": "Sauvegardez régulièrement vos données hors ligne et mettez en place un plan de réponse aux incidents."
+  },
+  {
+    "title": "Scénario 8 : Erreur humaine en déplacement",
+    "description": "<h3>Contexte</h3><p>Un médecin laisse son ordinateur portable pendant son déplacement dans un taxi à Dakar. L'appareil contient des informations médicales sensibles et classifiées non protégées par un mot de passe ou un chiffrement.</p><h3>Risques</h3><ul><li>Fuite de données sensibles</li><li>Exploitation par des tiers malveillants</li></ul><h3>Comment se protéger</h3><ul><li>Chiffrez vos données sensibles</li><li>Configurez vos appareils pour qu'ils se verrouillent automatiquement après quelques minutes d'inactivité</li></ul><p><strong>Règles d'or appliquées :</strong> 4, 5</p>",
+    "severity": "Élevé",
+    "threat_type": "Erreur humaine / Perte physique",
+    "solution": "Chiffrez vos données et configurez le verrouillage automatique de vos appareils."
+  },
+  {
+    "title": "Scénario 9 : Application malveillante",
+    "description": "<h3>Contexte</h3><p>Un cadre d'une grande entreprise installe une application gratuite sur son smartphone professionnel. Cette application collecte secrètement ses données de localisation, capture les informations tapées sur son clavier grâce à sa fonction keylogger et aussi ses contacts, les transmettant à des hackers.</p><h3>Risques</h3><ul><li>Exploitation des données personnelles et professionnelles</li></ul><h3>Comment se protéger</h3><ul><li>Téléchargez uniquement des applications depuis des sources fiables</li><li>Lisez attentivement les autorisations demandées par les applications</li></ul><p><strong>Règles d'or appliquées :</strong> 10</p>",
+    "severity": "Élevé",
+    "threat_type": "Malware mobile",
+    "solution": "Téléchargez uniquement des applications depuis des sources fiables et vérifiez les autorisations."
+  },
+  {
+    "title": "Scénario 10 : L'ingénierie sociale au sein de l'entreprise",
+    "description": "<h3>Contexte</h3><p>Un individu se présentant comme un technicien informatique se rend dans une administration publique en prétendant devoir résoudre une 'panne critique' affectant le réseau interne. Avec une attitude confiante et des justificatifs falsifiés mais fiables, il parvient à accéder au serveur principal. Une fois dans la salle des serveurs, il connecte une clé USB contenant un logiciel malveillant (RubberDucky), avec un code préparé pour l'occasion qui s'exécute en 1 seconde ouvrant une brèche permettant à son équipe de voler des données confidentielles.</p><h3>Risques</h3><ul><li>Accès non autorisé à des informations stratégiques</li><li>Installation de logiciels malveillants ou espionnage à distance</li></ul><h3>Comment se protéger</h3><ul><li>Formez vos équipes à vérifier l'identité et la légitimité de toute personne externe, même si elle semble confiante ou 'officielle'</li><li>Mettez en place un système de badge sécurisé et un protocole strict pour l'accès aux zones sensibles</li><li>Surveillez et consignez toutes les interventions sur les systèmes critiques</li><li>Installez des systèmes de contrôle d'accès et des caméras pour enregistrer les activités dans les zones sensibles</li></ul><p><strong>Règles d'or appliquées :</strong> 13, 4, 17</p>",
+    "severity": "Critique",
+    "threat_type": "Ingénierie sociale / Accès physique",
+    "solution": "Formez vos équipes à vérifier les identités et mettez en place des protocoles stricts d'accès aux zones sensibles."
+  },
+  {
+    "title": "Scénario Bonus : Regards indiscrets dans un espace public",
+    "description": "<h3>Contexte</h3><p>Lors d'un déplacement à Casablanca, Linda, conseillère en stratégie pour un ministère, profite de son temps d'attente dans un salon d'aéroport pour finaliser un rapport hautement confidentiel sur son ordinateur portable. Assise dans un espace ouvert, elle ne se rend pas compte qu'un individu derrière elle observe discrètement l'écran. Ce dernier prend en photo une partie du document contenant des informations sensibles, qui seront ensuite relayées anonymement à la presse.</p><h3>Risques</h3><ul><li>Fuite d'informations confidentielles par observation visuelle (shoulder surfing)</li><li>Atteinte à la réputation et au secret professionnel</li></ul><h3>Comment se protéger</h3><ul><li>Installez un filtre de confidentialité sur vos écrans, notamment lors des déplacements ou dans les lieux publics</li><li>Ne travaillez sur des documents sensibles que dans des espaces sécurisés ou privés</li><li>Gardez vos équipements sous surveillance et orientez-vous de manière à limiter les regards arrière</li><li>Verrouillez votre écran si vous devez vous lever, même brièvement</li></ul>",
+    "severity": "Moyen",
+    "threat_type": "Shoulder surfing / Espionnage visuel",
+    "solution": "Utilisez un filtre de confidentialité et travaillez sur des documents sensibles uniquement dans des espaces sécurisés."
   }
 ]

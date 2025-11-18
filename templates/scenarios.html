@@ -17,27 +17,17 @@
             {% for scenario in scenarios %}
             <div class="scenario-card glass-card">
                 <h3>{{ scenario.title }}</h3>
-                <p class="scenario-description">{{ scenario.description }}</p>
+                <div class="scenario-description">{{ scenario.description|safe }}</div>
                 
-                {% if scenario.risks %}
-                <div class="scenario-section">
-                    <h4>Risques</h4>
-                    <ul class="risks-list">
-                        {% for risk in scenario.risks %}
-                        <li>{{ risk }}</li>
-                        {% endfor %}
-                    </ul>
+                {% if scenario.severity %}
+                <div class="scenario-severity">
+                    <span class="severity-badge severity-{{ scenario.severity|lower }}">{{ scenario.severity }}</span>
                 </div>
                 {% endif %}
                 
-                {% if scenario.solutions %}
-                <div class="scenario-solution">
-                    <h4>Solutions</h4>
-                    <ul class="solutions-list">
-                        {% for solution in scenario.solutions %}
-                        <li>{{ solution }}</li>
-                        {% endfor %}
-                    </ul>
+                {% if scenario.threat_type %}
+                <div class="scenario-threat-type">
+                    <strong>Type de menace :</strong> {{ scenario.threat_type }}
                 </div>
                 {% endif %}
             </div>
