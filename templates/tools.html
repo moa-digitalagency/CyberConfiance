@@ -3,63 +3,320 @@
 {% block title %}Outils de Sécurité - CyberConfiance{% endblock %}
 
 {% block content %}
-<section class="page-header">
+<section class="page-header-modern">
     <div class="container">
-        <h1>Outils de Sécurité</h1>
-        <p>Découvrez les outils essentiels pour protéger vos appareils et données</p>
+        <div class="header-content-centered">
+            <h1 class="page-title-modern">Outils de Sécurité</h1>
+            <p class="page-subtitle-modern">Découvrez les outils essentiels pour protéger vos appareils et données</p>
+        </div>
     </div>
 </section>
 
-<section class="content-section">
+<section class="tools-section-modern">
     <div class="container">
         {% if tools %}
-        <div class="tools-grid">
+        <div class="tools-grid-modern">
             {% for tool in tools %}
-            <div class="tool-card glass-card">
-                <h3>{{ tool.name }}</h3>
-                <p class="tool-description">{{ tool.description }}</p>
-                
-                {% if tool.use_case %}
-                <div class="tool-usage">
-                    <h4>À quoi ça sert</h4>
-                    <p>{{ tool.use_case }}</p>
-                </div>
-                {% endif %}
-                
-                {% if tool.dangers %}
-                <div class="tool-dangers">
-                    <h4>Protège contre</h4>
-                    <p>{{ tool.dangers }}</p>
-                </div>
-                {% endif %}
-                
-                {% if tool.related_rules %}
-                <div class="tool-related">
-                    <h4>Règles d'or associées</h4>
-                    <div class="rules-buttons">
-                        {% for rule_id in tool.get_related_rule_ids() %}
-                        <a href="{{ url_for('main.rule_detail', rule_id=rule_id) }}" class="rule-link-button">Règle {{ rule_id }}</a>
-                        {% endfor %}
+            <article class="tool-card-modern">
+                <div class="tool-header-modern">
+                    <div class="tool-icon-wrapper">
+                        <svg class="tool-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
                     </div>
+                    <h3 class="tool-title-modern">{{ tool.name }}</h3>
                 </div>
-                {% endif %}
                 
-                {% if tool.related_scenarios %}
-                <div class="tool-related">
-                    <h4>Scénarios associés</h4>
-                    <div class="rules-buttons">
-                        {% for scenario_id in tool.get_related_scenario_ids() %}
-                        <a href="{{ url_for('main.scenarios') }}#scenario-{{ scenario_id }}" class="rule-link-button">Scénario {{ scenario_id }}</a>
-                        {% endfor %}
+                <p class="tool-description-modern">{{ tool.description }}</p>
+                
+                <div class="tool-sections">
+                    {% if tool.use_case %}
+                    <div class="tool-info-block">
+                        <div class="info-block-header">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="12" y1="16" x2="12" y2="12"/>
+                                <line x1="12" y1="8" x2="12.01" y2="8"/>
+                            </svg>
+                            <span class="info-block-title">À quoi ça sert</span>
+                        </div>
+                        <p class="info-block-text">{{ tool.use_case }}</p>
                     </div>
+                    {% endif %}
+                    
+                    {% if tool.dangers %}
+                    <div class="tool-info-block tool-protection">
+                        <div class="info-block-header">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            </svg>
+                            <span class="info-block-title">Protège contre</span>
+                        </div>
+                        <p class="info-block-text">{{ tool.dangers }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                {% if tool.related_rules or tool.related_scenarios %}
+                <div class="tool-links-section">
+                    {% if tool.related_rules %}
+                    <div class="tool-links-group">
+                        <h4 class="links-group-title">Règles d'or</h4>
+                        <div class="badge-container">
+                            {% for rule_id in tool.get_related_rule_ids() %}
+                            <a href="{{ url_for('main.rule_detail', rule_id=rule_id) }}" class="badge-link">Règle {{ rule_id }}</a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if tool.related_scenarios %}
+                    <div class="tool-links-group">
+                        <h4 class="links-group-title">Scénarios</h4>
+                        <div class="badge-container">
+                            {% for scenario_id in tool.get_related_scenario_ids() %}
+                            <a href="{{ url_for('main.scenarios') }}#scenario-{{ scenario_id }}" class="badge-link badge-scenario">Scénario {{ scenario_id }}</a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
                 </div>
                 {% endif %}
-            </div>
+            </article>
             {% endfor %}
         </div>
         {% else %}
-        <p>Aucun outil disponible pour le moment.</p>
+        <div class="empty-state">
+            <p>Aucun outil disponible pour le moment.</p>
+        </div>
         {% endif %}
     </div>
 </section>
+
+<style>
+.page-header-modern {
+    padding: 140px 0 80px;
+    text-align: center;
+}
+
+.header-content-centered {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.page-title-modern {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #fff 0%, #60a5fa 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.page-subtitle-modern {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    line-height: 1.8;
+}
+
+.tools-section-modern {
+    padding: 40px 0 120px;
+}
+
+.tools-grid-modern {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 2rem;
+}
+
+.tool-card-modern {
+    background: rgba(15, 31, 53, 0.6);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 16px;
+    padding: 2rem;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(20px);
+}
+
+.tool-card-modern:hover {
+    transform: translateY(-4px);
+    border-color: rgba(59, 130, 246, 0.4);
+    box-shadow: 0 12px 40px rgba(59, 130, 246, 0.15);
+}
+
+.tool-header-modern {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.tool-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(147, 51, 234, 0.2));
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.tool-icon {
+    color: var(--accent-blue-light);
+}
+
+.tool-title-modern {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.tool-description-modern {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+}
+
+.tool-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.tool-info-block {
+    background: rgba(10, 22, 40, 0.5);
+    border-left: 3px solid rgba(59, 130, 246, 0.5);
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.tool-protection {
+    border-left-color: rgba(34, 197, 94, 0.5);
+}
+
+.info-block-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.info-block-header svg {
+    color: var(--accent-blue-light);
+    flex-shrink: 0;
+}
+
+.tool-protection .info-block-header svg {
+    color: #22c55e;
+}
+
+.info-block-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.info-block-text {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0;
+}
+
+.tool-links-section {
+    border-top: 1px solid rgba(59, 130, 246, 0.1);
+    padding-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.tool-links-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.links-group-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0;
+}
+
+.badge-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.badge-link {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 20px;
+    color: var(--accent-blue-light);
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.badge-link:hover {
+    background: rgba(59, 130, 246, 0.2);
+    border-color: var(--accent-blue);
+    transform: translateY(-1px);
+}
+
+.badge-scenario {
+    background: rgba(147, 51, 234, 0.1);
+    border-color: rgba(147, 51, 234, 0.3);
+    color: #c084fc;
+}
+
+.badge-scenario:hover {
+    background: rgba(147, 51, 234, 0.2);
+    border-color: #9333ea;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--text-muted);
+    font-size: 1.125rem;
+}
+
+@media (max-width: 768px) {
+    .page-title-modern {
+        font-size: 2rem;
+    }
+    
+    .page-subtitle-modern {
+        font-size: 1rem;
+    }
+    
+    .tools-grid-modern {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .tool-card-modern {
+        padding: 1.5rem;
+    }
+    
+    .container {
+        padding: 0 1.5rem;
+    }
+}
+</style>
 {% endblock %}
