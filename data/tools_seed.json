@@ -8,7 +8,7 @@
     "use_case": "Communication sécurisée sans tracking. OS sans Google, uniquement applications de sécurité vérifiées. Séparation totale vie personnelle et professionnelle.",
     "dangers": "Tracking GPS, Collecte de données, Surveillance téléphonique",
     "related_rules": "11, 16",
-    "related_scenarios": "1"
+    "related_scenarios": "1, 5"
   },
   {
     "name": "Tor + VPN (Onion over VPN)",
@@ -30,7 +30,7 @@
     "use_case": "Déplacements sensibles, réunions confidentielles. Test : signal disparaît complètement à l'intérieur. Bloque tout tracking lorsque téléphone est rangé.",
     "dangers": "Tracking GPS, Écoute à distance, Géolocalisation non désirée",
     "related_rules": "16",
-    "related_scenarios": "1, 3"
+    "related_scenarios": "1, 3, 5"
   },
   {
     "name": "Détecteur de Signal Radio et Caméra Embarquée",
@@ -41,7 +41,7 @@
     "use_case": "Scan pièce/véhicule avant réunion critique. Détection de dispositifs d'espionnage cachés. Vérification régulière des espaces sensibles.",
     "dangers": "Écoute clandestine, Tracking véhicule, Espionnage industriel",
     "related_rules": "16",
-    "related_scenarios": "3"
+    "related_scenarios": "3, 6"
   },
   {
     "name": "Brouilleur GPS",
@@ -52,7 +52,7 @@
     "use_case": "Rend tout équipement de tracking GPS obsolète dans un véhicule. Protection contre géolocalisation forcée. Crée zone de confidentialité mobile.",
     "dangers": "Tracking GPS véhicule, Géolocalisation forcée, Surveillance de déplacements",
     "related_rules": "16",
-    "related_scenarios": "3"
+    "related_scenarios": "3, 5"
   },
   {
     "name": "Filtres de Confidentialité Écran",
@@ -63,7 +63,7 @@
     "use_case": "Installation : 5-10 minutes. Réduction luminosité acceptable (15-20%). Protection en espaces publics, transports, lieux surveillés.",
     "dangers": "Regard indiscret, Surveillance vidéo, Shoulder surfing",
     "related_rules": "14",
-    "related_scenarios": "1"
+    "related_scenarios": "1, 11"
   },
   {
     "name": "Étuis Anti-RFID",
@@ -74,7 +74,7 @@
     "use_case": "Utilisation combinée : RFID sleeves + Pochette Faraday = protection complète. Protection passeport, cartes bancaires, badges d'accès.",
     "dangers": "Clonage carte bancaire, Vol de données RFID, Skimming sans contact",
     "related_rules": "4",
-    "related_scenarios": "3"
+    "related_scenarios": "3, 8"
   },
   {
     "name": "Radio Numérique Cryptée (P25, DMR, Tetra)",
@@ -85,7 +85,7 @@
     "use_case": "Modèles : Motorola DP4400e, Hytera PD685, Icom IC-4100H. Portée 10-50 km selon terrain. Radio chiffrée coordination terrain + Signal/Proton documents secondaires.",
     "dangers": "Interception communications, Dépendance réseau GSM, Coupure Internet",
     "related_rules": "11",
-    "related_scenarios": "1"
+    "related_scenarios": "1, 2"
   },
   {
     "name": "Signal + Proton Mail",
@@ -96,7 +96,7 @@
     "use_case": "Désactiver sauvegardes cloud Google. Vérifier codes sécurité contacts critiques. Communication chiffrée pour messages, appels et emails sensibles.",
     "dangers": "Interception communications, Phishing, Surveillance messagerie",
     "related_rules": "11, 7, 8",
-    "related_scenarios": "2, 5, 7"
+    "related_scenarios": "2, 4, 5, 7"
   },
   {
     "name": "VPN Sécurisé",
@@ -117,8 +117,8 @@
     "url": "",
     "use_case": "Protéger toutes données stockées sur supports amovibles. En cas de vol ou perte, données restent inaccessibles sans clé de déchiffrement. Disque dur qui chiffre automatiquement toutes les données stockées.",
     "dangers": "Vol de données physiques, Perte d'appareil, Malware USB",
-    "related_rules": "4, 5, 12",
-    "related_scenarios": "3"
+    "related_rules": "4, 5, 12, 15",
+    "related_scenarios": "3, 8, 10"
   },
   {
     "name": "Authentification 2FA/FIDO2",
@@ -129,7 +129,7 @@
     "use_case": "Protection ultime pour comptes critiques. Impossible de se connecter sans clé physique, même si mot de passe volé. Résistant au phishing car clé vérifie le domaine.",
     "dangers": "Phishing sophistiqué, Vol de compte administrateur, Attaque sur comptes sensibles",
     "related_rules": "3, 4",
-    "related_scenarios": "5, 7"
+    "related_scenarios": "4, 5, 7"
   },
   {
     "name": "Sauvegardes Hors Ligne",
@@ -140,7 +140,7 @@
     "use_case": "Vérification intégrité tous 3 mois. Récupération données en cas ransomware, panne matérielle, sinistre. Suivre règle 3-2-1 : 3 copies, 2 supports différents, 1 hors site.",
     "dangers": "Ransomware, Perte de données, Panne matérielle",
     "related_rules": "13",
-    "related_scenarios": "9"
+    "related_scenarios": "7, 9"
   },
   {
     "name": "Téléphone Basique Sans Internet",
@@ -151,7 +151,7 @@
     "use_case": "Zéro données professionnelles. Usage : urgence seulement. Si non utilisé, mettre dans pochette Faraday. Alternative en cas de compromission smartphone principal.",
     "dangers": "Perte smartphone principal, Batterie déchargée, Compromission téléphone",
     "related_rules": "11",
-    "related_scenarios": "1"
+    "related_scenarios": "1, 5, 9"
   },
   {
     "name": "Mode Avion Systématique",
@@ -162,7 +162,7 @@
     "use_case": "Vérifier désactivation WiFi/Bluetooth même Mode Avion. Prévenir tracking et tentatives de connexion lorsque téléphone non utilisé.",
     "dangers": "Tracking continu, Drainage batterie, Tentatives connexion malveillantes",
     "related_rules": "16",
-    "related_scenarios": "1"
+    "related_scenarios": "1, 5"
   },
   {
     "name": "Tails OS",
@@ -184,7 +184,7 @@
     "use_case": "Créer et mémoriser des mots de passe complexes uniques pour chaque compte sans avoir à les retenir. Synchronisation entre tous vos appareils.",
     "dangers": "Phishing, Vol de mots de passe, Réutilisation de mots de passe",
     "related_rules": "2, 3",
-    "related_scenarios": ""
+    "related_scenarios": "4, 5, 7"
   },
   {
     "name": "Antivirus",
@@ -195,7 +195,7 @@
     "use_case": "Protection en temps réel contre les virus, ransomwares, spywares et autres logiciels malveillants. Analyse régulière des fichiers et programmes.",
     "dangers": "Malware, Ransomware, Virus, Cheval de Troie",
     "related_rules": "6, 10",
-    "related_scenarios": "9"
+    "related_scenarios": "4, 7, 9"
   },
   {
     "name": "Pare-feu (Firewall)",
@@ -206,7 +206,7 @@
     "use_case": "Bloquer les tentatives d'accès non autorisées à votre ordinateur ou réseau. Protection contre les attaques réseau et les logiciels malveillants qui tentent de communiquer vers l'extérieur.",
     "dangers": "Intrusion réseau, Accès non autorisé, Exfiltration de données",
     "related_rules": "6, 16",
-    "related_scenarios": ""
+    "related_scenarios": "6, 10"
   },
   {
     "name": "Chiffrement de disque",
@@ -217,7 +217,7 @@
     "use_case": "Protéger toutes les données stockées sur votre ordinateur ou téléphone. En cas de vol ou perte de l'appareil, les données restent inaccessibles sans la clé de déchiffrement.",
     "dangers": "Vol de données physiques, Perte d'appareil, Accès non autorisé aux données",
     "related_rules": "4, 5, 12",
-    "related_scenarios": "3"
+    "related_scenarios": "3, 8"
   },
   {
     "name": "Filtre anti-spam et anti-phishing",
@@ -228,7 +228,7 @@
     "use_case": "Protéger votre boîte mail des courriels malveillants, faux messages bancaires, arnaques et liens dangereux. Réduire le risque de cliquer sur des contenus frauduleux.",
     "dangers": "Phishing, Spear phishing, Arnaque par email, Malware par pièce jointe",
     "related_rules": "7, 8",
-    "related_scenarios": "2, 5, 7"
+    "related_scenarios": "2, 4, 5, 7"
   },
   {
     "name": "Navigateur sécurisé",
@@ -239,7 +239,7 @@
     "use_case": "Naviguer sur internet en bloquant les trackers publicitaires, scripts malveillants et sites dangereux. Protéger votre vie privée en limitant la collecte de données.",
     "dangers": "Tracking publicitaire, Sites malveillants, Collecte de données personnelles",
     "related_rules": "9, 15",
-    "related_scenarios": ""
+    "related_scenarios": "1, 5"
   },
   {
     "name": "Mise à jour automatique",
@@ -249,8 +249,8 @@
     "url": "",
     "use_case": "Corriger les failles de sécurité dès qu'elles sont découvertes, sans intervention manuelle. Maintenir tous vos logiciels à jour pour éviter l'exploitation de vulnérabilités connues.",
     "dangers": "Exploitation de vulnérabilités, Zero-day, Attaques ciblées",
-    "related_rules": "6",
-    "related_scenarios": ""
+    "related_rules": "6, 12",
+    "related_scenarios": "4, 7, 9"
   },
   {
     "name": "Détecteur de fuites de données",
@@ -261,6 +261,6 @@
     "use_case": "Être averti rapidement si votre email, mot de passe ou données personnelles apparaissent dans une fuite de données. Permet de réagir vite en changeant vos mots de passe.",
     "dangers": "Fuite de données, Brèche de sécurité, Vol d'identité",
     "related_rules": "2, 18",
-    "related_scenarios": ""
+    "related_scenarios": "4, 7"
   }
 ]
