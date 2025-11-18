@@ -15,7 +15,7 @@
     </div>
 </section>
 
-<section class="section" style="padding: 4rem 0;">
+<section class="section" style="padding-bottom: 4rem;">
     <div class="container">
         {% if recommendations.level == 'safe' %}
         <div class="breach-result-card safe-card">
@@ -94,7 +94,7 @@
                         {% endif %}
                     </div>
                     {% if breach.get('Description') %}
-                    <p class="breach-description">{{ breach['Description']|safe if breach['Description']|length < 200 else breach['Description'][:200]|safe + '...' }}</p>
+                    <p class="breach-description">{{ (breach['Description']|striptags if breach['Description']|length < 200 else breach['Description'][:200]|striptags + '...') }}</p>
                     {% endif %}
                     <div class="breach-details">
                         {% if breach.get('DataClasses') %}
@@ -102,7 +102,7 @@
                             <strong>Données compromises ({{ breach.get('DataClasses', [])|length }}):</strong>
                             <div class="data-classes-detailed">
                                 {% for data_class in breach.get('DataClasses', []) %}
-                                {% set scenario = data_scenarios.get(data_class, {'risk': 'Inconnu', 'scenario': 'Type de donnée non documenté.'}) %}
+                                {% set scenario = data_scenarios.get(data_class, {'risk': 'Modéré', 'scenario': 'Cette donnée peut être utilisée par des attaquants pour du phishing, de l\'usurpation d\'identité ou des tentatives de connexion non autorisées. Changez vos mots de passe et activez l\'authentification à deux facteurs sur tous vos comptes.'}) %}
                                 <div class="data-class-scenario">
                                     <div class="data-class-header">
                                         <span class="data-class-name">{{ data_class }}</span>
@@ -116,7 +116,7 @@
                         {% endif %}
                         {% if breach.get('PwnCount') %}
                         <div class="breach-detail-item">
-                            <strong>Comptes affectés:</strong> {{ "{:,}".format(breach['PwnCount']).replace(',', ' ') }}
+                            <strong>Comptes affectés:</strong> <span style="color: var(--text-secondary);">{{ "{:,}".format(breach['PwnCount']).replace(',', ' ') }}</span>
                         </div>
                         {% endif %}
                     </div>
