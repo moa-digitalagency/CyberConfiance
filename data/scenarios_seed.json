@@ -1,0 +1,26 @@
+[
+  {
+    "title": "Le piège du Wi-Fi public",
+    "description": "<p>Vous êtes dans un café et vous connectez votre ordinateur au Wi-Fi gratuit pour travailler. Sans le savoir, un pirate a créé un faux point d'accès avec un nom similaire à celui du café. Toutes vos communications passent par son ordinateur.</p><h3>Les risques</h3><ul><li>Interception de vos mots de passe et données bancaires</li><li>Vol de fichiers sensibles transmis sur le réseau</li><li>Installation à distance de logiciels malveillants</li></ul><h3>Comment se protéger</h3><ul><li>Vérifiez toujours le nom exact du réseau auprès du personnel</li><li>Utilisez systématiquement un VPN sur les réseaux publics</li><li>Désactivez le partage de fichiers et la découverte de réseau</li><li>Privilégiez votre connexion 4G/5G pour les opérations sensibles</li></ul>",
+    "severity": "Élevé",
+    "threat_type": "Man-in-the-Middle"
+  },
+  {
+    "title": "L'email du directeur (CEO Fraud)",
+    "description": "<p>Vous recevez un email urgent de votre directeur vous demandant de faire un virement de 50 000€ immédiatement pour finaliser une acquisition confidentielle. L'adresse email ressemble à celle de votre directeur, le ton est autoritaire et pressant.</p><h3>Les risques</h3><ul><li>Perte financière importante et immédiate</li><li>Compromission de la crédibilité professionnelle</li><li>Exposition à des poursuites judiciaires</li></ul><h3>Comment se protéger</h3><ul><li>Vérifiez systématiquement l'adresse email complète de l'expéditeur</li><li>Contactez directement votre supérieur par téléphone pour confirmer</li><li>Méfiez-vous des demandes urgentes contournant les procédures normales</li><li>Établissez un protocole de double validation pour les virements importants</li></ul>",
+    "severity": "Critique",
+    "threat_type": "Ingénierie sociale"
+  },
+  {
+    "title": "Le ransomware : vos données prises en otage",
+    "description": "<p>En ouvrant une pièce jointe d'un email qui semblait provenir de votre banque, un logiciel malveillant s'installe et chiffre tous vos fichiers. Un message apparaît exigeant 5 000€ en Bitcoin pour récupérer vos données.</p><h3>Les risques</h3><ul><li>Perte définitive de toutes vos données importantes</li><li>Arrêt complet de votre activité professionnelle</li><li>Paiement de rançon sans garantie de récupération</li><li>Vol de données avant chiffrement (double extorsion)</li></ul><h3>Comment se protéger</h3><ul><li>Maintenez des sauvegardes régulières hors ligne (règle 3-2-1)</li><li>Ne cliquez jamais sur les pièces jointes suspectes</li><li>Gardez votre antivirus et système à jour</li><li>Formez-vous à reconnaître les emails de phishing</li><li>Isolez immédiatement tout appareil infecté du réseau</li></ul>",
+    "severity": "Critique",
+    "threat_type": "Malware"
+  },
+  {
+    "title": "La clé USB piégée",
+    "description": "<p>Vous trouvez une clé USB dans le parking de votre entreprise avec une étiquette 'Salaires 2024 - Confidentiel'. Par curiosité, vous la branchez sur votre ordinateur professionnel pour voir ce qu'elle contient.</p><h3>Les risques</h3><ul><li>Installation automatique de malwares sur votre système</li><li>Vol de données sensibles de l'entreprise</li><li>Compromission du réseau entier de l'organisation</li><li>Création d'une porte dérobée pour les pirates</li></ul><h3>Comment se protéger</h3><ul><li>Ne branchez jamais de clés USB trouvées ou d'origine inconnue</li><li>Désactivez l'exécution automatique des périphériques USB</li><li>Scannez toute clé USB externe avec un antivirus avant ouverture</li><li>Signalez immédiatement au service IT toute clé USB suspecte trouvée</li><li>Utilisez des stations de quarantaine pour analyser les supports inconnus</li></ul>",
+    "severity": "Élevé",
+    "threat_type": "Malware physique"
+  }
+]

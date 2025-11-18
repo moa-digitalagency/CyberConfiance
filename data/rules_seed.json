@@ -1,0 +1,102 @@
+[
+  {
+    "title": "Séparez strictement vos usages privés et professionnels",
+    "description": "<h2>La règle</h2><p>Utilisez des appareils distincts pour vos activités professionnelles et personnelles. Évitez d'installer des applications non vérifiées sur vos appareils professionnels. Ne partagez jamais vos identifiants professionnels sur des plateformes non sécurisées.</p><h3>Les risques</h3><ul><li>Fuite de données professionnelles sensibles via des applications personnelles non sécurisées</li><li>Exposition des systèmes d'entreprise à des malwares provenant d'usages personnels</li><li>Compromission de la confidentialité des communications professionnelles</li></ul><h3>La solution</h3><p>Maintenez une séparation stricte entre appareils professionnels et personnels. Si impossible, utilisez des profils utilisateurs distincts et des applications de conteneurisation pour isoler les données.</p>",
+    "order": 1
+  },
+  {
+    "title": "Protégez vos accès par des mots de passe complexes et uniques",
+    "description": "<h2>La règle</h2><p>Créez des mots de passe robustes (minimum 12 caractères, incluant majuscules, minuscules, chiffres et symboles). Utilisez des mots de passe uniques pour chaque compte. Utilisez un gestionnaire de mots de passe pour stocker vos identifiants de manière sécurisée.</p><h3>Les risques</h3><ul><li>Accès non autorisé à vos comptes en cas de mots de passe faibles ou réutilisés</li><li>Compromission en cascade si le même mot de passe est utilisé sur plusieurs services</li><li>Exposition accrue lors de fuites de données massives</li></ul><h3>La solution</h3><p>Utilisez un gestionnaire de mots de passe fiable (Bitwarden, 1Password, KeePass) pour générer et stocker des mots de passe forts et uniques pour chaque service.</p>",
+    "order": 2
+  },
+  {
+    "title": "Activez l'authentification à deux facteurs (2FA)",
+    "description": "<h2>La règle</h2><p>Activez le 2FA sur tous vos comptes sensibles. Choisissez une méthode sécurisée (applications d'authentification, clés USB physiques). Le 2FA renforce considérablement la sécurité même si votre mot de passe est compromis.</p><h3>Les risques</h3><ul><li>Accès frauduleux à vos comptes même avec un mot de passe volé</li><li>Vol d'identité et usurpation de compte</li><li>Perte de contrôle sur vos données sensibles</li></ul><h3>La solution</h3><p>Privilégiez les applications d'authentification (Google Authenticator, Authy) ou les clés physiques (YubiKey) plutôt que les SMS qui sont moins sécurisés.</p>",
+    "order": 3
+  },
+  {
+    "title": "Protégez vos équipements physiques",
+    "description": "<h2>La règle</h2><p>Gardez vos appareils toujours sous votre contrôle. Protégez vos appareils avec des codes de verrouillage et du chiffrement. Utilisez des câbles de verrouillage pour vos ordinateurs portables lors des déplacements.</p><h3>Les risques</h3><ul><li>Vol de données sensibles en cas de perte ou vol d'appareil</li><li>Installation de logiciels malveillants sur un appareil non surveillé</li><li>Accès physique permettant de contourner les protections logicielles</li></ul><h3>La solution</h3><p>Activez le chiffrement complet du disque (BitLocker, FileVault), utilisez des codes PIN robustes, et ne laissez jamais vos appareils sans surveillance dans les lieux publics.</p>",
+    "order": 4
+  },
+  {
+    "title": "Verrouillez vos appareils et espaces de travail",
+    "description": "<h2>La règle</h2><p>Verrouillez systématiquement vos appareils quand vous vous absentez. Rangez toujours vos documents sensibles dans des tiroirs fermés à clé. Installez des filtres de confidentialité sur vos écrans.</p><h3>Les risques</h3><ul><li>Accès non autorisé à vos données pendant votre absence</li><li>Vol de documents confidentiels laissés à découvert</li><li>Espionnage visuel de vos écrans dans les espaces publics</li></ul><h3>La solution</h3><p>Configurez le verrouillage automatique après 2-5 minutes d'inactivité. Utilisez Windows+L (Windows) ou Control+Command+Q (Mac) pour verrouiller rapidement. Rangez systématiquement tous documents sensibles.</p>",
+    "order": 5
+  },
+  {
+    "title": "Soyez vigilant avec les courriels et les liens non sollicités",
+    "description": "<h2>La règle</h2><p>Analysez l'expéditeur avant de cliquer sur un lien. Soyez prudent avec les pièces jointes. Vérifiez les URL avant de saisir vos identifiants. Le phishing est l'une des techniques les plus courantes des cybercriminels.</p><h3>Les risques</h3><ul><li>Vol d'identifiants via des sites de phishing imitant des services légitimes</li><li>Installation de malwares via des pièces jointes malveillantes</li><li>Compromission de compte professionnel et propagation aux collègues</li></ul><h3>La solution</h3><p>Vérifiez toujours le domaine exact de l'expéditeur. Survolez les liens avant de cliquer pour voir la vraie URL. En cas de doute, contactez directement l'expéditeur par un autre canal.</p>",
+    "order": 6
+  },
+  {
+    "title": "Sauvegardez vos données régulièrement et de manière sécurisée",
+    "description": "<h2>La règle</h2><p>Établissez un plan de sauvegarde régulier. Stockez vos sauvegardes dans des endroits sécurisés hors ligne. Testez régulièrement vos sauvegardes pour vous assurer qu'elles fonctionnent.</p><h3>Les risques</h3><ul><li>Perte définitive de données critiques en cas de ransomware ou panne matérielle</li><li>Interruption prolongée de l'activité faute de données récupérables</li><li>Compromission des sauvegardes si elles sont connectées en permanence</li></ul><h3>La solution</h3><p>Appliquez la règle 3-2-1 : 3 copies de vos données, sur 2 supports différents, dont 1 hors site. Automatisez les sauvegardes et testez la restauration trimestriellement.</p>",
+    "order": 7
+  },
+  {
+    "title": "Évitez les réseaux publics non sécurisés",
+    "description": "<h2>La règle</h2><p>Évitez les réseaux Wi-Fi publics pour accéder à des comptes sensibles. Utilisez un VPN pour chiffrer vos communications. Vérifiez le nom du réseau avant de vous connecter.</p><h3>Les risques</h3><ul><li>Interception de vos communications sur des réseaux non chiffrés</li><li>Attaques « Man-in-the-Middle » permettant de voler vos identifiants</li><li>Faux points d'accès Wi-Fi créés par des pirates pour capturer vos données</li></ul><h3>La solution</h3><p>Utilisez toujours un VPN de confiance sur les réseaux publics. Privilégiez le partage de connexion 4G/5G de votre smartphone pour les opérations sensibles.</p>",
+    "order": 8
+  },
+  {
+    "title": "Faites preuve de vigilance lors de vos échanges téléphoniques ou en visioconférence",
+    "description": "<h2>La règle</h2><p>Utilisez des outils sécurisés et chiffrés pour vos communications. Protégez l'accès aux réunions par des codes. Sensibilisez vos participants aux risques d'espionnage.</p><h3>Les risques</h3><ul><li>Interception de conversations sensibles par des tiers</li><li>Enregistrement non autorisé de réunions confidentielles</li><li>Intrusion de personnes non autorisées dans les visioconférences</li></ul><h3>La solution</h3><p>Utilisez des plateformes sécurisées (Signal pour les appels, Zoom avec chiffrement end-to-end). Activez les salles d'attente et vérifiez l'identité des participants avant de partager des informations sensibles.</p>",
+    "order": 9
+  },
+  {
+    "title": "Veillez à la sécurité de votre smartphone",
+    "description": "<h2>La règle</h2><p>Utilisez uniquement des applications provenant de sources fiables. Vérifiez les autorisations demandées par les applications. Activez le chiffrement des données de votre appareil.</p><h3>Les risques</h3><ul><li>Installation d'applications malveillantes volant vos données personnelles</li><li>Accès non autorisé à vos contacts, messages et localisation</li><li>Transformation de votre smartphone en outil d'espionnage</li></ul><h3>La solution</h3><p>Téléchargez uniquement depuis les stores officiels (App Store, Google Play). Vérifiez les avis et permissions. Mettez à jour régulièrement votre système d'exploitation et vos applications.</p>",
+    "order": 10
+  },
+  {
+    "title": "Surveillez votre identité numérique sur les réseaux sociaux",
+    "description": "<h2>La règle</h2><p>Limitez la quantité d'informations personnelles partagées publiquement. Désactivez l'enregistrement des métadonnées sur vos photos. Surveillez régulièrement votre présence numérique pour détecter d'éventuelles usurpations.</p><h3>Les risques</h3><ul><li>Utilisation de vos informations personnelles pour des attaques d'ingénierie sociale</li><li>Usurpation d'identité à partir de photos et informations publiques</li><li>Révélation involontaire de localisation et d'habitudes via les métadonnées</li></ul><h3>La solution</h3><p>Configurez la confidentialité de vos profils au maximum. Supprimez les métadonnées EXIF de vos photos avant publication. Faites des recherches régulières sur votre nom pour détecter les usages frauduleux.</p>",
+    "order": 11
+  },
+  {
+    "title": "Mettez à jour vos logiciels et appareils régulièrement",
+    "description": "<h2>La règle</h2><p>Les mises à jour corrigent des failles de sécurité. Activez les mises à jour automatiques. Vérifiez que tous vos appareils connectés sont également à jour.</p><h3>Les risques</h3><ul><li>Exploitation de vulnérabilités connues et non corrigées</li><li>Infection par des malwares ciblant des failles spécifiques</li><li>Compromission totale du système via des vulnérabilités critiques</li></ul><h3>La solution</h3><p>Activez les mises à jour automatiques sur tous vos appareils. Installez les correctifs de sécurité dès leur disponibilité. Remplacez les équipements qui ne reçoivent plus de mises à jour.</p>",
+    "order": 12
+  },
+  {
+    "title": "Formez-vous et sensibilisez votre équipe aux bonnes pratiques",
+    "description": "<h2>La règle</h2><p>Organisez des sessions de formation régulières. Partagez des consignes claires sur les bonnes pratiques. Simulez des attaques pour évaluer la vigilance. Encouragez la communication en cas de doute.</p><h3>Les risques</h3><ul><li>Erreurs humaines causant des incidents de sécurité majeurs</li><li>Manque de réaction appropriée face aux tentatives d'attaque</li><li>Culture de l'insécurité où chacun minimise les risques</li></ul><h3>La solution</h3><p>Organisez des formations trimestrielles sur la cybersécurité. Lancez des campagnes de phishing simulé pour tester la vigilance. Créez une culture où signaler un doute est valorisé.</p>",
+    "order": 13
+  },
+  {
+    "title": "Installez des filtres de confidentialité sur vos écrans",
+    "description": "<h2>La règle</h2><p>Les filtres de confidentialité empêchent l'espionnage visuel dans les espaces publics. Utilisez des écrans secondaires pour les présentations. Protégez vos appareils des regards indiscrets.</p><h3>Les risques</h3><ul><li>Vol d'informations sensibles par simple observation visuelle</li><li>Capture de données confidentielles affichées à l'écran</li><li>Espionnage industriel dans les transports ou espaces publics</li></ul><h3>La solution</h3><p>Installez des filtres de confidentialité 3M ou équivalents sur vos ordinateurs portables. Positionnez votre écran dos au mur dans les espaces publics. Réduisez la luminosité pour limiter la visibilité à distance.</p>",
+    "order": 14
+  },
+  {
+    "title": "Évitez d'utiliser des équipements non vérifiés",
+    "description": "<h2>La règle</h2><p>N'utilisez que des équipements vérifiés et de confiance. Désactivez l'exécution automatique des périphériques USB. Les clés USB et disques externes peuvent contenir des logiciels malveillants.</p><h3>Les risques</h3><ul><li>Infection par des malwares via des clés USB piégées</li><li>Vol de données via des câbles de chargement modifiés (juice jacking)</li><li>Installation de keyloggers matériels sur des postes non sécurisés</li></ul><h3>La solution</h3><p>N'utilisez que vos propres câbles et chargeurs. Scannez toute clé USB avec un antivirus avant ouverture. Utilisez des bloqueurs de données (USB data blocker) pour charger en toute sécurité sur des bornes publiques.</p>",
+    "order": 15
+  },
+  {
+    "title": "Stockez vos données sensibles dans des espaces sécurisés",
+    "description": "<h2>La règle</h2><p>Chiffrez vos données sensibles avant de les stocker. Utilisez des services de stockage cloud sécurisés et certifiés. Limitez l'accès aux données aux seules personnes autorisées.</p><h3>Les risques</h3><ul><li>Accès non autorisé à vos données stockées sans chiffrement</li><li>Fuite de données lors de piratage de services cloud non sécurisés</li><li>Perte de confidentialité sur des données partagées sans contrôle</li></ul><h3>La solution</h3><p>Utilisez des solutions de chiffrement (VeraCrypt, Cryptomator) avant stockage cloud. Privilégiez les services certifiés (ISO 27001). Implémentez un contrôle d'accès strict basé sur le principe du moindre privilège.</p>",
+    "order": 16
+  },
+  {
+    "title": "Identifiez et gérez vos points d'accès critiques",
+    "description": "<h2>La règle</h2><p>Identifiez tous les points d'accès critiques (ports, serveurs, comptes administrateurs). Appliquez des mots de passe robustes et uniques. Surveillez régulièrement les accès et tentatives de connexion.</p><h3>Les risques</h3><ul><li>Intrusion via des points d'accès mal sécurisés ou oubliés</li><li>Escalade de privilèges par compromission de comptes administrateurs</li><li>Mouvements latéraux non détectés dans votre infrastructure</li></ul><h3>La solution</h3><p>Cartographiez tous vos points d'accès. Implémentez l'authentification multi-facteurs sur tous les comptes privilégiés. Surveillez les logs d'accès et mettez en place des alertes pour les tentatives suspectes.</p>",
+    "order": 17
+  },
+  {
+    "title": "Soyez prudent avec les demandes d'informations sensibles",
+    "description": "<h2>La règle</h2><p>Vérifiez toujours l'identité de la personne qui demande des informations. Ne communiquez jamais d'informations sensibles par téléphone ou email sans vérification. Méfiez-vous des techniques d'ingénierie sociale.</p><h3>Les risques</h3><ul><li>Divulgation d'informations confidentielles à des imposteurs</li><li>Manipulation psychologique pour obtenir des accès ou données</li><li>Compromission de systèmes suite à des informations révélées innocemment</li></ul><h3>La solution</h3><p>Établissez un protocole de vérification d'identité strict. En cas de demande inhabituelle, contactez directement la personne par un canal indépendant. Formez vos équipes à reconnaître les techniques de social engineering.</p>",
+    "order": 18
+  },
+  {
+    "title": "Utilisez des outils de chiffrement pour vos communications",
+    "description": "<h2>La règle</h2><p>Utilisez des outils de messagerie chiffrée (Signal, ProtonMail). Activez le chiffrement des emails et fichiers sensibles. Le chiffrement protège vos communications contre l'espionnage.</p><h3>Les risques</h3><ul><li>Interception et lecture de vos communications par des tiers</li><li>Espionnage industriel ou gouvernemental de vos échanges sensibles</li><li>Compromission de données confidentielles transmises en clair</li></ul><h3>La solution</h3><p>Utilisez Signal pour les messages et appels chiffrés. ProtonMail ou Tutanota pour les emails sensibles. Chiffrez les documents avec GPG avant envoi. Vérifiez toujours que le chiffrement end-to-end est activé.</p>",
+    "order": 19
+  },
+  {
+    "title": "Réagissez rapidement en cas d'incident de sécurité",
+    "description": "<h2>La règle</h2><p>Mettez en place un plan de réponse aux incidents. Alertez rapidement les responsables en cas de suspicion. Documentez chaque incident pour améliorer la prévention. Réagir rapidement limite les dégâts.</p><h3>Les risques</h3><ul><li>Propagation d'une attaque faute de réaction rapide</li><li>Perte de preuves nécessaires à l'investigation</li><li>Dommages amplifiés par une gestion improvisée de la crise</li></ul><h3>La solution</h3><p>Créez un plan de réponse aux incidents avec rôles et responsabilités clairs. Établissez une hotline de signalement disponible 24/7. Documentez tous les incidents et réalisez des post-mortems pour améliorer vos défenses.</p>",
+    "order": 20
+  }
+]

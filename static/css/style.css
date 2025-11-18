@@ -1530,19 +1530,51 @@ footer {
     gap: 1rem;
 }
 
+.rule-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
 .back-link {
     display: inline-flex;
     align-items: center;
+    gap: 0.5rem;
     color: var(--text-secondary);
     text-decoration: none;
     font-size: 0.95rem;
-    margin-bottom: 2rem;
     transition: all 0.3s ease;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.back-link svg {
+    transition: transform 0.3s ease;
 }
 
 .back-link:hover {
     color: var(--accent-blue);
-    transform: translateX(-5px);
+    background: rgba(59, 130, 246, 0.1);
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+.back-link:hover svg {
+    transform: translateX(-3px);
+}
+
+.rule-number {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 20px;
 }
 
 .rule-detail-content {
