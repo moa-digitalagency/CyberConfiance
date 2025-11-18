@@ -62,10 +62,14 @@ document.addEventListener('DOMContentLoaded', function() {
             const ruleNumbers = match[1].trim().split(/[,\s]+/).filter(n => n && !isNaN(n));
             
             if (ruleNumbers.length > 0) {
-                // Créer le HTML
+                // Supprimer le texte "Règles d'or appliquées" de la description pour éviter la duplication
+                const cleanDescription = descriptionDiv.innerHTML.replace(/Règles d['']or appliquées[^:]*:\s*[0-9,\s]+/i, '').trim();
+                descriptionDiv.innerHTML = cleanDescription;
+                
+                // Créer le HTML avec les bons liens vers /rules/{id}
                 let html = '<h4>📋 Règles d\'or à appliquer :</h4><div class="rules-buttons">';
                 ruleNumbers.forEach(num => {
-                    html += `<a href="/regles#regle-${num}" class="rule-link-button">Règle ${num}</a>`;
+                    html += `<a href="/rules/${num}" class="rule-link-button">Règle ${num}</a>`;
                 });
                 html += '</div>';
                 rulesContainer.innerHTML = html;
