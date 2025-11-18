@@ -1,0 +1,441 @@
+{% extends "base.html" %}
+
+{% block title %}Analyse de sécurité - {{ email }} - CyberConfiance{% endblock %}
+
+{% block content %}
+<section class="hero" style="min-height: 40vh; padding-top: 6rem; padding-bottom: 1rem;">
+    <div class="glow-orb"></div>
+    
+    <div class="container hero-content">
+        <h1 style="font-size: 2.5rem;">
+            <span class="hero-title-static">Analyse de sécurité</span>
+        </h1>
+        <p class="hero-subtitle">Résultats pour {{ email }}</p>
+    </div>
+</section>
+
+<section class="section" style="padding: 4rem 0;">
+    <div class="container">
+        {% if recommendations.level == 'safe' %}
+        <div class="breach-result-card safe-card">
+            <div class="breach-icon-wrapper safe-icon">
+                <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+            </div>
+            <h2 class="breach-title">{{ recommendations.title }}</h2>
+            <p class="breach-message">{{ recommendations.message }}</p>
+            <div class="breach-count safe-count">
+                <span class="count-number">0</span>
+                <span class="count-label">Fuites détectées</span>
+            </div>
+        </div>
+        {% elif recommendations.level == 'warning' %}
+        <div class="breach-result-card warning-card">
+            <div class="breach-icon-wrapper warning-icon">
+                <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/>
+                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+            </div>
+            <h2 class="breach-title">{{ recommendations.title }}</h2>
+            <p class="breach-message">{{ recommendations.message }}</p>
+            <div class="breach-count warning-count">
+                <span class="count-number">{{ result.count }}</span>
+                <span class="count-label">Fuite{{ 's' if result.count > 1 else '' }} détectée{{ 's' if result.count > 1 else '' }}</span>
+            </div>
+        </div>
+        {% else %}
+        <div class="breach-result-card danger-card">
+            <div class="breach-icon-wrapper danger-icon">
+                <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="12"/>
+                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+            </div>
+            <h2 class="breach-title">{{ recommendations.title }}</h2>
+            <p class="breach-message">{{ recommendations.message }}</p>
+            <div class="breach-count danger-count">
+                <span class="count-number">{{ result.count }}</span>
+                <span class="count-label">Fuite{{ 's' if result.count > 1 else '' }} détectée{{ 's' if result.count > 1 else '' }}</span>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="recommendations-section">
+            <h3 class="recommendations-title">Recommandations</h3>
+            <ul class="recommendations-list">
+                {% for recommendation in recommendations.recommendations %}
+                <li class="recommendation-item">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9 11 12 14 22 4"/>
+                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                    </svg>
+                    <span>{{ recommendation }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        {% if result.breaches and result.count > 0 %}
+        <div class="breaches-section">
+            <h3 class="breaches-title">Détails des fuites ({{ result.count }})</h3>
+            <div class="breaches-grid">
+                {% for breach in result.breaches[:10] %}
+                <div class="breach-card">
+                    <div class="breach-header">
+                        <h4>{{ breach.Name }}</h4>
+                        <span class="breach-date">{{ breach.BreachDate }}</span>
+                    </div>
+                    <p class="breach-description">{{ breach.Description|safe if breach.Description|length < 200 else breach.Description[:200]|safe + '...' }}</p>
+                    <div class="breach-details">
+                        <div class="breach-detail-item">
+                            <strong>Données compromises:</strong>
+                            <div class="data-classes">
+                                {% for data_class in breach.DataClasses[:5] %}
+                                <span class="data-class-badge">{{ data_class }}</span>
+                                {% endfor %}
+                                {% if breach.DataClasses|length > 5 %}
+                                <span class="data-class-badge">+{{ breach.DataClasses|length - 5 }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% if breach.PwnCount %}
+                        <div class="breach-detail-item">
+                            <strong>Comptes affectés:</strong> {{ "{:,}".format(breach.PwnCount).replace(',', ' ') }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+                {% if result.count > 10 %}
+                <div class="more-breaches">
+                    <p>Et {{ result.count - 10 }} autre{{ 's' if result.count - 10 > 1 else '' }} fuite{{ 's' if result.count - 10 > 1 else '' }}...</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="action-buttons">
+            <a href="{{ url_for('main.index') }}" class="btn btn-primary">Retour à l'accueil</a>
+            <a href="{{ url_for('main.service_cyberconsultation') }}" class="btn btn-secondary">Demander une consultation</a>
+        </div>
+    </div>
+</section>
+
+<style>
+.breach-result-card {
+    text-align: center;
+    padding: 4rem 3rem;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+    backdrop-filter: blur(80px) saturate(200%);
+    -webkit-backdrop-filter: blur(80px) saturate(200%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    margin-bottom: 3rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.safe-card {
+    border-color: rgba(34, 197, 94, 0.3);
+}
+
+.warning-card {
+    border-color: rgba(251, 191, 36, 0.3);
+}
+
+.danger-card {
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.breach-icon-wrapper {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 120px;
+    height: 120px;
+    margin-bottom: 2rem;
+    border-radius: 50%;
+}
+
+.safe-icon {
+    background: rgba(34, 197, 94, 0.1);
+    border: 2px solid rgba(34, 197, 94, 0.3);
+    color: #22c55e;
+}
+
+.warning-icon {
+    background: rgba(251, 191, 36, 0.1);
+    border: 2px solid rgba(251, 191, 36, 0.3);
+    color: #fbbf24;
+}
+
+.danger-icon {
+    background: rgba(239, 68, 68, 0.1);
+    border: 2px solid rgba(239, 68, 68, 0.3);
+    color: #ef4444;
+}
+
+.breach-title {
+    font-size: 2rem;
+    font-weight: 500;
+    margin-bottom: 1rem;
+    letter-spacing: -1px;
+    color: var(--text-primary);
+}
+
+.breach-message {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.breach-count {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 3rem;
+    border-radius: 16px;
+    margin-top: 1rem;
+}
+
+.safe-count {
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.warning-count {
+    background: rgba(251, 191, 36, 0.1);
+    border: 1px solid rgba(251, 191, 36, 0.2);
+}
+
+.danger-count {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.count-number {
+    font-size: 3.5rem;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+}
+
+.count-label {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-secondary);
+}
+
+.recommendations-section {
+    margin-bottom: 3rem;
+}
+
+.recommendations-title {
+    font-size: 1.8rem;
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.5px;
+    color: var(--text-primary);
+}
+
+.recommendations-list {
+    list-style: none;
+    display: grid;
+    gap: 1rem;
+}
+
+.recommendation-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 100%);
+    backdrop-filter: blur(70px) saturate(190%);
+    -webkit-backdrop-filter: blur(70px) saturate(190%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.recommendation-item:hover {
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.03) 100%);
+    border-color: rgba(59, 130, 246, 0.3);
+    transform: translateX(8px);
+}
+
+.recommendation-item svg {
+    flex-shrink: 0;
+    color: var(--accent-blue);
+    margin-top: 0.2rem;
+}
+
+.recommendation-item span {
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.breaches-section {
+    margin-bottom: 3rem;
+}
+
+.breaches-title {
+    font-size: 1.8rem;
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.5px;
+    color: var(--text-primary);
+}
+
+.breaches-grid {
+    display: grid;
+    gap: 2rem;
+}
+
+.breach-card {
+    padding: 2rem;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 100%);
+    backdrop-filter: blur(70px) saturate(190%);
+    -webkit-backdrop-filter: blur(70px) saturate(190%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-left: 3px solid rgba(239, 68, 68, 0.5);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.breach-card:hover {
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.03) 100%);
+    border-color: rgba(239, 68, 68, 0.3);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(239, 68, 68, 0.15);
+}
+
+.breach-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.breach-header h4 {
+    font-size: 1.3rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.breach-date {
+    font-size: 0.85rem;
+    color: var(--accent-blue);
+    background: rgba(59, 130, 246, 0.1);
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+}
+
+.breach-description {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+.breach-details {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.breach-detail-item {
+    font-size: 0.9rem;
+}
+
+.breach-detail-item strong {
+    color: var(--text-primary);
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.data-classes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.data-class-badge {
+    display: inline-block;
+    padding: 0.3rem 0.8rem;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: 6px;
+    font-size: 0.8rem;
+    color: #ef4444;
+}
+
+.more-breaches {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 3rem;
+}
+
+@media (max-width: 768px) {
+    .breach-result-card {
+        padding: 3rem 2rem;
+    }
+    
+    .breach-icon-wrapper {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .breach-icon-wrapper svg {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .breach-title {
+        font-size: 1.5rem;
+    }
+    
+    .breach-message {
+        font-size: 1rem;
+    }
+    
+    .count-number {
+        font-size: 2.5rem;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .action-buttons .btn {
+        width: 100%;
+    }
+    
+    .breach-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+}
+</style>
+{% endblock %}

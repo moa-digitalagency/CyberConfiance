@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_user, logout_user, login_required
-from services import ContentService
+from services import ContentService, HaveIBeenPwnedService
 from models import Contact, User
 import __init__ as app_module
 db = app_module.db
@@ -110,3 +110,24 @@ def service_cyberconsultation():
 @bp.route('/outils/methodologie-osint')
 def osint_methodology():
     return render_template('outils/methodologie_osint.html')
+
+@bp.route('/analyze-breach', methods=['POST'])
+def analyze_breach():
+    email = request.form.get('email')
+    
+    if not email:
+        flash('Veuillez fournir une adresse email.', 'error')
+        return redirect(url_for('main.index'))
+    
+    result = HaveIBeenPwnedService.check_email_breach(email)
+    
+    if result.get('error'):
+        flash(f"Erreur: {result['error']}", 'error')
+        return redirect(url_for('main.index'))
+    
+    recommendations = HaveIBeenPwnedService.get_breach_recommendations(result['count'])
+    
+    return render_template('breach_analysis.html', 
+                         email=email,
+                         result=result, 
+                         recommendations=recommendations)
