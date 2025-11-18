@@ -1,6 +1,6 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask import Blueprint, render_template, request, flash, redirect, url_for, session
 from flask_login import login_user, logout_user, login_required
-from services import ContentService, HaveIBeenPwnedService
+from services import ContentService, HaveIBeenPwnedService, QuizService
 from models import Contact, User, BreachAnalysis
 import __init__ as app_module
 import json
@@ -131,6 +131,76 @@ def attack_types():
     all_attacks = ContentService.get_all_attack_types()
     return render_template('outils/attack_types.html', attacks=all_attacks)
 
+@bp.route('/quiz', methods=['GET', 'POST'])
+def quiz():
+    if request.method == 'POST':
+        action = request.form.get('action')
+        
+        if action == 'submit_quiz':
+            answers = {}
+            quiz_data = QuizService.load_quiz_data()
+            
+            for question in quiz_data['questions']:
+                question_id = str(question['id'])
+                answer = request.form.get(f'question_{question_id}')
+                if answer:
+                    answers[question_id] = answer
+            
+            scores = QuizService.calculate_scores(answers)
+            recommendations = QuizService.get_recommendations(scores['overall_score'], answers)
+            
+            session['quiz_results'] = {
+                'scores': scores,
+                'recommendations': recommendations,
+                'answers': answers
+            }
+            
+            return render_template('outils/quiz_results.html',
+                                 scores=scores,
+                                 recommendations=recommendations)
+        
+        elif action == 'analyze_email':
+            email = request.form.get('email')
+            
+            if not email:
+                flash('Veuillez fournir une adresse email.', 'error')
+                return redirect(url_for('main.quiz'))
+            
+            quiz_results = session.get('quiz_results', {})
+            scores = quiz_results.get('scores', {})
+            recommendations = quiz_results.get('recommendations', {})
+            
+            hibp_result = HaveIBeenPwnedService.check_email_breach(email)
+            
+            if not hibp_result.get('error'):
+                try:
+                    breach_names = [breach.get('Name', 'Inconnu') for breach in hibp_result.get('breaches', [])]
+                    analysis = BreachAnalysis(
+                        email=email,
+                        breach_count=hibp_result.get('count', 0),
+                        risk_level=recommendations.get('level', {}).get('key', 'unknown'),
+                        breaches_found=json.dumps(breach_names),
+                        ip_address=request.remote_addr,
+                        user_agent=request.headers.get('User-Agent', '')[:500]
+                    )
+                    db.session.add(analysis)
+                    db.session.commit()
+                except Exception as e:
+                    print(f"⚠️ Erreur lors de l'enregistrement de l'analyse: {str(e)}")
+                    db.session.rollback()
+            
+            hibp_recommendations = HaveIBeenPwnedService.get_breach_recommendations(hibp_result.get('count', 0))
+            
+            return render_template('outils/quiz_results.html',
+                                 scores=scores,
+                                 recommendations=recommendations,
+                                 email=email,
+                                 hibp_result=hibp_result,
+                                 hibp_recommendations=hibp_recommendations)
+    
+    quiz_data = QuizService.load_quiz_data()
+    return render_template('outils/quiz.html', quiz_data=quiz_data)
+
 @bp.route('/analyze-breach', methods=['POST'])
 def analyze_breach():
     email = request.form.get('email')
@@ -142,7 +212,6 @@ def analyze_breach():
     result = HaveIBeenPwnedService.check_email_breach(email)
     
     if result.get('error'):
-        # Log détaillé pour l'admin (console serveur)
         print(f"⚠️ Analyse de fuite échouée pour {email}: {result['error']}")
         
         recommendations = {

@@ -4,6 +4,7 @@ import os
 import requests
 import hashlib
 from urllib.parse import quote
+from services.quiz_service import QuizService
 db = app_module.db
 
 class HaveIBeenPwnedService:

@@ -1,0 +1,250 @@
+{
+  "categories": {
+    "vigilance": "Niveau de Vigilance",
+    "security": "Niveau de Sécurité",
+    "hygiene": "Hygiène Numérique"
+  },
+  "questions": [
+    {
+      "id": 1,
+      "question": "Séparez-vous strictement vos usages personnels et professionnels ?",
+      "description": "Comptes email, appareils, applications différents pour le travail et la vie privée",
+      "options": [
+        {"value": 3, "text": "Oui, j'utilise toujours des comptes et appareils séparés", "weights": {"vigilance": 3, "security": 3, "hygiene": 2}},
+        {"value": 2, "text": "Partiellement, je sépare mes emails mais pas toujours mes appareils", "weights": {"vigilance": 2, "security": 2, "hygiene": 1}},
+        {"value": 1, "text": "Rarement, j'utilise souvent les mêmes comptes", "weights": {"vigilance": 1, "security": 1, "hygiene": 1}},
+        {"value": 0, "text": "Non, j'utilise les mêmes comptes et appareils", "weights": {"vigilance": 0, "security": 0, "hygiene": 0}}
+      ],
+      "related_rules": [1],
+      "category": "organisation"
+    },
+    {
+      "id": 2,
+      "question": "Utilisez-vous des mots de passe complexes et uniques pour chaque compte ?",
+      "description": "Au moins 12 caractères avec majuscules, minuscules, chiffres et symboles",
+      "options": [
+        {"value": 3, "text": "Oui, tous mes mots de passe sont uniques et complexes (gestionnaire de mots de passe)", "weights": {"vigilance": 2, "security": 3, "hygiene": 3}},
+        {"value": 2, "text": "Pour les comptes importants uniquement", "weights": {"vigilance": 1, "security": 2, "hygiene": 2}},
+        {"value": 1, "text": "J'utilise quelques variations du même mot de passe", "weights": {"vigilance": 1, "security": 1, "hygiene": 1}},
+        {"value": 0, "text": "Non, j'utilise des mots de passe simples ou identiques", "weights": {"vigilance": 0, "security": 0, "hygiene": 0}}
+      ],
+      "related_rules": [2],
+      "category": "authentification"
+    },
+    {
+      "id": 3,
+      "question": "Avez-vous activé l'authentification à deux facteurs (2FA) sur vos comptes ?",
+      "description": "Code SMS, application d'authentification ou clé physique",
+      "options": [
+        {"value": 3, "text": "Oui, sur tous mes comptes importants", "weights": {"vigilance": 2, "security": 3, "hygiene": 2}},
+        {"value": 2, "text": "Sur mes comptes bancaires et email seulement", "weights": {"vigilance": 1, "security": 2, "hygiene": 1}},
+        {"value": 1, "text": "Sur un ou deux comptes", "weights": {"vigilance": 1, "security": 1, "hygiene": 1}},
+        {"value": 0, "text": "Non, je n'utilise pas la 2FA", "weights": {"vigilance": 0, "security": 0, "hygiene": 0}}
+      ],
+      "related_rules": [3],
+      "category": "authentification"
+    },
+    {
+      "id": 4,
+      "question": "Vous connectez-vous à des réseaux Wi-Fi publics ?",
+      "description": "Cafés, aéroports, hôtels, espaces publics",
+      "options": [
+        {"value": 3, "text": "Jamais, ou uniquement avec un VPN actif", "weights": {"vigilance": 3, "security": 3, "hygiene": 2}},
+        {"value": 2, "text": "Parfois avec VPN, parfois sans", "weights": {"vigilance": 2, "security": 2, "hygiene": 1}},
+        {"value": 1, "text": "Oui, mais je fais attention à ne pas consulter mes comptes sensibles", "weights": {"vigilance": 1, "security": 1, "hygiene": 1}},
+        {"value": 0, "text": "Oui, régulièrement sans protection", "weights": {"vigilance": 0, "security": 0, "hygiene": 0}}
+      ],
+      "related_rules": [8],
+      "category": "reseaux"
+    },
+    {
+      "id": 5,
+      "question": "Utilisez-vous un VPN (réseau privé virtuel) ?",
+      "description": "Pour chiffrer votre connexion Internet",
+      "options": [
+        {"value": 3, "text": "Oui, systématiquement sur tous les réseaux", "weights": {"vigilance": 3, "security": 3, "hygiene": 2}},
+        {"value": 2, "text": "Oui, sur les réseaux publics uniquement", "weights": {"vigilance": 2, "security": 2, "hygiene": 1}},
+        {"value": 1, "text": "Occasionnellement", "weights": {"vigilance": 1, "security": 1, "hygiene": 1}},
+        {"value": 0, "text": "Non, je n'utilise pas de VPN", "weights": {"vigilance": 0, "security": 0, "hygiene": 0}}
+      ],
+      "related_rules": [8],
+      "category": "reseaux"
+    },
+    {
+      "id": 6,
+      "question": "Utilisez-vous WhatsApp, Telegram ou Signal pour vos communications sensibles ?",
+      "description": "Applications de messagerie",
+      "options": [
+        {"value": 3, "text": "Signal uniquement pour les communications sensibles", "weights": {"vigilance": 3, "security": 3, "hygiene": 2}},
+        {"value": 2, "text": "Telegram ou WhatsApp avec chiffrement activé", "weights": {"vigilance": 2, "security": 2, "hygiene": 1}},
+        {"value": 1, "text": "WhatsApp pour tout", "weights": {"vigilance": 1, "security": 1, "hygiene": 1}},
+        {"value": 0, "text": "SMS ou applications non sécurisées", "weights": {"vigilance": 0, "security": 0, "hygiene": 0}}
+      ],
+      "related_rules": [10],
+      "category": "communications"
+    },
+    {
+      "id": 7,
+      "question": "Utilisez-vous Gmail, Outlook ou une messagerie sécurisée comme Proton Mail ?",
+      "description": "Service de messagerie électronique",
+      "options": [
+        {"value": 3, "text": "Proton Mail ou messagerie chiffrée pour les communications sensibles", "weights": {"vigilance": 3, "security": 3, "hygiene": 2}},
+        {"value": 2, "text": "Gmail/Outlook avec 2FA et bonnes pratiques de sécurité", "weights": {"vigilance": 2, "security": 2, "hygiene": 2}},
+        {"value": 1, "text": "Gmail/Outlook sans protection supplémentaire", "weights": {"vigilance": 1, "security": 1, "hygiene": 1}},
+        {"value": 0, "text": "Messagerie d'entreprise ou fournisseur non sécurisé", "weights": {"vigilance": 0, "security": 0, "hygiene": 0}}
+      ],
+      "related_rules": [1, 6],
+      "category": "communications"
+    },
+    {
+      "id": 8,
+      "question": "Sauvegardez-vous régulièrement vos données importantes ?",
+      "description": "Documents, photos, fichiers professionnels",
+      "options": [
+        {"value": 3, "text": "Oui, sauvegardes automatiques chiffrées (cloud + disque externe hors ligne)", "weights": {"vigilance": 2, "security": 3, "hygiene": 3}},
+        {"value": 2, "text": "Oui, sur un cloud sécurisé ou disque externe", "weights": {"vigilance": 1, "security": 2, "hygiene": 2}},
+        {"value": 1, "text": "Occasionnellement", "weights": {"vigilance": 1, "security": 1, "hygiene": 1}},
+        {"value": 0, "text": "Non, pas de sauvegardes régulières", "weights": {"vigilance": 0, "security": 0, "hygiene": 0}}
+      ],
+      "related_rules": [7, 18],
+      "category": "donnees"
+    },
+    {
+      "id": 9,
+      "question": "Cliquez-vous sur des liens dans des emails non sollicités ?",
+      "description": "Emails promotionnels, messages suspects",
+      "options": [
+        {"value": 3, "text": "Jamais, je vérifie toujours l'expéditeur et l'URL", "weights": {"vigilance": 3, "security": 2, "hygiene": 2}},
+        {"value": 2, "text": "Rarement, je suis vigilant", "weights": {"vigilance": 2, "security": 1, "hygiene": 1}},
+        {"value": 1, "text": "Parfois, si ça semble légitime", "weights": {"vigilance": 1, "security": 1, "hygiene": 1}},
+        {"value": 0, "text": "Oui, je clique souvent sans vérifier", "weights": {"vigilance": 0, "security": 0, "hygiene": 0}}
+      ],
+      "related_rules": [6],
+      "category": "vigilance"
+    },
+    {
+      "id": 10,
+      "question": "Mettez-vous à jour vos logiciels et systèmes d'exploitation ?",
+      "description": "Mises à jour de sécurité Windows, Mac, applications",
+      "options": [
+        {"value": 3, "text": "Oui, automatiquement dès qu'elles sont disponibles", "weights": {"vigilance": 2, "security": 3, "hygiene": 3}},
+        {"value": 2, "text": "Régulièrement, toutes les semaines", "weights": {"vigilance": 1, "security": 2, "hygiene": 2}},
+        {"value": 1, "text": "De temps en temps, quand j'y pense", "weights": {"vigilance": 1, "security": 1, "hygiene": 1}},
+        {"value": 0, "text": "Rarement ou jamais", "weights": {"vigilance": 0, "security": 0, "hygiene": 0}}
+      ],
+      "related_rules": [12],
+      "category": "maintenance"
+    },
+    {
+      "id": 11,
+      "question": "Verrouillez-vous votre ordinateur et smartphone lorsque vous les laissez ?",
+      "description": "Code PIN, mot de passe, reconnaissance faciale",
+      "options": [
+        {"value": 3, "text": "Toujours, verrouillage automatique après 1-2 minutes", "weights": {"vigilance": 3, "security": 2, "hygiene": 2}},
+        {"value": 2, "text": "La plupart du temps", "weights": {"vigilance": 2, "security": 1, "hygiene": 1}},
+        {"value": 1, "text": "Seulement dans les lieux publics", "weights": {"vigilance": 1, "security": 1, "hygiene": 1}},
+        {"value": 0, "text": "Rarement ou jamais", "weights": {"vigilance": 0, "security": 0, "hygiene": 0}}
+      ],
+      "related_rules": [5],
+      "category": "protection_physique"
+    },
+    {
+      "id": 12,
+      "question": "Partagez-vous des informations personnelles ou professionnelles sur les réseaux sociaux ?",
+      "description": "Localisation, photos, activités, projets",
+      "options": [
+        {"value": 3, "text": "Jamais d'informations sensibles, profil privé", "weights": {"vigilance": 3, "security": 2, "hygiene": 2}},
+        {"value": 2, "text": "Rarement, je fais attention", "weights": {"vigilance": 2, "security": 1, "hygiene": 1}},
+        {"value": 1, "text": "Parfois, contenu personnel seulement", "weights": {"vigilance": 1, "security": 1, "hygiene": 1}},
+        {"value": 0, "text": "Oui, régulièrement sans restriction", "weights": {"vigilance": 0, "security": 0, "hygiene": 0}}
+      ],
+      "related_rules": [11],
+      "category": "reseaux_sociaux"
+    },
+    {
+      "id": 13,
+      "question": "Utilisez-vous un antivirus ou une protection contre les logiciels malveillants ?",
+      "description": "Windows Defender, Norton, Kaspersky, etc.",
+      "options": [
+        {"value": 3, "text": "Oui, antivirus premium avec protection en temps réel", "weights": {"vigilance": 2, "security": 3, "hygiene": 3}},
+        {"value": 2, "text": "Oui, Windows Defender ou équivalent intégré", "weights": {"vigilance": 1, "security": 2, "hygiene": 2}},
+        {"value": 1, "text": "J'ai un antivirus mais pas toujours à jour", "weights": {"vigilance": 1, "security": 1, "hygiene": 1}},
+        {"value": 0, "text": "Non, aucune protection", "weights": {"vigilance": 0, "security": 0, "hygiene": 0}}
+      ],
+      "related_rules": [12, 15],
+      "category": "protection_logicielle"
+    },
+    {
+      "id": 14,
+      "question": "Acceptez-vous des clés USB ou disques externes de sources inconnues ?",
+      "description": "Clés offertes lors d'événements, trouvées, prêtées",
+      "options": [
+        {"value": 3, "text": "Jamais, je n'utilise que mes propres supports vérifiés", "weights": {"vigilance": 3, "security": 3, "hygiene": 2}},
+        {"value": 2, "text": "Seulement de sources fiables après scan antivirus", "weights": {"vigilance": 2, "security": 2, "hygiene": 1}},
+        {"value": 1, "text": "Parfois, si nécessaire", "weights": {"vigilance": 1, "security": 1, "hygiene": 1}},
+        {"value": 0, "text": "Oui, sans précaution particulière", "weights": {"vigilance": 0, "security": 0, "hygiene": 0}}
+      ],
+      "related_rules": [15],
+      "category": "protection_physique"
+    },
+    {
+      "id": 15,
+      "question": "Avez-vous déjà été victime de phishing, hameçonnage ou tentative de fraude ?",
+      "description": "Emails suspects, faux sites web, arnaques",
+      "options": [
+        {"value": 3, "text": "Jamais, je sais les identifier", "weights": {"vigilance": 3, "security": 2, "hygiene": 2}},
+        {"value": 2, "text": "J'ai reçu des tentatives mais je ne suis jamais tombé dans le piège", "weights": {"vigilance": 2, "security": 2, "hygiene": 1}},
+        {"value": 1, "text": "Une fois, j'ai failli cliquer", "weights": {"vigilance": 1, "security": 1, "hygiene": 1}},
+        {"value": 0, "text": "Oui, j'ai déjà été victime", "weights": {"vigilance": 0, "security": 0, "hygiene": 0}}
+      ],
+      "related_rules": [6, 17],
+      "category": "experience"
+    }
+  ],
+  "scoring": {
+    "levels": {
+      "critique": {"min": 0, "max": 30, "label": "Critique", "color": "#dc2626"},
+      "faible": {"min": 31, "max": 50, "label": "Faible", "color": "#ea580c"},
+      "moyen": {"min": 51, "max": 70, "label": "Moyen", "color": "#f59e0b"},
+      "bon": {"min": 71, "max": 85, "label": "Bon", "color": "#84cc16"},
+      "excellent": {"min": 86, "max": 100, "label": "Excellent", "color": "#22c55e"}
+    },
+    "max_score": {
+      "vigilance": 45,
+      "security": 45,
+      "hygiene": 30
+    }
+  },
+  "recommendations": {
+    "critique": {
+      "title": "🚨 Votre sécurité numérique nécessite une attention immédiate !",
+      "message": "Votre niveau de sécurité actuel vous expose à des risques majeurs de cyberattaques. Il est crucial d'agir rapidement.",
+      "priority_rules": [2, 3, 6, 8, 12],
+      "tools": ["vpn", "antivirus", "gestionnaire_mots_de_passe"]
+    },
+    "faible": {
+      "title": "⚠️ Votre sécurité numérique peut être grandement améliorée",
+      "message": "Vous avez mis en place quelques bonnes pratiques, mais plusieurs aspects critiques nécessitent votre attention.",
+      "priority_rules": [2, 3, 6, 7, 12],
+      "tools": ["vpn", "antivirus", "2fa"]
+    },
+    "moyen": {
+      "title": "✅ Vous êtes sur la bonne voie !",
+      "message": "Vous avez de bonnes bases en cybersécurité. Quelques améliorations vous permettront d'atteindre un niveau optimal.",
+      "priority_rules": [1, 7, 11, 14],
+      "tools": ["sauvegarde_chiffree", "filtre_ecran"]
+    },
+    "bon": {
+      "title": "👏 Très bon niveau de sécurité numérique !",
+      "message": "Vous maîtrisez bien les bonnes pratiques de cybersécurité. Continuez ainsi et restez vigilant.",
+      "priority_rules": [1, 14, 18, 19],
+      "tools": ["pochette_faraday", "cle_fido2"]
+    },
+    "excellent": {
+      "title": "🏆 Excellent ! Vous êtes un modèle de cybersécurité",
+      "message": "Vous avez adopté les meilleures pratiques de sécurité numérique. Maintenez ce niveau de vigilance.",
+      "priority_rules": [19, 20],
+      "tools": ["smartphone_securise", "radio_cryptee"]
+    }
+  }
+}
