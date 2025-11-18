@@ -38,6 +38,7 @@ The platform features a minimalist design inspired by ChatflowAI, utilizing a pu
 
 **Recent Design Updates (Nov 2025):**
 - Hero section height: 60vh (increased from previous 42vh for better visual balance)
+- Hero section padding: increased top padding (8rem) and reduced bottom padding (2rem) for better visual hierarchy
 - Dynamic hero text now includes: "Dirigeants d'entreprise", "Décideurs publics", "Citoyens soucieux" (simplified from previous version)
 - Reduced spacing between "Votre bouclier numérique" and dynamic text (margin-top: 0.2em)
 - Removed all emojis from service pages (Sensibilisation, Fact-Checking, Cyberconsultation)
@@ -49,6 +50,18 @@ The platform features a minimalist design inspired by ChatflowAI, utilizing a pu
 - All 20 règles d'or from VADE MECUM PDF now populated with complete content including risks and solutions
 - À propos page: "Le contexte" and "Notre approche" sections now displayed in two-column layout
 - Rule detail pages: reorganized header with back button ("← Retour aux règles") and rule number badge ("Règle 1/20")
+
+**New Feature - Email Breach Analysis (Nov 18, 2025):**
+- Hero newsletter form converted to breach analysis tool with "Analyser" button
+- Integration with Have I Been Pwned API v3 for email breach detection
+- New `HaveIBeenPwnedService` class in `services/__init__.py` for API communication
+- Comprehensive breach analysis page (`templates/breach_analysis.html`) with:
+  - Visual status indicators (safe/warning/danger) based on breach count
+  - Detailed breach information with dates, affected data types, and account counts
+  - Contextual security recommendations tailored to breach severity levels
+  - Responsive design matching the platform's glassmorphism aesthetic
+- URL-encoded email addresses for API calls to handle special characters
+- Proper error handling for API failures, rate limiting, and invalid credentials
 
 ## External Dependencies
 
@@ -70,9 +83,14 @@ The platform features a minimalist design inspired by ChatflowAI, utilizing a pu
 - **python-dotenv 1.0.0**: Environment variable management
 - **gunicorn 21.2.0**: Production WSGI HTTP server
 
+### Security & API Integration
+- **requests 2.32.5**: HTTP library for external API calls
+- **Have I Been Pwned API v3**: Email breach detection service
+
 ### Environment Variables
 - `DATABASE_URL`: PostgreSQL connection string
 - `SECRET_KEY`: Flask session encryption key
 - `FLASK_DEBUG`: Debug mode toggle
 - `ADMIN_PASSWORD`: Admin account password
 - `PORT`: Application port
+- `HIBP_API_KEY`: Have I Been Pwned API key for breach analysis (required for email breach checking feature)
