@@ -151,6 +151,14 @@ def analyze_breach():
     print(f"DEBUG - result['count']: {result.get('count', 0)}")
     print(f"DEBUG - Nombre de breaches: {len(result.get('breaches', []))}")
     
+    # DEBUG: Voir les DataClasses de la première breach
+    if result.get('breaches'):
+        first_breach = result['breaches'][0]
+        print(f"DEBUG - Première breach: {first_breach.get('Name')}")
+        print(f"DEBUG - DataClasses disponibles: {bool(first_breach.get('DataClasses'))}")
+        if first_breach.get('DataClasses'):
+            print(f"DEBUG - Types de données: {first_breach.get('DataClasses')}")
+    
     # Log détaillé pour l'admin (console serveur uniquement)
     if result.get('breaches'):
         print(f"\n{'='*80}")
