@@ -149,10 +149,10 @@ def quiz():
             scores = QuizService.calculate_scores(answers)
             recommendations = QuizService.get_recommendations(scores['overall_score'], answers)
             
-            session['quiz_results'] = {
+            session['quiz_data'] = {
                 'scores': scores,
-                'recommendations': recommendations,
-                'answers': answers
+                'answers': answers,
+                'overall_score': scores['overall_score']
             }
             
             return render_template('outils/quiz_results.html',
@@ -166,19 +166,23 @@ def quiz():
                 flash('Veuillez fournir une adresse email.', 'error')
                 return redirect(url_for('main.quiz'))
             
-            quiz_results = session.get('quiz_results', {})
-            scores = quiz_results.get('scores', {})
-            recommendations = quiz_results.get('recommendations', {})
+            quiz_data = session.get('quiz_data', {})
+            scores = quiz_data.get('scores', {})
+            overall_score = quiz_data.get('overall_score', 50)
+            answers = quiz_data.get('answers', {})
+            
+            recommendations = QuizService.get_recommendations(overall_score, answers)
             
             hibp_result = HaveIBeenPwnedService.check_email_breach(email)
             
             if not hibp_result.get('error'):
                 try:
                     breach_names = [breach.get('Name', 'Inconnu') for breach in hibp_result.get('breaches', [])]
+                    risk_level = recommendations.get('level', {}).get('key', 'unknown') if isinstance(recommendations.get('level'), dict) else 'unknown'
                     analysis = BreachAnalysis(
                         email=email,
                         breach_count=hibp_result.get('count', 0),
-                        risk_level=recommendations.get('level', {}).get('key', 'unknown'),
+                        risk_level=risk_level,
                         breaches_found=json.dumps(breach_names),
                         ip_address=request.remote_addr,
                         user_agent=request.headers.get('User-Agent', '')[:500]
