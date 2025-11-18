@@ -1,5 +1,8 @@
 from __init__ import create_app
 import os
+from check_env import check_environment_variables
+
+check_environment_variables()
 
 app = create_app()
 

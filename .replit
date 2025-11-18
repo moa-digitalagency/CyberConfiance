@@ -39,7 +39,7 @@ localPort = 33197
 externalPort = 4200
 
 [[ports]]
-localPort = 37471
+localPort = 33773
 externalPort = 8081
 
 [[ports]]
@@ -88,4 +88,4 @@ externalPort = 8000
 
 [deployment]
 deploymentTarget = "autoscale"
-run = ["gunicorn", "--bind=0.0.0.0:5000", "--reuse-port", "main:app"]
+run = ["gunicorn", "--bind=0.0.0.0:5000", "--reuse-port", "--workers=2", "main:app"]
