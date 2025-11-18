@@ -133,14 +133,18 @@ def analyze_breach():
                 'Obtenez une clé sur: https://haveibeenpwned.com/API/Key (~$3.50/mois)'
             ]
         }
+        data_scenarios = HaveIBeenPwnedService.get_data_breach_scenarios()
         return render_template('breach_analysis.html', 
                              email=email,
                              result={'breaches': [], 'count': 0, 'error': result['error']}, 
-                             recommendations=recommendations)
+                             recommendations=recommendations,
+                             data_scenarios=data_scenarios)
     
     recommendations = HaveIBeenPwnedService.get_breach_recommendations(result['count'])
+    data_scenarios = HaveIBeenPwnedService.get_data_breach_scenarios()
     
     return render_template('breach_analysis.html', 
                          email=email,
                          result=result, 
-                         recommendations=recommendations)
+                         recommendations=recommendations,
+                         data_scenarios=data_scenarios)

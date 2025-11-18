@@ -98,14 +98,19 @@
                     <div class="breach-details">
                         {% if breach.get('DataClasses') %}
                         <div class="breach-detail-item">
-                            <strong>Données compromises:</strong>
-                            <div class="data-classes">
-                                {% for data_class in breach.get('DataClasses', [])[:5] %}
-                                <span class="data-class-badge">{{ data_class }}</span>
+                            <strong>⚠️ Données compromises ({{ breach.get('DataClasses', [])|length }}):</strong>
+                            <div class="data-classes-detailed">
+                                {% for data_class in breach.get('DataClasses', []) %}
+                                {% set scenario = data_scenarios.get(data_class, {'icon': '⚠️', 'risk': 'Inconnu', 'scenario': 'Type de donnée non documenté.'}) %}
+                                <div class="data-class-scenario">
+                                    <div class="data-class-header">
+                                        <span class="data-class-icon">{{ scenario.icon }}</span>
+                                        <span class="data-class-name">{{ data_class }}</span>
+                                        <span class="risk-badge risk-{{ scenario.risk|lower|replace('é', 'e')|replace(' ', '-') }}">{{ scenario.risk }}</span>
+                                    </div>
+                                    <p class="data-class-description">{{ scenario.scenario }}</p>
+                                </div>
                                 {% endfor %}
-                                {% if breach.get('DataClasses', [])|length > 5 %}
-                                <span class="data-class-badge">+{{ breach.get('DataClasses', [])|length - 5 }}</span>
-                                {% endif %}
                             </div>
                         </div>
                         {% endif %}
@@ -386,6 +391,82 @@
     border-radius: 6px;
     font-size: 0.8rem;
     color: #ef4444;
+}
+
+.data-classes-detailed {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.data-class-scenario {
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.02);
+    border-left: 3px solid rgba(239, 68, 68, 0.4);
+    border-radius: 8px;
+}
+
+.data-class-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.data-class-icon {
+    font-size: 1.5rem;
+}
+
+.data-class-name {
+    font-weight: 500;
+    color: var(--text-primary);
+    flex: 1;
+}
+
+.risk-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.risk-critique {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.risk-eleve {
+    background: rgba(251, 146, 60, 0.2);
+    color: #fb923c;
+    border: 1px solid rgba(251, 146, 60, 0.3);
+}
+
+.risk-moyen {
+    background: rgba(251, 191, 36, 0.2);
+    color: #fbbf24;
+    border: 1px solid rgba(251, 191, 36, 0.3);
+}
+
+.risk-faible {
+    background: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.risk-inconnu {
+    background: rgba(148, 163, 184, 0.2);
+    color: #94a3b8;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+.data-class-description {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0;
 }
 
 .more-breaches {
