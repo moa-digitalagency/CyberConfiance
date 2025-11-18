@@ -1711,7 +1711,7 @@ footer {
 
 .scenario-card h3 {
     font-size: 1.8rem;
-    font-weight: 500;
+    font-weight: 600;
     margin-bottom: 1.5rem;
     color: var(--accent-blue);
     letter-spacing: -1px;
@@ -1732,6 +1732,7 @@ footer {
     color: var(--text-primary);
     margin-bottom: 1rem;
     font-size: 1.1rem;
+    font-weight: 600;
 }
 
 .risks-list,
@@ -1767,7 +1768,7 @@ footer {
     color: var(--text-primary);
     font-size: 1.3rem;
     margin: 2rem 0 1rem 0;
-    font-weight: 500;
+    font-weight: 600;
 }
 
 .scenario-description p {
@@ -1863,7 +1864,7 @@ footer {
     color: var(--text-primary);
     font-size: 1.1rem;
     margin-bottom: 1rem;
-    font-weight: 500;
+    font-weight: 600;
 }
 
 .rules-buttons {
@@ -1948,7 +1949,7 @@ footer {
 
 .tool-card h3 {
     font-size: 1.8rem;
-    font-weight: 500;
+    font-weight: 600;
     margin-bottom: 1.5rem;
     color: var(--accent-blue);
     letter-spacing: -1px;
@@ -1970,6 +1971,7 @@ footer {
     color: var(--text-primary);
     margin-bottom: 1rem;
     font-size: 1.1rem;
+    font-weight: 600;
 }
 
 .tool-usage p {
@@ -2015,7 +2017,7 @@ footer {
 
 .glossary-item h3 {
     font-size: 1.3rem;
-    font-weight: 600;
+    font-weight: 700;
     margin-bottom: 1rem;
     color: var(--accent-blue);
     letter-spacing: -0.5px;
