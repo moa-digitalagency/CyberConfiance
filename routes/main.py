@@ -147,36 +147,6 @@ def analyze_breach():
     recommendations = HaveIBeenPwnedService.get_breach_recommendations(result['count'])
     data_scenarios = HaveIBeenPwnedService.get_data_breach_scenarios()
     
-    # DEBUG: Voir ce qui est envoyé au template
-    print(f"DEBUG - result.get('breaches'): {bool(result.get('breaches'))}")
-    print(f"DEBUG - result['count']: {result.get('count', 0)}")
-    print(f"DEBUG - Nombre de breaches: {len(result.get('breaches', []))}")
-    
-    # DEBUG: Voir les DataClasses de la première breach
-    if result.get('breaches'):
-        first_breach = result['breaches'][0]
-        print(f"DEBUG - Première breach: {first_breach.get('Name')}")
-        print(f"DEBUG - DataClasses disponibles: {bool(first_breach.get('DataClasses'))}")
-        if first_breach.get('DataClasses'):
-            print(f"DEBUG - Types de données: {first_breach.get('DataClasses')}")
-    
-    # Log détaillé pour l'admin (console serveur uniquement)
-    if result.get('breaches'):
-        print(f"\n{'='*80}")
-        print(f"📊 ANALYSE DE FUITE - {email}")
-        print(f"   Nombre de fuites détectées: {result['count']}")
-        print(f"{'='*80}")
-        for i, breach in enumerate(result['breaches'][:10], 1):
-            print(f"\n{i}. {breach.get('Name', 'Inconnu')}")
-            print(f"   Date: {breach.get('BreachDate', 'Non spécifiée')}")
-            if breach.get('DataClasses'):
-                print(f"   Données compromises: {', '.join(breach.get('DataClasses', []))}")
-            if breach.get('PwnCount'):
-                print(f"   Comptes affectés: {breach['PwnCount']:,}")
-        if result['count'] > 10:
-            print(f"\n... et {result['count'] - 10} autre(s) fuite(s)")
-        print(f"{'='*80}\n")
-    
     try:
         breach_names = [breach.get('Name', 'Inconnu') for breach in result.get('breaches', [])]
         analysis = BreachAnalysis(
