@@ -87,22 +87,28 @@
                 {% for breach in result.breaches[:10] %}
                 <div class="breach-card">
                     <div class="breach-header">
-                        <h4>{{ breach['Name'] }}</h4>
+                        <h4>{{ breach.get('Name', 'Fuite inconnue') }}</h4>
+                        {% if breach.get('BreachDate') %}
                         <span class="breach-date">{{ breach['BreachDate'] }}</span>
+                        {% endif %}
                     </div>
+                    {% if breach.get('Description') %}
                     <p class="breach-description">{{ breach['Description']|safe if breach['Description']|length < 200 else breach['Description'][:200]|safe + '...' }}</p>
+                    {% endif %}
                     <div class="breach-details">
+                        {% if breach.get('DataClasses') %}
                         <div class="breach-detail-item">
                             <strong>Données compromises:</strong>
                             <div class="data-classes">
-                                {% for data_class in breach['DataClasses'][:5] %}
+                                {% for data_class in breach.get('DataClasses', [])[:5] %}
                                 <span class="data-class-badge">{{ data_class }}</span>
                                 {% endfor %}
-                                {% if breach['DataClasses']|length > 5 %}
-                                <span class="data-class-badge">+{{ breach['DataClasses']|length - 5 }}</span>
+                                {% if breach.get('DataClasses', [])|length > 5 %}
+                                <span class="data-class-badge">+{{ breach.get('DataClasses', [])|length - 5 }}</span>
                                 {% endif %}
                             </div>
                         </div>
+                        {% endif %}
                         {% if breach.get('PwnCount') %}
                         <div class="breach-detail-item">
                             <strong>Comptes affectés:</strong> {{ "{:,}".format(breach['PwnCount']).replace(',', ' ') }}
