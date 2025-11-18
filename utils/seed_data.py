@@ -118,10 +118,54 @@ def seed_glossary(db):
     db.session.commit()
     print(f"✓ Glossary: {seeded_count} created, {updated_count} updated")
 
+def seed_tools(db):
+    """Seed or update tools from JSON data (idempotent)"""
+    from models import Tool
+    
+    tools_data = load_json_seed('tools_seed.json')
+    if not tools_data:
+        return
+    
+    seeded_count = 0
+    updated_count = 0
+    
+    for tool_data in tools_data:
+        # Check if tool exists by name
+        existing_tool = Tool.query.filter_by(name=tool_data['name']).first()
+        
+        if existing_tool:
+            # Update existing tool
+            existing_tool.description = tool_data['description']
+            existing_tool.category = tool_data.get('category', '')
+            existing_tool.url = tool_data.get('url', '')
+            existing_tool.use_case = tool_data.get('use_case', '')
+            existing_tool.dangers = tool_data.get('dangers', '')
+            existing_tool.related_rules = tool_data.get('related_rules', '')
+            existing_tool.related_scenarios = tool_data.get('related_scenarios', '')
+            updated_count += 1
+        else:
+            # Create new tool
+            new_tool = Tool(
+                name=tool_data['name'],
+                description=tool_data['description'],
+                category=tool_data.get('category', ''),
+                url=tool_data.get('url', ''),
+                use_case=tool_data.get('use_case', ''),
+                dangers=tool_data.get('dangers', ''),
+                related_rules=tool_data.get('related_rules', ''),
+                related_scenarios=tool_data.get('related_scenarios', '')
+            )
+            db.session.add(new_tool)
+            seeded_count += 1
+    
+    db.session.commit()
+    print(f"✓ Tools: {seeded_count} created, {updated_count} updated")
+
 def seed_all_data(db):
     """Seed all data from JSON files"""
     print("Starting database seeding...")
     seed_rules(db)
     seed_scenarios(db)
     seed_glossary(db)
+    seed_tools(db)
     print("Database seeding completed!")

@@ -19,21 +19,28 @@
                 <h3>{{ tool.name }}</h3>
                 <p class="tool-description">{{ tool.description }}</p>
                 
-                {% if tool.usage %}
+                {% if tool.use_case %}
                 <div class="tool-usage">
-                    <h4>Utilisation</h4>
-                    <p>{{ tool.usage }}</p>
+                    <h4>À quoi ça sert</h4>
+                    <p>{{ tool.use_case }}</p>
                 </div>
                 {% endif %}
                 
-                {% if tool.recommended_brands %}
-                <div class="tool-brands">
-                    <h4>Marques recommandées</h4>
-                    <ul>
-                        {% for brand in tool.recommended_brands %}
-                        <li>{{ brand }}</li>
+                {% if tool.dangers %}
+                <div class="tool-dangers">
+                    <h4>Protège contre</h4>
+                    <p>{{ tool.dangers }}</p>
+                </div>
+                {% endif %}
+                
+                {% if tool.related_rules %}
+                <div class="tool-related">
+                    <h4>Règles d'or associées</h4>
+                    <div class="rules-buttons">
+                        {% for rule_id in tool.get_related_rule_ids() %}
+                        <a href="{{ url_for('main.rule_detail', rule_id=rule_id) }}" class="rule-link-button">Règle {{ rule_id }}</a>
                         {% endfor %}
-                    </ul>
+                    </div>
                 </div>
                 {% endif %}
             </div>
