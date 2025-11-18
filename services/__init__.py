@@ -20,7 +20,8 @@ class HaveIBeenPwnedService:
             return {'error': 'Service temporairement indisponible', 'breaches': [], 'count': 0}
         
         encoded_email = quote(email, safe='')
-        url = f"https://haveibeenpwned.com/api/v3/breachedaccount/{encoded_email}"
+        # truncateResponse=false pour obtenir TOUS les détails (DataClasses, etc.)
+        url = f"https://haveibeenpwned.com/api/v3/breachedaccount/{encoded_email}?truncateResponse=false"
         headers = {
             'hibp-api-key': api_key,
             'User-Agent': 'CyberConfiance-App'
