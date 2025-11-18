@@ -122,15 +122,18 @@ def analyze_breach():
     result = HaveIBeenPwnedService.check_email_breach(email)
     
     if result.get('error'):
+        # Log détaillé pour l'admin (console serveur)
+        print(f"⚠️ Analyse de fuite échouée pour {email}: {result['error']}")
+        
         recommendations = {
             'level': 'error',
-            'title': 'Erreur de configuration',
+            'title': 'Service temporairement indisponible',
             'message': result['error'],
             'recommendations': [
-                'La clé API Have I Been Pwned n\'est pas configurée.',
-                'Pour utiliser cette fonctionnalité, configurez HIBP_API_KEY dans les secrets.',
-                'En production, cette variable est obligatoire.',
-                'Obtenez une clé sur: https://haveibeenpwned.com/API/Key (~$3.50/mois)'
+                'Le service d\'analyse de fuites de données est actuellement indisponible.',
+                'Veuillez contacter l\'administrateur du site si le problème persiste.',
+                'En attendant, nous vous recommandons d\'utiliser des mots de passe forts et uniques pour chaque service.',
+                'Activez l\'authentification à deux facteurs (2FA) sur tous vos comptes importants.'
             ]
         }
         data_scenarios = HaveIBeenPwnedService.get_data_breach_scenarios()

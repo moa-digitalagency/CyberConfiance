@@ -15,7 +15,9 @@ class HaveIBeenPwnedService:
         """
         api_key = os.environ.get('HIBP_API_KEY')
         if not api_key:
-            return {'error': 'Clé API non configurée', 'breaches': [], 'count': 0}
+            # Log détaillé pour l'admin (console serveur)
+            print("⚠️ HIBP_API_KEY non configurée - Service d'analyse de fuites indisponible")
+            return {'error': 'Service temporairement indisponible', 'breaches': [], 'count': 0}
         
         encoded_email = quote(email, safe='')
         url = f"https://haveibeenpwned.com/api/v3/breachedaccount/{encoded_email}"
@@ -43,16 +45,25 @@ class HaveIBeenPwnedService:
                     'email': email
                 }
             elif response.status_code == 401:
-                return {'error': 'Clé API invalide', 'breaches': [], 'count': 0}
+                # Log détaillé pour l'admin
+                print(f"❌ HIBP API: Clé API invalide (401)")
+                return {'error': 'Service temporairement indisponible', 'breaches': [], 'count': 0}
             elif response.status_code == 429:
-                return {'error': 'Trop de requêtes, veuillez réessayer plus tard', 'breaches': [], 'count': 0}
+                # Log détaillé pour l'admin
+                print(f"⚠️ HIBP API: Limite de requêtes atteinte (429)")
+                return {'error': 'Service temporairement surchargé, veuillez réessayer dans quelques instants', 'breaches': [], 'count': 0}
             else:
-                return {'error': f'Erreur API: {response.status_code}', 'breaches': [], 'count': 0}
+                # Log détaillé pour l'admin
+                print(f"❌ HIBP API: Erreur {response.status_code}")
+                return {'error': 'Service temporairement indisponible', 'breaches': [], 'count': 0}
                 
         except requests.exceptions.Timeout:
-            return {'error': 'Délai d\'attente dépassé', 'breaches': [], 'count': 0}
+            print(f"⚠️ HIBP API: Délai d'attente dépassé")
+            return {'error': 'Le service met trop de temps à répondre, veuillez réessayer', 'breaches': [], 'count': 0}
         except requests.exceptions.RequestException as e:
-            return {'error': f'Erreur de connexion: {str(e)}', 'breaches': [], 'count': 0}
+            # Log détaillé pour l'admin
+            print(f"❌ HIBP API: Erreur de connexion - {str(e)}")
+            return {'error': 'Service temporairement indisponible', 'breaches': [], 'count': 0}
     
     @staticmethod
     def get_breach_recommendations(breach_count):

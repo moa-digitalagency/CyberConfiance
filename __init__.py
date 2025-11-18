@@ -68,28 +68,14 @@ def initialize_data():
         if os.environ.get('ADMIN_PASSWORD'):
             print("✓ Admin user created with custom password from ADMIN_PASSWORD environment variable.")
         else:
-            print("=" * 80)
-            print("⚠️  WARNING: Using default admin credentials!")
-            print("   Username: admin")
-            print("   Password: admin123")
-            print("   ")
-            print("   For production, set ADMIN_PASSWORD environment variable:")
-            print("   export ADMIN_PASSWORD='your_secure_password'")
-            print("=" * 80)
+            # Log discret pour l'admin uniquement (console serveur)
+            print("⚠️  Admin: credentials par défaut utilisés (username: admin)")
     else:
         if not is_debug and not admin_password_set:
             admin = User.query.filter_by(username='admin', is_admin=True).first()
             if admin and admin.check_password('admin123'):
-                print("=" * 80)
-                print("⚠️  CRITICAL SECURITY WARNING!")
-                print("   Admin account is using the DEFAULT PASSWORD in PRODUCTION mode!")
-                print("   ")
-                print("   Set ADMIN_PASSWORD environment variable immediately:")
-                print("   export ADMIN_PASSWORD='your_secure_password'")
-                print("   ")
-                print("   Then delete and recreate the admin user in the database,")
-                print("   or change the password in the /admin panel.")
-                print("=" * 80)
+                # Log critique pour l'admin (console serveur uniquement)
+                print("⚠️  SÉCURITÉ: Mot de passe admin par défaut détecté en production - Configurez ADMIN_PASSWORD")
     
     if GlossaryTerm.query.count() == 0:
         glossary_data = [
