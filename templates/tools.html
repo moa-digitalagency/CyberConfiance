@@ -25,10 +25,12 @@
                         </svg>
                     </div>
                     <div class="tool-header-content">
-                        <h3 class="tool-title-modern">{{ tool.name }}</h3>
-                        {% if tool.type %}
-                        <span class="tool-type-badge tool-type-{{ tool.type.lower() }}">{{ tool.type }}</span>
-                        {% endif %}
+                        <div class="tool-title-row">
+                            <h3 class="tool-title-modern">{{ tool.name }}</h3>
+                            {% if tool.type %}
+                            <span class="tool-type-badge tool-type-{{ tool.type.lower() }}">{{ tool.type }}</span>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
                 
@@ -177,6 +179,13 @@
     flex-direction: column;
     gap: 0.5rem;
     flex: 1;
+}
+
+.tool-title-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
 }
 
 .tool-title-modern {

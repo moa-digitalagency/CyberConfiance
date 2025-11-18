@@ -17,7 +17,7 @@ class ContentService:
     
     @staticmethod
     def get_all_scenarios():
-        return Scenario.query.order_by(Scenario.created_at.desc()).all()
+        return Scenario.query.order_by(Scenario.created_at.asc()).all()
     
     @staticmethod
     def get_all_resources():
