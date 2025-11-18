@@ -176,6 +176,8 @@ header {
     justify-content: center;
     text-align: center;
     overflow: hidden;
+    padding-top: 8rem;
+    padding-bottom: 2rem;
 }
 
 .glow-orb {
