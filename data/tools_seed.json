@@ -1,5 +1,181 @@
 [
   {
+    "name": "Smartphone Fantôme",
+    "description": "Base absolue du système de sécurisation. Un OS sécurisé, aucune collecte de données Google. Applications uniques : Signal, Proton, VPN.",
+    "category": "Communication",
+    "type": "Matériel",
+    "url": "",
+    "use_case": "Communication sécurisée sans tracking. OS sans Google, uniquement applications de sécurité vérifiées. Séparation totale vie personnelle et professionnelle.",
+    "dangers": "Tracking GPS, Collecte de données, Surveillance téléphonique",
+    "related_rules": "11, 16",
+    "related_scenarios": "1"
+  },
+  {
+    "name": "Tor + VPN (Onion over VPN)",
+    "description": "Anonymat numérique maximum en deux couches. VPN masque votre IP, Tor masque destination. Configuration : VPN d'abord, puis Tor.",
+    "category": "Confidentialité",
+    "type": "Service",
+    "url": "",
+    "use_case": "Traçabilité zéro même pour Fournisseur d'accès Internet. Anonymat complet en ligne. Double couche de protection pour navigation ultra-sécurisée.",
+    "dangers": "Tracking en ligne, Surveillance FAI, Identification de navigation",
+    "related_rules": "11, 16",
+    "related_scenarios": "1"
+  },
+  {
+    "name": "Pochette et Sac de Faraday",
+    "description": "Blindage métallique bloquant tous les signaux (GPS, WiFi, Bluetooth, RFID, GSM, NFC). Empêche tracking physique.",
+    "category": "Protection physique",
+    "type": "Matériel",
+    "url": "",
+    "use_case": "Déplacements sensibles, réunions confidentielles. Test : signal disparaît complètement à l'intérieur. Bloque tout tracking lorsque téléphone est rangé.",
+    "dangers": "Tracking GPS, Écoute à distance, Géolocalisation non désirée",
+    "related_rules": "16",
+    "related_scenarios": "1, 3"
+  },
+  {
+    "name": "Détecteur de Signal Radio et Caméra Embarquée",
+    "description": "Détecte mouchards RF, traceurs GPS, balises espion sur fréquences 100 MHz - 8000 MHz. Alerte précoce menaces.",
+    "category": "Détection",
+    "type": "Matériel",
+    "url": "",
+    "use_case": "Scan pièce/véhicule avant réunion critique. Détection de dispositifs d'espionnage cachés. Vérification régulière des espaces sensibles.",
+    "dangers": "Écoute clandestine, Tracking véhicule, Espionnage industriel",
+    "related_rules": "16",
+    "related_scenarios": "3"
+  },
+  {
+    "name": "Brouilleur GPS",
+    "description": "Rend tracking GPS impossible sur périmètre (10-100m selon modèle). Idéal pour empêcher un tracking dans une voiture.",
+    "category": "Protection physique",
+    "type": "Matériel",
+    "url": "",
+    "use_case": "Rend tout équipement de tracking GPS obsolète dans un véhicule. Protection contre géolocalisation forcée. Crée zone de confidentialité mobile.",
+    "dangers": "Tracking GPS véhicule, Géolocalisation forcée, Surveillance de déplacements",
+    "related_rules": "16",
+    "related_scenarios": "3"
+  },
+  {
+    "name": "Filtres de Confidentialité Écran",
+    "description": "Film protection écran limitant angle vision (30° chaque côté). Empêche lecture par-dessus épaule ou via une caméra de sécurité.",
+    "category": "Protection visuelle",
+    "type": "Matériel",
+    "url": "",
+    "use_case": "Installation : 5-10 minutes. Réduction luminosité acceptable (15-20%). Protection en espaces publics, transports, lieux surveillés.",
+    "dangers": "Regard indiscret, Surveillance vidéo, Shoulder surfing",
+    "related_rules": "14",
+    "related_scenarios": "1"
+  },
+  {
+    "name": "Étuis Anti-RFID",
+    "description": "Blindage contre lecture ID, cartes bancaires sans contact + passeport. Empêche clonage carte à distance.",
+    "category": "Protection physique",
+    "type": "Matériel",
+    "url": "",
+    "use_case": "Utilisation combinée : RFID sleeves + Pochette Faraday = protection complète. Protection passeport, cartes bancaires, badges d'accès.",
+    "dangers": "Clonage carte bancaire, Vol de données RFID, Skimming sans contact",
+    "related_rules": "4",
+    "related_scenarios": "3"
+  },
+  {
+    "name": "Radio Numérique Cryptée (P25, DMR, Tetra)",
+    "description": "Communication bidirectionnelle indépendante réseau GSM/Internet. Chiffrement obligatoire. Fonctionnement zones souterraines.",
+    "category": "Communication",
+    "type": "Matériel",
+    "url": "",
+    "use_case": "Modèles : Motorola DP4400e, Hytera PD685, Icom IC-4100H. Portée 10-50 km selon terrain. Radio chiffrée coordination terrain + Signal/Proton documents secondaires.",
+    "dangers": "Interception communications, Dépendance réseau GSM, Coupure Internet",
+    "related_rules": "11",
+    "related_scenarios": "1"
+  },
+  {
+    "name": "Signal + Proton Mail",
+    "description": "Messagerie + appels + vidéo chiffrés bout-en-bout. Email sécurisé Proton. Ne pas utiliser WhatsApp.",
+    "category": "Communication",
+    "type": "Application",
+    "url": "",
+    "use_case": "Désactiver sauvegardes cloud Google. Vérifier codes sécurité contacts critiques. Communication chiffrée pour messages, appels et emails sensibles.",
+    "dangers": "Interception communications, Phishing, Surveillance messagerie",
+    "related_rules": "11, 7, 8",
+    "related_scenarios": "2, 5, 7"
+  },
+  {
+    "name": "VPN Sécurisé",
+    "description": "Masquage IP + chiffrage trafic. Recommandés : ProtonVPN. Configuration : connexion auto démarrage, kill switch activé, serveur lointain, DNS chiffré.",
+    "category": "Confidentialité",
+    "type": "Service",
+    "url": "",
+    "use_case": "Sécuriser connexions sur réseaux WiFi publics, protéger données de navigation. Masquer activité en ligne du FAI et surveillance réseau.",
+    "dangers": "Interception de données, Espionnage sur réseau public, Attaque Man-in-the-Middle",
+    "related_rules": "11, 16",
+    "related_scenarios": "1"
+  },
+  {
+    "name": "Clés USB/Disques Cryptés",
+    "description": "Stockage portable chiffré. Accès mot de passe long. Jamais brancher clé inconnue sur le PC.",
+    "category": "Chiffrement",
+    "type": "Matériel",
+    "url": "",
+    "use_case": "Protéger toutes données stockées sur supports amovibles. En cas de vol ou perte, données restent inaccessibles sans clé de déchiffrement. Disque dur qui chiffre automatiquement toutes les données stockées.",
+    "dangers": "Vol de données physiques, Perte d'appareil, Malware USB",
+    "related_rules": "4, 5, 12",
+    "related_scenarios": "3"
+  },
+  {
+    "name": "Authentification 2FA/FIDO2",
+    "description": "Clés ou Carte NFC FIDO2 physiques. Codes secours stockés scellés coffre. Aucun piratage possible authentification matérielle.",
+    "category": "Authentification",
+    "type": "Matériel",
+    "url": "",
+    "use_case": "Protection ultime pour comptes critiques. Impossible de se connecter sans clé physique, même si mot de passe volé. Résistant au phishing car clé vérifie le domaine.",
+    "dangers": "Phishing sophistiqué, Vol de compte administrateur, Attaque sur comptes sensibles",
+    "related_rules": "3, 4",
+    "related_scenarios": "5, 7"
+  },
+  {
+    "name": "Sauvegardes Hors Ligne",
+    "description": "Sauvegarde hebdomadaire disque externe. Disque déconnecté réseau après sauvegarde. Rotation 3 disques (prévention corruption).",
+    "category": "Protection des données",
+    "type": "Service",
+    "url": "",
+    "use_case": "Vérification intégrité tous 3 mois. Récupération données en cas ransomware, panne matérielle, sinistre. Suivre règle 3-2-1 : 3 copies, 2 supports différents, 1 hors site.",
+    "dangers": "Ransomware, Perte de données, Panne matérielle",
+    "related_rules": "13",
+    "related_scenarios": "9"
+  },
+  {
+    "name": "Téléphone Basique Sans Internet",
+    "description": "Backup communication urgence. Appels + SMS uniquement. Batterie 7-10 jours. SIM prépayée distincte.",
+    "category": "Communication",
+    "type": "Matériel",
+    "url": "",
+    "use_case": "Zéro données professionnelles. Usage : urgence seulement. Si non utilisé, mettre dans pochette Faraday. Alternative en cas de compromission smartphone principal.",
+    "dangers": "Perte smartphone principal, Batterie déchargée, Compromission téléphone",
+    "related_rules": "11",
+    "related_scenarios": "1"
+  },
+  {
+    "name": "Mode Avion Systématique",
+    "description": "Désactivation réseau nuit, entre opérations, repos minière. Batterie +40% autonomie. Zéro tentative connexion suspecte.",
+    "category": "Protection",
+    "type": "Fonctionnalité",
+    "url": "",
+    "use_case": "Vérifier désactivation WiFi/Bluetooth même Mode Avion. Prévenir tracking et tentatives de connexion lorsque téléphone non utilisé.",
+    "dangers": "Tracking continu, Drainage batterie, Tentatives connexion malveillantes",
+    "related_rules": "16",
+    "related_scenarios": "1"
+  },
+  {
+    "name": "Tails OS",
+    "description": "OS portable amnésique (oublie tout après extinction). Pas de trace disque dur. Tor intégré automatique.",
+    "category": "Confidentialité",
+    "type": "Logiciel",
+    "url": "",
+    "use_case": "Idéal accès depuis PC public. Situations exceptionnelles nécessitant anonymat complet. Aucune trace après utilisation.",
+    "dangers": "Compromission PC principal, Nécessité anonymat absolu, Accès depuis PC non fiable",
+    "related_rules": "11, 16",
+    "related_scenarios": "1"
+  },
+  {
     "name": "Gestionnaire de mots de passe",
     "description": "Un gestionnaire de mots de passe permet de créer, stocker et gérer des mots de passe forts et uniques pour tous vos comptes en ligne de manière sécurisée.",
     "category": "Authentification",
@@ -22,17 +198,6 @@
     "related_scenarios": "9"
   },
   {
-    "name": "VPN (Réseau privé virtuel)",
-    "description": "Un VPN chiffre votre connexion internet et masque votre adresse IP, protégeant ainsi vos données sur les réseaux publics et préservant votre confidentialité.",
-    "category": "Confidentialité",
-    "type": "Service",
-    "url": "",
-    "use_case": "Sécuriser vos connexions sur les réseaux WiFi publics, protéger vos données de navigation et accéder à du contenu géolocalisé en toute sécurité.",
-    "dangers": "Interception de données, Espionnage sur réseau public, Attaque Man-in-the-Middle",
-    "related_rules": "11, 16",
-    "related_scenarios": "1"
-  },
-  {
     "name": "Pare-feu (Firewall)",
     "description": "Un pare-feu surveille et contrôle le trafic réseau entrant et sortant, bloquant les connexions non autorisées et protégeant contre les intrusions.",
     "category": "Protection",
@@ -44,17 +209,6 @@
     "related_scenarios": ""
   },
   {
-    "name": "Authentification à deux facteurs (2FA)",
-    "description": "Application qui génère des codes temporaires pour renforcer la sécurité de vos connexions en ajoutant une seconde couche de vérification.",
-    "category": "Authentification",
-    "type": "Application",
-    "url": "",
-    "use_case": "Protéger vos comptes avec une double vérification : mot de passe + code temporaire. Même si votre mot de passe est compromis, l'accès reste bloqué sans le second facteur.",
-    "dangers": "Vol de compte, Phishing, Accès non autorisé",
-    "related_rules": "3",
-    "related_scenarios": "5, 7"
-  },
-  {
     "name": "Chiffrement de disque",
     "description": "Technologie qui chiffre l'intégralité de votre disque dur pour protéger vos données même si votre appareil est volé ou perdu.",
     "category": "Chiffrement",
@@ -64,17 +218,6 @@
     "dangers": "Vol de données physiques, Perte d'appareil, Accès non autorisé aux données",
     "related_rules": "4, 5, 12",
     "related_scenarios": "3"
-  },
-  {
-    "name": "Sauvegarde automatique",
-    "description": "Système qui crée automatiquement des copies de vos données importantes à intervalles réguliers sur un support externe ou dans le cloud.",
-    "category": "Protection des données",
-    "type": "Service",
-    "url": "",
-    "use_case": "Récupérer vos données en cas de panne matérielle, attaque ransomware, suppression accidentelle ou sinistre. Suivre la règle 3-2-1 : 3 copies, 2 supports différents, 1 hors site.",
-    "dangers": "Ransomware, Perte de données, Panne matérielle",
-    "related_rules": "13",
-    "related_scenarios": ""
   },
   {
     "name": "Filtre anti-spam et anti-phishing",
@@ -108,17 +251,6 @@
     "dangers": "Exploitation de vulnérabilités, Zero-day, Attaques ciblées",
     "related_rules": "6",
     "related_scenarios": ""
-  },
-  {
-    "name": "Clé de sécurité matérielle (USB)",
-    "description": "Dispositif physique USB qui sert de second facteur d'authentification, offrant une protection maximale contre le phishing et le vol de compte.",
-    "category": "Authentification",
-    "type": "Matériel",
-    "url": "",
-    "use_case": "Protection ultime pour vos comptes critiques. Impossible de se connecter sans la clé physique, même si votre mot de passe est volé. Résistant au phishing car la clé vérifie le domaine.",
-    "dangers": "Phishing sophistiqué, Vol de compte administrateur, Attaque sur comptes sensibles",
-    "related_rules": "3, 4",
-    "related_scenarios": "5"
   },
   {
     "name": "Détecteur de fuites de données",
