@@ -12,7 +12,7 @@ Preferred communication style: Simple, everyday language.
 The application uses a modular Flask architecture with a factory pattern and blueprints for public and admin routes. A `ContentService` class centralizes data retrieval logic, abstracting database interactions from route handlers.
 
 ### Data Architecture
-SQLAlchemy ORM manages PostgreSQL database operations. The schema includes models for `User`, `Article`, `Rule`, `Tool`, `Scenario`, `Resource`, `News`, `Contact`, and `GlossaryTerm`, supporting timestamps and content publication states.
+SQLAlchemy ORM manages PostgreSQL database operations. The schema includes models for `User`, `Article`, `Rule`, `Tool`, `Scenario`, `Resource`, `News`, `Contact`, `GlossaryTerm`, and `AttackType`, supporting timestamps and content publication states.
 
 ### Authentication & Authorization
 Flask-Login handles session-based authentication with Werkzeug for secure password hashing. Flask-Admin views are protected by `SecureModelView`, ensuring only authenticated administrators can access content management features. A default admin account is created in development, with production requiring the `ADMIN_PASSWORD` environment variable.
@@ -25,13 +25,13 @@ Flask-Admin provides CRUD operations for all content models via an intuitive int
 
 ### Data Persistence System
 A JSON-based seeding system ensures content persists across deployments:
-- **Seed Files**: `data/rules_seed.json` and `data/scenarios_seed.json` serve as single sources of truth for content
-- **Idempotent Seeding**: The `utils/seed_data.py` module provides `seed_rules()` and `seed_scenarios()` functions that:
-  - Update existing records when found (by title)
+- **Seed Files**: `data/rules_seed.json`, `data/scenarios_seed.json`, and other seed files serve as single sources of truth for content
+- **Idempotent Seeding**: The `utils/seed_data.py` module provides seeding functions (`seed_rules()`, `seed_scenarios()`, `seed_attack_types()`, etc.) that:
+  - Update existing records when found (by title or name)
   - Create new records when not found
-  - Only update fields present in JSON (preserving manually added fields like `solution`)
-- **Automatic Initialization**: `init_db.py` runs on application startup to seed/update database with latest JSON content
-- **Benefits**: Easy content updates via JSON editing, persistent data across workflow restarts, no code changes needed for content modifications
+  - Only update fields present in seed data (preserving manually added fields)
+- **Automatic Initialization**: `init_db.py` runs on application startup to seed/update database with latest content
+- **Benefits**: Easy content updates, persistent data across workflow restarts, no code changes needed for content modifications
 
 ### UI/UX Decisions
 The platform features a minimalist design inspired by ChatflowAI, utilizing a pure black background, colorful glow orb effects, minimalist typography (San Francisco / System Font stack with negative letter-spacing), and a simplified color palette (black, white, grays, and vibrant accents). UI elements are clean with subtle borders and generous spacing. Animations are subtle and scroll-triggered.
@@ -62,6 +62,20 @@ The platform features a minimalist design inspired by ChatflowAI, utilizing a pu
   - Responsive design matching the platform's glassmorphism aesthetic
 - URL-encoded email addresses for API calls to handle special characters
 - Proper error handling for API failures, rate limiting, and invalid credentials
+
+**New Feature - Attack Types Catalog (Nov 18, 2025):**
+- Comprehensive catalog of 42 common cyber attack types from Hacksplaining, fully translated to French
+- New `AttackType` model with fields: name_en, name_fr, description_fr, category, severity, prevention, order
+- Accessible via `/outils/types-attaques` route
+- Category-based filtering (Toutes, IA, Web, Réseau, Données, Social) with interactive JavaScript
+- Glass-card design with severity badges (Critique, Élevé, Moyen, Faible) color-coded by risk level
+- Each attack includes:
+  - French name and English reference
+  - Detailed description in French
+  - Prevention recommendations specific to each attack type
+  - Severity classification for risk assessment
+- Idempotent seeding via `seed_attack_types()` function in `utils/seed_data.py`
+- Responsive grid layout (auto-fill minmax 300px) matching platform aesthetic
 
 ## External Dependencies
 
