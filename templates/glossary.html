@@ -12,18 +12,61 @@
 
 <section class="content-section">
     <div class="container">
+        <div class="glossary-search-container">
+            <input type="text" id="glossary-search" class="glossary-search-input" placeholder="🔍 Rechercher un terme...">
+        </div>
+        
         {% if terms %}
-        <div class="glossary-grid">
+        <div class="glossary-grid" id="glossary-grid">
             {% for term in terms %}
-            <div class="glossary-item glass-card">
+            <div class="glossary-item glass-card" data-term="{{ term.term|lower }}" data-definition="{{ term.definition|lower }}">
                 <h3>{{ term.term }}</h3>
                 <p>{{ term.definition }}</p>
             </div>
             {% endfor %}
+        </div>
+        <div id="no-results" class="no-results" style="display: none;">
+            <p>Aucun terme ne correspond à votre recherche.</p>
         </div>
         {% else %}
         <p>Aucun terme disponible pour le moment.</p>
         {% endif %}
     </div>
 </section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('glossary-search');
+    const glossaryGrid = document.getElementById('glossary-grid');
+    const glossaryItems = document.querySelectorAll('.glossary-item');
+    const noResults = document.getElementById('no-results');
+    
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase().trim();
+            let visibleCount = 0;
+            
+            glossaryItems.forEach(function(item) {
+                const term = item.getAttribute('data-term');
+                const definition = item.getAttribute('data-definition');
+                
+                if (term.includes(searchTerm) || definition.includes(searchTerm)) {
+                    item.style.display = '';
+                    visibleCount++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            
+            if (visibleCount === 0) {
+                noResults.style.display = 'block';
+                glossaryGrid.style.display = 'none';
+            } else {
+                noResults.style.display = 'none';
+                glossaryGrid.style.display = 'grid';
+            }
+        });
+    }
+});
+</script>
 {% endblock %}

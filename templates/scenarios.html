@@ -30,6 +30,8 @@
                     <strong>Type de menace :</strong> {{ scenario.threat_type }}
                 </div>
                 {% endif %}
+                
+                <div class="scenario-rules-links"></div>
             </div>
             {% endfor %}
         </div>
@@ -38,4 +40,39 @@
         {% endif %}
     </div>
 </section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const scenarioCards = document.querySelectorAll('.scenario-card');
+    
+    scenarioCards.forEach(card => {
+        const descriptionDiv = card.querySelector('.scenario-description');
+        const rulesContainer = card.querySelector('.scenario-rules-links');
+        
+        if (!descriptionDiv || !rulesContainer) return;
+        
+        // Lire le contenu texte (déjà décodé par le navigateur)
+        const description = descriptionDiv.textContent;
+        
+        // Chercher le pattern "Règles d'or appliquées :" suivi de nombres
+        const match = description.match(/Règles d['']or appliquées[^:]*:\s*([0-9,\s]+)/i);
+        
+        if (match && match[1]) {
+            // Extraire les numéros
+            const ruleNumbers = match[1].trim().split(/[,\s]+/).filter(n => n && !isNaN(n));
+            
+            if (ruleNumbers.length > 0) {
+                // Créer le HTML
+                let html = '<h4>📋 Règles d\'or à appliquer :</h4><div class="rules-buttons">';
+                ruleNumbers.forEach(num => {
+                    html += `<a href="/regles#regle-${num}" class="rule-link-button">Règle ${num}</a>`;
+                });
+                html += '</div>';
+                rulesContainer.innerHTML = html;
+                rulesContainer.style.display = 'block';
+            }
+        }
+    });
+});
+</script>
 {% endblock %}

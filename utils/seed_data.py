@@ -87,9 +87,41 @@ def seed_scenarios(db):
     db.session.commit()
     print(f"✓ Scenarios: {seeded_count} created, {updated_count} updated")
 
+def seed_glossary(db):
+    """Seed or update glossary terms from JSON data (idempotent)"""
+    from models import GlossaryTerm
+    
+    glossary_data = load_json_seed('glossary_seed.json')
+    if not glossary_data:
+        return
+    
+    seeded_count = 0
+    updated_count = 0
+    
+    for term_data in glossary_data:
+        # Check if term exists by term name
+        existing_term = GlossaryTerm.query.filter_by(term=term_data['term']).first()
+        
+        if existing_term:
+            # Update existing term
+            existing_term.definition = term_data['definition']
+            updated_count += 1
+        else:
+            # Create new term
+            new_term = GlossaryTerm(
+                term=term_data['term'],
+                definition=term_data['definition']
+            )
+            db.session.add(new_term)
+            seeded_count += 1
+    
+    db.session.commit()
+    print(f"✓ Glossary: {seeded_count} created, {updated_count} updated")
+
 def seed_all_data(db):
     """Seed all data from JSON files"""
     print("Starting database seeding...")
     seed_rules(db)
     seed_scenarios(db)
+    seed_glossary(db)
     print("Database seeding completed!")

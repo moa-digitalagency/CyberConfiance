@@ -1,0 +1,162 @@
+[
+  {
+    "term": "2FA / Authentification à deux facteurs",
+    "definition": "Procédé qui demande deux preuves différentes (par ex. : mot de passe et code SMS) avant d'ouvrir un compte. Objet : compliquer la vie d'un pirate qui n'a volé qu'un seul élément."
+  },
+  {
+    "term": "Appareil connecté (IoT)",
+    "definition": "Tout objet « non-informatique » (caméra, montre, thermostat) relié à Internet. Un pirate peut s'en servir comme porte d'entrée si l'appareil est mal protégé."
+  },
+  {
+    "term": "Chiffrement / Cryptage",
+    "definition": "Technique qui brouille l'information ; sans la bonne clé, le fichier est illisible, même en cas de vol."
+  },
+  {
+    "term": "Clonage vocal",
+    "definition": "Imitation synthétique d'une voix à l'aide de l'Intelligence Artificielle pour tromper une victime (ex. appel demandant un virement urgent)."
+  },
+  {
+    "term": "Cloud",
+    "definition": "Serveurs distants où l'on stocke ou traite ses données « dans Internet » plutôt que sur son propre PC."
+  },
+  {
+    "term": "Dark Web",
+    "definition": "Partie d'Internet inaccessible aux navigateurs classiques ; anonymisée, elle sert souvent de marché noir pour données volées."
+  },
+  {
+    "term": "Deepfake",
+    "definition": "Vidéo truquée par Intelligence artificielle faisant dire ou faire à quelqu'un ce qu'il n'a jamais dit ou fait."
+  },
+  {
+    "term": "Disque dur crypté / Clé USB chiffrée",
+    "definition": "Support de stockage protégé par chiffrement ; même volé, son contenu reste secret sans le mot de passe."
+  },
+  {
+    "term": "Firewall / Pare-feu",
+    "definition": "Logiciel ou boîtier qui filtre le trafic réseau et bloque les connexions indésirables."
+  },
+  {
+    "term": "Hacker",
+    "definition": "Individu qui exploite ou détourne un système informatique, souvent à des fins malveillantes (synonyme de « pirate »)."
+  },
+  {
+    "term": "IA (Intelligence artificielle)",
+    "definition": "Programmes capables d'« apprendre » à partir de données pour aider… ou pour attaquer, comme dans les deepfakes."
+  },
+  {
+    "term": "Ingénierie sociale",
+    "definition": "Manipulation psychologique destinée à pousser une personne à révéler une information ou réaliser une action risquée."
+  },
+  {
+    "term": "Keylogger",
+    "definition": "Logiciel espion qui enregistre chaque frappe au clavier pour voler mots de passe ou messages."
+  },
+  {
+    "term": "Malware (logiciel malveillant)",
+    "definition": "Terme-parapluie pour tout programme conçu pour nuire : virus, cheval de Troie, ransomware, etc."
+  },
+  {
+    "term": "Man-in-the-Middle (attaque)",
+    "definition": "Pirate placé « entre » vous et le site visé pour intercepter ou modifier les données qui transitent, souvent sur un Wi-Fi public."
+  },
+  {
+    "term": "Mot de passe complexe",
+    "definition": "Chaîne d'au moins 12 caractères mêlant majuscules, minuscules, chiffres et symboles; première barrière contre l'intrusion."
+  },
+  {
+    "term": "Gestionnaire de mots de passe",
+    "definition": "Coffre-fort chiffré qui génère et retient pour vous tous vos mots de passe."
+  },
+  {
+    "term": "Phishing (hameçonnage)",
+    "definition": "Courriel ou message frauduleux qui imite un service légitime pour subtiliser identifiants ou argent."
+  },
+  {
+    "term": "Ransomware",
+    "definition": "Malware qui chiffre vos fichiers puis réclame une rançon pour les déverrouiller."
+  },
+  {
+    "term": "VPN (Virtual Private Network)",
+    "definition": "Tunnel chiffré entre votre appareil et Internet ; il protège vos données sur des réseaux non fiables."
+  },
+  {
+    "term": "Wi-Fi public",
+    "definition": "Réseau sans-fil ouvert (cafés, aéroports) souvent non chiffré ; un pirate peut y espionner votre trafic."
+  },
+  {
+    "term": "Antivirus",
+    "definition": "Logiciel qui détecte, bloque et supprime les virus et autres logiciels malveillants de votre ordinateur."
+  },
+  {
+    "term": "Backdoor (porte dérobée)",
+    "definition": "Accès secret laissé dans un système informatique permettant à un pirate de revenir sans être détecté."
+  },
+  {
+    "term": "Botnet",
+    "definition": "Réseau d'ordinateurs infectés contrôlés à distance par un pirate pour lancer des attaques massives."
+  },
+  {
+    "term": "Brute force (force brute)",
+    "definition": "Méthode d'attaque qui consiste à tester systématiquement toutes les combinaisons possibles pour trouver un mot de passe."
+  },
+  {
+    "term": "Cache",
+    "definition": "Espace de stockage temporaire qui conserve des copies de données fréquemment consultées pour accélérer l'accès."
+  },
+  {
+    "term": "Cookie",
+    "definition": "Petit fichier stocké par un site web sur votre navigateur pour mémoriser vos préférences ou suivre votre activité."
+  },
+  {
+    "term": "DDoS (Distributed Denial of Service)",
+    "definition": "Attaque visant à rendre un service indisponible en le saturant de requêtes provenant de multiples sources."
+  },
+  {
+    "term": "DNS (Domain Name System)",
+    "definition": "Système qui traduit les noms de domaine (comme google.com) en adresses IP compréhensibles par les ordinateurs."
+  },
+  {
+    "term": "Exploit",
+    "definition": "Programme ou technique qui profite d'une faille de sécurité dans un logiciel pour compromettre un système."
+  },
+  {
+    "term": "Métadonnées",
+    "definition": "Données sur les données : informations cachées dans un fichier (date, lieu, appareil utilisé) qui peuvent révéler des informations sensibles."
+  },
+  {
+    "term": "Patch de sécurité",
+    "definition": "Mise à jour logicielle qui corrige des vulnérabilités ou failles de sécurité découvertes."
+  },
+  {
+    "term": "Root / Administrateur",
+    "definition": "Compte avec les privilèges les plus élevés sur un système, permettant de tout contrôler et modifier."
+  },
+  {
+    "term": "Sauvegarde (Backup)",
+    "definition": "Copie de sécurité de vos données stockée séparément pour pouvoir les restaurer en cas de perte ou d'attaque."
+  },
+  {
+    "term": "Shoulder surfing",
+    "definition": "Technique d'espionnage consistant à regarder par-dessus l'épaule de quelqu'un pour voler des informations confidentielles."
+  },
+  {
+    "term": "Spam",
+    "definition": "Courriels non sollicités envoyés en masse, souvent à des fins publicitaires ou malveillantes."
+  },
+  {
+    "term": "Spear phishing",
+    "definition": "Attaque de phishing ciblée et personnalisée visant une personne ou organisation spécifique."
+  },
+  {
+    "term": "SSL/TLS",
+    "definition": "Protocoles de sécurité qui chiffrent les communications entre votre navigateur et un site web (reconnaissables au 'https')."
+  },
+  {
+    "term": "Trojan (Cheval de Troie)",
+    "definition": "Logiciel malveillant déguisé en programme légitime qui ouvre une porte d'accès aux pirates."
+  },
+  {
+    "term": "Zero-day",
+    "definition": "Faille de sécurité inconnue du développeur et non corrigée, exploitée par des pirates avant qu'un patch ne soit disponible."
+  }
+]
