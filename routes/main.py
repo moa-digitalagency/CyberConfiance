@@ -103,16 +103,16 @@ def service_sensibilisation():
 @bp.route('/programme/<slug>')
 def programme_detail(slug):
     programmes = {
-        'ateliers-communautaires': 'Ateliers communautaires',
-        'campagnes-reseaux-sociaux': 'Campagnes sur réseaux sociaux',
-        'webinaires-videos': 'Webinaires et vidéos',
-        'guides-pratiques': 'Guides pratiques',
-        'formations-entreprises': 'Formations entreprises',
-        'partenariats-educatifs': 'Partenariats éducatifs'
+        'ateliers-communautaires': 'programmes/ateliers_communautaires.html',
+        'campagnes-reseaux-sociaux': 'programmes/campagnes_reseaux_sociaux.html',
+        'webinaires-videos': 'programmes/webinaires_videos.html',
+        'guides-pratiques': 'programmes/guides_pratiques.html',
+        'formations-entreprises': 'programmes/formations_entreprises.html',
+        'partenariats-educatifs': 'programmes/partenariats_educatifs.html'
     }
     
-    programme_title = programmes.get(slug, 'Programme')
-    return render_template('programme_detail.html', programme_title=programme_title)
+    template = programmes.get(slug, 'programme_detail.html')
+    return render_template(template)
 
 @bp.route('/services/factchecking')
 def service_factchecking():

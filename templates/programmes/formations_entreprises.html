@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Formations entreprises - CyberConfiance{% endblock %}
+
+{% block content %}
+<section class="page-header-modern">
+    <div class="container">
+        <div class="header-content-centered">
+            <h1 class="page-title-modern">Formations entreprises</h1>
+            <p class="page-subtitle-modern">Programmes sur mesure pour sensibiliser vos employés</p>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="glass-card-enhanced" style="padding: 4rem 3rem; text-align: center;">
+            <div style="margin-bottom: 2rem;">
+                <svg width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color: var(--accent-blue); margin: 0 auto;">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M12 6v6l4 2"/>
+                </svg>
+            </div>
+            
+            <h2 style="font-size: 2rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-primary);">
+                En cours de développement
+            </h2>
+            
+            <p style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 2rem; line-height: 1.8; max-width: 700px; margin-left: auto; margin-right: auto;">
+                Ce programme est actuellement en cours d'élaboration. Nous développons des formations sur mesure pour sensibiliser les employés des PME et grandes organisations aux risques cyber.
+            </p>
+            
+            <p style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 2.5rem;">
+                Vous serez informé dès que ce programme sera disponible.
+            </p>
+            
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <a href="{{ url_for('main.service_sensibilisation') }}" class="btn btn-primary">
+                    Retour aux programmes
+                </a>
+                <a href="{{ url_for('main.contact') }}" class="btn btn-secondary">
+                    Nous contacter
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
