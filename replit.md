@@ -23,12 +23,22 @@ Jinja2 templates use a base layout (`base.html`) for consistency. The design fea
 ### Content Management
 Flask-Admin provides CRUD operations for all content models via an intuitive interface. A `published` field in the `Article` model supports a draft/published workflow.
 
+### Data Persistence System
+A JSON-based seeding system ensures content persists across deployments:
+- **Seed Files**: `data/rules_seed.json` and `data/scenarios_seed.json` serve as single sources of truth for content
+- **Idempotent Seeding**: The `utils/seed_data.py` module provides `seed_rules()` and `seed_scenarios()` functions that:
+  - Update existing records when found (by title)
+  - Create new records when not found
+  - Only update fields present in JSON (preserving manually added fields like `solution`)
+- **Automatic Initialization**: `init_db.py` runs on application startup to seed/update database with latest JSON content
+- **Benefits**: Easy content updates via JSON editing, persistent data across workflow restarts, no code changes needed for content modifications
+
 ### UI/UX Decisions
 The platform features a minimalist design inspired by ChatflowAI, utilizing a pure black background, colorful glow orb effects, minimalist typography (San Francisco / System Font stack with negative letter-spacing), and a simplified color palette (black, white, grays, and vibrant accents). UI elements are clean with subtle borders and generous spacing. Animations are subtle and scroll-triggered.
 
 **Recent Design Updates (Nov 2025):**
 - Hero section height: 60vh (increased from previous 42vh for better visual balance)
-- Dynamic hero text now includes: "En Afrique", "Dirigeants d'entreprise", "Décideurs publics", "Citoyens curieux"
+- Dynamic hero text now includes: "Dirigeants d'entreprise", "Décideurs publics", "Citoyens soucieux" (simplified from previous version)
 - Reduced spacing between "Votre bouclier numérique" and dynamic text (margin-top: 0.2em)
 - Removed all emojis from service pages (Sensibilisation, Fact-Checking, Cyberconsultation)
 - Standardized page headers across all pages using `page-header` component
@@ -37,6 +47,8 @@ The platform features a minimalist design inspired by ChatflowAI, utilizing a pu
 - Consistent glassmorphism styling across pillar cards and content sections (text-align: center)
 - Responsive grid displays for rules (3 columns), scenarios/tools (2 columns), and glossary
 - All 20 règles d'or from VADE MECUM PDF now populated with complete content including risks and solutions
+- À propos page: "Le contexte" and "Notre approche" sections now displayed in two-column layout
+- Rule detail pages: reorganized header with back button ("← Retour aux règles") and rule number badge ("Règle 1/20")
 
 ## External Dependencies
 
