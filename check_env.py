@@ -33,7 +33,7 @@ def check_environment_variables():
     is_deployment = os.environ.get('REPLIT_DEPLOYMENT') == '1'
     
     print("=" * 80)
-    print("🔍 Vérification des variables d'environnement...")
+    print("Vérification des variables d'environnement...")
     print(f"Mode: {'PRODUCTION (Déploiement)' if is_deployment else 'DÉVELOPPEMENT'}")
     print("=" * 80)
     
@@ -43,11 +43,11 @@ def check_environment_variables():
         if not value:
             if is_deployment:
                 missing_vars.append((var_name, description))
-                print(f"❌ {var_name}: MANQUANT - {description}")
+                print(f"[X] {var_name}: MANQUANT - {description}")
             else:
-                print(f"⚠️  {var_name}: Non défini (OK en dev) - {description}")
+                print(f"[!] {var_name}: Non défini (OK en dev) - {description}")
         else:
-            print(f"✅ {var_name}: Configuré")
+            print(f"[OK] {var_name}: Configuré")
     
     # Vérifier les variables recommandées
     print("\nVariables recommandées:")
@@ -55,24 +55,24 @@ def check_environment_variables():
         value = os.environ.get(var_name)
         if not value:
             missing_recommended.append((var_name, description))
-            print(f"⚠️  {var_name}: Non défini - {description}")
+            print(f"[!] {var_name}: Non défini - {description}")
         else:
-            print(f"✅ {var_name}: Configuré")
+            print(f"[OK] {var_name}: Configuré")
     
     # Vérifier les variables optionnelles
     print("\nVariables optionnelles (fonctionnalités avancées):")
     for var_name, description in OPTIONAL_ENV_VARS.items():
         value = os.environ.get(var_name)
         if not value:
-            print(f"ℹ️  {var_name}: Non défini - {description}")
+            print(f"[i] {var_name}: Non défini - {description}")
         else:
-            print(f"✅ {var_name}: Configuré")
+            print(f"[OK] {var_name}: Configuré")
     
     print("=" * 80)
     
     # En mode production/déploiement, les variables requises doivent être présentes
     if is_deployment and missing_vars:
-        print("\n🚨 ERREUR CRITIQUE: Variables d'environnement manquantes en production!")
+        print("\n[ERREUR CRITIQUE] Variables d'environnement manquantes en production!")
         print("\nPour configurer les secrets de déploiement:")
         print("1. Allez dans l'onglet 'Deployments' de votre Repl")
         print("2. Cliquez sur 'Add deployment secret'")
@@ -84,11 +84,11 @@ def check_environment_variables():
         sys.exit(1)
     
     if missing_recommended:
-        print("\n💡 Recommandation: Configurez les variables suivantes pour un meilleur contrôle:")
+        print("\nRecommandation: Configurez les variables suivantes pour un meilleur contrôle:")
         for var_name, description in missing_recommended:
             print(f"   - {var_name}: {description}")
     
-    print("\n✅ Vérification terminée avec succès!")
+    print("\n[OK] Vérification terminée avec succès!")
     print("=" * 80 + "\n")
     return True
 

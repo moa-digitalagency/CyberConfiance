@@ -4,6 +4,7 @@ from services import ContentService, HaveIBeenPwnedService, QuizService
 from models import Contact, User, BreachAnalysis
 import __init__ as app_module
 import json
+import requests
 db = app_module.db
 
 bp = Blueprint('main', __name__)
@@ -131,6 +132,114 @@ def attack_types():
     all_attacks = ContentService.get_all_attack_types()
     return render_template('outils/attack_types.html', attacks=all_attacks)
 
+@bp.route('/outils/analyseur-liens', methods=['GET', 'POST'])
+def link_analyzer():
+    analyzed_url = None
+    redirects = None
+    final_url = None
+    redirect_count = 0
+    
+    if request.method == 'POST':
+        url = request.form.get('url')
+        
+        if not url:
+            flash('Veuillez fournir une URL à analyser.', 'error')
+            return redirect(url_for('main.link_analyzer'))
+        
+        if not url.startswith('http://') and not url.startswith('https://'):
+            url = 'https://' + url
+        
+        from urllib.parse import urlparse
+        import ipaddress
+        
+        def is_safe_url(check_url):
+            try:
+                parsed = urlparse(check_url)
+                if parsed.scheme not in ['http', 'https']:
+                    return False
+                
+                hostname = parsed.hostname
+                if not hostname:
+                    return False
+                
+                if hostname in ['localhost', '127.0.0.1', '0.0.0.0']:
+                    return False
+                
+                if hostname.startswith('169.254.'):
+                    return False
+                
+                try:
+                    ip = ipaddress.ip_address(hostname)
+                    if ip.is_private or ip.is_loopback or ip.is_link_local:
+                        return False
+                except ValueError:
+                    pass
+                
+                return True
+            except Exception:
+                return False
+        
+        if not is_safe_url(url):
+            flash('Cette URL n\'est pas autorisée pour des raisons de sécurité.', 'error')
+            return redirect(url_for('main.link_analyzer'))
+        
+        try:
+            analyzed_url = url
+            redirects = []
+            current_url = url
+            max_redirects = 10
+            redirect_count = 0
+            
+            while redirect_count < max_redirects:
+                if not is_safe_url(current_url):
+                    redirects.append({
+                        'url': current_url,
+                        'error': 'URL bloquée pour des raisons de sécurité'
+                    })
+                    break
+                
+                try:
+                    response = requests.get(current_url, allow_redirects=False, timeout=10, headers={'User-Agent': 'CyberConfiance-Link-Analyzer'})
+                    
+                    redirects.append({
+                        'url': current_url,
+                        'status_code': response.status_code,
+                        'headers': dict(response.headers)
+                    })
+                    
+                    if response.status_code in [301, 302, 303, 307, 308]:
+                        next_url = response.headers.get('Location')
+                        if not next_url:
+                            break
+                        
+                        if not next_url.startswith('http'):
+                            from urllib.parse import urljoin
+                            next_url = urljoin(current_url, next_url)
+                        
+                        current_url = next_url
+                        redirect_count += 1
+                    else:
+                        break
+                        
+                except requests.exceptions.RequestException as e:
+                    redirects.append({
+                        'url': current_url,
+                        'error': str(e)
+                    })
+                    break
+            
+            final_url = current_url
+                                 
+        except Exception as e:
+            flash(f'Erreur lors de l\'analyse: {str(e)}', 'error')
+            return redirect(url_for('main.link_analyzer'))
+    
+    return render_template('outils/link_analyzer.html',
+                         analyzed_url=analyzed_url,
+                         redirects=redirects,
+                         final_url=final_url,
+                         redirect_count=redirect_count)
+
 @bp.route('/quiz', methods=['GET', 'POST'])
 def quiz():
     if request.method == 'POST':
@@ -227,13 +336,22 @@ def quiz_result_detail(result_id):
         quiz_result.hibp_summary.get('breach_count', 0) if quiz_result.hibp_summary else 0
     )
     
+    data_scenarios = HaveIBeenPwnedService.get_data_breach_scenarios()
+    
     return render_template('outils/quiz_results.html',
                          quiz_result=quiz_result,
                          scores=quiz_result.category_scores,
                          recommendations=recommendations,
                          email=quiz_result.email,
                          hibp_result=quiz_result.hibp_summary,
-                         hibp_recommendations=hibp_recommendations)
+                         hibp_recommendations=hibp_recommendations,
+                         data_scenarios=data_scenarios)
+
+@bp.route('/quiz/all-results')
+def quiz_all_results():
+    from models import QuizResult
+    all_results = QuizResult.query.order_by(QuizResult.created_at.desc()).all()
+    return render_template('outils/quiz_all_results.html', results=all_results)
 
 @bp.route('/analyze-breach', methods=['POST'])
 def analyze_breach():
@@ -246,7 +364,7 @@ def analyze_breach():
     result = HaveIBeenPwnedService.check_email_breach(email)
     
     if result.get('error'):
-        print(f"⚠️ Analyse de fuite échouée pour {email}: {result['error']}")
+        print(f"[!] Analyse de fuite échouée pour {email}: {result['error']}")
         
         recommendations = {
             'level': 'error',
@@ -281,9 +399,9 @@ def analyze_breach():
         )
         db.session.add(analysis)
         db.session.commit()
-        print(f"✅ Analyse enregistrée: {email} - {result.get('count', 0)} breach(es)")
+        print(f"[OK] Analyse enregistrée: {email} - {result.get('count', 0)} breach(es)")
     except Exception as e:
-        print(f"⚠️ Erreur lors de l'enregistrement de l'analyse: {str(e)}")
+        print(f"[!] Erreur lors de l'enregistrement de l'analyse: {str(e)}")
         db.session.rollback()
     
     return render_template('breach_analysis.html', 

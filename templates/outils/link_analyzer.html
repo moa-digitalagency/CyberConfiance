@@ -1,0 +1,358 @@
+{% extends "base.html" %}
+
+{% block title %}Analyseur de Liens - CyberConfiance{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1>Analyseur de Liens et Redirections</h1>
+        <p class="subtitle">Découvrez où mènent vraiment les liens et détectez les chaînes de redirections</p>
+    </div>
+</section>
+
+<section class="link-analyzer-container">
+    <div class="container">
+        <div class="analyzer-description">
+            <h2>Pourquoi analyser les liens ?</h2>
+            <p>Les cybercriminels utilisent souvent des chaînes de redirections pour masquer la destination finale d'un lien. Cet outil vous permet de suivre toutes les redirections et de voir où un lien mène réellement avant de cliquer.</p>
+            
+            <div class="security-tips">
+                <h3>Signes d'alerte :</h3>
+                <ul>
+                    <li>Multiples redirections (> 3)</li>
+                    <li>Changements de domaine suspects</li>
+                    <li>Raccourcisseurs d'URL inconnus</li>
+                    <li>Domaines qui imitent des sites légitimes</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="analyzer-form-card">
+            <h2>Analyser un Lien</h2>
+            <form method="POST" action="{{ url_for('main.link_analyzer') }}" class="link-form">
+                <div class="form-group">
+                    <label for="url">URL à analyser:</label>
+                    <input type="text" 
+                           id="url" 
+                           name="url" 
+                           class="url-input" 
+                           placeholder="https://example.com ou bit.ly/abc123" 
+                           required
+                           {% if analyzed_url %}value="{{ analyzed_url }}"{% endif %}>
+                </div>
+                <button type="submit" class="btn-primary">Analyser</button>
+            </form>
+        </div>
+
+        {% if redirects %}
+        <div class="results-card">
+            <h2>Résultats de l'Analyse</h2>
+            
+            <div class="analysis-summary">
+                <div class="summary-item">
+                    <strong>URL initiale:</strong>
+                    <span class="url-text">{{ analyzed_url }}</span>
+                </div>
+                <div class="summary-item">
+                    <strong>Destination finale:</strong>
+                    <span class="url-text">{{ final_url }}</span>
+                </div>
+                <div class="summary-item">
+                    <strong>Nombre de redirections:</strong>
+                    <span class="redirect-count {% if redirect_count > 3 %}warning{% endif %}">
+                        {{ redirect_count }}
+                        {% if redirect_count > 3 %}(Attention: Nombreuses redirections!){% endif %}
+                    </span>
+                </div>
+            </div>
+
+            <h3>Chaîne de Redirections</h3>
+            <div class="redirects-chain">
+                {% for redirect in redirects %}
+                <div class="redirect-step">
+                    <div class="step-number">Étape {{ loop.index }}</div>
+                    <div class="redirect-details">
+                        <div class="redirect-url">
+                            <strong>URL:</strong>
+                            <a href="{{ redirect.url }}" target="_blank" rel="noopener noreferrer">{{ redirect.url }}</a>
+                        </div>
+                        
+                        {% if redirect.error %}
+                        <div class="redirect-error">
+                            <strong>Erreur:</strong> {{ redirect.error }}
+                        </div>
+                        {% else %}
+                        <div class="redirect-status">
+                            <strong>Code HTTP:</strong>
+                            <span class="status-code status-{{ redirect.status_code }}">{{ redirect.status_code }}</span>
+                            {% if redirect.status_code in [301, 302, 303, 307, 308] %}
+                            <span class="redirect-type">
+                                {% if redirect.status_code == 301 %}Redirection Permanente{% endif %}
+                                {% if redirect.status_code == 302 %}Redirection Temporaire{% endif %}
+                                {% if redirect.status_code == 303 %}Voir Ailleurs{% endif %}
+                                {% if redirect.status_code == 307 %}Redirection Temporaire (Strict){% endif %}
+                                {% if redirect.status_code == 308 %}Redirection Permanente (Strict){% endif %}
+                            </span>
+                            {% elif redirect.status_code == 200 %}
+                            <span class="redirect-type">Destination Finale</span>
+                            {% endif %}
+                        </div>
+                        
+                        {% if redirect.headers.get('Location') %}
+                        <div class="redirect-location">
+                            <strong>Redirige vers:</strong> {{ redirect.headers['Location'] }}
+                        </div>
+                        {% endif %}
+                        {% endif %}
+                    </div>
+                    
+                    {% if not loop.last and not redirect.error %}
+                    <div class="redirect-arrow">↓</div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<style>
+.link-analyzer-container {
+    padding: 4rem 0;
+}
+
+.analyzer-description {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.analyzer-description h2 {
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.analyzer-description p {
+    color: var(--text-secondary);
+    line-height: 1.8;
+}
+
+.security-tips {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    background: rgba(245, 158, 11, 0.1);
+    border-left: 4px solid #f59e0b;
+    border-radius: 8px;
+}
+
+.security-tips h3 {
+    color: #f59e0b;
+    margin-bottom: 1rem;
+}
+
+.security-tips ul {
+    list-style: none;
+    padding: 0;
+}
+
+.security-tips li {
+    padding: 0.5rem 0;
+    padding-left: 1.5rem;
+    position: relative;
+    color: var(--text-secondary);
+}
+
+.security-tips li::before {
+    content: "!";
+    position: absolute;
+    left: 0;
+    color: #f59e0b;
+    font-weight: bold;
+}
+
+.analyzer-form-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.analyzer-form-card h2 {
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+}
+
+.link-form .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.link-form label {
+    display: block;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.url-input {
+    width: 100%;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 1rem;
+}
+
+.url-input:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+}
+
+.results-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 12px;
+    padding: 2rem;
+}
+
+.results-card h2, .results-card h3 {
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+}
+
+.analysis-summary {
+    background: rgba(59, 130, 246, 0.1);
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+}
+
+.summary-item {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+}
+
+.summary-item:last-child {
+    border-bottom: none;
+}
+
+.summary-item strong {
+    color: var(--text-primary);
+    display: inline-block;
+    min-width: 150px;
+}
+
+.url-text {
+    color: var(--accent-blue);
+    word-break: break-all;
+}
+
+.redirect-count {
+    color: var(--accent-blue);
+    font-weight: 600;
+}
+
+.redirect-count.warning {
+    color: #f59e0b;
+}
+
+.redirects-chain {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.redirect-step {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 8px;
+    padding: 1.5rem;
+    position: relative;
+}
+
+.step-number {
+    position: absolute;
+    top: -12px;
+    left: 20px;
+    background: var(--bg-navy-light);
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    color: var(--accent-blue);
+    font-weight: 600;
+}
+
+.redirect-details > div {
+    margin-bottom: 0.75rem;
+}
+
+.redirect-details > div:last-child {
+    margin-bottom: 0;
+}
+
+.redirect-url strong,
+.redirect-status strong,
+.redirect-location strong {
+    color: var(--text-primary);
+    display: inline-block;
+    min-width: 100px;
+}
+
+.redirect-url a {
+    color: var(--accent-blue);
+    word-break: break-all;
+}
+
+.status-code {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 600;
+    margin-left: 0.5rem;
+}
+
+.status-200 {
+    background: rgba(16, 185, 129, 0.2);
+    color: #10b981;
+}
+
+.status-301, .status-302, .status-303, .status-307, .status-308 {
+    background: rgba(245, 158, 11, 0.2);
+    color: #f59e0b;
+}
+
+.redirect-type {
+    margin-left: 0.5rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.redirect-error {
+    background: rgba(239, 68, 68, 0.2);
+    padding: 1rem;
+    border-radius: 6px;
+    color: #ef4444;
+}
+
+.redirect-arrow {
+    text-align: center;
+    font-size: 2rem;
+    color: var(--accent-blue);
+    margin: 0.5rem 0;
+}
+
+@media (max-width: 768px) {
+    .security-tips li {
+        font-size: 0.9rem;
+    }
+    
+    .summary-item strong {
+        display: block;
+        margin-bottom: 0.25rem;
+    }
+}
+</style>
+{% endblock %}

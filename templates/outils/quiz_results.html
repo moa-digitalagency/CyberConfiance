@@ -89,14 +89,24 @@
                             <span class="breach-date">{{ breach.date }}</span>
                         </div>
                         {% if breach.pwn_count %}
-                        <p><strong>{{ "{:,}".format(breach.pwn_count) }}</strong> comptes compromis</p>
+                        <p class="breach-impact"><strong>{{ "{:,}".format(breach.pwn_count) }}</strong> comptes compromis</p>
                         {% endif %}
                         {% if breach.data_classes %}
                         <div class="data-classes">
                             <strong>Données compromises:</strong>
-                            {% for data_class in breach.data_classes %}
-                            <span class="data-class-tag">{{ data_class }}</span>
-                            {% endfor %}
+                            <div class="data-classes-list">
+                                {% for data_class in breach.data_classes %}
+                                <div class="data-class-item">
+                                    <span class="data-class-tag">{{ data_class }}</span>
+                                    {% if data_scenarios.get(data_class) %}
+                                    <div class="data-class-info">
+                                        <span class="risk-level risk-{{ data_scenarios[data_class].risk|lower|replace('é', 'e')|replace(' ', '-') }}">{{ data_scenarios[data_class].risk }}</span>
+                                        <p class="risk-scenario">{{ data_scenarios[data_class].scenario }}</p>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                {% endfor %}
+                            </div>
                         </div>
                         {% endif %}
                     </div>

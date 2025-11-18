@@ -4,7 +4,7 @@ from flask_login import current_user
 import __init__ as app_module
 db = app_module.db
 admin = app_module.admin
-from models import Article, Rule, Tool, Scenario, Resource, News, Contact, GlossaryTerm, User, BreachAnalysis
+from models import Article, Rule, Tool, Scenario, Resource, News, Contact, GlossaryTerm, User, BreachAnalysis, QuizResult
 
 bp = Blueprint('admin_bp', __name__, url_prefix='/admin_bp')
 
@@ -34,6 +34,26 @@ class BreachAnalysisView(SecureModelView):
         'created_at': 'Date de recherche'
     }
 
+class QuizResultView(SecureModelView):
+    column_list = ['id', 'email', 'overall_score', 'created_at', 'ip_address']
+    column_searchable_list = ['email', 'ip_address']
+    column_filters = ['overall_score', 'created_at']
+    column_sortable_list = ['id', 'email', 'overall_score', 'created_at']
+    column_default_sort = ('created_at', True)
+    can_create = False
+    can_edit = False
+    column_labels = {
+        'id': 'ID',
+        'email': 'Email',
+        'overall_score': 'Score global (%)',
+        'category_scores': 'Scores par catégorie',
+        'answers': 'Réponses',
+        'hibp_summary': 'Résumé HIBP',
+        'ip_address': 'Adresse IP',
+        'user_agent': 'Navigateur',
+        'created_at': 'Date du quiz'
+    }
+
 admin.add_view(SecureModelView(User, db.session, name='Utilisateurs'))
 admin.add_view(SecureModelView(Article, db.session, name='Articles'))
 admin.add_view(SecureModelView(Rule, db.session, name='Règles'))
@@ -44,3 +64,4 @@ admin.add_view(SecureModelView(News, db.session, name='Actualités'))
 admin.add_view(SecureModelView(Contact, db.session, name='Contacts'))
 admin.add_view(SecureModelView(GlossaryTerm, db.session, name='Glossaire'))
 admin.add_view(BreachAnalysisView(BreachAnalysis, db.session, name='Analyses de fuites'))
+admin.add_view(QuizResultView(QuizResult, db.session, name='Résultats de quiz'))

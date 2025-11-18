@@ -14,7 +14,7 @@ def init_database():
     with app.app_context():
         # Create all tables
         db.create_all()
-        print("✓ Database tables created")
+        print("[OK] Database tables created")
         
         # Seed data from JSON files
         seed_all_data(db)

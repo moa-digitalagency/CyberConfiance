@@ -40,7 +40,7 @@ class HIBPChecker:
             >>> checker = HIBPChecker()
             >>> is_pwned, count = checker.check_password("password123")
             >>> if is_pwned:
-            ...     print(f"⚠️ Ce mot de passe a été trouvé {count} fois dans des fuites!")
+            ...     print(f"[!] Ce mot de passe a été trouvé {count} fois dans des fuites!")
         """
         try:
             # Hacher le mot de passe en SHA-1
@@ -68,11 +68,11 @@ class HIBPChecker:
                 # Mot de passe non trouvé dans les fuites
                 return False, 0
             else:
-                print(f"⚠️ Erreur API HIBP: {response.status_code}")
+                print(f"[!] Erreur API HIBP: {response.status_code}")
                 return False, 0
                 
         except Exception as e:
-            print(f"⚠️ Erreur lors de la vérification du mot de passe: {e}")
+            print(f"[!] Erreur lors de la vérification du mot de passe: {e}")
             return False, 0
     
     def check_email(self, email: str) -> Tuple[bool, list]:
@@ -92,10 +92,10 @@ class HIBPChecker:
             >>> checker = HIBPChecker(api_key="votre_cle_api")
             >>> is_pwned, breaches = checker.check_email("test@example.com")
             >>> if is_pwned:
-            ...     print(f"⚠️ Email trouvé dans {len(breaches)} fuites: {breaches}")
+            ...     print(f"[!] Email trouvé dans {len(breaches)} fuites: {breaches}")
         """
         if not self.api_key:
-            print("⚠️ Clé API HIBP non configurée. Vérification d'email impossible.")
+            print("[!] Clé API HIBP non configurée. Vérification d'email impossible.")
             print("   Pour obtenir une clé: https://haveibeenpwned.com/API/Key")
             return False, []
         
@@ -119,11 +119,11 @@ class HIBPChecker:
                 # Aucune fuite trouvée pour cet email
                 return False, []
             else:
-                print(f"⚠️ Erreur API HIBP: {response.status_code}")
+                print(f"[!] Erreur API HIBP: {response.status_code}")
                 return False, []
                 
         except Exception as e:
-            print(f"⚠️ Erreur lors de la vérification de l'email: {e}")
+            print(f"[!] Erreur lors de la vérification de l'email: {e}")
             return False, []
     
     def get_password_strength_message(self, password: str) -> dict:
@@ -151,7 +151,7 @@ class HIBPChecker:
             return {
                 'is_safe': False,
                 'level': 'danger',
-                'message': f'🚨 DANGER: Ce mot de passe a été trouvé {count:,} fois dans des fuites de données!',
+                'message': f'DANGER: Ce mot de passe a été trouvé {count:,} fois dans des fuites de données!',
                 'suggestions': ['Choisissez un mot de passe complètement différent', 
                                'Ne réutilisez jamais un mot de passe compromis']
             }
@@ -174,21 +174,21 @@ class HIBPChecker:
             return {
                 'is_safe': True,
                 'level': 'success',
-                'message': '✅ Excellent! Ce mot de passe est fort et n\'a pas été compromis.',
+                'message': 'Excellent! Ce mot de passe est fort et n\'a pas été compromis.',
                 'suggestions': []
             }
         elif length >= 8 and criteria_met >= 2:
             return {
                 'is_safe': True,
                 'level': 'warning',
-                'message': '⚠️ Bon mot de passe, mais peut être amélioré.',
+                'message': 'Bon mot de passe, mais peut être amélioré.',
                 'suggestions': suggestions
             }
         else:
             return {
                 'is_safe': False,
                 'level': 'danger',
-                'message': '❌ Mot de passe faible. Améliorez-le pour votre sécurité.',
+                'message': 'Mot de passe faible. Améliorez-le pour votre sécurité.',
                 'suggestions': suggestions
             }
 

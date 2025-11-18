@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% block title %}Tous les Résultats des Quiz - CyberConfiance{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1>Tous les Résultats des Quiz</h1>
+        <p class="subtitle">Historique des évaluations de sécurité numérique</p>
+    </div>
+</section>
+
+<section class="results-list-container">
+    <div class="container">
+        {% if results %}
+        <div class="results-stats">
+            <div class="stat-card">
+                <h3>{{ results|length }}</h3>
+                <p>Quiz complétés</p>
+            </div>
+            <div class="stat-card">
+                <h3>{{ "%.1f"|format(results|map(attribute='overall_score')|sum / results|length) }}%</h3>
+                <p>Score moyen</p>
+            </div>
+            <div class="stat-card">
+                <h3>{{ results|selectattr('hibp_summary')|selectattr('hibp_summary.breach_count', 'gt', 0)|list|length }}</h3>
+                <p>Emails avec fuites détectées</p>
+            </div>
+        </div>
+
+        <div class="results-table-container">
+            <table class="results-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Email</th>
+                        <th>Score Global</th>
+                        <th>Fuites HIBP</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for result in results %}
+                    <tr>
+                        <td>{{ result.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
+                        <td>{{ result.email }}</td>
+                        <td>
+                            <div class="score-badge" style="background: 
+                                {% if result.overall_score >= 80 %}#10b981
+                                {% elif result.overall_score >= 60 %}#3b82f6
+                                {% elif result.overall_score >= 40 %}#f59e0b
+                                {% else %}#ef4444{% endif %}">
+                                {{ result.overall_score }}%
+                            </div>
+                        </td>
+                        <td>
+                            {% if result.hibp_summary and result.hibp_summary.breach_count %}
+                            <span class="breach-count breach-{{ 'danger' if result.hibp_summary.breach_count > 5 else 'warning' }}">
+                                {{ result.hibp_summary.breach_count }} fuite(s)
+                            </span>
+                            {% else %}
+                            <span class="breach-count breach-safe">Aucune</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ url_for('main.quiz_result_detail', result_id=result.id) }}" class="btn-view">Voir détails</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="no-results-message">
+            <h2>Aucun résultat de quiz disponible</h2>
+            <p>Les résultats des quiz apparaîtront ici une fois que des utilisateurs auront complété le quiz de sécurité.</p>
+            <a href="{{ url_for('main.quiz') }}" class="btn-primary">Passer le Quiz</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<style>
+.results-list-container {
+    padding: 4rem 0;
+}
+
+.results-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.stat-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+}
+
+.stat-card h3 {
+    font-size: 2.5rem;
+    color: var(--accent-blue);
+    margin-bottom: 0.5rem;
+}
+
+.stat-card p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.results-table-container {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.results-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.results-table thead {
+    background: rgba(59, 130, 246, 0.1);
+}
+
+.results-table th {
+    padding: 1rem;
+    text-align: left;
+    color: var(--text-primary);
+    font-weight: 600;
+    border-bottom: 2px solid rgba(59, 130, 246, 0.3);
+}
+
+.results-table td {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+    color: var(--text-secondary);
+}
+
+.results-table tbody tr:hover {
+    background: rgba(59, 130, 246, 0.05);
+}
+
+.score-badge {
+    display: inline-block;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    color: white;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.breach-count {
+    display: inline-block;
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.breach-safe {
+    background: rgba(16, 185, 129, 0.2);
+    color: #10b981;
+}
+
+.breach-warning {
+    background: rgba(245, 158, 11, 0.2);
+    color: #f59e0b;
+}
+
+.breach-danger {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+}
+
+.btn-view {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: var(--accent-blue);
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.btn-view:hover {
+    background: var(--accent-blue-light);
+    transform: translateY(-2px);
+}
+
+.no-results-message {
+    text-align: center;
+    padding: 4rem 2rem;
+}
+
+.no-results-message h2 {
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.no-results-message p {
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+}
+
+@media (max-width: 768px) {
+    .results-table-container {
+        overflow-x: auto;
+    }
+    
+    .results-table {
+        min-width: 600px;
+    }
+}
+</style>
+{% endblock %}

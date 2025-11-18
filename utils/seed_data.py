@@ -45,7 +45,7 @@ def seed_rules(db):
             seeded_count += 1
     
     db.session.commit()
-    print(f"✓ Rules: {seeded_count} created, {updated_count} updated")
+    print(f"[OK] Rules: {seeded_count} created, {updated_count} updated")
 
 def seed_scenarios(db):
     """Seed or update scenarios from JSON data (idempotent)"""
@@ -85,7 +85,7 @@ def seed_scenarios(db):
             seeded_count += 1
     
     db.session.commit()
-    print(f"✓ Scenarios: {seeded_count} created, {updated_count} updated")
+    print(f"[OK] Scenarios: {seeded_count} created, {updated_count} updated")
 
 def seed_glossary(db):
     """Seed or update glossary terms from JSON data (idempotent)"""
@@ -116,7 +116,7 @@ def seed_glossary(db):
             seeded_count += 1
     
     db.session.commit()
-    print(f"✓ Glossary: {seeded_count} created, {updated_count} updated")
+    print(f"[OK] Glossary: {seeded_count} created, {updated_count} updated")
 
 def seed_tools(db):
     """Seed or update tools from JSON data (idempotent)"""
@@ -161,7 +161,7 @@ def seed_tools(db):
             seeded_count += 1
     
     db.session.commit()
-    print(f"✓ Tools: {seeded_count} created, {updated_count} updated")
+    print(f"[OK] Tools: {seeded_count} created, {updated_count} updated")
 
 def seed_attack_types(db):
     """Seed or update attack types (idempotent)"""
@@ -232,7 +232,7 @@ def seed_attack_types(db):
             created_count += 1
     
     db.session.commit()
-    print(f"✓ Attack Types: {created_count} created, {updated_count} updated")
+    print(f"[OK] Attack Types: {created_count} created, {updated_count} updated")
 
 def seed_all_data(db):
     """Seed all data from JSON files"""
