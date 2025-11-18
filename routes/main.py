@@ -146,6 +146,23 @@ def analyze_breach():
     recommendations = HaveIBeenPwnedService.get_breach_recommendations(result['count'])
     data_scenarios = HaveIBeenPwnedService.get_data_breach_scenarios()
     
+    # Log détaillé pour l'admin (console serveur uniquement)
+    if result.get('breaches'):
+        print(f"\n{'='*80}")
+        print(f"📊 ANALYSE DE FUITE - {email}")
+        print(f"   Nombre de fuites détectées: {result['count']}")
+        print(f"{'='*80}")
+        for i, breach in enumerate(result['breaches'][:10], 1):
+            print(f"\n{i}. {breach.get('Name', 'Inconnu')}")
+            print(f"   Date: {breach.get('BreachDate', 'Non spécifiée')}")
+            if breach.get('DataClasses'):
+                print(f"   Données compromises: {', '.join(breach.get('DataClasses', []))}")
+            if breach.get('PwnCount'):
+                print(f"   Comptes affectés: {breach['PwnCount']:,}")
+        if result['count'] > 10:
+            print(f"\n... et {result['count'] - 10} autre(s) fuite(s)")
+        print(f"{'='*80}\n")
+    
     return render_template('breach_analysis.html', 
                          email=email,
                          result=result, 
