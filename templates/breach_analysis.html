@@ -80,7 +80,55 @@
             </ul>
         </div>
 
-        {# Section de détails masquée pour la confidentialité - Les détails sont loggés côté serveur pour l'admin #}
+        {% if result.breaches and result.count > 0 %}
+        <div class="breaches-section">
+            <h3 class="breaches-title">Détails des fuites ({{ result.count }})</h3>
+            <div class="breaches-grid">
+                {% for breach in result.breaches[:10] %}
+                <div class="breach-card">
+                    <div class="breach-header">
+                        <h4>{{ breach.get('Name', 'Fuite inconnue') }}</h4>
+                        {% if breach.get('BreachDate') %}
+                        <span class="breach-date">{{ breach['BreachDate'] }}</span>
+                        {% endif %}
+                    </div>
+                    {% if breach.get('Description') %}
+                    <p class="breach-description">{{ breach['Description']|safe if breach['Description']|length < 200 else breach['Description'][:200]|safe + '...' }}</p>
+                    {% endif %}
+                    <div class="breach-details">
+                        {% if breach.get('DataClasses') %}
+                        <div class="breach-detail-item">
+                            <strong>Données compromises ({{ breach.get('DataClasses', [])|length }}):</strong>
+                            <div class="data-classes-detailed">
+                                {% for data_class in breach.get('DataClasses', []) %}
+                                {% set scenario = data_scenarios.get(data_class, {'risk': 'Inconnu', 'scenario': 'Type de donnée non documenté.'}) %}
+                                <div class="data-class-scenario">
+                                    <div class="data-class-header">
+                                        <span class="data-class-name">{{ data_class }}</span>
+                                        <span class="risk-badge risk-{{ scenario.risk|lower|replace('é', 'e')|replace(' ', '-') }}">{{ scenario.risk }}</span>
+                                    </div>
+                                    <p class="data-class-description">{{ scenario.scenario }}</p>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if breach.get('PwnCount') %}
+                        <div class="breach-detail-item">
+                            <strong>Comptes affectés:</strong> {{ "{:,}".format(breach['PwnCount']).replace(',', ' ') }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+                {% if result.count > 10 %}
+                <div class="more-breaches">
+                    <p>Et {{ result.count - 10 }} autre{{ 's' if result.count - 10 > 1 else '' }} fuite{{ 's' if result.count - 10 > 1 else '' }}...</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
 
         <div class="action-buttons">
             <a href="{{ url_for('main.index') }}" class="btn btn-primary">Retour à l'accueil</a>
