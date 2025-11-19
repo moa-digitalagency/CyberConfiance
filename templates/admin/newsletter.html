@@ -1,0 +1,78 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Inscriptions Newsletter - Administration{% endblock %}
+
+{% block content %}
+<div class="admin-header">
+    <h1>Inscriptions Newsletter</h1>
+    <p>Liste des inscriptions à la newsletter</p>
+</div>
+
+<div class="stats-grid" style="margin-bottom: 2rem;">
+    <div class="stat-card">
+        <div class="stat-value">{{ total_subscribed }}</div>
+        <div class="stat-label">Abonnés actifs</div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-value">{{ subscriptions.total }}</div>
+        <div class="stat-label">Total des inscriptions</div>
+    </div>
+</div>
+
+<div class="admin-toolbar">
+    <div class="filter-group">
+        <label for="status-filter">Statut:</label>
+        <select id="status-filter" onchange="window.location.href='?subscribed=' + this.value">
+            <option value="true" {% if subscribed_only == 'true' %}selected{% endif %}>Actifs uniquement</option>
+            <option value="false" {% if subscribed_only == 'false' %}selected{% endif %}>Tous</option>
+        </select>
+    </div>
+</div>
+
+<div class="admin-card">
+    <h3>Inscriptions</h3>
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Email</th>
+                <th>Statut</th>
+                <th>Date d'inscription</th>
+                <th>Date de désinscription</th>
+                <th>IP</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sub in subscriptions.items %}
+            <tr>
+                <td>{{ sub.email }}</td>
+                <td>
+                    {% if sub.subscribed %}
+                    <span class="badge badge-success">Actif</span>
+                    {% else %}
+                    <span class="badge badge-secondary">Désabonné</span>
+                    {% endif %}
+                </td>
+                <td>{{ sub.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
+                <td>{{ sub.unsubscribed_at.strftime('%d/%m/%Y %H:%M') if sub.unsubscribed_at else 'N/A' }}</td>
+                <td><small>{{ sub.ip_address or 'N/A' }}</small></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    {% if subscriptions.pages > 1 %}
+    <div class="pagination">
+        {% if subscriptions.has_prev %}
+        <a href="?page={{ subscriptions.prev_num }}&subscribed={{ subscribed_only }}" class="btn btn-secondary">Précédent</a>
+        {% endif %}
+        
+        <span>Page {{ subscriptions.page }} sur {{ subscriptions.pages }}</span>
+        
+        {% if subscriptions.has_next %}
+        <a href="?page={{ subscriptions.next_num }}&subscribed={{ subscribed_only }}" class="btn btn-secondary">Suivant</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

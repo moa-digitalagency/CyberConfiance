@@ -1,0 +1,79 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Messages de contact - Administration{% endblock %}
+
+{% block content %}
+<div class="admin-header">
+    <h1>Messages de contact</h1>
+    <p>Liste des messages reçus via le formulaire de contact</p>
+</div>
+
+<div class="admin-toolbar">
+    <div class="filter-group">
+        <label for="status-filter">Filtrer par statut:</label>
+        <select id="status-filter" onchange="window.location.href='?status=' + this.value">
+            <option value="">Tous les messages</option>
+            <option value="new" {% if status == 'new' %}selected{% endif %}>Nouveaux</option>
+            <option value="read" {% if status == 'read' %}selected{% endif %}>Lus</option>
+            <option value="replied" {% if status == 'replied' %}selected{% endif %}>Répondus</option>
+            <option value="archived" {% if status == 'archived' %}selected{% endif %}>Archivés</option>
+        </select>
+    </div>
+</div>
+
+<div class="admin-card">
+    <h3>Messages ({{ contacts.total }})</h3>
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Email</th>
+                <th>Sujet</th>
+                <th>Message</th>
+                <th>Date</th>
+                <th>Statut</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for contact in contacts.items %}
+            <tr>
+                <td><strong>{{ contact.name }}</strong></td>
+                <td>{{ contact.email }}</td>
+                <td>{{ contact.subject }}</td>
+                <td>
+                    <div style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                        {{ contact.message }}
+                    </div>
+                </td>
+                <td>{{ contact.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
+                <td>
+                    {% if contact.status == 'new' %}
+                    <span class="badge badge-warning">Nouveau</span>
+                    {% elif contact.status == 'read' %}
+                    <span class="badge badge-info">Lu</span>
+                    {% elif contact.status == 'replied' %}
+                    <span class="badge badge-success">Répondu</span>
+                    {% else %}
+                    <span class="badge badge-secondary">{{ contact.status }}</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    {% if contacts.pages > 1 %}
+    <div class="pagination">
+        {% if contacts.has_prev %}
+        <a href="?page={{ contacts.prev_num }}{% if status %}&status={{ status }}{% endif %}" class="btn btn-secondary">Précédent</a>
+        {% endif %}
+        
+        <span>Page {{ contacts.page }} sur {{ contacts.pages }}</span>
+        
+        {% if contacts.has_next %}
+        <a href="?page={{ contacts.next_num }}{% if status %}&status={{ status }}{% endif %}" class="btn btn-secondary">Suivant</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Gestion des articles - Administration{% endblock %}
+
+{% block content %}
+<div class="admin-header">
+    <h1>Gestion des articles</h1>
+    <p>Liste et gestion des articles de blog</p>
+</div>
+
+<div class="admin-toolbar">
+    <div class="filter-group">
+        <label for="category-filter">Filtrer par catégorie:</label>
+        <select id="category-filter" onchange="window.location.href='?category=' + encodeURIComponent(this.value)">
+            <option value="">Toutes les catégories</option>
+            {% for cat in categories %}
+            <option value="{{ cat }}" {% if selected_category == cat %}selected{% endif %}>{{ cat }}</option>
+            {% endfor %}
+        </select>
+    </div>
+</div>
+
+<div class="admin-card">
+    <h3>Articles ({{ articles.total }})</h3>
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Titre</th>
+                <th>Catégorie</th>
+                <th>Source</th>
+                <th>Date de publication</th>
+                <th>Créé le</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for article in articles.items %}
+            <tr>
+                <td><strong>{{ article.title }}</strong></td>
+                <td><span class="badge badge-info">{{ article.category }}</span></td>
+                <td>{{ article.source or 'N/A' }}</td>
+                <td>{{ article.published_date.strftime('%d/%m/%Y') if article.published_date else 'N/A' }}</td>
+                <td>{{ article.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    {% if articles.pages > 1 %}
+    <div class="pagination">
+        {% if articles.has_prev %}
+        <a href="?page={{ articles.prev_num }}{% if selected_category %}&amp;category={{ selected_category|urlencode }}{% endif %}" class="btn btn-secondary">Précédent</a>
+        {% endif %}
+        
+        <span>Page {{ articles.page }} sur {{ articles.pages }}</span>
+        
+        {% if articles.has_next %}
+        <a href="?page={{ articles.next_num }}{% if selected_category %}&amp;category={{ selected_category|urlencode }}{% endif %}" class="btn btn-secondary">Suivant</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
