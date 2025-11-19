@@ -1,0 +1,94 @@
+{% extends "admin/base.html" %}
+
+{% block title %}{{ 'Nouvel article' if action == 'new' else 'Modifier l\'article' }} - Administration{% endblock %}
+
+{% block content %}
+<div class="admin-header">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h1>{{ 'Nouvel article' if action == 'new' else 'Modifier l\'article' }}</h1>
+            <p>{{ 'Créez un nouvel article d\'actualité' if action == 'new' else 'Modifiez les informations de l\'article' }}</p>
+        </div>
+        <a href="{{ url_for('admin_panel.blog_management') }}" class="btn btn-secondary">← Retour</a>
+    </div>
+</div>
+
+<form method="POST" action="{{ url_for('admin_panel.news_new') if action == 'new' else url_for('admin_panel.news_edit', id=news.id) }}">
+    <div class="admin-card">
+        <h3>Informations de l'article</h3>
+        
+        <div style="display: grid; gap: 1.5rem; margin-top: 2rem;">
+            <div class="form-group">
+                <label for="title" style="display: block; color: var(--text-primary); margin-bottom: 0.5rem; font-weight: 500;">
+                    Titre <span style="color: var(--accent-red);">*</span>
+                </label>
+                <input type="text" id="title" name="title" value="{{ news.title if news else '' }}" required class="admin-filter-input" style="width: 100%;">
+            </div>
+            
+            <div class="form-group">
+                <label for="content" style="display: block; color: var(--text-primary); margin-bottom: 0.5rem; font-weight: 500;">
+                    Contenu <span style="color: var(--accent-red);">*</span>
+                </label>
+                <textarea id="content" name="content" rows="10" required class="admin-filter-input" style="width: 100%; font-family: inherit; resize: vertical;">{{ news.content if news else '' }}</textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="category" style="display: block; color: var(--text-primary); margin-bottom: 0.5rem; font-weight: 500;">
+                    Catégorie
+                </label>
+                <select id="category" name="category" class="admin-filter-input" style="width: 100%;">
+                    <option value="Général" {{ 'selected' if news and news.category == 'Général' else '' }}>Général</option>
+                    <option value="Cybersécurité" {{ 'selected' if news and news.category == 'Cybersécurité' else '' }}>Cybersécurité</option>
+                    <option value="Fact-checking" {{ 'selected' if news and news.category == 'Fact-checking' else '' }}>Fact-checking</option>
+                    <option value="Sensibilisation" {{ 'selected' if news and news.category == 'Sensibilisation' else '' }}>Sensibilisation</option>
+                    <option value="Technologie" {{ 'selected' if news and news.category == 'Technologie' else '' }}>Technologie</option>
+                    <option value="Afrique" {{ 'selected' if news and news.category == 'Afrique' else '' }}>Afrique</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="source" style="display: block; color: var(--text-primary); margin-bottom: 0.5rem; font-weight: 500;">
+                    Source
+                </label>
+                <input type="text" id="source" name="source" value="{{ news.source if news else '' }}" class="admin-filter-input" style="width: 100%;" placeholder="Ex: CyberConfiance, AFP, Reuters...">
+            </div>
+            
+            <div class="form-group">
+                <label for="url" style="display: block; color: var(--text-primary); margin-bottom: 0.5rem; font-weight: 500;">
+                    URL source
+                </label>
+                <input type="url" id="url" name="url" value="{{ news.url if news else '' }}" class="admin-filter-input" style="width: 100%;" placeholder="https://...">
+            </div>
+            
+            <div class="form-group">
+                <label for="published_date" style="display: block; color: var(--text-primary); margin-bottom: 0.5rem; font-weight: 500;">
+                    Date de publication
+                </label>
+                <input type="date" id="published_date" name="published_date" value="{{ news.published_date.strftime('%Y-%m-%d') if news and news.published_date else '' }}" class="admin-filter-input" style="width: 100%;">
+                <small style="color: var(--text-secondary); margin-top: 0.25rem; display: block;">
+                    Si vide, la date actuelle sera utilisée
+                </small>
+            </div>
+        </div>
+        
+        <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+            <button type="submit" class="btn btn-primary">{{ 'Créer l\'article' if action == 'new' else 'Enregistrer les modifications' }}</button>
+            <a href="{{ url_for('admin_panel.blog_management') }}" class="btn btn-secondary">Annuler</a>
+        </div>
+    </div>
+</form>
+
+<style>
+.form-group {
+    background: rgba(255, 255, 255, 0.02);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid rgba(59, 130, 246, 0.1);
+}
+
+.form-group:hover {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(59, 130, 246, 0.2);
+}
+</style>
+{% endblock %}

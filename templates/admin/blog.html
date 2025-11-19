@@ -34,7 +34,7 @@
         </div>
     </div>
     <div class="toolbar-right">
-        <a href="/my4dm1n/news/new/" class="btn btn-primary">+ Nouvel article</a>
+        <a href="{{ url_for('admin_panel.news_new') }}" class="btn btn-primary">+ Nouvel article</a>
     </div>
 </div>
 
@@ -76,8 +76,8 @@
                     <td style="font-size: 0.85rem;">{{ article.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
                     <td class="actions-cell">
                         <div class="action-btn-group">
-                            <a href="/my4dm1n/news/edit/?id={{ article.id }}" class="btn btn-primary btn-sm">Modifier</a>
-                            <form method="POST" action="/my4dm1n/news/delete/?id={{ article.id }}" style="display: inline;" onsubmit="return confirm('Supprimer cet article ?')">
+                            <a href="{{ url_for('admin_panel.news_edit', id=article.id) }}" class="btn btn-primary btn-sm">Modifier</a>
+                            <form method="POST" action="{{ url_for('admin_panel.news_delete', id=article.id) }}" style="display: inline;" onsubmit="return confirm('Supprimer cet article ?')">
                                 <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
                             </form>
                         </div>

@@ -499,6 +499,110 @@ def edit_page_content(page):
                          page_name=page_names[page], 
                          settings=settings)
 
+@bp.route('/news/new', methods=['GET', 'POST'])
+@moderator_required
+def news_new():
+    """Créer un nouvel article"""
+    if request.method == 'POST':
+        try:
+            title = request.form.get('title')
+            content = request.form.get('content')
+            category = request.form.get('category', 'Général')
+            source = request.form.get('source', '')
+            url = request.form.get('url', '')
+            published_date_str = request.form.get('published_date')
+            
+            if not title or not content:
+                flash('Le titre et le contenu sont obligatoires', 'danger')
+                return redirect(url_for('admin_panel.news_new'))
+            
+            news = News()
+            news.title = title
+            news.content = content
+            news.category = category
+            news.source = source
+            news.url = url
+            
+            if published_date_str:
+                try:
+                    news.published_date = datetime.strptime(published_date_str, '%Y-%m-%d')
+                except:
+                    news.published_date = datetime.utcnow()
+            else:
+                news.published_date = datetime.utcnow()
+            
+            db.session.add(news)
+            db.session.commit()
+            
+            log_activity('ADMIN_NEWS_CREATE', f'Création article: {title}', success=True)
+            flash('Article créé avec succès', 'success')
+            return redirect(url_for('admin_panel.blog_management'))
+        except Exception as e:
+            db.session.rollback()
+            log_activity('ADMIN_NEWS_CREATE', f'Erreur création article', success=False, details=str(e))
+            flash(f'Erreur lors de la création: {str(e)}', 'danger')
+            return redirect(url_for('admin_panel.news_new'))
+    
+    return render_template('admin/news_form.html', news=None, action='new')
+
+@bp.route('/news/edit/<int:id>', methods=['GET', 'POST'])
+@moderator_required
+def news_edit(id):
+    """Éditer un article existant"""
+    news = News.query.get_or_404(id)
+    
+    if request.method == 'POST':
+        try:
+            news.title = request.form.get('title')
+            news.content = request.form.get('content')
+            news.category = request.form.get('category', 'Général')
+            news.source = request.form.get('source', '')
+            news.url = request.form.get('url', '')
+            published_date_str = request.form.get('published_date')
+            
+            if not news.title or not news.content:
+                flash('Le titre et le contenu sont obligatoires', 'danger')
+                return redirect(url_for('admin_panel.news_edit', id=id))
+            
+            if published_date_str:
+                try:
+                    news.published_date = datetime.strptime(published_date_str, '%Y-%m-%d')
+                except:
+                    pass
+            
+            db.session.commit()
+            
+            log_activity('ADMIN_NEWS_UPDATE', f'Modification article: {news.title}', success=True)
+            flash('Article modifié avec succès', 'success')
+            return redirect(url_for('admin_panel.blog_management'))
+        except Exception as e:
+            db.session.rollback()
+            log_activity('ADMIN_NEWS_UPDATE', f'Erreur modification article', success=False, details=str(e))
+            flash(f'Erreur lors de la modification: {str(e)}', 'danger')
+            return redirect(url_for('admin_panel.news_edit', id=id))
+    
+    return render_template('admin/news_form.html', news=news, action='edit')
+
+@bp.route('/news/delete/<int:id>', methods=['POST'])
+@moderator_required
+def news_delete(id):
+    """Supprimer un article"""
+    try:
+        news = News.query.get_or_404(id)
+        title = news.title
+        
+        db.session.delete(news)
+        db.session.commit()
+        
+        log_activity('ADMIN_NEWS_DELETE', f'Suppression article: {title}', success=True)
+        flash('Article supprimé avec succès', 'success')
+    except Exception as e:
+        db.session.rollback()
+        log_activity('ADMIN_NEWS_DELETE', f'Erreur suppression article', success=False, details=str(e))
+        flash(f'Erreur lors de la suppression: {str(e)}', 'danger')
+    
+    return redirect(url_for('admin_panel.blog_management'))
+
 @bp.route('/api/stats')
 @admin_required
 def api_stats():
