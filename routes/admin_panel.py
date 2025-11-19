@@ -130,16 +130,19 @@ def content_management():
     """Gestion du contenu frontend - accessible aux modérateurs"""
     log_activity('ADMIN_CONTENT_VIEW', 'Consultation gestion contenu')
     
+    from models import AttackType
     rules_count = Rule.query.count()
     scenarios_count = Scenario.query.count()
     tools_count = Tool.query.count()
     glossary_count = GlossaryTerm.query.count()
+    attack_types_count = AttackType.query.count()
     
     return render_template('admin/content.html',
                          rules_count=rules_count,
                          scenarios_count=scenarios_count,
                          tools_count=tools_count,
-                         glossary_count=glossary_count)
+                         glossary_count=glossary_count,
+                         attack_types_count=attack_types_count)
 
 @bp.route('/history/quiz')
 @admin_required
