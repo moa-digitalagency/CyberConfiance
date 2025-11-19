@@ -21,13 +21,15 @@ Flask-Login handles session-based authentication with Werkzeug for secure passwo
 Jinja2 templates use a base layout. The design features a professional dark theme with glassmorphism effects, CSS custom properties, gradient accents, smooth animations, scroll-triggered effects, and parallax scrolling. Typography uses the Inter font, and the design is fully responsive. The platform also supports a light/dark theme system with automatic detection and a user-controlled switcher, along with bilingual support (French/English) via Flask-Babel.
 
 ### Feature Specifications
-- **Content Management**: Flask-Admin provides CRUD operations for all content models.
-- **Request Submission Forms**: Supports fact-checking, OSINT, and cyberconsultation requests with text, file, and URL inputs. All submissions are automatically scanned using VirusTotal.
+- **Admin Panel**: Flask-Admin provides management for user requests (fact-checking & cyberconsultation), history logs (breach analysis, quiz results, security analysis), activity/security logs, site settings, and SEO metadata. Content management (articles, rules, tools, etc.) has been removed - content is managed via JSON seed files.
+- **Request Submission Forms**: Dedicated secure forms at `/request/factchecking` and `/request/cyberconsultation` support text, file, and URL inputs with anonymous submission option. All submissions are automatically scanned using VirusTotal for malicious content detection.
 - **Email Breach Analysis**: Integrates with Have I Been Pwned API for user email breach detection.
 - **Attack Types Catalog**: A comprehensive, categorized, and filterable catalog of 42 common cyber attack types with descriptions, prevention, and severity.
 - **Security Quiz**: An interactive quiz assessing user vigilance, security, and digital hygiene, providing personalized recommendations and an optional email breach check.
-- **Blog & Newsletter System**: A news/blog system with categorized articles and a newsletter subscription management.
-- **Security Analyzer**: A tool for analyzing files, domains, IPs, and URLs against threat databases using a vendor-agnostic service, storing results for admin review.
+- **Blog & Newsletter System**: A news/blog system with categorized articles and a newsletter subscription management, displayed on homepage.
+- **Security Analyzer**: A tool for analyzing files, domains, IPs, and URLs against threat databases using VirusTotal, storing results for admin review.
+- **Bilingual Support**: Complete English/French translation with automatic browser language detection and user-controlled language switcher (bottom-left corner).
+- **Theme System**: Light and dark themes with automatic system detection and user-controlled theme switcher (bottom-left corner). Logo variants (light/dark) configurable in site settings.
 
 ### UI/UX Decisions
 The platform features a minimalist design with a pure black background, colorful glow orb effects, minimalist typography, and a simplified color palette. UI elements are clean with subtle borders, generous spacing, and scroll-triggered animations. Recent design improvements focus on enhanced primary buttons with advanced glassmorphism effects and mobile optimization.
