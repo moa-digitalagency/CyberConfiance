@@ -3,7 +3,7 @@
 {% block title %}Analyseur de Sécurité - CyberConfiance{% endblock %}
 
 {% block content %}
-<section class="page-header">
+<section class="page-header-modern">
     <div class="container">
         <h1>Analyseur de Sécurité</h1>
         <p class="subtitle">Vérifiez la sécurité de fichiers, domaines, adresses IP et URLs</p>
@@ -18,56 +18,72 @@
                 Vérifiez la réputation et la sécurité de différents éléments numériques en utilisant notre base de données de menaces.
             </p>
 
-            <form method="POST" action="{{ url_for('main.security_analyzer') }}" class="analyzer-form">
+            <form method="POST" action="{{ url_for('main.security_analyzer') }}" class="analyzer-form" enctype="multipart/form-data">
                 <div class="input-type-selector">
                     <label class="type-option">
-                        <input type="radio" name="input_type" value="hash" checked>
+                        <input type="radio" name="input_type" value="file" checked>
                         <span class="type-label">
-                            <span class="type-icon">🔐</span>
-                            <span class="type-text">Hash (MD5/SHA)</span>
+                            <span class="type-text">Fichier</span>
+                        </span>
+                    </label>
+                    <label class="type-option">
+                        <input type="radio" name="input_type" value="url">
+                        <span class="type-label">
+                            <span class="type-text">URL (Liens)</span>
                         </span>
                     </label>
                     <label class="type-option">
                         <input type="radio" name="input_type" value="domain">
                         <span class="type-label">
-                            <span class="type-icon">🌐</span>
                             <span class="type-text">Domaine</span>
                         </span>
                     </label>
                     <label class="type-option">
                         <input type="radio" name="input_type" value="ip">
                         <span class="type-label">
-                            <span class="type-icon">📡</span>
                             <span class="type-text">Adresse IP</span>
                         </span>
                     </label>
                     <label class="type-option">
-                        <input type="radio" name="input_type" value="url">
+                        <input type="radio" name="input_type" value="hash">
                         <span class="type-label">
-                            <span class="type-icon">🔗</span>
-                            <span class="type-text">URL</span>
+                            <span class="type-text">Hash (MD5/SHA)</span>
                         </span>
                     </label>
                 </div>
 
-                <div class="input-group">
+                <div class="input-group" id="textInputGroup">
                     <input 
                         type="text" 
                         name="input_value" 
                         id="inputValue" 
                         placeholder="Entrez la valeur à analyser..." 
-                        required
                         class="analyzer-input"
                     >
                     <button type="submit" class="btn-primary">
                         <span>Analyser</span>
-                        <span class="btn-icon">🔍</span>
+                    </button>
+                </div>
+
+                <div class="input-group" id="fileInputGroup" style="display: none;">
+                    <input 
+                        type="file" 
+                        name="file" 
+                        id="fileInput" 
+                        class="analyzer-input file-input"
+                        accept="*/*"
+                    >
+                    <button type="submit" class="btn-primary">
+                        <span>Analyser le fichier</span>
                     </button>
                 </div>
 
                 <div class="input-hints">
-                    <p class="hint hash-hint active">
-                        <strong>Exemple:</strong> 44d88612fea8a8f36de82e1278abb02f
+                    <p class="hint file-hint active">
+                        <strong>Info:</strong> Taille maximale 32 MB. Tous les types de fichiers sont acceptés.
+                    </p>
+                    <p class="hint url-hint">
+                        <strong>Exemple:</strong> https://example.com/page
                     </p>
                     <p class="hint domain-hint">
                         <strong>Exemple:</strong> example.com
@@ -75,8 +91,8 @@
                     <p class="hint ip-hint">
                         <strong>Exemple:</strong> 8.8.8.8
                     </p>
-                    <p class="hint url-hint">
-                        <strong>Exemple:</strong> https://example.com/page
+                    <p class="hint hash-hint">
+                        <strong>Exemple:</strong> 44d88612fea8a8f36de82e1278abb02f
                     </p>
                 </div>
             </form>
@@ -91,7 +107,7 @@
             </div>
             {% elif not results.found %}
             <div class="alert alert-success">
-                <h3>✓ Élément non répertorié</h3>
+                <h3>Élément non répertorié</h3>
                 <p>{{ results.message }}</p>
                 <p class="result-note">Cet élément n'est pas connu dans notre base de données de menaces, ce qui est généralement un bon signe.</p>
             </div>
@@ -134,7 +150,7 @@
 
                 {% if results.threat_detected %}
                 <div class="alert alert-warning">
-                    <h4>⚠️ Menace Détectée</h4>
+                    <h4>Menace Détectée</h4>
                     <p>Cet élément a été signalé comme potentiellement dangereux par plusieurs sources de sécurité.</p>
                     <ul class="safety-recommendations">
                         <li>Ne téléchargez pas ou n'exécutez pas ce fichier</li>
@@ -144,7 +160,7 @@
                 </div>
                 {% else %}
                 <div class="alert alert-success">
-                    <h4>✓ Aucune Menace Majeure Détectée</h4>
+                    <h4>Aucune Menace Majeure Détectée</h4>
                     <p>Cet élément semble sûr selon les analyses de sécurité disponibles.</p>
                 </div>
                 {% endif %}
@@ -230,16 +246,17 @@
         {% endif %}
 
         <div class="info-card">
-            <h3>💡 À Propos de Cet Outil</h3>
+            <h3>À Propos de Cet Outil</h3>
             <p>Cet analyseur de sécurité vérifie la réputation d'éléments numériques contre une vaste base de données de menaces connues. Les résultats proviennent de multiples sources de sécurité pour vous donner une vue complète.</p>
             
             <div class="capabilities">
                 <h4>Types d'Analyses Supportés:</h4>
                 <ul>
-                    <li><strong>Hash de Fichier:</strong> MD5, SHA-1, SHA-256 pour vérifier les fichiers suspects</li>
+                    <li><strong>Fichier:</strong> Upload et analyse de fichiers (32 MB max)</li>
+                    <li><strong>URL (Liens):</strong> Vérification de la sécurité des liens web</li>
                     <li><strong>Domaine:</strong> Vérification de la réputation des noms de domaine</li>
                     <li><strong>Adresse IP:</strong> Analyse de la sécurité des adresses IP</li>
-                    <li><strong>URL:</strong> Vérification de la sécurité des liens web</li>
+                    <li><strong>Hash:</strong> MD5, SHA-1, SHA-256 pour vérifier les fichiers suspects</li>
                 </ul>
             </div>
         </div>
@@ -250,6 +267,10 @@
 document.addEventListener('DOMContentLoaded', function() {
     const typeOptions = document.querySelectorAll('input[name="input_type"]');
     const hints = document.querySelectorAll('.hint');
+    const textInputGroup = document.getElementById('textInputGroup');
+    const fileInputGroup = document.getElementById('fileInputGroup');
+    const textInput = document.getElementById('inputValue');
+    const fileInput = document.getElementById('fileInput');
     
     typeOptions.forEach(option => {
         option.addEventListener('change', function() {
@@ -258,6 +279,18 @@ document.addEventListener('DOMContentLoaded', function() {
             const activeHint = document.querySelector('.' + hintClass);
             if (activeHint) {
                 activeHint.classList.add('active');
+            }
+            
+            if (this.value === 'file') {
+                textInputGroup.style.display = 'none';
+                fileInputGroup.style.display = 'flex';
+                textInput.removeAttribute('required');
+                fileInput.setAttribute('required', 'required');
+            } else {
+                textInputGroup.style.display = 'flex';
+                fileInputGroup.style.display = 'none';
+                textInput.setAttribute('required', 'required');
+                fileInput.removeAttribute('required');
             }
         });
     });
@@ -354,6 +387,25 @@ document.addEventListener('DOMContentLoaded', function() {
     outline: none;
     border-color: var(--accent-blue);
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.file-input {
+    cursor: pointer;
+}
+
+.file-input::file-selector-button {
+    padding: 0.5rem 1rem;
+    background: rgba(59, 130, 246, 0.2);
+    color: var(--text-primary);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 6px;
+    cursor: pointer;
+    margin-right: 1rem;
+    transition: all 0.3s ease;
+}
+
+.file-input::file-selector-button:hover {
+    background: rgba(59, 130, 246, 0.3);
 }
 
 .btn-icon {
