@@ -6,10 +6,10 @@ from datetime import datetime
 from urllib.parse import urlparse
 
 class SecurityAnalyzerService:
-    """Service for analyzing security threats via external API"""
+    """Service for analyzing security threats via VirusTotal API"""
     
     def __init__(self):
-        self.api_key = os.environ.get('SECURITY_ANALYSIS_API_KEY')
+        self.api_key = os.environ.get('VT_API_KEY')
         
         self.malicious_patterns = [
             r'<script[^>]*>.*?</script>',

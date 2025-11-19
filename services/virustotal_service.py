@@ -6,7 +6,7 @@ from typing import Dict, List, Optional, Tuple
 
 class VirusTotalService:
     def __init__(self):
-        self.api_key = os.environ.get('VIRUSTOTAL_API_KEY')
+        self.api_key = os.environ.get('VT_API_KEY')
         self.client = None
         if self.api_key:
             try:

@@ -11,6 +11,12 @@ Ce guide vous accompagne pas à pas dans le déploiement de CyberConfiance sur d
   - Inscrivez-vous sur https://haveibeenpwned.com/API/Key
   - La clé API est obligatoire pour la vérification d'emails
   
+- ✅ **Compte VirusTotal API** (gratuit avec limite)
+  - Créez un compte sur https://www.virustotal.com/
+  - Récupérez votre clé API sur https://www.virustotal.com/gui/my-apikey
+  - Plan gratuit: 500 requêtes/jour (suffisant pour la plupart des usages)
+  - La clé API est obligatoire pour scanner les fichiers/URLs/domaines
+  
 - ✅ **Base de données PostgreSQL** (production) ou SQLite (développement)
 
 ### Recommandés
@@ -30,6 +36,9 @@ ADMIN_PASSWORD=VotreMotDePasseSécurisé123!
 
 # Clé API Have I Been Pwned (requis pour vérification d'emails)
 HIBP_API_KEY=votre_clé_api_hibp
+
+# Clé API VirusTotal (requis pour scanner fichiers/URLs/domaines)
+VT_API_KEY=votre_clé_api_virustotal
 ```
 
 ### Variables RECOMMANDÉES

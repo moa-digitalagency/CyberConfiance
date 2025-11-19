@@ -11,6 +11,7 @@ import sys
 REQUIRED_ENV_VARS = {
     'ADMIN_PASSWORD': 'Mot de passe administrateur (requis en production)',
     'HIBP_API_KEY': 'Clé API Have I Been Pwned pour vérifier les emails compromis (~$3.50/mois - https://haveibeenpwned.com/API/Key)',
+    'VT_API_KEY': 'Clé API VirusTotal pour scanner les fichiers/URLs/domaines (gratuit avec limite - https://www.virustotal.com/gui/my-apikey)',
 }
 
 # Variables optionnelles mais recommandées

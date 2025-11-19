@@ -96,6 +96,7 @@ Créez un fichier `.env` ou configurez les secrets Replit:
 ```bash
 ADMIN_PASSWORD=VotreMotDePasseSécurisé123!
 HIBP_API_KEY=votre_clé_api_hibp
+VT_API_KEY=votre_clé_api_virustotal
 ```
 
 **Variables recommandées:**
@@ -125,7 +126,9 @@ gunicorn --bind=0.0.0.0:5000 --reuse-port --workers=2 main:app
 
 ---
 
-## 🔐 Obtenir une clé API Have I Been Pwned
+## 🔐 Obtenir les clés API
+
+### Have I Been Pwned (Vérification d'emails)
 
 La clé API HIBP est **OBLIGATOIRE** car la page d'accueil utilise la fonctionnalité "Vérifiez si votre email a été compromis".
 
@@ -136,6 +139,18 @@ La clé API HIBP est **OBLIGATOIRE** car la page d'accueil utilise la fonctionna
 5. Ajoutez-la dans vos secrets: `HIBP_API_KEY=votre_clé`
 
 **Note:** La vérification de mots de passe est gratuite et ne nécessite pas de clé API. Seule la vérification d'emails en nécessite une.
+
+### VirusTotal (Analyse de sécurité)
+
+La clé API VirusTotal est **OBLIGATOIRE** pour scanner les fichiers, URLs et domaines soumis via les formulaires de requêtes (fact-checking, cyberconsultation, OSINT, signalements).
+
+1. Créez un compte sur https://www.virustotal.com/
+2. Connectez-vous et allez sur https://www.virustotal.com/gui/my-apikey
+3. Copiez votre clé API (gratuite avec limite de 500 requêtes/jour)
+4. Ajoutez-la dans vos secrets: `VT_API_KEY=votre_clé`
+
+**Plan gratuit:** 500 requêtes/jour - suffisant pour la plupart des usages  
+**Plan premium:** Pour plus de requêtes, consultez https://www.virustotal.com/gui/my-apikey
 
 ---
 
