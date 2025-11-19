@@ -3,35 +3,62 @@
 {% block title %}Connexion - CyberConfiance{% endblock %}
 
 {% block content %}
-<section class="page-header">
-    <div class="container">
-        <h1>🔐 Connexion Administrateur</h1>
-    </div>
-</section>
-
-<section class="content-section">
-    <div class="container">
-        <div class="contact-form">
-            <form method="POST" action="{{ url_for('main.login') }}">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                <input type="hidden" name="next" value="{{ request.args.get('next', '') }}">
-                <div class="form-group">
-                    <label for="username">Nom d'utilisateur</label>
-                    <input type="text" id="username" name="username" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="password">Mot de passe</label>
-                    <input type="password" id="password" name="password" required>
-                </div>
-                
-                <button type="submit" class="btn btn-primary">Se connecter</button>
-            </form>
+<div style="min-height: 80vh; display: flex; align-items: center; justify-content: center; padding: 2rem 1rem;">
+    <div style="max-width: 450px; width: 100%; background: #1a1a2e; border-radius: 12px; padding: 3rem; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);">
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <h1 style="font-size: 2rem; color: #4a9eff; margin-bottom: 0.5rem; font-weight: 600;">Connexion Administrateur</h1>
+            <p style="color: #8892b0; font-size: 0.95rem;">Accédez au panneau d'administration</p>
+        </div>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div style="padding: 1rem; margin-bottom: 1.5rem; border-radius: 8px; background: {% if category == 'error' %}rgba(231, 76, 60, 0.1); border: 1px solid #e74c3c; color: #e74c3c{% else %}rgba(46, 204, 113, 0.1); border: 1px solid #2ecc71; color: #2ecc71{% endif %};">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <form method="POST" action="{{ url_for('main.login') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="next" value="{{ request.args.get('next', '') }}">
             
-            <p style="margin-top: 1rem; color: #999; font-size: 0.9rem;">
-                <strong>Note:</strong> Changez le mot de passe par défaut après la première connexion.
+            <div style="margin-bottom: 1.5rem;">
+                <label for="username" style="display: block; color: #ccd6f6; margin-bottom: 0.5rem; font-weight: 500; font-size: 0.95rem;">Nom d'utilisateur</label>
+                <input type="text" 
+                       id="username" 
+                       name="username" 
+                       required 
+                       style="width: 100%; padding: 0.875rem 1rem; background: #0a192f; border: 2px solid #233554; border-radius: 8px; color: #ccd6f6; font-size: 1rem; transition: all 0.3s ease;"
+                       onfocus="this.style.borderColor='#4a9eff'; this.style.outline='none';"
+                       onblur="this.style.borderColor='#233554';">
+            </div>
+            
+            <div style="margin-bottom: 2rem;">
+                <label for="password" style="display: block; color: #ccd6f6; margin-bottom: 0.5rem; font-weight: 500; font-size: 0.95rem;">Mot de passe</label>
+                <input type="password" 
+                       id="password" 
+                       name="password" 
+                       required 
+                       style="width: 100%; padding: 0.875rem 1rem; background: #0a192f; border: 2px solid #233554; border-radius: 8px; color: #ccd6f6; font-size: 1rem; transition: all 0.3s ease;"
+                       onfocus="this.style.borderColor='#4a9eff'; this.style.outline='none';"
+                       onblur="this.style.borderColor='#233554';">
+            </div>
+            
+            <button type="submit" 
+                    style="width: 100%; padding: 1rem; background: linear-gradient(135deg, #4a9eff 0%, #3d7dd1 100%); color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px;"
+                    onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(74, 158, 255, 0.4)';"
+                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+                Se connecter
+            </button>
+        </form>
+        
+        <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(255, 193, 7, 0.1); border-left: 3px solid #ffc107; border-radius: 4px;">
+            <p style="color: #ffc107; font-size: 0.875rem; margin: 0; line-height: 1.5;">
+                <strong>Note:</strong> Changez le mot de passe par défaut après la première connexion pour sécuriser votre compte.
             </p>
         </div>
     </div>
-</section>
+</div>
 {% endblock %}
