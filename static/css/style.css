@@ -2007,6 +2007,21 @@ footer {
     color: var(--text-primary);
 }
 
+select {
+    color: var(--text-primary);
+}
+
+select option {
+    background: var(--bg-navy);
+    color: var(--text-primary);
+    padding: 0.5rem;
+}
+
+[data-theme="light"] select option {
+    background: #ffffff;
+    color: #1a1a2e;
+}
+
 .glossary-search-container {
     margin-bottom: 3rem;
     max-width: 600px;

@@ -26,11 +26,16 @@ class RequestSubmissionService:
         urls_input = form_data.get('urls', '')
         is_anonymous = form_data.get('is_anonymous') == 'on'
         
-        # For cybercrime reports, prepend crime type and platform to description
+        # For cybercrime reports, prepend crime type, platform and identifier to description
         if request_type == 'cybercrime-report':
             crime_type = form_data.get('crime_type', 'Non spécifié')
             platform = form_data.get('platform', 'Non spécifiée')
-            description = f"[Type: {crime_type}] [Plateforme: {platform}]\n\n{description}"
+            platform_identifier = form_data.get('platform_identifier', '')
+            
+            crime_info = f"[Type: {crime_type}] [Plateforme: {platform}]"
+            if platform_identifier:
+                crime_info += f" [Identification: {platform_identifier}]"
+            description = f"{crime_info}\n\n{description}"
         
         contact_name = None if is_anonymous else form_data.get('name')
         contact_email = None if is_anonymous else form_data.get('email')

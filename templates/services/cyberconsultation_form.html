@@ -89,8 +89,59 @@
                                 </h3>
 
                                 <div class="form-group" style="margin-bottom: 1.5rem;">
-                                    <label for="description_cyber" class="form-label">Description de votre besoin <span style="color: #ef4444;">*</span></label>
-                                    <textarea id="description_cyber" name="description" required rows="6" class="form-input" placeholder="Décrivez vos besoins en cybersécurité..." style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; resize: vertical;"></textarea>
+                                    <label for="consultation_type" class="form-label">Type de consultation <span style="color: #ef4444;">*</span></label>
+                                    <select id="consultation_type" name="consultation_type" required class="form-input" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; cursor: pointer;">
+                                        <option value="">-- Sélectionnez un type --</option>
+                                        <option value="audit_securite">Audit de sécurité informatique</option>
+                                        <option value="protection_donnees">Protection des données (RGPD/Compliance)</option>
+                                        <option value="test_intrusion">Test d'intrusion (Pentest)</option>
+                                        <option value="formation">Formation en cybersécurité</option>
+                                        <option value="incident_response">Réponse à incident de sécurité</option>
+                                        <option value="securisation_infra">Sécurisation d'infrastructure</option>
+                                        <option value="conseil_strategique">Conseil stratégique en cybersécurité</option>
+                                        <option value="evaluation_risques">Évaluation des risques</option>
+                                        <option value="autre">Autre demande</option>
+                                    </select>
+                                </div>
+
+                                <div class="row" style="gap: 1.5rem 0; margin-bottom: 1.5rem;">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="organization_size" class="form-label">Taille de l'organisation</label>
+                                            <select id="organization_size" name="organization_size" class="form-input" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; cursor: pointer;">
+                                                <option value="">-- Sélectionnez --</option>
+                                                <option value="particulier">Particulier</option>
+                                                <option value="1-10">1-10 employés</option>
+                                                <option value="11-50">11-50 employés</option>
+                                                <option value="51-200">51-200 employés</option>
+                                                <option value="201-500">201-500 employés</option>
+                                                <option value="500+">Plus de 500 employés</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="business_sector" class="form-label">Secteur d'activité</label>
+                                            <select id="business_sector" name="business_sector" class="form-input" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; cursor: pointer;">
+                                                <option value="">-- Sélectionnez --</option>
+                                                <option value="finance">Finance / Banque</option>
+                                                <option value="sante">Santé</option>
+                                                <option value="education">Éducation</option>
+                                                <option value="gouvernement">Gouvernement / Administration</option>
+                                                <option value="ecommerce">E-commerce / Retail</option>
+                                                <option value="telecom">Télécommunications</option>
+                                                <option value="tech">Technologies / IT</option>
+                                                <option value="industrie">Industrie</option>
+                                                <option value="autre">Autre</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style="margin-bottom: 1.5rem;">
+                                    <label for="description_cyber" class="form-label">Description détaillée de votre besoin <span style="color: #ef4444;">*</span></label>
+                                    <textarea id="description_cyber" name="description" required rows="7" class="form-input" placeholder="Décrivez votre contexte, vos objectifs de sécurité, les systèmes concernés, et vos attentes pour cette consultation..." style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; resize: vertical;"></textarea>
                                     <small style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 8px; display: flex; align-items: center; gap: 5px;">
                                         <i class="bi bi-shield-check"></i> Le contenu textuel est scanné pour détecter tout contenu malveillant
                                     </small>
@@ -189,8 +240,54 @@
                                 </h3>
 
                                 <div class="form-group" style="margin-bottom: 1.5rem;">
-                                    <label for="description_osint" class="form-label">Description de l'investigation <span style="color: #ef4444;">*</span></label>
-                                    <textarea id="description_osint" name="description" required rows="6" class="form-input" placeholder="Décrivez en détail ce que vous souhaitez investiguer..." style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; resize: vertical;"></textarea>
+                                    <label for="investigation_type" class="form-label">Type d'investigation OSINT <span style="color: #ef4444;">*</span></label>
+                                    <select id="investigation_type" name="investigation_type" required class="form-input" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; cursor: pointer;">
+                                        <option value="">-- Sélectionnez un type --</option>
+                                        <option value="personne">Investigation sur une personne</option>
+                                        <option value="organisation">Investigation sur une organisation/entreprise</option>
+                                        <option value="site_web">Analyse de site web/domaine</option>
+                                        <option value="compte_social">Investigation de compte sur réseaux sociaux</option>
+                                        <option value="adresse_email">Recherche sur adresse email</option>
+                                        <option value="numero_telephone">Recherche sur numéro de téléphone</option>
+                                        <option value="adresse_ip">Recherche sur adresse IP</option>
+                                        <option value="crypto">Investigation sur portefeuille crypto</option>
+                                        <option value="autre">Autre type d'investigation</option>
+                                    </select>
+                                </div>
+
+                                <div class="row" style="gap: 1.5rem 0; margin-bottom: 1.5rem;">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="target_identifier" class="form-label">Identifiant de la cible</label>
+                                            <input type="text" id="target_identifier" name="target_identifier" class="form-input" placeholder="Ex: @username, nom complet, email, numéro..." style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem;">
+                                            <small style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 5px; display: block;">
+                                                Nom d'utilisateur, email, numéro, adresse, etc.
+                                            </small>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="urgency_level" class="form-label">Niveau d'urgence</label>
+                                            <select id="urgency_level" name="urgency_level" class="form-input" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; cursor: pointer;">
+                                                <option value="">-- Sélectionnez --</option>
+                                                <option value="faible">Faible (investigation standard)</option>
+                                                <option value="moyen">Moyen (dans la semaine)</option>
+                                                <option value="eleve">Élevé (sous 48h)</option>
+                                                <option value="critique">Critique (urgent)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style="margin-bottom: 1.5rem;">
+                                    <label for="known_information" class="form-label">Informations déjà connues</label>
+                                    <textarea id="known_information" name="known_information" rows="4" class="form-input" placeholder="Listez toutes les informations que vous possédez déjà sur la cible (réseaux sociaux, emploi, localisation approximative, etc.)" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; resize: vertical;"></textarea>
+                                </div>
+
+                                <div class="form-group" style="margin-bottom: 1.5rem;">
+                                    <label for="description_osint" class="form-label">Objectif de l'investigation <span style="color: #ef4444;">*</span></label>
+                                    <textarea id="description_osint" name="description" required rows="6" class="form-input" placeholder="Décrivez précisément ce que vous cherchez à découvrir : contexte, objectifs, informations recherchées, raison de l'investigation..." style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; resize: vertical;"></textarea>
                                     <small style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 8px; display: flex; align-items: center; gap: 5px;">
                                         <i class="bi bi-shield-check"></i> Le contenu textuel est scanné pour détecter tout contenu malveillant
                                     </small>

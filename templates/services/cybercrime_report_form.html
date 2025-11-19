@@ -106,9 +106,69 @@
 
                             <div class="form-group" style="margin-bottom: 1.5rem;">
                                 <label for="platform" class="form-label">Plateforme concernée</label>
-                                <input type="text" id="platform" name="platform" class="form-input" placeholder="Ex: Facebook, WhatsApp, Instagram, Site web..." style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem;">
+                                <select id="platform" name="platform" class="form-input" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; cursor: pointer;">
+                                    <option value="">-- Sélectionnez une plateforme --</option>
+                                    <optgroup label="Réseaux sociaux">
+                                        <option value="Facebook">Facebook</option>
+                                        <option value="Instagram">Instagram</option>
+                                        <option value="Twitter/X">Twitter/X</option>
+                                        <option value="TikTok">TikTok</option>
+                                        <option value="Snapchat">Snapchat</option>
+                                        <option value="LinkedIn">LinkedIn</option>
+                                        <option value="YouTube">YouTube</option>
+                                        <option value="Pinterest">Pinterest</option>
+                                        <option value="Reddit">Reddit</option>
+                                    </optgroup>
+                                    <optgroup label="Messagerie">
+                                        <option value="WhatsApp">WhatsApp</option>
+                                        <option value="Telegram">Telegram</option>
+                                        <option value="Signal">Signal</option>
+                                        <option value="Messenger">Facebook Messenger</option>
+                                        <option value="Discord">Discord</option>
+                                        <option value="Skype">Skype</option>
+                                        <option value="Viber">Viber</option>
+                                    </optgroup>
+                                    <optgroup label="Rencontres">
+                                        <option value="Tinder">Tinder</option>
+                                        <option value="Bumble">Bumble</option>
+                                        <option value="Badoo">Badoo</option>
+                                        <option value="Happn">Happn</option>
+                                    </optgroup>
+                                    <optgroup label="Services financiers">
+                                        <option value="PayPal">PayPal</option>
+                                        <option value="Orange Money">Orange Money</option>
+                                        <option value="MTN Mobile Money">MTN Mobile Money</option>
+                                        <option value="Wave">Wave</option>
+                                        <option value="Binance">Binance</option>
+                                        <option value="Coinbase">Coinbase</option>
+                                    </optgroup>
+                                    <optgroup label="E-commerce">
+                                        <option value="Jumia">Jumia</option>
+                                        <option value="Amazon">Amazon</option>
+                                        <option value="AliExpress">AliExpress</option>
+                                        <option value="eBay">eBay</option>
+                                    </optgroup>
+                                    <optgroup label="Email">
+                                        <option value="Gmail">Gmail</option>
+                                        <option value="Yahoo Mail">Yahoo Mail</option>
+                                        <option value="Outlook/Hotmail">Outlook/Hotmail</option>
+                                    </optgroup>
+                                    <optgroup label="Autre">
+                                        <option value="Site web">Site web</option>
+                                        <option value="Application mobile">Application mobile</option>
+                                        <option value="Autre">Autre plateforme</option>
+                                    </optgroup>
+                                </select>
                                 <small style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 8px; display: block;">
-                                    Indiquez le nom de la plateforme, du site web ou de l'application concernée
+                                    Sélectionnez la plateforme où le crime a eu lieu, ou "Autre" si non listée
+                                </small>
+                            </div>
+
+                            <div class="form-group" style="margin-bottom: 1.5rem;">
+                                <label for="platform_identifier" class="form-label">Identification sur la plateforme</label>
+                                <input type="text" id="platform_identifier" name="platform_identifier" class="form-input" placeholder="Ex: Numéro WhatsApp, nom du compte Facebook, URL du profil..." style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem;">
+                                <small style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 8px; display: block;">
+                                    Numéro de téléphone, nom du compte, URL du profil, adresse email ou tout identifiant permettant de localiser l'auteur
                                 </small>
                             </div>
 
