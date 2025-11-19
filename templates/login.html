@@ -3,62 +3,162 @@
 {% block title %}Connexion - CyberConfiance{% endblock %}
 
 {% block content %}
-<div style="min-height: 80vh; display: flex; align-items: center; justify-content: center; padding: 2rem 1rem;">
-    <div style="max-width: 450px; width: 100%; background: #1a1a2e; border-radius: 12px; padding: 3rem; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);">
-        <div style="text-align: center; margin-bottom: 2rem;">
-            <h1 style="font-size: 2rem; color: #4a9eff; margin-bottom: 0.5rem; font-weight: 600;">Connexion Administrateur</h1>
-            <p style="color: #8892b0; font-size: 0.95rem;">Accédez au panneau d'administration</p>
-        </div>
-        
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div style="padding: 1rem; margin-bottom: 1.5rem; border-radius: 8px; background: {% if category == 'error' %}rgba(231, 76, 60, 0.1); border: 1px solid #e74c3c; color: #e74c3c{% else %}rgba(46, 204, 113, 0.1); border: 1px solid #2ecc71; color: #2ecc71{% endif %};">
-                        {{ message }}
+<section class="hero" style="min-height: 90vh; display: flex; align-items: center; justify-content: center;">
+    <div class="glow-orb"></div>
+    
+    <div class="container" style="position: relative; z-index: 10;">
+        <div style="max-width: 500px; margin: 0 auto;">
+            <div style="
+                background: rgba(10, 22, 40, 0.8);
+                backdrop-filter: blur(60px) saturate(180%);
+                -webkit-backdrop-filter: blur(60px) saturate(180%);
+                border: 1px solid rgba(59, 130, 246, 0.2);
+                border-radius: 16px;
+                padding: 3rem;
+                box-shadow: 
+                    0 4px 16px rgba(0, 0, 0, 0.3),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            ">
+                <div style="text-align: center; margin-bottom: 2.5rem;">
+                    <h1 style="
+                        font-size: 2rem;
+                        color: var(--text-primary);
+                        margin-bottom: 0.5rem;
+                        font-weight: 600;
+                        letter-spacing: -0.5px;
+                    ">Connexion Administrateur</h1>
+                    <p style="
+                        color: var(--text-secondary);
+                        font-size: 0.95rem;
+                        font-weight: 400;
+                    ">Accédez au panneau d'administration</p>
+                </div>
+                
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div style="
+                                padding: 1rem 1.25rem;
+                                margin-bottom: 1.5rem;
+                                border-radius: 10px;
+                                background: {% if category == 'error' %}rgba(239, 68, 68, 0.15){% else %}rgba(34, 197, 94, 0.15){% endif %};
+                                border: 1px solid {% if category == 'error' %}rgba(239, 68, 68, 0.3){% else %}rgba(34, 197, 94, 0.3){% endif %};
+                                color: {% if category == 'error' %}#fca5a5{% else %}#86efac{% endif %};
+                                font-size: 0.9rem;
+                            ">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                
+                <form method="POST" action="{{ url_for('main.login') }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="next" value="{{ request.args.get('next', '') }}">
+                    
+                    <div style="margin-bottom: 1.5rem;">
+                        <label for="username" style="
+                            display: block;
+                            color: var(--text-secondary);
+                            margin-bottom: 0.6rem;
+                            font-weight: 500;
+                            font-size: 0.9rem;
+                            letter-spacing: -0.2px;
+                        ">Nom d'utilisateur</label>
+                        <input type="text" 
+                               id="username" 
+                               name="username" 
+                               required 
+                               autocomplete="username"
+                               style="
+                                   width: 100%;
+                                   padding: 0.9rem 1rem;
+                                   background: rgba(255, 255, 255, 0.05);
+                                   border: 1px solid rgba(255, 255, 255, 0.1);
+                                   border-radius: 10px;
+                                   color: var(--text-primary);
+                                   font-size: 0.95rem;
+                                   transition: all 0.3s ease;
+                                   backdrop-filter: blur(20px);
+                                   -webkit-backdrop-filter: blur(20px);
+                               "
+                               onfocus="this.style.borderColor='rgba(59, 130, 246, 0.6)'; this.style.background='rgba(255, 255, 255, 0.08)'; this.style.outline='none';"
+                               onblur="this.style.borderColor='rgba(255, 255, 255, 0.1)'; this.style.background='rgba(255, 255, 255, 0.05)';">
                     </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-        
-        <form method="POST" action="{{ url_for('main.login') }}">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            <input type="hidden" name="next" value="{{ request.args.get('next', '') }}">
-            
-            <div style="margin-bottom: 1.5rem;">
-                <label for="username" style="display: block; color: #ccd6f6; margin-bottom: 0.5rem; font-weight: 500; font-size: 0.95rem;">Nom d'utilisateur</label>
-                <input type="text" 
-                       id="username" 
-                       name="username" 
-                       required 
-                       style="width: 100%; padding: 0.875rem 1rem; background: #0a192f; border: 2px solid #233554; border-radius: 8px; color: #ccd6f6; font-size: 1rem; transition: all 0.3s ease;"
-                       onfocus="this.style.borderColor='#4a9eff'; this.style.outline='none';"
-                       onblur="this.style.borderColor='#233554';">
+                    
+                    <div style="margin-bottom: 2rem;">
+                        <label for="password" style="
+                            display: block;
+                            color: var(--text-secondary);
+                            margin-bottom: 0.6rem;
+                            font-weight: 500;
+                            font-size: 0.9rem;
+                            letter-spacing: -0.2px;
+                        ">Mot de passe</label>
+                        <input type="password" 
+                               id="password" 
+                               name="password" 
+                               required
+                               autocomplete="current-password"
+                               style="
+                                   width: 100%;
+                                   padding: 0.9rem 1rem;
+                                   background: rgba(255, 255, 255, 0.05);
+                                   border: 1px solid rgba(255, 255, 255, 0.1);
+                                   border-radius: 10px;
+                                   color: var(--text-primary);
+                                   font-size: 0.95rem;
+                                   transition: all 0.3s ease;
+                                   backdrop-filter: blur(20px);
+                                   -webkit-backdrop-filter: blur(20px);
+                               "
+                               onfocus="this.style.borderColor='rgba(59, 130, 246, 0.6)'; this.style.background='rgba(255, 255, 255, 0.08)'; this.style.outline='none';"
+                               onblur="this.style.borderColor='rgba(255, 255, 255, 0.1)'; this.style.background='rgba(255, 255, 255, 0.05)';">
+                    </div>
+                    
+                    <button type="submit" 
+                            style="
+                                width: 100%;
+                                padding: 1rem;
+                                background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-blue-dark) 100%);
+                                color: white;
+                                border: none;
+                                border-radius: 10px;
+                                font-size: 0.95rem;
+                                font-weight: 600;
+                                cursor: pointer;
+                                transition: all 0.3s ease;
+                                text-transform: uppercase;
+                                letter-spacing: 0.5px;
+                                box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+                            "
+                            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(59, 130, 246, 0.5)';"
+                            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(59, 130, 246, 0.3)';">
+                        Se connecter
+                    </button>
+                </form>
+                
+                <div style="
+                    margin-top: 1.75rem;
+                    padding: 1rem 1.25rem;
+                    background: rgba(251, 191, 36, 0.1);
+                    border: 1px solid rgba(251, 191, 36, 0.2);
+                    border-left: 3px solid rgba(251, 191, 36, 0.6);
+                    border-radius: 8px;
+                    backdrop-filter: blur(20px);
+                    -webkit-backdrop-filter: blur(20px);
+                ">
+                    <p style="
+                        color: #fbbf24;
+                        font-size: 0.85rem;
+                        margin: 0;
+                        line-height: 1.6;
+                    ">
+                        <strong>Note:</strong> Changez le mot de passe par défaut après la première connexion pour sécuriser votre compte.
+                    </p>
+                </div>
             </div>
-            
-            <div style="margin-bottom: 2rem;">
-                <label for="password" style="display: block; color: #ccd6f6; margin-bottom: 0.5rem; font-weight: 500; font-size: 0.95rem;">Mot de passe</label>
-                <input type="password" 
-                       id="password" 
-                       name="password" 
-                       required 
-                       style="width: 100%; padding: 0.875rem 1rem; background: #0a192f; border: 2px solid #233554; border-radius: 8px; color: #ccd6f6; font-size: 1rem; transition: all 0.3s ease;"
-                       onfocus="this.style.borderColor='#4a9eff'; this.style.outline='none';"
-                       onblur="this.style.borderColor='#233554';">
-            </div>
-            
-            <button type="submit" 
-                    style="width: 100%; padding: 1rem; background: linear-gradient(135deg, #4a9eff 0%, #3d7dd1 100%); color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px;"
-                    onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(74, 158, 255, 0.4)';"
-                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
-                Se connecter
-            </button>
-        </form>
-        
-        <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(255, 193, 7, 0.1); border-left: 3px solid #ffc107; border-radius: 4px;">
-            <p style="color: #ffc107; font-size: 0.875rem; margin: 0; line-height: 1.5;">
-                <strong>Note:</strong> Changez le mot de passe par défaut après la première connexion pour sécuriser votre compte.
-            </p>
         </div>
     </div>
-</div>
+</section>
 {% endblock %}
