@@ -5,79 +5,142 @@
 {% block content %}
 <div class="admin-header">
     <h1>Logs de Sécurité</h1>
-    <p>Événements de sécurité et tentatives d'attaque</p>
+    <p>Événements de sécurité et tentatives d'attaque détectées</p>
+</div>
+
+<div class="admin-toolbar">
+    <div class="toolbar-left">
+        <form method="GET" style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+            <div class="filter-group">
+                <label for="event_type">Type d'événement:</label>
+                <input type="text" id="event_type" name="event_type" value="{{ event_type }}" placeholder="Type..." style="min-width: 180px;">
+            </div>
+            <div class="filter-group">
+                <label for="severity">Sévérité:</label>
+                <select id="severity" name="severity">
+                    <option value="">Toutes les sévérités</option>
+                    <option value="low" {% if severity == 'low' %}selected{% endif %}>Faible</option>
+                    <option value="medium" {% if severity == 'medium' %}selected{% endif %}>Moyen</option>
+                    <option value="high" {% if severity == 'high' %}selected{% endif %}>Élevé</option>
+                    <option value="critical" {% if severity == 'critical' %}selected{% endif %}>Critique</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label style="display: flex; align-items: center; gap: 0.5rem;">
+                    <input type="checkbox" name="blocked" value="true" {% if blocked_only == 'true' %}checked{% endif %}>
+                    Bloqués uniquement
+                </label>
+            </div>
+            <button type="submit" class="btn btn-primary btn-sm">Filtrer</button>
+            <a href="{{ url_for('admin_panel.security_logs') }}" class="btn btn-secondary btn-sm">Réinitialiser</a>
+        </form>
+    </div>
+    <div class="toolbar-right">
+        <button onclick="exportData()" class="btn btn-secondary">Exporter CSV</button>
+    </div>
 </div>
 
 <div class="admin-card">
-    <form method="GET" class="admin-filters">
-        <input type="text" name="event_type" value="{{ event_type }}" placeholder="Type d'événement..." class="admin-filter-input">
-        <select name="severity" class="admin-filter-input">
-            <option value="">Toutes les sévérités</option>
-            <option value="low" {% if severity == 'low' %}selected{% endif %}>Faible</option>
-            <option value="medium" {% if severity == 'medium' %}selected{% endif %}>Moyen</option>
-            <option value="high" {% if severity == 'high' %}selected{% endif %}>Élevé</option>
-            <option value="critique" {% if severity == 'critique' %}selected{% endif %}>Critique</option>
-        </select>
-        <label style="color: var(--text-primary); display: flex; align-items: center; gap: 0.5rem;">
-            <input type="checkbox" name="blocked" value="true" {% if blocked_only == 'true' %}checked{% endif %}>
-            Bloqués uniquement
-        </label>
-        <button type="submit" class="btn btn-primary">Filtrer</button>
-    </form>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h3 style="margin: 0;">Logs de sécurité ({{ logs.total }})</h3>
+        <div style="color: var(--text-secondary); font-size: 0.9rem;">
+            Bloqués: <strong style="color: #ef4444;">{{ blocked_count|default(0) }}</strong> / 
+            Total: <strong>{{ logs.total }}</strong>
+        </div>
+    </div>
     
-    <table class="admin-table">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Type d'événement</th>
-                <th>Sévérité</th>
-                <th>Description</th>
-                <th>Bloqué</th>
-                <th>IP</th>
-                <th>Date</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for log in logs.items %}
-            <tr>
-                <td>{{ log.id }}</td>
-                <td><span class="badge badge-info">{{ log.event_type }}</span></td>
-                <td>
-                    {% if log.severity in ['high', 'critique'] %}
-                    <span class="badge badge-danger">{{ log.severity }}</span>
-                    {% elif log.severity == 'medium' %}
-                    <span class="badge badge-warning">{{ log.severity }}</span>
-                    {% else %}
-                    <span class="badge badge-info">{{ log.severity }}</span>
-                    {% endif %}
-                </td>
-                <td style="max-width: 400px; overflow: hidden; text-overflow: ellipsis;">{{ log.description }}</td>
-                <td>
-                    {% if log.blocked %}
-                    <span class="badge badge-danger">Oui</span>
-                    {% else %}
-                    <span class="badge badge-success">Non</span>
-                    {% endif %}
-                </td>
-                <td>{{ log.ip_address }}</td>
-                <td>{{ log.created_at.strftime('%d/%m/%Y %H:%M:%S') }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="table-container">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th style="width: 60px;">ID</th>
+                    <th style="width: 160px;">Type d'événement</th>
+                    <th style="width: 100px;">Sévérité</th>
+                    <th>Description</th>
+                    <th style="width: 90px;">Bloqué</th>
+                    <th style="width: 130px;">IP</th>
+                    <th style="width: 150px;">Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs.items %}
+                <tr>
+                    <td style="font-family: monospace; font-size: 0.85rem;">{{ log.id }}</td>
+                    <td><span class="badge badge-info">{{ log.event_type }}</span></td>
+                    <td>
+                        {% if log.severity in ['high', 'critical'] %}
+                        <span class="badge badge-danger">{{ log.severity|upper }}</span>
+                        {% elif log.severity == 'medium' %}
+                        <span class="badge badge-warning">{{ log.severity|upper }}</span>
+                        {% else %}
+                        <span class="badge badge-success">{{ log.severity|upper }}</span>
+                        {% endif %}
+                    </td>
+                    <td style="max-width: 400px; overflow: hidden; text-overflow: ellipsis; font-size: 0.9rem;">
+                        {{ log.description }}
+                    </td>
+                    <td>
+                        {% if log.blocked %}
+                        <span class="badge badge-danger">OUI</span>
+                        {% else %}
+                        <span class="badge badge-success">NON</span>
+                        {% endif %}
+                    </td>
+                    <td style="font-family: monospace; font-size: 0.85rem;">{{ log.ip_address }}</td>
+                    <td style="font-size: 0.85rem;">{{ log.created_at.strftime('%d/%m/%Y %H:%M:%S') }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
     
     {% if logs.pages > 1 %}
     <div class="pagination">
         {% if logs.has_prev %}
-        <a href="{{ url_for('admin_panel.security_logs', page=logs.prev_num, event_type=event_type, severity=severity, blocked=blocked_only) }}">Précédent</a>
+        <a href="{{ url_for('admin_panel.security_logs', page=logs.prev_num, event_type=event_type, severity=severity, blocked=blocked_only) }}">‹ Précédent</a>
         {% endif %}
         
-        <span class="active">Page {{ logs.page }} / {{ logs.pages }}</span>
+        {% for page_num in logs.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+            {% if page_num %}
+                {% if page_num == logs.page %}
+                    <span class="active">{{ page_num }}</span>
+                {% else %}
+                    <a href="{{ url_for('admin_panel.security_logs', page=page_num, event_type=event_type, severity=severity, blocked=blocked_only) }}">{{ page_num }}</a>
+                {% endif %}
+            {% else %}
+                <span>...</span>
+            {% endif %}
+        {% endfor %}
         
         {% if logs.has_next %}
-        <a href="{{ url_for('admin_panel.security_logs', page=logs.next_num, event_type=event_type, severity=severity, blocked=blocked_only) }}">Suivant</a>
+        <a href="{{ url_for('admin_panel.security_logs', page=logs.next_num, event_type=event_type, severity=severity, blocked=blocked_only) }}">Suivant ›</a>
         {% endif %}
     </div>
     {% endif %}
 </div>
+
+<script>
+function exportData() {
+    let csv = 'ID,Type,Sévérité,Description,Bloqué,IP,Date\n';
+    const rows = document.querySelectorAll('.admin-table tbody tr');
+    
+    rows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        if (cells.length >= 7) {
+            const values = Array.from(cells).slice(0, 7).map(cell => 
+                '"' + cell.textContent.trim().replace(/"/g, '""') + '"'
+            );
+            csv += values.join(',') + '\n';
+        }
+    });
+    
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'security_logs_' + new Date().toISOString().split('T')[0] + '.csv';
+    a.click();
+    window.URL.revokeObjectURL(url);
+}
+</script>
 {% endblock %}

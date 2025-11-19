@@ -5,47 +5,101 @@
 {% block content %}
 <div class="admin-header">
     <h1>Paramètres du Site</h1>
-    <p>Configuration générale du site</p>
+    <p>Configuration générale du site et gestion des paramètres</p>
 </div>
 
-<div class="admin-card">
-    <form method="POST">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<div class="admin-toolbar">
+    <div class="toolbar-left">
+        <div class="filter-group">
+            <input type="text" id="search-input" placeholder="Rechercher un paramètre..." style="min-width: 250px;">
+        </div>
+    </div>
+    <div class="toolbar-right">
+        <a href="/my4dm1n/sitesettings/new/" class="btn btn-primary">+ Nouveau paramètre</a>
+        <a href="/my4dm1n/sitesettings/" class="btn btn-secondary">Gérer via Flask-Admin</a>
+    </div>
+</div>
+
+<form method="POST" action="{{ url_for('admin_panel.update_site_settings') }}">
+    <div class="admin-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h3 style="margin: 0;">Paramètres configurés ({{ settings|length }})</h3>
+        </div>
         
-        <div style="display: grid; gap: 2rem;">
-            {% if settings %}
+        {% if settings %}
+        <div style="display: grid; gap: 1.5rem;">
             {% for setting in settings %}
-            <div>
-                <label style="display: block; color: var(--text-primary); margin-bottom: 0.5rem; font-weight: 600;">
+            <div class="form-group" data-searchable="{{ setting.key }} {{ setting.description }} {{ setting.value }}">
+                <label for="setting_{{ setting.key }}" style="display: block; color: var(--text-primary); margin-bottom: 0.5rem; font-weight: 600;">
                     {{ setting.key }}
                     {% if setting.description %}
                     <span style="font-weight: normal; color: var(--text-secondary); font-size: 0.85rem;">({{ setting.description }})</span>
                     {% endif %}
                 </label>
+                
+                {% if setting.value_type == 'textarea' or (setting.value and setting.value|length > 100) %}
+                <textarea id="setting_{{ setting.key }}" name="setting_{{ setting.key }}" rows="4" class="admin-filter-input" style="width: 100%; font-family: inherit; resize: vertical;">{{ setting.value }}</textarea>
+                {% else %}
                 <input 
                     type="text" 
+                    id="setting_{{ setting.key }}" 
                     name="setting_{{ setting.key }}" 
                     value="{{ setting.value }}" 
                     class="admin-filter-input"
                     style="width: 100%;"
                 >
+                {% endif %}
+                
+                {% if setting.updated_at %}
+                <small style="color: var(--text-secondary); margin-top: 0.25rem; display: block;">
+                    Dernière modification : {{ setting.updated_at.strftime('%d/%m/%Y à %H:%M') }}
+                </small>
+                {% endif %}
             </div>
             {% endfor %}
-            {% else %}
-            <p style="color: var(--text-secondary);">Aucun paramètre configuré. Les paramètres peuvent être ajoutés via Flask-Admin.</p>
-            {% endif %}
-            
-            <div style="margin-top: 1rem;">
-                <button type="submit" class="btn btn-primary">Enregistrer les paramètres</button>
-                <a href="/flask-admin/sitesettings/" class="btn btn-secondary">Gérer via Flask-Admin</a>
-            </div>
         </div>
-    </form>
-</div>
+        
+        <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+            <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+            <button type="button" onclick="window.location.reload()" class="btn btn-secondary">Annuler</button>
+        </div>
+        {% else %}
+        <div style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+            <p style="margin-bottom: 1rem; font-size: 1.1rem;">Aucun paramètre configuré</p>
+            <p style="font-size: 0.9rem; margin-bottom: 2rem;">
+                Commencez par créer des paramètres personnalisés pour configurer votre site.
+            </p>
+            <a href="/my4dm1n/sitesettings/new/" class="btn btn-primary">Créer le premier paramètre</a>
+        </div>
+        {% endif %}
+    </div>
+</form>
 
-<div class="admin-card" style="margin-top: 2rem;">
-    <h3>Ajouter un nouveau paramètre</h3>
-    <p style="color: var(--text-secondary);">Pour ajouter de nouveaux paramètres, utilisez l'interface Flask-Admin.</p>
-    <a href="/flask-admin/sitesettings/new/" class="btn btn-primary">Ajouter un paramètre</a>
-</div>
+<style>
+.form-group {
+    background: rgba(255, 255, 255, 0.02);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid rgba(59, 130, 246, 0.1);
+    transition: all 0.2s;
+}
+
+.form-group:hover {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(59, 130, 246, 0.2);
+}
+</style>
+
+<script>
+// Search functionality
+document.getElementById('search-input').addEventListener('input', function(e) {
+    const searchTerm = e.target.value.toLowerCase();
+    const formGroups = document.querySelectorAll('.form-group');
+    
+    formGroups.forEach(group => {
+        const searchableText = group.getAttribute('data-searchable').toLowerCase();
+        group.style.display = searchableText.includes(searchTerm) ? 'block' : 'none';
+    });
+});
+</script>
 {% endblock %}

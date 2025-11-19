@@ -364,6 +364,52 @@ def seed_news(db):
     db.session.commit()
     print(f"[OK] News: {seeded_count} created, {updated_count} updated")
 
+def seed_page_content_settings(db):
+    """Seed default content settings for page editing"""
+    from models import SiteSettings
+    
+    default_content_settings = [
+        # Page d'accueil
+        {'key': 'hero_title', 'value': 'Votre Bouclier Numérique en Afrique', 'description': 'Titre principal de la page d\'accueil', 'category': 'home', 'value_type': 'string', 'is_public': True},
+        {'key': 'hero_subtitle', 'value': 'Plateforme de sensibilisation, fact-checking et accompagnement en cybersécurité pour l\'Afrique francophone', 'description': 'Sous-titre de la page d\'accueil', 'category': 'home', 'value_type': 'textarea', 'is_public': True},
+        {'key': 'cta_text', 'value': 'Découvrir nos services', 'description': 'Texte du bouton d\'appel à l\'action', 'category': 'home', 'value_type': 'string', 'is_public': True},
+        {'key': 'features_title', 'value': 'Nos Solutions de Protection', 'description': 'Titre de la section fonctionnalités', 'category': 'home', 'value_type': 'string', 'is_public': True},
+        
+        # Page À propos
+        {'key': 'about_mission', 'value': 'Démocratiser la cybersécurité et lutter contre la désinformation en Afrique francophone grâce à l\'éducation, la vérification d\'informations et l\'accompagnement professionnel.', 'description': 'Mission de CyberConfiance', 'category': 'about', 'value_type': 'textarea', 'is_public': True},
+        {'key': 'about_vision', 'value': 'Faire de l\'Afrique francophone un espace numérique sûr et informé, où chaque citoyen dispose des outils et connaissances pour se protéger contre les cybermenaces et la désinformation.', 'description': 'Vision de CyberConfiance', 'category': 'about', 'value_type': 'textarea', 'is_public': True},
+        {'key': 'about_values', 'value': 'Excellence • Intégrité • Innovation • Accessibilité • Impact Social', 'description': 'Valeurs de l\'entreprise', 'category': 'about', 'value_type': 'textarea', 'is_public': True},
+        
+        # Page Services
+        {'key': 'services_intro', 'value': 'CyberConfiance propose une gamme complète de services pour protéger votre organisation contre les menaces numériques.', 'description': 'Introduction de la page services', 'category': 'services', 'value_type': 'textarea', 'is_public': True},
+        {'key': 'audit_description', 'value': 'Analyse approfondie de votre infrastructure pour identifier les vulnérabilités et recommander des solutions adaptées.', 'description': 'Description du service d\'audit', 'category': 'services', 'value_type': 'textarea', 'is_public': True},
+        {'key': 'formation_description', 'value': 'Programmes de formation personnalisés pour sensibiliser vos équipes aux bonnes pratiques de cybersécurité.', 'description': 'Description du service de formation', 'category': 'services', 'value_type': 'textarea', 'is_public': True},
+        
+        # Page Contact
+        {'key': 'contact_title', 'value': 'Contactez-Nous', 'description': 'Titre de la page contact', 'category': 'contact', 'value_type': 'string', 'is_public': True},
+        {'key': 'contact_subtitle', 'value': 'Notre équipe est à votre disposition pour répondre à toutes vos questions sur la cybersécurité.', 'description': 'Sous-titre de la page contact', 'category': 'contact', 'value_type': 'textarea', 'is_public': True},
+        {'key': 'contact_hours', 'value': 'Lundi - Vendredi: 8h00 - 18h00\nSamedi: 9h00 - 13h00', 'description': 'Horaires d\'ouverture', 'category': 'contact', 'value_type': 'textarea', 'is_public': True},
+    ]
+    
+    created_count = 0
+    updated_count = 0
+    
+    for setting_data in default_content_settings:
+        existing = SiteSettings.query.filter_by(key=setting_data['key'], category=setting_data['category']).first()
+        if not existing:
+            setting = SiteSettings(**setting_data)
+            db.session.add(setting)
+            created_count += 1
+        else:
+            # Update existing settings
+            existing.value = setting_data['value']
+            existing.description = setting_data['description']
+            existing.value_type = setting_data.get('value_type', 'string')
+            updated_count += 1
+    
+    db.session.commit()
+    print(f"[OK] Page Content Settings: {created_count} created, {updated_count} updated")
+
 def create_admin_user(db):
     """Create the first admin user if it doesn't exist"""
     from models import User
@@ -408,6 +454,7 @@ def seed_all_data(db):
     seed_attack_types(db)
     seed_news(db)
     seed_site_settings(db)
+    seed_page_content_settings(db)
     seed_seo_metadata(db)
     create_admin_user(db)
     print("Database seeding completed!")
