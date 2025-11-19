@@ -22,12 +22,14 @@ Jinja2 templates use a base layout. The design features a professional dark them
 
 ### Feature Specifications
 - **Admin Panel**: Flask-Admin provides management for user requests (fact-checking & cyberconsultation), history logs (breach analysis, quiz results, security analysis), threat logs, activity/security logs, site settings, and SEO metadata. Content management (articles, rules, tools, etc.) has been removed - content is managed via JSON seed files.
-- **Request Submission Forms**: Four dedicated secure forms support text, file, and URL inputs with anonymous submission option:
+- **Request Submission Forms**: Three main secure forms plus a cybercrime reporting form, all supporting text, file, and URL inputs with anonymous submission option:
   - `/request/factchecking` - Fact-checking requests with VirusTotal scanning
-  - `/outils/methodologie-osint` - OSINT analysis requests
-  - `/request/cyberconsultation` - General cybersecurity consultation with two tabs (Consultation and OSINT Investigation)
-  - `/request/osint-investigation` - Deep OSINT investigations (POST-only, embedded in cyberconsultation page)
-  All submissions are automatically scanned using VirusTotal for malicious content detection.
+  - `/request/cyberconsultation` - General cybersecurity consultation with two tabs:
+    - **Consultation Tab**: General cybersecurity consultation form with anonymous submission option
+    - **OSINT Investigation Tab**: Deep OSINT investigations form (posts to `/request/osint-investigation`)
+  - `/request/cybercrime-report` - Cybercrime reporting form with 14 crime categories (Pédocriminalité, Cyberbanque, Revenge porn, Cyberharcèlement, Escroquerie en ligne, Vol d'identité, Diffusion de contenu illégal, Piratage de compte, Menaces en ligne, Extorsion en ligne, Usurpation d'identité, Fraude aux cryptomonnaies, Arnaque aux sentiments, Autre), platform field, and anonymous submission enabled by default
+  - `/outils/methodologie-osint` - OSINT methodology page with CTA button redirecting to the OSINT Investigation tab on the cyberconsultation page
+  All submissions are automatically scanned using VirusTotal for malicious content detection. The RequestSubmissionService extracts crime type and platform information for cybercrime reports and prepends them to the description field.
 - **Threat Detection & Incident Logging**: Comprehensive security threat detection system with automatic metadata collection and database persistence:
   - **ThreatLog Model**: Stores detected security incidents with unique incident IDs, threat type, IP address, user agent, platform, device type, VPN detection, and complete metadata JSON
   - **Metadata Collection**: Automatic collection of HTTP headers (sanitized to exclude Authorization, Cookie, X-Auth-Token), browser info, OS, language, referrer, device detection, and VPN indicators
