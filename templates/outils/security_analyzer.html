@@ -250,16 +250,46 @@
 
         <div class="info-card">
             <h3>À Propos de Cet Outil</h3>
-            <p>Cet analyseur de sécurité vérifie la réputation d'éléments numériques contre une vaste base de données de menaces connues. Les résultats proviennent de multiples sources de sécurité pour vous donner une vue complète.</p>
             
-            <div class="capabilities">
-                <h4>Types d'Analyses Supportés:</h4>
-                <ul>
-                    <li><strong>Fichier:</strong> Upload et analyse de fichiers (32 MB max)</li>
-                    <li><strong>URL (Liens):</strong> Vérification de la sécurité des liens web</li>
-                    <li><strong>Domaine:</strong> Vérification de la réputation des noms de domaine</li>
-                    <li><strong>Adresse IP:</strong> Analyse de la sécurité des adresses IP</li>
-                    <li><strong>Hash:</strong> MD5, SHA-1, SHA-256 pour vérifier les fichiers suspects</li>
+            <div class="info-section">
+                <h4>Qu'est-ce que l'Analyseur de Sécurité ?</h4>
+                <p>Cet outil vérifie la réputation et la sécurité d'éléments numériques en les comparant à une vaste base de données de menaces connues. Les résultats proviennent de multiples moteurs de sécurité pour vous fournir une analyse complète et fiable.</p>
+            </div>
+            
+            <div class="info-section">
+                <h4>Types d'Analyses Disponibles</h4>
+                <div class="analysis-types">
+                    <div class="analysis-type">
+                        <strong>Fichiers</strong>
+                        <p>Upload et analyse de fichiers suspects (taille maximale : 32 MB). Tous les types de fichiers sont acceptés.</p>
+                    </div>
+                    <div class="analysis-type">
+                        <strong>URL et Liens Web</strong>
+                        <p>Vérification de la sécurité des liens avant de les visiter. Détection de sites de phishing et de malware.</p>
+                    </div>
+                    <div class="analysis-type">
+                        <strong>Noms de Domaine</strong>
+                        <p>Analyse de la réputation et de l'historique de sécurité d'un domaine Internet.</p>
+                    </div>
+                    <div class="analysis-type">
+                        <strong>Adresses IP</strong>
+                        <p>Vérification de la réputation d'une adresse IP et détection d'activités malveillantes.</p>
+                    </div>
+                    <div class="analysis-type">
+                        <strong>Hash de Fichiers</strong>
+                        <p>Vérification par empreinte cryptographique (MD5, SHA-1, SHA-256) sans upload du fichier complet.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="info-section">
+                <h4>Comment Interpréter les Résultats</h4>
+                <p>Chaque analyse interroge plusieurs dizaines de moteurs de sécurité. Un élément est considéré comme dangereux si plusieurs moteurs le signalent comme malveillant. Les niveaux de menace sont :</p>
+                <ul class="threat-levels-list">
+                    <li><span class="level-indicator level-critique"></span><strong>Critique</strong> : Menace confirmée, évitez tout contact</li>
+                    <li><span class="level-indicator level-elevé"></span><strong>Élevé</strong> : Forte probabilité de danger, prudence recommandée</li>
+                    <li><span class="level-indicator level-modéré"></span><strong>Modéré</strong> : Quelques signalements, vérification conseillée</li>
+                    <li><span class="level-indicator level-faible"></span><strong>Faible</strong> : Peu ou pas de signalements</li>
                 </ul>
             </div>
         </div>
@@ -585,6 +615,109 @@ document.addEventListener('DOMContentLoaded', function() {
 .capabilities li {
     margin-bottom: 0.75rem;
     line-height: 1.6;
+}
+
+.info-section {
+    margin-bottom: 2.5rem;
+}
+
+.info-section:last-child {
+    margin-bottom: 0;
+}
+
+.info-section h4 {
+    color: var(--text-primary);
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.info-section p {
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 1rem;
+}
+
+.analysis-types {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.analysis-type {
+    padding: 1.5rem;
+    background: rgba(59, 130, 246, 0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(59, 130, 246, 0.15);
+    transition: all 0.3s ease;
+}
+
+.analysis-type:hover {
+    background: rgba(59, 130, 246, 0.08);
+    border-color: rgba(59, 130, 246, 0.25);
+}
+
+.analysis-type strong {
+    display: block;
+    color: var(--accent-blue);
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+}
+
+.analysis-type p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.threat-levels-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 1.5rem;
+}
+
+.threat-levels-list li {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+    background: rgba(59, 130, 246, 0.03);
+    border-radius: 6px;
+    color: var(--text-secondary);
+}
+
+.level-indicator {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+.level-critique {
+    background: #ef4444;
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+}
+
+.level-elevé {
+    background: #f59e0b;
+    box-shadow: 0 0 8px rgba(245, 158, 11, 0.5);
+}
+
+.level-modéré {
+    background: #fbbf24;
+    box-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
+}
+
+.level-faible {
+    background: #3b82f6;
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
 }
 
 @media (max-width: 768px) {
