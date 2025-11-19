@@ -100,6 +100,38 @@ The platform features a minimalist design inspired by ChatflowAI, utilizing a pu
 - Comprehensive CSS styling matching platform's glassmorphism aesthetic
 - Accessible via `/quiz` route with link in "Outils" navigation menu
 
+**New Feature - Security Analyzer (Nov 19, 2025):**
+- Comprehensive security analysis tool for checking files, domains, IPs, and URLs against threat databases
+- New `SecurityAnalysis` model for storing analysis results with fields: input_value, input_type, malicious_count, total_engines, analysis_result (JSON), timestamp
+- `SecurityAnalyzerService` class in `services/security_analyzer.py` for vendor-agnostic security API integration
+- Supports multiple input types:
+  - **File Hash**: MD5, SHA-1, or SHA-256 hash analysis
+  - **Domain**: Domain reputation and threat detection
+  - **IP Address**: IP reputation analysis
+  - **URL**: URL safety scanning
+- Key features:
+  - Vendor-neutral implementation (no brand exposure in UI)
+  - Real-time threat detection with detailed results
+  - Database persistence for admin review and audit trail
+  - Admin panel integration for viewing all security analyses
+  - Glassmorphism design matching platform aesthetic
+  - Comprehensive error handling with user-friendly messages
+- Accessible via `/outils/analyseur-securite` route
+- Added to tools catalog via seed data (`data/tools_seed.json`)
+- Related to rules 9, 13, 15 and scenarios 2, 4, 7
+
+**Design Improvements (Nov 19, 2025):**
+- Enhanced primary buttons with advanced glassmorphism effects:
+  - Backdrop-filter blur (30px) with saturation boost
+  - Multi-layer box shadows for depth and glow
+  - Inset highlights for realistic glass effect
+  - Animated shimmer effect on hover using ::before pseudo-element
+  - Proper z-index layering for overlay effects
+- Quiz results page mobile optimization:
+  - Reduced font sizes for better mobile readability
+  - Improved responsive layout for smaller screens
+  - Maintained glassmorphism aesthetic across all screen sizes
+
 ## External Dependencies
 
 ### Core Framework
@@ -123,6 +155,7 @@ The platform features a minimalist design inspired by ChatflowAI, utilizing a pu
 ### Security & API Integration
 - **requests 2.32.5**: HTTP library for external API calls
 - **Have I Been Pwned API v3**: Email breach detection service
+- **vt-py 0.18.4**: Python client for security threat intelligence API (vendor-agnostic integration)
 
 ### Environment Variables
 - `DATABASE_URL`: PostgreSQL connection string
@@ -131,3 +164,4 @@ The platform features a minimalist design inspired by ChatflowAI, utilizing a pu
 - `ADMIN_PASSWORD`: Admin account password
 - `PORT`: Application port
 - `HIBP_API_KEY`: Have I Been Pwned API key for breach analysis (required for email breach checking feature)
+- `SECURITY_ANALYSIS_API_KEY`: API key for security threat analysis (required for Security Analyzer tool)
