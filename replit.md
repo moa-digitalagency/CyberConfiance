@@ -100,6 +100,25 @@ The platform features a minimalist design inspired by ChatflowAI, utilizing a pu
 - Comprehensive CSS styling matching platform's glassmorphism aesthetic
 - Accessible via `/quiz` route with link in "Outils" navigation menu
 
+**New Feature - Blog & Newsletter System (Nov 19, 2025):**
+- Comprehensive news/blog system with 10 articles organized into 5 strategic categories:
+  - Menaces & Alertes: Latest cyber threats and security alerts
+  - Bonnes Pratiques: Best practices and security tips
+  - Actualités Cyber: Cybersecurity news and trends
+  - Réglementation: Compliance and regulatory updates
+  - Formations & Ressources: Training and educational resources
+- Category-based filtering on news page with persistent URL parameters
+- Pagination system correctly handles special characters (& é à) in category names
+- New `Newsletter` model for capturing email subscriptions with fields: email, subscribed, ip_address, user_agent, created_at, unsubscribed_at
+- Newsletter subscription route (`/newsletter`) with duplicate detection and reactivation support
+- Admin panel enhancements:
+  - **Blog Management** (`/admin/blog`): View and filter articles by category with working pagination
+  - **Newsletter Management** (`/admin/newsletter`): View all subscriptions with active/inactive filtering
+  - **Contact Management** (`/admin/contacts`): View contact form submissions with status filtering
+  - **Content Management** (`/admin/content/edit/<page>`): Edit site content per page (home, about, services, contact) using SiteSettings model with proper category scoping
+- Navigation updates: New "Contenus" section in admin sidebar with links to Articles, Newsletter, and Messages
+- All admin templates feature glassmorphism design matching platform aesthetic
+
 **New Feature - Security Analyzer (Nov 19, 2025):**
 - Comprehensive security analysis tool for checking files, domains, IPs, and URLs against threat databases
 - New `SecurityAnalysis` model for storing analysis results with fields: input_value, input_type, malicious_count, total_engines, analysis_result (JSON), timestamp
