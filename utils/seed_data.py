@@ -327,6 +327,43 @@ def seed_seo_metadata(db):
     db.session.commit()
     print(f"[OK] SEO Metadata: {created_count} created")
 
+def seed_news(db):
+    """Seed or update news articles from JSON data (idempotent)"""
+    from models import News
+    
+    news_data = load_json_seed('news_seed.json')
+    if not news_data:
+        return
+    
+    seeded_count = 0
+    updated_count = 0
+    
+    for article_data in news_data:
+        existing_article = News.query.filter_by(title=article_data['title']).first()
+        
+        if existing_article:
+            existing_article.content = article_data['content']
+            if 'source' in article_data:
+                existing_article.source = article_data['source']
+            if 'url' in article_data:
+                existing_article.url = article_data.get('url')
+            if 'published_date' in article_data:
+                existing_article.published_date = datetime.strptime(article_data['published_date'], '%Y-%m-%d')
+            updated_count += 1
+        else:
+            new_article = News(
+                title=article_data['title'],
+                content=article_data['content'],
+                source=article_data.get('source', ''),
+                url=article_data.get('url'),
+                published_date=datetime.strptime(article_data['published_date'], '%Y-%m-%d') if 'published_date' in article_data else datetime.utcnow()
+            )
+            db.session.add(new_article)
+            seeded_count += 1
+    
+    db.session.commit()
+    print(f"[OK] News: {seeded_count} created, {updated_count} updated")
+
 def create_admin_user(db):
     """Create the first admin user if it doesn't exist"""
     from models import User
@@ -369,6 +406,7 @@ def seed_all_data(db):
     seed_glossary(db)
     seed_tools(db)
     seed_attack_types(db)
+    seed_news(db)
     seed_site_settings(db)
     seed_seo_metadata(db)
     create_admin_user(db)
