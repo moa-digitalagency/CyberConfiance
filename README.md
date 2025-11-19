@@ -105,7 +105,16 @@ FLASK_DEBUG=False  # En production
 SECRET_KEY=votre_clé_secrète_pour_les_sessions
 ```
 
-4. **Lancer l'application**
+4. **Initialiser la base de données** (optionnel - se fait automatiquement au premier démarrage)
+```bash
+# Initialisation normale
+python init_db.py
+
+# Réinitialisation complète (⚠️ SUPPRIME toutes les données!)
+python init_db.py --reset
+```
+
+5. **Lancer l'application**
 ```bash
 # En développement
 python main.py
