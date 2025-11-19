@@ -369,8 +369,6 @@ def seo_settings():
     
     return render_template('admin/seo_settings.html', seo_pages=seo_pages)
 
-# Alias pour ajouter une page SEO
-add_seo_page = seo_settings
 
 @bp.route('/blog')
 @moderator_required
