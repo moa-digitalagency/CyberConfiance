@@ -1,7 +1,7 @@
 # CyberConfiance
 
 ## Overview
-CyberConfiance is a French-language Flask-based cybersecurity awareness platform. It offers educational content on best practices, threat scenarios, security tools, and news through a public website and an admin panel for content management. The platform aims to educate general users, from beginners to intermediate, in accessible language, enhancing their cybersecurity knowledge.
+CyberConfiance is a bilingual (French/English) Flask-based cybersecurity awareness platform. It provides educational content on best practices, threat scenarios, security tools, and news through a public website, interactive request submission forms with VirusTotal security scanning, and an admin panel. The platform aims to enhance users' cybersecurity knowledge and provide practical security analysis tools.
 
 ## User Preferences
 Preferred communication style: Simple, everyday language.
@@ -9,184 +9,52 @@ Preferred communication style: Simple, everyday language.
 ## System Architecture
 
 ### Application Structure
-The application uses a modular Flask architecture with a factory pattern and blueprints for public and admin routes. A `ContentService` class centralizes data retrieval logic, abstracting database interactions from route handlers.
+The application uses a modular Flask architecture with a factory pattern and blueprints for public and admin routes. A `ContentService` class centralizes data retrieval logic, abstracting database interactions.
 
 ### Data Architecture
-SQLAlchemy ORM manages PostgreSQL database operations. The schema includes models for `User`, `Article`, `Rule`, `Tool`, `Scenario`, `Resource`, `News`, `Contact`, `GlossaryTerm`, and `AttackType`, supporting timestamps and content publication states.
+SQLAlchemy ORM manages PostgreSQL database operations. The schema includes models for various content types (e.g., `Article`, `Rule`, `Tool`), user management (`User`), and platform-specific data such as `RequestSubmission` and `SiteSettings`. A JSON-based seeding system ensures content persistence and idempotent updates across deployments.
 
 ### Authentication & Authorization
-Flask-Login handles session-based authentication with Werkzeug for secure password hashing. Flask-Admin views are protected by `SecureModelView`, ensuring only authenticated administrators can access content management features. A default admin account is created in development, with production requiring the `ADMIN_PASSWORD` environment variable.
-
-**Admin Panel Access Flow:**
-- Direct access to `/my4dm1n` automatically redirects to `/my4dm1n/dashboard`
-- Unauthenticated users are redirected to login with next parameter: `/login?next=/my4dm1n`
-- After successful login, users are redirected back to `/my4dm1n`, which then redirects to dashboard
-- Flask-Login's `login_view` is configured as `main.login` for automatic redirection handling
+Flask-Login handles session-based authentication with Werkzeug for secure password hashing. Flask-Admin views are protected by `SecureModelView`, restricting content management to authenticated administrators.
 
 ### Frontend Architecture
-Jinja2 templates use a base layout (`base.html`) for consistency. The design features a professional dark theme with glassmorphism effects, CSS custom properties, gradient accents, smooth animations, scroll-triggered effects, and parallax scrolling. Typography uses the Inter font, and the design is fully responsive with CSS Grid and Flexbox. Navigation includes dropdown menus with enhanced glassmorphism.
+Jinja2 templates use a base layout. The design features a professional dark theme with glassmorphism effects, CSS custom properties, gradient accents, smooth animations, scroll-triggered effects, and parallax scrolling. Typography uses the Inter font, and the design is fully responsive. The platform also supports a light/dark theme system with automatic detection and a user-controlled switcher, along with bilingual support (French/English) via Flask-Babel.
 
-### Content Management
-Flask-Admin provides CRUD operations for all content models via an intuitive interface. A `published` field in the `Article` model supports a draft/published workflow.
-
-### Data Persistence System
-A JSON-based seeding system ensures content persists across deployments:
-- **Seed Files**: `data/rules_seed.json`, `data/scenarios_seed.json`, and other seed files serve as single sources of truth for content
-- **Idempotent Seeding**: The `utils/seed_data.py` module provides seeding functions (`seed_rules()`, `seed_scenarios()`, `seed_attack_types()`, etc.) that:
-  - Update existing records when found (by title or name)
-  - Create new records when not found
-  - Only update fields present in seed data (preserving manually added fields)
-- **Automatic Initialization**: `init_db.py` runs on application startup to seed/update database with latest content
-- **Benefits**: Easy content updates, persistent data across workflow restarts, no code changes needed for content modifications
+### Feature Specifications
+- **Content Management**: Flask-Admin provides CRUD operations for all content models.
+- **Request Submission Forms**: Supports fact-checking, OSINT, and cyberconsultation requests with text, file, and URL inputs. All submissions are automatically scanned using VirusTotal.
+- **Email Breach Analysis**: Integrates with Have I Been Pwned API for user email breach detection.
+- **Attack Types Catalog**: A comprehensive, categorized, and filterable catalog of 42 common cyber attack types with descriptions, prevention, and severity.
+- **Security Quiz**: An interactive quiz assessing user vigilance, security, and digital hygiene, providing personalized recommendations and an optional email breach check.
+- **Blog & Newsletter System**: A news/blog system with categorized articles and a newsletter subscription management.
+- **Security Analyzer**: A tool for analyzing files, domains, IPs, and URLs against threat databases using a vendor-agnostic service, storing results for admin review.
 
 ### UI/UX Decisions
-The platform features a minimalist design inspired by ChatflowAI, utilizing a pure black background, colorful glow orb effects, minimalist typography (San Francisco / System Font stack with negative letter-spacing), and a simplified color palette (black, white, grays, and vibrant accents). UI elements are clean with subtle borders and generous spacing. Animations are subtle and scroll-triggered.
-
-**Recent Design Updates (Nov 2025):**
-- Hero section height: 60vh (increased from previous 42vh for better visual balance)
-- Hero section padding: increased top padding (8rem) and reduced bottom padding (2rem) for better visual hierarchy
-- Dynamic hero text now includes: "Dirigeants d'entreprise", "Décideurs publics", "Citoyens soucieux" (simplified from previous version)
-- Reduced spacing between "Votre bouclier numérique" and dynamic text (margin-top: 0.2em)
-- Removed all emojis from service pages (Sensibilisation, Fact-Checking, Cyberconsultation)
-- Standardized page headers across all pages using `page-header` component
-- Unified font sizes (hero title: 3.2rem, section titles: 2rem, body text: 0.95rem)
-- Removed newsletter section decorative elements for cleaner design
-- Consistent glassmorphism styling across pillar cards and content sections (text-align: center)
-- Responsive grid displays for rules (3 columns), scenarios/tools (2 columns), and glossary
-- All 20 règles d'or from VADE MECUM PDF now populated with complete content including risks and solutions
-- À propos page: "Le contexte" and "Notre approche" sections now displayed in two-column layout
-- Rule detail pages: reorganized header with back button ("← Retour aux règles") and rule number badge ("Règle 1/20")
-
-**New Feature - Email Breach Analysis (Nov 18, 2025):**
-- Hero newsletter form converted to breach analysis tool with "Analyser" button
-- Integration with Have I Been Pwned API v3 for email breach detection
-- New `HaveIBeenPwnedService` class in `services/__init__.py` for API communication
-- Comprehensive breach analysis page (`templates/breach_analysis.html`) with:
-  - Visual status indicators (safe/warning/danger) based on breach count
-  - Detailed breach information with dates, affected data types, and account counts
-  - Contextual security recommendations tailored to breach severity levels
-  - Responsive design matching the platform's glassmorphism aesthetic
-- URL-encoded email addresses for API calls to handle special characters
-- Proper error handling for API failures, rate limiting, and invalid credentials
-
-**New Feature - Attack Types Catalog (Nov 18, 2025):**
-- Comprehensive catalog of 42 common cyber attack types from Hacksplaining, fully translated to French
-- New `AttackType` model with fields: name_en, name_fr, description_fr, category, severity, prevention, order
-- Accessible via `/outils/types-attaques` route
-- Category-based filtering (Toutes, IA, Web, Réseau, Données, Social) with interactive JavaScript
-- Glass-card design with severity badges (Critique, Élevé, Moyen, Faible) color-coded by risk level
-- Each attack includes:
-  - French name and English reference
-  - Detailed description in French
-  - Prevention recommendations specific to each attack type
-  - Severity classification for risk assessment
-- Idempotent seeding via `seed_attack_types()` function in `utils/seed_data.py`
-- Responsive grid layout (auto-fill minmax 300px) matching platform aesthetic
-
-**New Feature - Quiz de Sécurité Numérique (Nov 18, 2025):**
-- Interactive security assessment quiz with 15 questions based on the 20 golden security rules
-- Questions cover common tools and habits (Gmail, WhatsApp, VPN, public WiFi, password managers, etc.)
-- Three-axis scoring system evaluating users across:
-  - **Vigilance** (🛡️): Awareness and threat detection capabilities
-  - **Sécurité** (🔒): Technical security practices and tools usage
-  - **Hygiène Numérique** (✨): Digital hygiene and privacy habits
-- Personalized recommendations engine that:
-  - Calculates overall security score (0-100%)
-  - Identifies weak areas based on user responses
-  - Suggests priority security rules to implement
-  - Recommends relevant security tools from the catalog
-- Integration with Have I Been Pwned API for email breach analysis post-quiz
-- Two-step interface:
-  1. **Quiz interface** (`templates/outils/quiz.html`): Multi-question form with progress tracking and navigation
-  2. **Results page** (`templates/outils/quiz_results.html`): Detailed score breakdown, recommendations, and optional email breach check
-- Client-side JavaScript (`static/js/quiz.js`) for smooth question navigation and form validation
-- Server-side score calculation via `QuizService` class in `services/quiz_service.py`
-- JSON-based question storage (`data/quiz_questions.json`) for easy content updates
-- Session-based data persistence (primitives only, no ORM objects) for multi-step flow
-- Comprehensive CSS styling matching platform's glassmorphism aesthetic
-- Accessible via `/quiz` route with link in "Outils" navigation menu
-
-**New Feature - Blog & Newsletter System (Nov 19, 2025):**
-- Comprehensive news/blog system with 10 articles organized into 5 strategic categories:
-  - Menaces & Alertes: Latest cyber threats and security alerts
-  - Bonnes Pratiques: Best practices and security tips
-  - Actualités Cyber: Cybersecurity news and trends
-  - Réglementation: Compliance and regulatory updates
-  - Formations & Ressources: Training and educational resources
-- Category-based filtering on news page with persistent URL parameters
-- Pagination system correctly handles special characters (& é à) in category names
-- New `Newsletter` model for capturing email subscriptions with fields: email, subscribed, ip_address, user_agent, created_at, unsubscribed_at
-- Newsletter subscription route (`/newsletter`) with duplicate detection and reactivation support
-- Admin panel enhancements:
-  - **Blog Management** (`/admin/blog`): View and filter articles by category with working pagination
-  - **Newsletter Management** (`/admin/newsletter`): View all subscriptions with active/inactive filtering
-  - **Contact Management** (`/admin/contacts`): View contact form submissions with status filtering
-  - **Content Management** (`/admin/content/edit/<page>`): Edit site content per page (home, about, services, contact) using SiteSettings model with proper category scoping
-- Navigation updates: New "Contenus" section in admin sidebar with links to Articles, Newsletter, and Messages
-- All admin templates feature glassmorphism design matching platform aesthetic
-
-**New Feature - Security Analyzer (Nov 19, 2025):**
-- Comprehensive security analysis tool for checking files, domains, IPs, and URLs against threat databases
-- New `SecurityAnalysis` model for storing analysis results with fields: input_value, input_type, malicious_count, total_engines, analysis_result (JSON), timestamp
-- `SecurityAnalyzerService` class in `services/security_analyzer.py` for vendor-agnostic security API integration
-- Supports multiple input types:
-  - **File Hash**: MD5, SHA-1, or SHA-256 hash analysis
-  - **Domain**: Domain reputation and threat detection
-  - **IP Address**: IP reputation analysis
-  - **URL**: URL safety scanning
-- Key features:
-  - Vendor-neutral implementation (no brand exposure in UI)
-  - Real-time threat detection with detailed results
-  - Database persistence for admin review and audit trail
-  - Admin panel integration for viewing all security analyses
-  - Glassmorphism design matching platform aesthetic
-  - Comprehensive error handling with user-friendly messages
-- Accessible via `/outils/analyseur-securite` route
-- Added to tools catalog via seed data (`data/tools_seed.json`)
-- Related to rules 9, 13, 15 and scenarios 2, 4, 7
-
-**Design Improvements (Nov 19, 2025):**
-- Enhanced primary buttons with advanced glassmorphism effects:
-  - Backdrop-filter blur (30px) with saturation boost
-  - Multi-layer box shadows for depth and glow
-  - Inset highlights for realistic glass effect
-  - Animated shimmer effect on hover using ::before pseudo-element
-  - Proper z-index layering for overlay effects
-- Quiz results page mobile optimization:
-  - Reduced font sizes for better mobile readability
-  - Improved responsive layout for smaller screens
-  - Maintained glassmorphism aesthetic across all screen sizes
+The platform features a minimalist design with a pure black background, colorful glow orb effects, minimalist typography, and a simplified color palette. UI elements are clean with subtle borders, generous spacing, and scroll-triggered animations. Recent design improvements focus on enhanced primary buttons with advanced glassmorphism effects and mobile optimization.
 
 ## External Dependencies
 
 ### Core Framework
-- **Flask 3.0.0**: Web application framework
-- **Werkzeug 3.1.3**: WSGI utilities and password hashing
+- **Flask**: Web application framework
+- **Werkzeug**: WSGI utilities and password hashing
 
 ### Database
 - **PostgreSQL**: Primary data store
-- **Flask-SQLAlchemy 3.1.1**: ORM for database operations
-- **psycopg2-binary 2.9.9**: PostgreSQL adapter
-- **Alembic 1.13.0**: Database migration tool
+- **Flask-SQLAlchemy**: ORM for database operations
+- **psycopg2-binary**: PostgreSQL adapter
+- **Alembic**: Database migration tool
 
 ### Authentication & Admin
-- **Flask-Login 0.6.3**: User session management
-- **Flask-Admin 1.6.1**: Administrative interface
+- **Flask-Login**: User session management
+- **Flask-Admin**: Administrative interface
 
 ### Deployment & Configuration
-- **python-dotenv 1.0.0**: Environment variable management
-- **gunicorn 21.2.0**: Production WSGI HTTP server
+- **python-dotenv**: Environment variable management
+- **gunicorn**: Production WSGI HTTP server
 
 ### Security & API Integration
-- **requests 2.32.5**: HTTP library for external API calls
+- **requests**: HTTP library for external API calls
 - **Have I Been Pwned API v3**: Email breach detection service
-- **vt-py 0.18.4**: Python client for security threat intelligence API (vendor-agnostic integration)
-
-### Environment Variables
-- `DATABASE_URL`: PostgreSQL connection string
-- `SECRET_KEY`: Flask session encryption key
-- `FLASK_DEBUG`: Debug mode toggle
-- `ADMIN_PASSWORD`: Admin account password
-- `PORT`: Application port
-- `HIBP_API_KEY`: Have I Been Pwned API key for breach analysis (required for email breach checking feature)
-- `SECURITY_ANALYSIS_API_KEY`: API key for security threat analysis (required for Security Analyzer tool)
+- **vt-py**: Python client for VirusTotal API
+- **Flask-Babel**: Internationalization and localization framework
+- **filetype**: MIME type detection for uploaded files
