@@ -1,25 +1,45 @@
 import vt
 import os
 import hashlib
+import re
 from datetime import datetime
+from urllib.parse import urlparse
 
 class SecurityAnalyzerService:
     """Service for analyzing security threats via external API"""
     
     def __init__(self):
         self.api_key = os.environ.get('SECURITY_ANALYSIS_API_KEY')
+        
+        self.malicious_patterns = [
+            r'<script[^>]*>.*?</script>',
+            r'javascript:',
+            r'on\w+\s*=\s*["\']',
+            r'eval\s*\(',
+            r'exec\s*\(',
+            r'base64_decode',
+            r'system\s*\(',
+            r'shell_exec',
+            r'passthru',
+            r'\$_(GET|POST|REQUEST|COOKIE)\[',
+            r'<?php',
+            r'<%',
+        ]
     
     def analyze(self, input_value, input_type):
         """
-        Analyze hash, domain, IP, URL, or file
+        Analyze hash, domain, IP, URL, file, or text
         
         Args:
-            input_value: The value to analyze (hash, domain, IP, URL)
-            input_type: Type of input ('hash', 'domain', 'ip', 'url', 'file')
+            input_value: The value to analyze (hash, domain, IP, URL, text)
+            input_type: Type of input ('hash', 'domain', 'ip', 'url', 'text')
         
         Returns:
             dict: Analysis results
         """
+        if input_type == 'text':
+            return self.analyze_text(input_value)
+        
         if not self.api_key:
             return {
                 'error': True,
@@ -200,3 +220,57 @@ class SecurityAnalyzerService:
             return 'faible'
         else:
             return 'sûr'
+    
+    def analyze_text(self, text):
+        """
+        Analyze text for malicious patterns and embedded URLs
+        
+        Args:
+            text: Text content to analyze
+        
+        Returns:
+            dict: Analysis results
+        """
+        if not text or len(text.strip()) == 0:
+            return {
+                'error': False,
+                'threat_detected': False,
+                'message': 'No content to analyze'
+            }
+        
+        malicious_found = []
+        for pattern in self.malicious_patterns:
+            matches = re.finditer(pattern, text, re.IGNORECASE | re.DOTALL)
+            for match in matches:
+                malicious_found.append({
+                    'pattern': pattern,
+                    'match': match.group()[:100],
+                    'position': match.start()
+                })
+        
+        url_pattern = r'https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+'
+        urls_found = re.findall(url_pattern, text)
+        
+        url_threats = []
+        if urls_found and self.api_key:
+            for url in urls_found[:5]:
+                url_result = self.analyze(url, 'url')
+                if not url_result.get('error') and url_result.get('threat_detected'):
+                    url_threats.append({
+                        'url': url,
+                        'result': url_result
+                    })
+        
+        threat_detected = len(malicious_found) > 0 or len(url_threats) > 0
+        
+        return {
+            'error': False,
+            'type': 'text',
+            'threat_detected': threat_detected,
+            'malicious_patterns_found': len(malicious_found),
+            'malicious_patterns': malicious_found[:10],
+            'urls_scanned': len(urls_found),
+            'malicious_urls': url_threats,
+            'threat_level': 'critique' if threat_detected else 'sûr',
+            'message': 'Malicious content detected!' if threat_detected else 'Content appears safe'
+        }
