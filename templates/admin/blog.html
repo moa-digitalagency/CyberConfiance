@@ -78,6 +78,7 @@
                         <div class="action-btn-group">
                             <a href="{{ url_for('admin_panel.news_edit', id=article.id) }}" class="btn btn-primary btn-sm">Modifier</a>
                             <form method="POST" action="{{ url_for('admin_panel.news_delete', id=article.id) }}" style="display: inline;" onsubmit="return confirm('Supprimer cet article ?')">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                                 <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
                             </form>
                         </div>

@@ -78,6 +78,7 @@
                         <div class="action-btn-group">
                             <a href="{{ url_for('admin_panel.quiz_detail', quiz_id=result.id) }}" class="btn btn-primary btn-sm">Voir détails</a>
                             <form method="POST" action="{{ url_for('admin_panel.delete_quiz_result', quiz_id=result.id) }}" style="display: inline;" onsubmit="return confirm('Supprimer ce résultat ?')">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                                 <button type="submit" class="btn btn-danger btn-sm" title="Supprimer">✕</button>
                             </form>
                         </div>

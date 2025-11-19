@@ -14,6 +14,7 @@
 </div>
 
 <form method="POST" action="{{ url_for('admin_panel.edit_page_content', page=page) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
     <div class="admin-card">
         <h3>Paramètres de contenu</h3>
         

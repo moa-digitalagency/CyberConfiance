@@ -91,6 +91,7 @@
                         <div class="action-btn-group">
                             <a href="{{ url_for('admin_panel.security_detail', analysis_id=result.id) }}" class="btn btn-primary btn-sm">Voir détails</a>
                             <form method="POST" action="{{ url_for('admin_panel.delete_security_result', analysis_id=result.id) }}" style="display: inline;" onsubmit="return confirm('Supprimer ce résultat ?')">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                                 <button type="submit" class="btn btn-danger btn-sm">✕</button>
                             </form>
                         </div>

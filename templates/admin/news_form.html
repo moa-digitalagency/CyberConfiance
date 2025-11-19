@@ -14,6 +14,7 @@
 </div>
 
 <form method="POST" action="{{ url_for('admin_panel.news_new') if action == 'new' else url_for('admin_panel.news_edit', id=news.id) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
     <div class="admin-card">
         <h3>Informations de l'article</h3>
         

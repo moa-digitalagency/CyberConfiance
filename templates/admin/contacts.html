@@ -34,6 +34,7 @@
     <div style="background: rgba(10, 22, 40, 0.95); backdrop-filter: blur(60px); max-width: 700px; margin: 2rem auto; padding: 2.5rem; border-radius: 16px; border: 1px solid rgba(59, 130, 246, 0.3); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);">
         <h3 style="color: var(--text-primary); margin-bottom: 1.5rem; font-size: 1.5rem;">Composer un message</h3>
         <form method="POST" action="{{ url_for('admin_panel.send_contact_message') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <div style="margin-bottom: 1.25rem;">
                 <label style="color: var(--text-secondary); display: block; margin-bottom: 0.5rem; font-weight: 500;">Destinataires:</label>
                 <input type="text" name="recipients" placeholder="email1@example.com, email2@example.com" required style="width: 100%; padding: 0.875rem 1rem; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 8px; color: var(--text-primary); font-size: 0.95rem;">
@@ -113,6 +114,7 @@
                             <a href="{{ url_for('admin_panel.contact_detail', contact_id=contact.id) }}" class="btn btn-secondary btn-sm" title="Voir">Voir</a>
                             <button onclick="replyToContact('{{ contact.email }}')" class="btn btn-primary btn-sm" title="Répondre">Répondre</button>
                             <form method="POST" action="{{ url_for('admin_panel.delete_contact', contact_id=contact.id) }}" style="display: inline;" onsubmit="return confirm('Supprimer ce message ?')">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                                 <button type="submit" class="btn btn-danger btn-sm" title="Supprimer">✕</button>
                             </form>
                         </div>
