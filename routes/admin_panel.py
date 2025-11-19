@@ -16,7 +16,7 @@ def admin_required(f):
     def decorated_function(*args, **kwargs):
         if not (current_user.is_active and current_user.role == 'admin'):
             flash('Accès refusé. Vous devez être administrateur actif.', 'danger')
-            return redirect(url_for('main.login'))
+            return redirect(url_for('main.login', next=request.url))
         return f(*args, **kwargs)
     return decorated_function
 
@@ -27,7 +27,7 @@ def moderator_required(f):
     def decorated_function(*args, **kwargs):
         if not (current_user.is_active and current_user.role in ['admin', 'moderator']):
             flash('Accès refusé. Rôle modérateur ou administrateur requis.', 'danger')
-            return redirect(url_for('main.login'))
+            return redirect(url_for('main.login', next=request.url))
         return f(*args, **kwargs)
     return decorated_function
 
@@ -316,7 +316,10 @@ def site_settings():
                     setting.value = value
                     setting.updated_by = current_user.id
                 else:
-                    setting = SiteSettings(key=setting_key, value=value, updated_by=current_user.id)
+                    setting = SiteSettings()
+                    setting.key = setting_key
+                    setting.value = value
+                    setting.updated_by = current_user.id
                     db.session.add(setting)
         
         db.session.commit()
@@ -338,7 +341,8 @@ def seo_settings():
         seo = SEOMetadata.query.filter_by(page_path=page_path).first()
         
         if not seo:
-            seo = SEOMetadata(page_path=page_path, updated_by=current_user.id)
+            seo = SEOMetadata()
+            seo.page_path = page_path
             db.session.add(seo)
         
         seo.title = request.form.get('title')
@@ -469,12 +473,11 @@ def edit_page_content(page):
                     setting.value = value
                     setting.updated_by = current_user.id
                 else:
-                    setting = SiteSettings(
-                        key=setting_key,
-                        value=value,
-                        category=page,
-                        updated_by=current_user.id
-                    )
+                    setting = SiteSettings()
+                    setting.key = setting_key
+                    setting.value = value
+                    setting.category = page
+                    setting.updated_by = current_user.id
                     db.session.add(setting)
         
         db.session.commit()

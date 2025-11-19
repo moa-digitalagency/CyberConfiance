@@ -88,6 +88,7 @@ def initialize_data():
     if User.query.count() == 0:
         admin_password = os.environ.get('ADMIN_PASSWORD', 'admin123')
         admin = User(username='admin', email='admin@cyberconfiance.fr', is_admin=True)
+        admin.role = 'admin'
         admin.set_password(admin_password)
         db.session.add(admin)
         
