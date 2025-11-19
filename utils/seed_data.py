@@ -369,26 +369,48 @@ def seed_page_content_settings(db):
     from models import SiteSettings
     
     default_content_settings = [
-        # Page d'accueil
+        # Page d'accueil - Section Hero
         {'key': 'hero_title', 'value': 'Votre Bouclier Numérique en Afrique', 'description': 'Titre principal de la page d\'accueil', 'category': 'home', 'value_type': 'string', 'is_public': True},
         {'key': 'hero_subtitle', 'value': 'Plateforme de sensibilisation, fact-checking et accompagnement en cybersécurité pour l\'Afrique francophone', 'description': 'Sous-titre de la page d\'accueil', 'category': 'home', 'value_type': 'textarea', 'is_public': True},
+        {'key': 'hero_description', 'value': 'Dans un monde numérique en constante évolution, la cybersécurité n\'est plus une option mais une nécessité. CyberConfiance vous accompagne dans la protection de vos données, la sensibilisation de vos équipes et la lutte contre la désinformation en ligne.', 'description': 'Description détaillée sous le hero', 'category': 'home', 'value_type': 'textarea', 'is_public': True},
         {'key': 'cta_text', 'value': 'Découvrir nos services', 'description': 'Texte du bouton d\'appel à l\'action', 'category': 'home', 'value_type': 'string', 'is_public': True},
+        {'key': 'cta_secondary', 'value': 'Évaluer ma sécurité', 'description': 'Texte du bouton secondaire', 'category': 'home', 'value_type': 'string', 'is_public': True},
+        
+        # Page d'accueil - Sections
         {'key': 'features_title', 'value': 'Nos Solutions de Protection', 'description': 'Titre de la section fonctionnalités', 'category': 'home', 'value_type': 'string', 'is_public': True},
+        {'key': 'features_description', 'value': 'Des services adaptés à tous les besoins, des particuliers aux grandes organisations, pour une protection numérique optimale.', 'description': 'Description de la section fonctionnalités', 'category': 'home', 'value_type': 'textarea', 'is_public': True},
+        {'key': 'why_us_title', 'value': 'Pourquoi Choisir CyberConfiance?', 'description': 'Titre de la section avantages', 'category': 'home', 'value_type': 'string', 'is_public': True},
+        {'key': 'why_us_description', 'value': 'Une expertise locale combinée à des standards internationaux pour protéger l\'Afrique francophone contre les cybermenaces.', 'description': 'Description de la section avantages', 'category': 'home', 'value_type': 'textarea', 'is_public': True},
         
-        # Page À propos
-        {'key': 'about_mission', 'value': 'Démocratiser la cybersécurité et lutter contre la désinformation en Afrique francophone grâce à l\'éducation, la vérification d\'informations et l\'accompagnement professionnel.', 'description': 'Mission de CyberConfiance', 'category': 'about', 'value_type': 'textarea', 'is_public': True},
-        {'key': 'about_vision', 'value': 'Faire de l\'Afrique francophone un espace numérique sûr et informé, où chaque citoyen dispose des outils et connaissances pour se protéger contre les cybermenaces et la désinformation.', 'description': 'Vision de CyberConfiance', 'category': 'about', 'value_type': 'textarea', 'is_public': True},
+        # Page À propos - Mission & Vision
+        {'key': 'about_intro', 'value': 'CyberConfiance est née d\'une conviction : la cybersécurité doit être accessible à tous. Fondée en 2024, notre mission est de protéger l\'Afrique francophone contre les menaces numériques croissantes.', 'description': 'Introduction de la page à propos', 'category': 'about', 'value_type': 'textarea', 'is_public': True},
+        {'key': 'about_mission', 'value': 'Démocratiser la cybersécurité et lutter contre la désinformation en Afrique francophone grâce à l\'éducation, la vérification d\'informations et l\'accompagnement professionnel. Nous croyons que chaque citoyen, entreprise et institution mérite d\'évoluer dans un espace numérique sûr et fiable.', 'description': 'Mission de CyberConfiance', 'category': 'about', 'value_type': 'textarea', 'is_public': True},
+        {'key': 'about_vision', 'value': 'Faire de l\'Afrique francophone un espace numérique sûr et informé, où chaque citoyen dispose des outils et connaissances pour se protéger contre les cybermenaces et la désinformation. Nous aspirons à devenir le partenaire de référence en cybersécurité pour toute l\'Afrique francophone d\'ici 2030.', 'description': 'Vision de CyberConfiance', 'category': 'about', 'value_type': 'textarea', 'is_public': True},
         {'key': 'about_values', 'value': 'Excellence • Intégrité • Innovation • Accessibilité • Impact Social', 'description': 'Valeurs de l\'entreprise', 'category': 'about', 'value_type': 'textarea', 'is_public': True},
+        {'key': 'about_context', 'value': 'Face à l\'explosion des cyberattaques en Afrique (+38% en 2023) et la prolifération de la désinformation en ligne, nous avons créé une plateforme complète qui combine sensibilisation, vérification de faits et conseil expert. Notre approche est unique : nous adaptons les meilleures pratiques internationales au contexte africain.', 'description': 'Contexte et raison d\'être', 'category': 'about', 'value_type': 'textarea', 'is_public': True},
+        {'key': 'about_approach', 'value': 'Notre approche repose sur trois piliers : l\'éducation accessible (formations, webinaires, contenus pédagogiques), le fact-checking rigoureux (vérification d\'informations en temps réel), et l\'accompagnement personnalisé (audits, conseils, mise en conformité). Nous utilisons des méthodologies éprouvées adaptées aux réalités locales.', 'description': 'Notre approche méthodologique', 'category': 'about', 'value_type': 'textarea', 'is_public': True},
         
-        # Page Services
-        {'key': 'services_intro', 'value': 'CyberConfiance propose une gamme complète de services pour protéger votre organisation contre les menaces numériques.', 'description': 'Introduction de la page services', 'category': 'services', 'value_type': 'textarea', 'is_public': True},
-        {'key': 'audit_description', 'value': 'Analyse approfondie de votre infrastructure pour identifier les vulnérabilités et recommander des solutions adaptées.', 'description': 'Description du service d\'audit', 'category': 'services', 'value_type': 'textarea', 'is_public': True},
-        {'key': 'formation_description', 'value': 'Programmes de formation personnalisés pour sensibiliser vos équipes aux bonnes pratiques de cybersécurité.', 'description': 'Description du service de formation', 'category': 'services', 'value_type': 'textarea', 'is_public': True},
+        # Page Services - Introduction et détails
+        {'key': 'services_intro', 'value': 'CyberConfiance propose une gamme complète de services pour protéger votre organisation contre les menaces numériques. De la sensibilisation à l\'audit technique, nous couvrons tous vos besoins en cybersécurité.', 'description': 'Introduction de la page services', 'category': 'services', 'value_type': 'textarea', 'is_public': True},
+        {'key': 'services_commitment', 'value': 'Notre engagement : des solutions pragmatiques, accessibles et adaptées au contexte africain. Nous ne vendons pas de la technologie, nous construisons votre sécurité numérique.', 'description': 'Engagement de service', 'category': 'services', 'value_type': 'textarea', 'is_public': True},
         
-        # Page Contact
+        # Services détaillés
+        {'key': 'sensibilisation_title', 'value': 'Sensibilisation & Formation', 'description': 'Titre du service sensibilisation', 'category': 'services', 'value_type': 'string', 'is_public': True},
+        {'key': 'sensibilisation_description', 'value': 'Formations sur mesure pour tous les niveaux : dirigeants, employés, citoyens. Ateliers interactifs, webinaires, contenus e-learning. Certification de vos équipes aux bonnes pratiques de cybersécurité. Simulations d\'attaques (phishing, ransomware) pour tester et améliorer la résilience.', 'description': 'Description du service de sensibilisation', 'category': 'services', 'value_type': 'textarea', 'is_public': True},
+        
+        {'key': 'factchecking_title', 'value': 'Fact-Checking & Vérification', 'description': 'Titre du service fact-checking', 'category': 'services', 'value_type': 'string', 'is_public': True},
+        {'key': 'factchecking_description', 'value': 'Vérification rigoureuse des informations circulant en ligne. Analyse des deepfakes et contenus manipulés. Surveillance des campagnes de désinformation. Rapports détaillés et recommandations. Service disponible 24/7 pour les organisations et médias.', 'description': 'Description du service fact-checking', 'category': 'services', 'value_type': 'textarea', 'is_public': True},
+        
+        {'key': 'cyberconsultation_title', 'value': 'Cyber-Consultation & Audit', 'description': 'Titre du service cyber-consultation', 'category': 'services', 'value_type': 'string', 'is_public': True},
+        {'key': 'cyberconsultation_description', 'value': 'Audits de sécurité complets (infrastructure, applications, processus). Tests d\'intrusion et évaluation des vulnérabilités. Mise en conformité (RGPD, ISO 27001, directives locales). Plans de reprise après incident. Accompagnement stratégique de votre DSI/RSSI.', 'description': 'Description du service cyber-consultation', 'category': 'services', 'value_type': 'textarea', 'is_public': True},
+        
+        # Page Contact - Informations détaillées
         {'key': 'contact_title', 'value': 'Contactez-Nous', 'description': 'Titre de la page contact', 'category': 'contact', 'value_type': 'string', 'is_public': True},
-        {'key': 'contact_subtitle', 'value': 'Notre équipe est à votre disposition pour répondre à toutes vos questions sur la cybersécurité.', 'description': 'Sous-titre de la page contact', 'category': 'contact', 'value_type': 'textarea', 'is_public': True},
-        {'key': 'contact_hours', 'value': 'Lundi - Vendredi: 8h00 - 18h00\nSamedi: 9h00 - 13h00', 'description': 'Horaires d\'ouverture', 'category': 'contact', 'value_type': 'textarea', 'is_public': True},
+        {'key': 'contact_subtitle', 'value': 'Notre équipe est à votre disposition pour répondre à toutes vos questions sur la cybersécurité. Que vous soyez un particulier, une PME ou une grande organisation, nous avons les solutions adaptées à vos besoins.', 'description': 'Sous-titre de la page contact', 'category': 'contact', 'value_type': 'textarea', 'is_public': True},
+        {'key': 'contact_description', 'value': 'Besoin d\'une consultation urgente ? D\'un audit de sécurité ? D\'une formation pour vos équipes ? Ou simplement d\'un conseil expert ? N\'hésitez pas à nous contacter. Nous nous engageons à répondre sous 24h ouvrées.', 'description': 'Description détaillée page contact', 'category': 'contact', 'value_type': 'textarea', 'is_public': True},
+        {'key': 'contact_hours', 'value': 'Lundi - Vendredi: 8h00 - 18h00\nSamedi: 9h00 - 13h00\nDimanche: Fermé (support urgence uniquement)', 'description': 'Horaires d\'ouverture', 'category': 'contact', 'value_type': 'textarea', 'is_public': True},
+        {'key': 'contact_response_time', 'value': 'Temps de réponse moyen : 4 heures (durant les heures ouvrables)', 'description': 'Temps de réponse', 'category': 'contact', 'value_type': 'string', 'is_public': True},
+        {'key': 'contact_emergency', 'value': 'Pour les urgences de sécurité (incident en cours, violation de données), contactez notre ligne d\'urgence 24/7.', 'description': 'Message urgence', 'category': 'contact', 'value_type': 'textarea', 'is_public': True},
     ]
     
     created_count = 0
