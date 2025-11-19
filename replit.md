@@ -21,8 +21,19 @@ Flask-Login handles session-based authentication with Werkzeug for secure passwo
 Jinja2 templates use a base layout. The design features a professional dark theme with glassmorphism effects, CSS custom properties, gradient accents, smooth animations, scroll-triggered effects, and parallax scrolling. Typography uses the Inter font, and the design is fully responsive. The platform also supports a light/dark theme system with automatic detection and a user-controlled switcher, along with bilingual support (French/English) via Flask-Babel.
 
 ### Feature Specifications
-- **Admin Panel**: Flask-Admin provides management for user requests (fact-checking & cyberconsultation), history logs (breach analysis, quiz results, security analysis), activity/security logs, site settings, and SEO metadata. Content management (articles, rules, tools, etc.) has been removed - content is managed via JSON seed files.
-- **Request Submission Forms**: Dedicated secure forms at `/request/factchecking` and `/request/cyberconsultation` support text, file, and URL inputs with anonymous submission option. All submissions are automatically scanned using VirusTotal for malicious content detection.
+- **Admin Panel**: Flask-Admin provides management for user requests (fact-checking & cyberconsultation), history logs (breach analysis, quiz results, security analysis), threat logs, activity/security logs, site settings, and SEO metadata. Content management (articles, rules, tools, etc.) has been removed - content is managed via JSON seed files.
+- **Request Submission Forms**: Four dedicated secure forms support text, file, and URL inputs with anonymous submission option:
+  - `/request/factchecking` - Fact-checking requests with VirusTotal scanning
+  - `/outils/methodologie-osint` - OSINT analysis requests
+  - `/request/cyberconsultation` - General cybersecurity consultation with two tabs (Consultation and OSINT Investigation)
+  - `/request/osint-investigation` - Deep OSINT investigations (POST-only, embedded in cyberconsultation page)
+  All submissions are automatically scanned using VirusTotal for malicious content detection.
+- **Threat Detection & Incident Logging**: Comprehensive security threat detection system with automatic metadata collection and database persistence:
+  - **ThreatLog Model**: Stores detected security incidents with unique incident IDs, threat type, IP address, user agent, platform, device type, VPN detection, and complete metadata JSON
+  - **Metadata Collection**: Automatic collection of HTTP headers (sanitized to exclude Authorization, Cookie, X-Auth-Token), browser info, OS, language, referrer, device detection, and VPN indicators
+  - **Security Alert Page**: Dedicated `/security-threat` route displays full threat details with shareable incident URLs via query parameter (`?incident_id=XXX`) for admin review and audit workflows
+  - **Session & URL Resilience**: Incident IDs stored both in session (for page refreshes) and passed as query parameters (for direct access when cookies blocked)
+  - **Admin Workflow**: Copy-to-clipboard functionality for sharing incident links with security teams
 - **Email Breach Analysis**: Integrates with Have I Been Pwned API for user email breach detection.
 - **Attack Types Catalog**: A comprehensive, categorized, and filterable catalog of 42 common cyber attack types with descriptions, prevention, and severity.
 - **Security Quiz**: An interactive quiz assessing user vigilance, security, and digital hygiene, providing personalized recommendations and an optional email breach check.
