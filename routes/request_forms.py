@@ -184,6 +184,59 @@ def osint_investigation():
         flash(result['message'], 'danger')
         return redirect(url_for('request_forms.cyberconsultation'))
 
+@bp.route('/request/cybercrime-report', methods=['GET', 'POST'])
+def cybercrime_report():
+    """Cybercrime report form with enhanced security"""
+    if request.method == 'POST':
+        # Extract crime type and platform for better logging
+        crime_type = request.form.get('crime_type', 'unknown')
+        platform = request.form.get('platform', 'not specified')
+        
+        result = RequestSubmissionService.process_submission(
+            request_type='cybercrime-report',
+            form_data=request.form,
+            files=request.files
+        )
+        
+        if result['success']:
+            log_activity('CYBERCRIME_REPORT_SUBMIT', 
+                        f'Cybercrime report submitted: {crime_type} on {platform}', 
+                        success=True)
+            flash(result['message'], 'success')
+            return redirect(url_for('request_forms.cybercrime_report'))
+        else:
+            if result.get('threat_detected'):
+                log_activity('CYBERCRIME_REPORT_THREAT', 
+                           f'{result["message"]} - Crime type: {crime_type}', 
+                           success=False)
+                # Store only incident ID in session, full data in database
+                metadata = collect_request_metadata()
+                incident_id = generate_incident_id()
+                
+                # Store threat details in database for security and audit
+                from models import db, ThreatLog
+                threat_log = ThreatLog(
+                    incident_id=incident_id,
+                    threat_type=result.get('threat_type', 'unknown'),
+                    threat_details=result.get('message'),
+                    ip_address=metadata['ip_address'],
+                    user_agent=metadata['user_agent'],
+                    platform=metadata['platform'],
+                    device_type=metadata['device_type'],
+                    vpn_detected=metadata['vpn_detected'],
+                    metadata_json=metadata
+                )
+                db.session.add(threat_log)
+                db.session.commit()
+                
+                # Store incident ID in session AND pass as query parameter for reliability
+                # This ensures the alert works even if cookies are blocked or not yet established
+                session['threat_incident_id'] = incident_id
+                return redirect(url_for('request_forms.security_threat', incident_id=incident_id))
+            flash(result['message'], 'danger')
+    
+    return render_template('services/cybercrime_report_form.html')
+
 @bp.route('/security-threat')
 def security_threat():
     """Display security threat warning page with all metadata

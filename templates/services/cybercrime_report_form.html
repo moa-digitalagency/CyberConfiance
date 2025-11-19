@@ -1,0 +1,246 @@
+{% extends 'base.html' %}
+
+{% block title %}Dénoncer un Cybercrime - CyberConfiance{% endblock %}
+
+{% block content %}
+<section class="page-header-modern">
+    <div class="container">
+        <div class="header-content-centered">
+            <h1 class="page-title-modern">Dénoncer un Cybercrime</h1>
+            <p class="page-subtitle-modern">Signalez toute activité illégale ou cybercriminelle en toute confidentialité</p>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="glass-card-enhanced" style="padding: 3rem;">
+                    <div style="text-align: center; margin-bottom: 3rem;">
+                        <i class="bi bi-shield-exclamation" style="font-size: 4rem; color: #ef4444; margin-bottom: 1.5rem; display: block;"></i>
+                        <p style="font-size: 1.1rem; color: var(--text-secondary); max-width: 700px; margin: 0 auto;">
+                            Nous prenons la lutte contre la cybercriminalité très au sérieux. Votre dénonciation nous aide à protéger la communauté et à identifier les menaces en ligne.
+                        </p>
+                    </div>
+
+                    <form method="POST" enctype="multipart/form-data" class="request-form-modern">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        
+                        <!-- Anonymous Toggle -->
+                        <div class="form-section" style="margin-bottom: 2.5rem;">
+                            <div class="anonymous-toggle" style="display: flex; align-items: center; gap: 15px; padding: 20px; background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 12px; backdrop-filter: blur(10px);">
+                                <input type="checkbox" id="is_anonymous" name="is_anonymous" checked style="width: 24px; height: 24px; cursor: pointer; accent-color: var(--accent-blue);">
+                                <label for="is_anonymous" style="margin: 0; cursor: pointer; font-weight: 600; font-size: 1.05rem; color: var(--text-primary);">
+                                    <i class="bi bi-incognito" style="margin-right: 5px;"></i> Dénoncer de manière anonyme
+                                </label>
+                            </div>
+                            <small style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 12px; display: block; padding-left: 5px;">
+                                Votre dénonciation peut être anonyme. Si vous souhaitez être contacté pour un suivi, décochez cette option.
+                            </small>
+                        </div>
+
+                        <!-- Contact Information Section -->
+                        <div id="contact-section" class="form-section" style="margin-bottom: 2.5rem; display: none;">
+                            <h3 class="section-heading" style="font-size: 1.4rem; margin-bottom: 1.5rem; color: var(--accent-blue); display: flex; align-items: center; gap: 10px;">
+                                <i class="bi bi-person-circle"></i> Informations de contact (optionnel)
+                            </h3>
+                            
+                            <div class="row" style="gap: 1.5rem 0;">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="name" class="form-label">Nom complet</label>
+                                        <input type="text" id="name" name="name" class="form-input" placeholder="Jean Dupont" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; transition: all 0.3s ease;">
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="email" class="form-label">Adresse email</label>
+                                        <input type="email" id="email" name="email" class="form-input" placeholder="jean.dupont@example.com" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; transition: all 0.3s ease;">
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="phone" class="form-label">Numéro de téléphone (Optionnel)</label>
+                                        <input type="tel" id="phone" name="phone" class="form-input" placeholder="+225 XX XX XX XX XX" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; transition: all 0.3s ease;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Cybercrime Type Section -->
+                        <div class="form-section" style="margin-bottom: 2.5rem;">
+                            <h3 class="section-heading" style="font-size: 1.4rem; margin-bottom: 1.5rem; color: var(--accent-blue); display: flex; align-items: center; gap: 10px;">
+                                <i class="bi bi-exclamation-diamond"></i> Type de cybercriminalité
+                            </h3>
+
+                            <div class="form-group">
+                                <label for="crime_type" class="form-label">Sélectionnez le type de crime <span style="color: #ef4444;">*</span></label>
+                                <select id="crime_type" name="crime_type" required class="form-input" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; cursor: pointer;">
+                                    <option value="">-- Sélectionnez un type --</option>
+                                    <option value="pedocriminalite">Pédocriminalité</option>
+                                    <option value="cyberbanque">Cyberbanque / Fraude financière</option>
+                                    <option value="revenge_porn">Revenge porn / Pornographie non consensuelle</option>
+                                    <option value="usurpation_identite">Usurpation d'identité</option>
+                                    <option value="phishing">Phishing / Hameçonnage</option>
+                                    <option value="catfishing">Catfishing / Faux profils</option>
+                                    <option value="briquage">Briquage (Bruteforce) / Piratage de compte</option>
+                                    <option value="ransomware">Ransomware / Rançongiciel</option>
+                                    <option value="ddos">Attaque DDoS</option>
+                                    <option value="cyberharcelement">Cyberharcèlement</option>
+                                    <option value="doxxing">Doxxing / Divulgation d'informations privées</option>
+                                    <option value="deepfake">Deepfake malveillant</option>
+                                    <option value="cryptojacking">Cryptojacking</option>
+                                    <option value="autre">Autre forme de cybercriminalité</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Incident Details Section -->
+                        <div class="form-section" style="margin-bottom: 2.5rem;">
+                            <h3 class="section-heading" style="font-size: 1.4rem; margin-bottom: 1.5rem; color: var(--accent-blue); display: flex; align-items: center; gap: 10px;">
+                                <i class="bi bi-file-text"></i> Détails de l'incident
+                            </h3>
+
+                            <div class="form-group" style="margin-bottom: 1.5rem;">
+                                <label for="platform" class="form-label">Plateforme concernée</label>
+                                <input type="text" id="platform" name="platform" class="form-input" placeholder="Ex: Facebook, WhatsApp, Instagram, Site web..." style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem;">
+                                <small style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 8px; display: block;">
+                                    Indiquez le nom de la plateforme, du site web ou de l'application concernée
+                                </small>
+                            </div>
+
+                            <div class="form-group" style="margin-bottom: 1.5rem;">
+                                <label for="description" class="form-label">Description détaillée de l'incident <span style="color: #ef4444;">*</span></label>
+                                <textarea id="description" name="description" required rows="8" class="form-input" placeholder="Décrivez l'incident en détail : qui, quoi, quand, comment. Plus vous fournissez d'informations, mieux nous pourrons vous aider..." style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; resize: vertical; transition: all 0.3s ease;"></textarea>
+                                <small style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 8px; display: flex; align-items: center; gap: 5px;">
+                                    <i class="bi bi-shield-check"></i> Le contenu textuel est scanné pour détecter tout contenu malveillant
+                                </small>
+                            </div>
+
+                            <div class="form-group" style="margin-bottom: 1.5rem;">
+                                <label for="urls" class="form-label">URLs ou liens suspects (une par ligne)</label>
+                                <textarea id="urls" name="urls" rows="4" class="form-input" placeholder="https://example-suspect.com&#10;https://faux-profil.com/user123" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; resize: vertical; transition: all 0.3s ease;"></textarea>
+                                <small style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 8px; display: flex; align-items: center; gap: 5px;">
+                                    <i class="bi bi-shield-check"></i> Les URLs sont scannées via VirusTotal pour détecter les menaces
+                                </small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="file" class="form-label">Joindre des preuves (captures d'écran, documents, etc.)</label>
+                                <input type="file" id="file" name="file" class="form-input" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem;">
+                                <small style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 8px; display: flex; align-items: center; gap: 5px;">
+                                    <i class="bi bi-shield-check"></i> Les fichiers sont scannés pour détecter les malwares et virus
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- Security Notice -->
+                        <div class="security-notice" style="padding: 20px; background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 12px; margin-bottom: 2rem; backdrop-filter: blur(10px);">
+                            <p style="margin: 0 0 12px 0; color: #ef4444; font-size: 1.05rem; font-weight: 700; display: flex; align-items: flex-start; gap: 10px;">
+                                <i class="bi bi-exclamation-triangle-fill" style="font-size: 1.3rem; flex-shrink: 0; margin-top: 2px;"></i>
+                                <span>Avis de sécurité strict</span>
+                            </p>
+                            <p style="margin: 0; color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6; padding-left: 34px;">
+                                Toute tentative de soumettre du contenu malveillant (fichiers infectés, liens malveillants ou injection de code) sera <strong>immédiatement détectée</strong> et enregistrée comme activité illégale. Une vérification avancée contre les malwares, virus et tentatives d'exploitation est effectuée sur tous les contenus soumis.
+                            </p>
+                        </div>
+
+                        <!-- Legal Notice -->
+                        <div style="padding: 20px; background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 12px; margin-bottom: 2rem;">
+                            <p style="margin: 0; color: var(--text-primary); font-size: 0.95rem; line-height: 1.6; display: flex; align-items: flex-start; gap: 10px;">
+                                <i class="bi bi-info-circle-fill" style="color: var(--accent-blue); font-size: 1.2rem; flex-shrink: 0; margin-top: 2px;"></i>
+                                <span>
+                                    <strong>Informations importantes :</strong> Les dénonciations sont traitées avec la plus grande confidentialité. Nous collaborons avec les autorités compétentes lorsque cela est nécessaire. Les fausses dénonciations peuvent avoir des conséquences légales.
+                                </span>
+                            </p>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 18px; font-size: 1.15rem; font-weight: 600; border-radius: 12px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; background: #ef4444; transition: all 0.3s ease;">
+                            <i class="bi bi-send-fill"></i> Soumettre la dénonciation
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.form-label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--text-primary);
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: rgba(59, 130, 246, 0.5);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-input::placeholder {
+    color: var(--text-muted);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -15px;
+}
+
+.col-md-6 {
+    flex: 0 0 50%;
+    max-width: 50%;
+    padding: 0 15px;
+}
+
+.col-md-12 {
+    flex: 0 0 100%;
+    max-width: 100%;
+    padding: 0 15px;
+}
+
+@media (max-width: 768px) {
+    .col-md-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}
+</style>
+
+<script>
+// Anonymous toggle - checked by default
+const anonymousCheckbox = document.getElementById('is_anonymous');
+const contactSection = document.getElementById('contact-section');
+
+// Set as anonymous by default
+anonymousCheckbox.checked = true;
+
+anonymousCheckbox.addEventListener('change', function() {
+    const inputs = contactSection.querySelectorAll('input');
+    
+    if (this.checked) {
+        // Anonymous mode
+        contactSection.style.display = 'none';
+        inputs.forEach(input => {
+            input.required = false;
+            input.value = '';
+        });
+    } else {
+        // Contact mode
+        contactSection.style.display = 'block';
+    }
+});
+</script>
+{% endblock %}

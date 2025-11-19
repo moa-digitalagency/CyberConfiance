@@ -13,7 +13,7 @@ class RequestSubmissionService:
         Process a request submission with full security scanning
         
         Args:
-            request_type: Type of request ('fact-checking', 'osint', 'cyberconsultation')
+            request_type: Type of request ('fact-checking', 'osint', 'cyberconsultation', 'cybercrime-report')
             form_data: Form data dictionary
             files: Uploaded files
         
@@ -25,6 +25,12 @@ class RequestSubmissionService:
         description = form_data.get('description', '')
         urls_input = form_data.get('urls', '')
         is_anonymous = form_data.get('is_anonymous') == 'on'
+        
+        # For cybercrime reports, prepend crime type and platform to description
+        if request_type == 'cybercrime-report':
+            crime_type = form_data.get('crime_type', 'Non spécifié')
+            platform = form_data.get('platform', 'Non spécifiée')
+            description = f"[Type: {crime_type}] [Plateforme: {platform}]\n\n{description}"
         
         contact_name = None if is_anonymous else form_data.get('name')
         contact_email = None if is_anonymous else form_data.get('email')
