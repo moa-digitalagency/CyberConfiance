@@ -605,6 +605,13 @@
                 </div>
                 
                 <div class="admin-nav-section">
+                    <div class="admin-nav-section-title">Requêtes</div>
+                    <ul>
+                        <li><a href="{{ url_for('admin_requests.requests_dashboard') }}" class="{% if request.endpoint == 'admin_requests.requests_dashboard' or request.endpoint == 'admin_requests.request_detail' %}active{% endif %}">Toutes les requêtes</a></li>
+                    </ul>
+                </div>
+                
+                <div class="admin-nav-section">
                     <div class="admin-nav-section-title">Historiques</div>
                     <ul>
                         <li><a href="{{ url_for('admin_panel.quiz_history') }}" class="{% if request.endpoint == 'admin_panel.quiz_history' %}active{% endif %}">Quiz</a></li>
