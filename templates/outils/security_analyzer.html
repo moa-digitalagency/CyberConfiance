@@ -23,15 +23,15 @@
             <form method="POST" action="{{ url_for('main.security_analyzer') }}" class="analyzer-form" enctype="multipart/form-data">
                 <div class="input-type-selector">
                     <label class="type-option">
-                        <input type="radio" name="input_type" value="file" checked>
+                        <input type="radio" name="input_type" value="url" checked>
                         <span class="type-label">
-                            <span class="type-text">Fichier</span>
+                            <span class="type-text">URL (Liens)</span>
                         </span>
                     </label>
                     <label class="type-option">
-                        <input type="radio" name="input_type" value="url">
+                        <input type="radio" name="input_type" value="file">
                         <span class="type-label">
-                            <span class="type-text">URL (Liens)</span>
+                            <span class="type-text">Fichier</span>
                         </span>
                     </label>
                     <label class="type-option">
@@ -54,13 +54,14 @@
                     </label>
                 </div>
 
-                <div class="input-group" id="textInputGroup">
+                <div class="input-group" id="textInputGroup" style="display: flex;">
                     <input 
                         type="text" 
                         name="input_value" 
                         id="inputValue" 
                         placeholder="Entrez la valeur à analyser..." 
                         class="analyzer-input"
+                        required
                     >
                     <button type="submit" class="btn-primary">
                         <span>Analyser</span>
@@ -81,11 +82,11 @@
                 </div>
 
                 <div class="input-hints">
-                    <p class="hint file-hint active">
-                        <strong>Info:</strong> Taille maximale 32 MB. Tous les types de fichiers sont acceptés.
-                    </p>
-                    <p class="hint url-hint">
+                    <p class="hint url-hint active">
                         <strong>Exemple:</strong> https://example.com/page
+                    </p>
+                    <p class="hint file-hint">
+                        <strong>Info:</strong> Taille maximale 32 MB. Tous les types de fichiers sont acceptés.
                     </p>
                     <p class="hint domain-hint">
                         <strong>Exemple:</strong> example.com
