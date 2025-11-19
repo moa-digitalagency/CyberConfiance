@@ -9,8 +9,6 @@
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v={{ range(1, 99999) | random }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme-light.css') }}?v={{ range(1, 99999) | random }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme-dark.css') }}?v={{ range(1, 99999) | random }}">
     <script>
         window.siteSettings = {
             logo_light_url: "{{ site_settings.logo_light if site_settings and site_settings.logo_light else url_for('static', filename='img/logo.png') }}",
@@ -21,11 +19,8 @@
 <body>
     <div class="background-animation"></div>
     
-    <!-- Theme and Language Switchers (Bottom Left) -->
+    <!-- Language Switcher (Bottom Left) -->
     <div style="position: fixed; bottom: 20px; left: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 10px;">
-        <button id="theme-toggle" style="width: 50px; height: 50px; border-radius: 50%; background: rgba(59, 130, 246, 0.15); border: 2px solid rgba(59, 130, 246, 0.3); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 22px; backdrop-filter: blur(10px); transition: all 0.3s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" title="Toggle theme">
-            <i id="theme-icon" class="bi bi-moon-fill" style="color: #3b82f6;"></i>
-        </button>
         <button id="lang-toggle" style="width: 50px; height: 50px; border-radius: 50%; background: rgba(59, 130, 246, 0.15); border: 2px solid rgba(59, 130, 246, 0.3); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; color: #3b82f6; backdrop-filter: blur(10px); transition: all 0.3s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" title="Switch language">
             <span id="current-lang">{{ session.get('language', 'fr').upper() }}</span>
         </button>

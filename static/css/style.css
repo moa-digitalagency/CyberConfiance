@@ -1,7 +1,8 @@
 :root {
-    --bg-navy: #0a1628;
-    --bg-navy-light: #0f1f35;
-    --bg-navy-dark: #050b14;
+    --bg-navy: #000000;
+    --bg-navy-light: #0a0a0a;
+    --bg-navy-dark: #000000;
+    --bg-primary: #000000;
     --text-primary: #ffffff;
     --text-secondary: #94a3b8;
     --text-muted: #64748b;
@@ -25,7 +26,7 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     line-height: 1.6;
     color: var(--text-primary);
-    background: var(--bg-primary, #0a0e27);
+    background: #000000;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -464,7 +465,8 @@ header {
 }
 
 .section {
-    padding: 4rem 0;
+    padding: 0;
+    margin: 0;
     position: relative;
 }
 
@@ -486,8 +488,9 @@ header {
 }
 
 .page-header-modern {
-    padding: 140px 0 14px;
+    padding: 140px 0 2rem;
     text-align: center;
+    margin: 0;
 }
 
 .header-content-centered {
@@ -515,8 +518,8 @@ header {
     position: relative;
     overflow: hidden;
     background: #000000;
-    padding: 2rem 0 6rem 0;
-    margin-top: -2rem;
+    padding: 2rem 0 2rem 0;
+    margin: 0;
 }
 
 .vision-box {
@@ -631,7 +634,8 @@ header {
 
 .pillars-section {
     background: #000000;
-    padding: 6rem 0;
+    padding: 2rem 0;
+    margin: 0;
 }
 
 .pillars-grid {
@@ -753,7 +757,8 @@ header {
 
 .news-section {
     background: #000000;
-    padding: 6rem 0;
+    padding: 2rem 0;
+    margin: 0;
 }
 
 .news-grid {
@@ -893,7 +898,8 @@ header {
 .newsletter-section {
     background: #000000;
     position: relative;
-    padding: 6rem 0;
+    padding: 2rem 0;
+    margin: 0;
 }
 
 .newsletter-section::before {
@@ -1109,7 +1115,8 @@ header {
 
 .contact-section {
     text-align: center;
-    padding: 8rem 0;
+    padding: 2rem 0;
+    margin: 0;
     background: #000000;
     border: none;
     box-shadow: none;
@@ -1136,7 +1143,8 @@ header {
 
 footer {
     border-top: 1px solid var(--border-subtle);
-    padding: 4rem 0;
+    padding: 2rem 0;
+    margin: 0;
 }
 
 .footer-content {
@@ -1181,9 +1189,9 @@ footer {
 }
 
 .page-header {
-    padding: 8rem 0 3rem;
+    padding: 140px 0 2rem;
     text-align: center;
-    margin-top: 80px;
+    margin: 0;
 }
 
 .page-header h1 {
@@ -2507,7 +2515,8 @@ footer {
 /* New Homepage Sections */
 .mission-section {
     text-align: center;
-    padding: 6rem 0;
+    padding: 2rem 0;
+    margin: 0;
 }
 
 .mission-section .section-subtitle {
@@ -2596,7 +2605,8 @@ footer {
 
 .footer-newsletter {
     background: linear-gradient(135deg, rgba(0, 102, 255, 0.1) 0%, rgba(0, 82, 204, 0.05) 100%);
-    padding: 4rem 0;
+    padding: 2rem 0;
+    margin: 0;
 }
 
 .newsletter-box {
@@ -2791,8 +2801,8 @@ footer {
 
 /* Vision et Objectifs Section */
 .vision-section {
-    padding: 6rem 0;
-    margin: 4rem 0;
+    padding: 2rem 0;
+    margin: 0;
 }
 
 .vision-box {
@@ -2831,19 +2841,19 @@ footer {
 
 /* Section Spacing Adjustments */
 .section {
-    padding: 5rem 0;
-    margin: 3rem 0;
+    padding: 0;
+    margin: 0;
 }
 
 .section + .section {
-    margin-top: 0;
+    margin: 0;
 }
 
 /* Contact Section Enhanced */
 .contact-section {
     text-align: center;
-    padding: 4rem 3rem;
-    margin: 4rem 0;
+    padding: 2rem 3rem;
+    margin: 0;
 }
 
 .contact-section h2 {
