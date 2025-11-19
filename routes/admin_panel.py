@@ -3,7 +3,7 @@ from flask_login import login_required, current_user
 from functools import wraps
 from models import (db, User, ActivityLog, SecurityLog, QuizResult, SecurityAnalysis, 
                     BreachAnalysis, Rule, Scenario, Tool, GlossaryTerm, SiteSettings, SEOMetadata,
-                    News, Newsletter, Contact)
+                    News, Newsletter, Contact, AttackType)
 from utils.logging_utils import log_activity
 from datetime import datetime, timedelta
 from sqlalchemy import func, desc
@@ -130,7 +130,6 @@ def content_management():
     """Gestion du contenu frontend - accessible aux modérateurs"""
     log_activity('ADMIN_CONTENT_VIEW', 'Consultation gestion contenu')
     
-    from models import AttackType
     rules_count = Rule.query.count()
     scenarios_count = Scenario.query.count()
     tools_count = Tool.query.count()
