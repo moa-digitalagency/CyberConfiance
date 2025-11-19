@@ -357,6 +357,51 @@ def contact_management():
     
     return render_template('admin/contacts.html', contacts=contacts, status=status)
 
+@bp.route('/content/edit/<page>', methods=['GET', 'POST'])
+@moderator_required
+def edit_page_content(page):
+    """Édition du contenu d'une page"""
+    page_names = {
+        'home': 'Page d\'accueil',
+        'about': 'À propos',
+        'services': 'Services',
+        'contact': 'Contact'
+    }
+    
+    if page not in page_names:
+        flash('Page non trouvée', 'danger')
+        return redirect(url_for('admin_panel.content_management'))
+    
+    if request.method == 'POST':
+        for key, value in request.form.items():
+            if key.startswith('setting_'):
+                setting_key = key.replace('setting_', '')
+                setting = SiteSettings.query.filter_by(key=setting_key, category=page).first()
+                if setting:
+                    setting.value = value
+                    setting.updated_by = current_user.id
+                else:
+                    setting = SiteSettings(
+                        key=setting_key,
+                        value=value,
+                        category=page,
+                        updated_by=current_user.id
+                    )
+                    db.session.add(setting)
+        
+        db.session.commit()
+        log_activity('ADMIN_PAGE_CONTENT_UPDATE', f'Mise à jour contenu page {page}', success=True)
+        flash(f'Contenu de la page {page_names[page]} mis à jour avec succès', 'success')
+        return redirect(url_for('admin_panel.edit_page_content', page=page))
+    
+    settings = SiteSettings.query.filter_by(category=page).all()
+    log_activity('ADMIN_PAGE_CONTENT_VIEW', f'Consultation contenu page {page}')
+    
+    return render_template('admin/edit_page_content.html', 
+                         page=page, 
+                         page_name=page_names[page], 
+                         settings=settings)
+
 @bp.route('/api/stats')
 @admin_required
 def api_stats():

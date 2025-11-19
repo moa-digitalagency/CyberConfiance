@@ -5,10 +5,43 @@
 {% block content %}
 <div class="admin-header">
     <h1>Gestion du contenu</h1>
-    <p>Gérez le contenu affiché sur le site</p>
+    <p>Modifiez le contenu textuel des pages du site</p>
 </div>
 
-<div class="stats-grid">
+<div class="admin-card">
+    <h3>Contenu du site par page</h3>
+    <p style="margin-bottom: 2rem; color: var(--text-secondary);">
+        Cliquez sur "Modifier" pour éditer les textes affichés sur chaque page du site.
+    </p>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+        <div class="content-page-card">
+            <h4>Page d'accueil</h4>
+            <p>Titre principal, slogan, sections de présentation</p>
+            <a href="{{ url_for('admin_panel.edit_page_content', page='home') }}" class="btn btn-primary">Modifier</a>
+        </div>
+        
+        <div class="content-page-card">
+            <h4>À propos</h4>
+            <p>Textes de présentation de la plateforme</p>
+            <a href="{{ url_for('admin_panel.edit_page_content', page='about') }}" class="btn btn-primary">Modifier</a>
+        </div>
+        
+        <div class="content-page-card">
+            <h4>Services</h4>
+            <p>Descriptions des 6 piliers de services</p>
+            <a href="{{ url_for('admin_panel.edit_page_content', page='services') }}" class="btn btn-primary">Modifier</a>
+        </div>
+        
+        <div class="content-page-card">
+            <h4>Contact</h4>
+            <p>Textes de la page de contact</p>
+            <a href="{{ url_for('admin_panel.edit_page_content', page='contact') }}" class="btn btn-primary">Modifier</a>
+        </div>
+    </div>
+</div>
+
+<div class="stats-grid" style="margin-top: 2rem;">
     <div class="stat-card">
         <div class="stat-value">{{ rules_count }}</div>
         <div class="stat-label">Règles d'or</div>
@@ -46,4 +79,30 @@
         <a href="/admin/user/" class="btn btn-secondary">Utilisateurs</a>
     </div>
 </div>
+
+<style>
+.content-page-card {
+    background: rgba(15, 31, 53, 0.6);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 12px;
+    padding: 1.5rem;
+    backdrop-filter: blur(10px);
+}
+
+.content-page-card h4 {
+    color: var(--accent-blue);
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.content-page-card p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.content-page-card .btn {
+    width: 100%;
+}
+</style>
 {% endblock %}
