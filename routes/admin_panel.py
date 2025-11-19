@@ -13,8 +13,19 @@ def admin_required(f):
     @wraps(f)
     @login_required
     def decorated_function(*args, **kwargs):
-        if not current_user.is_admin:
-            flash('Accès refusé. Vous devez être administrateur.', 'danger')
+        if not (current_user.is_active and current_user.role == 'admin'):
+            flash('Accès refusé. Vous devez être administrateur actif.', 'danger')
+            return redirect(url_for('main.index'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+def moderator_required(f):
+    """Decorator for routes accessible by moderators and admins"""
+    @wraps(f)
+    @login_required
+    def decorated_function(*args, **kwargs):
+        if not (current_user.is_active and current_user.role in ['admin', 'moderator']):
+            flash('Accès refusé. Rôle modérateur ou administrateur requis.', 'danger')
             return redirect(url_for('main.index'))
         return f(*args, **kwargs)
     return decorated_function
@@ -72,9 +83,9 @@ def dashboard():
                          recent_security_logs=recent_security_logs)
 
 @bp.route('/content')
-@admin_required
+@moderator_required
 def content_management():
-    """Gestion du contenu frontend"""
+    """Gestion du contenu frontend - accessible aux modérateurs"""
     log_activity('ADMIN_CONTENT_VIEW', 'Consultation gestion contenu')
     
     rules_count = Rule.query.count()

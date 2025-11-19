@@ -1,6 +1,7 @@
 import json
 import os
 from pathlib import Path
+from datetime import datetime
 
 def load_json_seed(filename):
     """Load seed data from JSON file"""
@@ -326,6 +327,38 @@ def seed_seo_metadata(db):
     db.session.commit()
     print(f"[OK] SEO Metadata: {created_count} created")
 
+def create_admin_user(db):
+    """Create the first admin user if it doesn't exist"""
+    from models import User
+    
+    admin_password = os.getenv('ADMIN_PASSWORD')
+    
+    if not admin_password:
+        print("[!] ADMIN_PASSWORD not set - skipping admin user creation")
+        return
+    
+    admin = User.query.filter_by(username='admin').first()
+    
+    if admin:
+        admin.role = 'admin'
+        admin.is_admin = True
+        admin.is_active = True
+        db.session.commit()
+        print("[OK] Admin user updated with role and permissions")
+    else:
+        admin = User(
+            username='admin',
+            email='admin@cyberconfiance.cd',
+            role='admin',
+            is_admin=True,
+            is_active=True,
+            created_at=datetime.utcnow()
+        )
+        admin.set_password(admin_password)
+        db.session.add(admin)
+        db.session.commit()
+        print("[OK] Admin user created successfully (username: admin)")
+
 def seed_all_data(db):
     """Seed all data from JSON files"""
     print("Starting database seeding...")
@@ -336,4 +369,5 @@ def seed_all_data(db):
     seed_attack_types(db)
     seed_site_settings(db)
     seed_seo_metadata(db)
+    create_admin_user(db)
     print("Database seeding completed!")

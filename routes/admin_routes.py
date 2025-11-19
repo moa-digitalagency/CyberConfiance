@@ -11,8 +11,17 @@ from models import (Article, Rule, Tool, Scenario, Resource, News, Contact, Glos
 bp = Blueprint('admin_bp', __name__, url_prefix='/admin_bp')
 
 class SecureModelView(ModelView):
+    """Admin-only view"""
     def is_accessible(self):
-        return current_user.is_authenticated and current_user.is_admin
+        return current_user.is_authenticated and current_user.is_active and current_user.role == 'admin'
+    
+    def inaccessible_callback(self, name, **kwargs):
+        return redirect(url_for('main.login'))
+
+class ModeratorModelView(ModelView):
+    """View accessible by moderators and admins"""
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.is_active and current_user.role in ['admin', 'moderator']
     
     def inaccessible_callback(self, name, **kwargs):
         return redirect(url_for('main.login'))
@@ -78,15 +87,61 @@ class SecurityAnalysisView(SecureModelView):
         'created_at': 'Date d\'analyse'
     }
 
-admin.add_view(SecureModelView(User, db.session, name='Utilisateurs'))
-admin.add_view(SecureModelView(Article, db.session, name='Articles'))
-admin.add_view(SecureModelView(Rule, db.session, name='Règles'))
-admin.add_view(SecureModelView(Tool, db.session, name='Outils'))
-admin.add_view(SecureModelView(Scenario, db.session, name='Scénarios'))
-admin.add_view(SecureModelView(Resource, db.session, name='Ressources'))
-admin.add_view(SecureModelView(News, db.session, name='Actualités'))
-admin.add_view(SecureModelView(Contact, db.session, name='Contacts'))
-admin.add_view(SecureModelView(GlossaryTerm, db.session, name='Glossaire'))
+class UserManagementView(SecureModelView):
+    """Enhanced user management with role controls"""
+    column_list = ['id', 'username', 'email', 'role', 'is_active', 'created_at', 'last_login']
+    column_searchable_list = ['username', 'email']
+    column_filters = ['role', 'is_active', 'created_at']
+    column_sortable_list = ['id', 'username', 'email', 'role', 'is_active', 'created_at', 'last_login']
+    column_default_sort = ('created_at', True)
+    
+    form_columns = ['username', 'email', 'role', 'is_active', 'is_admin']
+    
+    column_labels = {
+        'id': 'ID',
+        'username': 'Nom d\'utilisateur',
+        'email': 'Email',
+        'role': 'Rôle',
+        'is_admin': 'Admin (legacy)',
+        'is_active': 'Actif',
+        'created_at': 'Créé le',
+        'last_login': 'Dernière connexion',
+        'password_hash': 'Hash du mot de passe'
+    }
+    
+    column_descriptions = {
+        'role': 'admin = Administrateur complet, moderator = Modérateur, user = Utilisateur standard',
+        'is_admin': 'Champ legacy - utiliser "role" à la place',
+        'is_active': 'Utilisateur peut se connecter'
+    }
+    
+    form_choices = {
+        'role': [
+            ('admin', 'Administrateur'),
+            ('moderator', 'Modérateur'),
+            ('user', 'Utilisateur')
+        ]
+    }
+    
+    column_exclude_list = ['password_hash']
+    form_excluded_columns = ['password_hash', 'created_at', 'last_login', 'activity_logs', 'security_logs', 'settings_updates', 'seo_updates']
+    
+    def on_model_change(self, form, model, is_created):
+        """Sync is_admin with role"""
+        if model.role == 'admin':
+            model.is_admin = True
+        else:
+            model.is_admin = False
+
+admin.add_view(UserManagementView(User, db.session, name='Utilisateurs'))
+admin.add_view(ModeratorModelView(Article, db.session, name='Articles'))
+admin.add_view(ModeratorModelView(Rule, db.session, name='Règles'))
+admin.add_view(ModeratorModelView(Tool, db.session, name='Outils'))
+admin.add_view(ModeratorModelView(Scenario, db.session, name='Scénarios'))
+admin.add_view(ModeratorModelView(Resource, db.session, name='Ressources'))
+admin.add_view(ModeratorModelView(News, db.session, name='Actualités'))
+admin.add_view(ModeratorModelView(Contact, db.session, name='Contacts'))
+admin.add_view(ModeratorModelView(GlossaryTerm, db.session, name='Glossaire'))
 admin.add_view(BreachAnalysisView(BreachAnalysis, db.session, name='Analyses de fuites'))
 admin.add_view(QuizResultView(QuizResult, db.session, name='Résultats de quiz'))
 admin.add_view(SecurityAnalysisView(SecurityAnalysis, db.session, name='Analyses de sécurité'))
