@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header-modern">
+    <div class="container">
+        <h1>{{ form_title }}</h1>
+        <p class="lead">{{ form_description }}</p>
+    </div>
+</div>
+
+<section class="request-form-section" style="padding: 60px 0;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="glass-card-enhanced" style="padding: 40px;">
+                    {% if success_message %}
+                    <div class="alert alert-success" style="margin-bottom: 30px; padding: 20px; border-radius: 10px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: #10b981;">
+                        <i class="bi bi-check-circle-fill"></i> {{ success_message }}
+                    </div>
+                    {% endif %}
+                    
+                    <form method="POST" enctype="multipart/form-data" class="request-form">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        
+                        <!-- Anonymous Submission Toggle -->
+                        <div class="form-group" style="margin-bottom: 30px;">
+                            <div style="display: flex; align-items: center; gap: 10px; padding: 15px; background: rgba(59, 130, 246, 0.05); border-radius: 10px;">
+                                <input type="checkbox" id="is_anonymous" name="is_anonymous" style="width: 20px; height: 20px; cursor: pointer;">
+                                <label for="is_anonymous" style="margin: 0; cursor: pointer; font-weight: 500;">
+                                    <i class="bi bi-incognito"></i> Submit anonymously (no contact information required)
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Contact Information (Hidden when anonymous) -->
+                        <div id="contact-info" style="margin-bottom: 30px;">
+                            <h3 style="font-size: 1.2rem; margin-bottom: 20px; color: var(--text-primary);">
+                                <i class="bi bi-person-circle"></i> Contact Information
+                            </h3>
+                            
+                            <div class="form-group" style="margin-bottom: 20px;">
+                                <label for="name" style="display: block; margin-bottom: 8px; font-weight: 500;">Full Name</label>
+                                <input type="text" id="name" name="name" class="form-control" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-card);">
+                            </div>
+
+                            <div class="form-group" style="margin-bottom: 20px;">
+                                <label for="email" style="display: block; margin-bottom: 8px; font-weight: 500;">Email Address</label>
+                                <input type="email" id="email" name="email" class="form-control" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-card);">
+                            </div>
+
+                            <div class="form-group" style="margin-bottom: 20px;">
+                                <label for="phone" style="display: block; margin-bottom: 8px; font-weight: 500;">Phone Number (Optional)</label>
+                                <input type="tel" id="phone" name="phone" class="form-control" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-card);">
+                            </div>
+                        </div>
+
+                        <!-- Request Details -->
+                        <h3 style="font-size: 1.2rem; margin-bottom: 20px; color: var(--text-primary);">
+                            <i class="bi bi-file-text"></i> Request Details
+                        </h3>
+
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label for="description" style="display: block; margin-bottom: 8px; font-weight: 500;">Description <span style="color: #ef4444;">*</span></label>
+                            <textarea id="description" name="description" required rows="6" class="form-control" placeholder="Please provide a detailed description..." style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-card); resize: vertical;"></textarea>
+                            <small style="color: var(--text-secondary); font-size: 0.875rem; margin-top: 5px; display: block;">
+                                <i class="bi bi-shield-check"></i> All text is scanned for malicious content
+                            </small>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label for="urls" style="display: block; margin-bottom: 8px; font-weight: 500;">URLs (one per line)</label>
+                            <textarea id="urls" name="urls" rows="4" class="form-control" placeholder="https://example.com&#10;https://another-example.com" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-card); resize: vertical;"></textarea>
+                            <small style="color: var(--text-secondary); font-size: 0.875rem; margin-top: 5px; display: block;">
+                                <i class="bi bi-shield-check"></i> All URLs are scanned with VirusTotal for malicious content
+                            </small>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 30px;">
+                            <label for="file" style="display: block; margin-bottom: 8px; font-weight: 500;">Attach File (Optional)</label>
+                            <input type="file" id="file" name="file" class="form-control" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-card);">
+                            <small style="color: var(--text-secondary); font-size: 0.875rem; margin-top: 5px; display: block;">
+                                <i class="bi bi-shield-check"></i> All files are scanned with VirusTotal for malware
+                            </small>
+                        </div>
+
+                        <!-- Security Notice -->
+                        <div style="padding: 15px; background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 10px; margin-bottom: 30px;">
+                            <p style="margin: 0; color: #ef4444; font-size: 0.9rem; font-weight: 500;">
+                                <i class="bi bi-exclamation-triangle-fill"></i> Security Notice: Any attempt to submit malicious content (files, links, or code injection) will be detected and logged as illegal activity.
+                            </p>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 15px; font-size: 1.1rem; font-weight: 600; border-radius: 10px; border: none; cursor: pointer;">
+                            <i class="bi bi-send-fill"></i> Submit Request
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+document.getElementById('is_anonymous').addEventListener('change', function() {
+    const contactInfo = document.getElementById('contact-info');
+    const inputs = contactInfo.querySelectorAll('input');
+    
+    if (this.checked) {
+        contactInfo.style.display = 'none';
+        inputs.forEach(input => {
+            input.required = false;
+            input.value = '';
+        });
+    } else {
+        contactInfo.style.display = 'block';
+        document.getElementById('name').required = true;
+        document.getElementById('email').required = true;
+    }
+});
+</script>
+{% endblock %}

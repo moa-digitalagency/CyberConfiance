@@ -1,25 +1,35 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ session.get('language', 'fr') }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{% block title %}CyberConfiance - Cybersécurité{% endblock %}</title>
     <meta name="description" content="{% block description %}Plateforme de sensibilisation à la cybersécurité{% endblock %}">
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v={{ range(1, 99999) | random }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/theme-light.css') }}?v={{ range(1, 99999) | random }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme-dark.css') }}?v={{ range(1, 99999) | random }}">
+    <script>
+        window.siteSettings = {
+            logo_light_url: "{{ site_settings.logo_light if site_settings and site_settings.logo_light else url_for('static', filename='img/logo.png') }}",
+            logo_dark_url: "{{ site_settings.logo_dark if site_settings and site_settings.logo_dark else url_for('static', filename='img/logo.png') }}"
+        };
+    </script>
 </head>
 <body>
     <div class="background-animation"></div>
     
     <!-- Theme and Language Switchers (Bottom Left) -->
-    <div style="position: fixed; bottom: 20px; left: 20px; z-index: 1000; display: flex; gap: 10px;">
-        <button id="theme-toggle" style="width: 45px; height: 45px; border-radius: 50%; background: rgba(59, 130, 246, 0.2); border: 1px solid rgba(59, 130, 246, 0.3); color: var(--text-primary); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 20px; backdrop-filter: blur(10px);" title="Toggle theme">
-            🌓
+    <div style="position: fixed; bottom: 20px; left: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 10px;">
+        <button id="theme-toggle" style="width: 50px; height: 50px; border-radius: 50%; background: rgba(59, 130, 246, 0.15); border: 2px solid rgba(59, 130, 246, 0.3); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 22px; backdrop-filter: blur(10px); transition: all 0.3s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" title="Toggle theme">
+            <i id="theme-icon" class="bi bi-moon-fill" style="color: #3b82f6;"></i>
         </button>
-        <div style="display: flex; gap: 5px; background: rgba(59, 130, 246, 0.2); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 25px; padding: 5px; backdrop-filter: blur(10px);">
-            <button class="lang-switch-btn" data-lang="en" style="padding: 8px 15px; border: none; background: rgba(255,255,255,0.1); border-radius: 20px; color: var(--text-primary); cursor: pointer; font-size: 13px; font-weight: 500;" title="English">EN</button>
-            <button class="lang-switch-btn" data-lang="fr" style="padding: 8px 15px; border: none; background: rgba(255,255,255,0.1); border-radius: 20px; color: var(--text-primary); cursor: pointer; font-size: 13px; font-weight: 500;" title="Français">FR</button>
+        <div style="display: flex; gap: 5px; background: rgba(59, 130, 246, 0.15); border: 2px solid rgba(59, 130, 246, 0.3); border-radius: 25px; padding: 4px; backdrop-filter: blur(10px); box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <button id="lang-toggle" style="padding: 10px 16px; border: none; background: linear-gradient(135deg, #3b82f6, #06b6d4); border-radius: 20px; color: white; cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.3s ease;" title="Switch language">
+                <span id="current-lang">{{ session.get('language', 'fr').upper() }}</span>
+            </button>
         </div>
     </div>
     <header>
@@ -114,6 +124,7 @@
     </footer>
 
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/theme-switcher.js') }}"></script>
     <script src="{{ url_for('static', filename='js/theme-lang-switcher.js') }}"></script>
     {% block scripts %}{% endblock %}
 </body>

@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for, session
+from flask import Blueprint, render_template, request, flash, redirect, url_for, session, jsonify
 from flask_login import login_user, logout_user, login_required
 from services import ContentService, HaveIBeenPwnedService, QuizService
 from services.security_analyzer import SecurityAnalyzerService
@@ -503,13 +503,26 @@ def analyze_breach():
                          recommendations=recommendations,
                          data_scenarios=data_scenarios)
 
+@bp.route('/set-language', methods=['POST'])
 @bp.route('/set-language/<lang>')
-def set_language(lang):
+def set_language(lang=None):
     """Set user's preferred language"""
     from urllib.parse import urlparse
     
-    if lang in ['en', 'fr']:
+    if request.method == 'POST' and request.is_json:
+        data = request.get_json()
+        lang = data.get('language', 'fr')
+        
+        if lang in ['en', 'fr']:
+            session['language'] = lang
+            session.permanent = True
+            return jsonify({'success': True, 'language': lang})
+        
+        return jsonify({'success': False, 'error': 'Invalid language'}), 400
+    
+    if lang and lang in ['en', 'fr']:
         session['language'] = lang
+        session.permanent = True
     
     referrer = request.referrer
     if referrer:

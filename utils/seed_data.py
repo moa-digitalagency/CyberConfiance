@@ -242,6 +242,8 @@ def seed_site_settings(db):
     default_settings = [
         {'key': 'site_name', 'value': 'CyberConfiance', 'description': 'Nom du site', 'category': 'general', 'is_public': True},
         {'key': 'contact_email', 'value': 'contact@cyberconfiance.fr', 'description': 'Email de contact principal', 'category': 'general', 'is_public': True},
+        {'key': 'logo_light', 'value': '/static/img/logo.png', 'description': 'Logo for light theme', 'category': 'appearance', 'is_public': True},
+        {'key': 'logo_dark', 'value': '/static/img/logo.png', 'description': 'Logo for dark theme', 'category': 'appearance', 'is_public': True},
         {'key': 'maintenance_mode', 'value': 'false', 'value_type': 'boolean', 'description': 'Mode maintenance activé', 'category': 'system', 'is_public': False},
         {'key': 'analytics_enabled', 'value': 'true', 'value_type': 'boolean', 'description': 'Activer les statistiques', 'category': 'system', 'is_public': False},
     ]

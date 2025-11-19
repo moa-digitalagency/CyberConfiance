@@ -4,7 +4,7 @@ from utils.logging_utils import log_activity
 
 bp = Blueprint('request_forms', __name__)
 
-@bp.route('/services/factchecking', methods=['GET', 'POST'])
+@bp.route('/request/factchecking', methods=['GET', 'POST'])
 def factchecking():
     """Fact-checking request form with VirusTotal security"""
     if request.method == 'POST':
@@ -23,7 +23,7 @@ def factchecking():
                 log_activity('FACTCHECK_THREAT', result['message'], success=False)
             flash(result['message'], 'danger')
     
-    return render_template('services/factchecking.html')
+    return render_template('services/factchecking_form.html')
 
 @bp.route('/outils/methodologie-osint', methods=['GET', 'POST'])
 def osint():
@@ -46,7 +46,7 @@ def osint():
     
     return render_template('outils/methodologie_osint.html')
 
-@bp.route('/services/cyberconsultation', methods=['GET', 'POST'])
+@bp.route('/request/cyberconsultation', methods=['GET', 'POST'])
 def cyberconsultation():
     """Cyberconsultation request form with VirusTotal security"""
     if request.method == 'POST':
@@ -65,4 +65,4 @@ def cyberconsultation():
                 log_activity('CONSULTATION_THREAT', result['message'], success=False)
             flash(result['message'], 'danger')
     
-    return render_template('services/cyberconsultation.html')
+    return render_template('services/cyberconsultation_form.html')

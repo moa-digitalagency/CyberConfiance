@@ -4,9 +4,8 @@ from flask_login import current_user
 import __init__ as app_module
 db = app_module.db
 admin = app_module.admin
-from models import (Article, Rule, Tool, Scenario, Resource, News, Contact, GlossaryTerm, 
-                    User, BreachAnalysis, QuizResult, SecurityAnalysis, ActivityLog, 
-                    SecurityLog, SiteSettings, SEOMetadata, AttackType)
+from models import (User, BreachAnalysis, QuizResult, SecurityAnalysis, ActivityLog, 
+                    SecurityLog, SiteSettings, SEOMetadata, RequestSubmission)
 
 bp = Blueprint('admin_bp', __name__, url_prefix='/admin_bp')
 
@@ -87,6 +86,37 @@ class SecurityAnalysisView(SecureModelView):
         'created_at': 'Date d\'analyse'
     }
 
+class RequestSubmissionView(SecureModelView):
+    column_list = ['id', 'request_type', 'is_anonymous', 'contact_email', 'threat_detected', 'status', 'created_at']
+    column_searchable_list = ['contact_email', 'contact_name', 'description', 'ip_address']
+    column_filters = ['request_type', 'is_anonymous', 'threat_detected', 'status', 'created_at']
+    column_sortable_list = ['id', 'request_type', 'threat_detected', 'status', 'created_at']
+    column_default_sort = ('created_at', True)
+    can_create = False
+    column_editable_list = ['status', 'admin_notes']
+    form_columns = ['request_type', 'description', 'urls', 'file_name', 'is_anonymous', 'contact_name', 'contact_email', 'contact_phone', 'threat_detected', 'status', 'admin_notes', 'vt_file_results', 'vt_url_results', 'vt_text_results']
+    column_labels = {
+        'id': 'ID',
+        'request_type': 'Type de demande',
+        'description': 'Description',
+        'urls': 'URLs',
+        'file_name': 'Nom du fichier',
+        'is_anonymous': 'Anonyme',
+        'contact_name': 'Nom',
+        'contact_email': 'Email',
+        'contact_phone': 'Téléphone',
+        'threat_detected': 'Menace détectée',
+        'status': 'Statut',
+        'admin_notes': 'Notes admin',
+        'vt_file_results': 'Résultats VT fichier',
+        'vt_url_results': 'Résultats VT URLs',
+        'vt_text_results': 'Résultats VT texte',
+        'ip_address': 'Adresse IP',
+        'user_agent': 'Navigateur',
+        'created_at': 'Date de demande',
+        'updated_at': 'Mis à jour le'
+    }
+
 class UserManagementView(SecureModelView):
     """Enhanced user management with role controls"""
     column_list = ['id', 'username', 'email', 'role', 'is_active', 'created_at', 'last_login']
@@ -134,19 +164,11 @@ class UserManagementView(SecureModelView):
             model.is_admin = False
 
 admin.add_view(UserManagementView(User, db.session, name='Utilisateurs'))
-admin.add_view(ModeratorModelView(Article, db.session, name='Articles'))
-admin.add_view(ModeratorModelView(Rule, db.session, name='Règles'))
-admin.add_view(ModeratorModelView(Tool, db.session, name='Outils'))
-admin.add_view(ModeratorModelView(Scenario, db.session, name='Scénarios'))
-admin.add_view(ModeratorModelView(Resource, db.session, name='Ressources'))
-admin.add_view(ModeratorModelView(News, db.session, name='Actualités'))
-admin.add_view(ModeratorModelView(Contact, db.session, name='Contacts'))
-admin.add_view(ModeratorModelView(GlossaryTerm, db.session, name='Glossaire'))
-admin.add_view(BreachAnalysisView(BreachAnalysis, db.session, name='Analyses de fuites'))
-admin.add_view(QuizResultView(QuizResult, db.session, name='Résultats de quiz'))
-admin.add_view(SecurityAnalysisView(SecurityAnalysis, db.session, name='Analyses de sécurité'))
-admin.add_view(SecureModelView(ActivityLog, db.session, name='Logs d\'activité'))
-admin.add_view(SecureModelView(SecurityLog, db.session, name='Logs de sécurité'))
-admin.add_view(SecureModelView(AttackType, db.session, name='Types d\'attaques'))
+admin.add_view(RequestSubmissionView(RequestSubmission, db.session, name='Demandes - Fact-checking & Consultation'))
+admin.add_view(BreachAnalysisView(BreachAnalysis, db.session, name='Historique - Analyses de fuites'))
+admin.add_view(QuizResultView(QuizResult, db.session, name='Historique - Résultats de quiz'))
+admin.add_view(SecurityAnalysisView(SecurityAnalysis, db.session, name='Historique - Analyses de sécurité'))
+admin.add_view(SecureModelView(ActivityLog, db.session, name='Historique - Logs d\'activité'))
+admin.add_view(SecureModelView(SecurityLog, db.session, name='Historique - Logs de sécurité'))
 admin.add_view(SecureModelView(SiteSettings, db.session, name='Paramètres site'))
-admin.add_view(SecureModelView(SEOMetadata, db.session, name='Métadonnées SEO'))
+admin.add_view(SecureModelView(SEOMetadata, db.session, name='SEO - Métadonnées'))

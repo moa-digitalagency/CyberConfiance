@@ -15,12 +15,34 @@
 <section class="section">
     <div class="container">
         <div class="glass-card-enhanced">
-            <h2 class="section-title" style="text-align: center;">Submit a Fact-Checking Request</h2>
+            <h2 class="section-title" style="text-align: center;">About Our Fact-Checking Service</h2>
             <p style="font-size: 0.95rem; line-height: 1.7; color: var(--text-secondary); text-align: center; max-width: 800px; margin: 0 auto 2rem;">
                 Submit information you want verified. We use OSINT techniques and VirusTotal security scanning to protect you from malicious content.
             </p>
             
-            <form method="POST" enctype="multipart/form-data" style="max-width: 700px; margin: 0 auto;">
+            <div style="text-align: center; margin-top: 30px;">
+                <a href="{{ url_for('request_forms.factchecking') }}" class="btn btn-primary" style="display: inline-block; padding: 15px 40px; font-size: 1.1rem; font-weight: 600; text-decoration: none; border-radius: 10px;">
+                    <i class="bi bi-file-earmark-text-fill"></i> Submit Fact-Checking Request
+                </a>
+            </div>
+            
+            <h3 style="margin-top: 40px; margin-bottom: 20px;">What is Fact-Checking?</h3>
+            <p style="font-size: 0.95rem; line-height: 1.7; color: var(--text-secondary);">
+                Fact-checking is the process of verifying factual information to promote accuracy in reporting and combat misinformation. We use advanced OSINT (Open Source Intelligence) techniques combined with VirusTotal security scanning to ensure both accuracy and safety.
+            </p>
+
+            <h3 style="margin-top: 30px; margin-bottom: 20px;">Our OSINT Methodology</h3>
+            <p style="font-size: 0.95rem; line-height: 1.7; color: var(--text-secondary);">
+                Open Source Intelligence involves collecting and analyzing publicly available information from various sources. Our process includes verification of sources, cross-referencing multiple databases, and security scanning to protect our clients from malicious content.
+            </p>
+        </div>
+    </div>
+</section>
+
+<section class="section" style="display: none;">
+    <div class="container">
+        <div class="glass-card-enhanced">
+            <form method="POST" enctype="multipart/form-data" style="max-width: 700px; margin: 0 auto; display: none;">
                 <div style="margin-bottom: 1.5rem;">
                     <label for="description" style="display: block; margin-bottom: 0.5rem; color: var(--text-primary); font-weight: 500;">
                         Description / Information to Verify *
