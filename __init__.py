@@ -8,7 +8,7 @@ from flask_wtf.csrf import CSRFProtect
 from config import Config
 
 db = SQLAlchemy()
-admin = Admin(name='CyberConfiance Admin', template_mode='bootstrap3', url='/my4dm1n', endpoint='admin')
+admin = Admin(name='CyberConfiance Admin', template_mode='bootstrap3', url='/flask-admin', endpoint='admin')
 login_manager = LoginManager()
 csrf = CSRFProtect()
 limiter = Limiter(
