@@ -26,6 +26,7 @@ def requests_dashboard():
         'fact_checking': RequestSubmission.query.filter_by(request_type='fact-checking').count(),
         'osint': RequestSubmission.query.filter_by(request_type='osint').count(),
         'cyberconsultation': RequestSubmission.query.filter_by(request_type='cyberconsultation').count(),
+        'cybercrime': RequestSubmission.query.filter_by(request_type='cybercrime-report').count(),
         'threats_detected': RequestSubmission.query.filter_by(threat_detected=True).count(),
         'pending': RequestSubmission.query.filter_by(status='pending').count(),
     }

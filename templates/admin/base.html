@@ -607,7 +607,11 @@
                 <div class="admin-nav-section">
                     <div class="admin-nav-section-title">Requêtes</div>
                     <ul>
-                        <li><a href="{{ url_for('admin_requests.requests_dashboard') }}" class="{% if request.endpoint == 'admin_requests.requests_dashboard' or request.endpoint == 'admin_requests.request_detail' %}active{% endif %}">Toutes les requêtes</a></li>
+                        <li><a href="{{ url_for('admin_requests.requests_dashboard') }}" class="{% if request.endpoint == 'admin_requests.requests_dashboard' and not request.args.get('type') %}active{% endif %}">Toutes les requêtes</a></li>
+                        <li><a href="{{ url_for('admin_requests.requests_dashboard', type='cybercrime-report') }}" class="{% if request.args.get('type') == 'cybercrime-report' %}active{% endif %}">Signalements cybercrime</a></li>
+                        <li><a href="{{ url_for('admin_requests.requests_dashboard', type='cyberconsultation') }}" class="{% if request.args.get('type') == 'cyberconsultation' %}active{% endif %}">Cyberconsultations</a></li>
+                        <li><a href="{{ url_for('admin_requests.requests_dashboard', type='osint') }}" class="{% if request.args.get('type') == 'osint' %}active{% endif %}">Investigations OSINT</a></li>
+                        <li><a href="{{ url_for('admin_requests.requests_dashboard', type='fact-checking') }}" class="{% if request.args.get('type') == 'fact-checking' %}active{% endif %}">Fact-checking</a></li>
                     </ul>
                 </div>
                 

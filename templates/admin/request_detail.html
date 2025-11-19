@@ -40,8 +40,34 @@
         
         {% if submission.threat_detected %}
         <div style="background: rgba(239, 68, 68, 0.1); border: 2px solid rgba(239, 68, 68, 0.5); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem;">
-            <h3 style="margin-bottom: 1rem; color: #ef4444;">⚠️ Threat Detected</h3>
-            <p style="color: var(--text-secondary);">This submission contained malicious content that was detected and blocked by VirusTotal scanning.</p>
+            <h3 style="margin-bottom: 1rem; color: #ef4444;">⚠️ ALERTE : Menace Détectée</h3>
+            <p style="color: var(--text-secondary); margin-bottom: 1rem;">Cette soumission contient du contenu malveillant qui a été détecté et bloqué par l'analyse VirusTotal.</p>
+            
+            {% if submission.vt_file_results %}
+            <div style="margin-top: 1rem; padding: 1rem; background: rgba(0,0,0,0.3); border-radius: 6px;">
+                <strong style="color: #ef4444;">Type de menace identifiée :</strong>
+                <div style="margin-top: 0.5rem; color: var(--text-secondary);">
+                    {% if submission.vt_file_results.data %}
+                        {% if submission.vt_file_results.data.attributes %}
+                            {% if submission.vt_file_results.data.attributes.last_analysis_stats %}
+                                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; margin-top: 0.5rem;">
+                                    <div><strong>Malicieux:</strong> {{ submission.vt_file_results.data.attributes.last_analysis_stats.malicious or 0 }}</div>
+                                    <div><strong>Suspects:</strong> {{ submission.vt_file_results.data.attributes.last_analysis_stats.suspicious or 0 }}</div>
+                                    <div><strong>Non détecté:</strong> {{ submission.vt_file_results.data.attributes.last_analysis_stats.undetected or 0 }}</div>
+                                    <div><strong>Inoffensif:</strong> {{ submission.vt_file_results.data.attributes.last_analysis_stats.harmless or 0 }}</div>
+                                </div>
+                            {% endif %}
+                            {% if submission.vt_file_results.data.attributes.popular_threat_classification %}
+                                <div style="margin-top: 1rem;">
+                                    <strong>Classification :</strong> 
+                                    <span style="color: #ef4444;">{{ submission.vt_file_results.data.attributes.popular_threat_classification.suggested_threat_label }}</span>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
         </div>
         {% endif %}
         

@@ -27,6 +27,11 @@
             <div style="font-size: 2rem; font-weight: bold; color: #f59e0b;">{{ stats.cyberconsultation }}</div>
         </div>
         
+        <div style="background: rgba(220, 38, 38, 0.1); padding: 1.5rem; border-radius: 8px; border: 1px solid rgba(220, 38, 38, 0.3);">
+            <div style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Cybercrime</div>
+            <div style="font-size: 2rem; font-weight: bold; color: #dc2626;">{{ stats.cybercrime }}</div>
+        </div>
+        
         <div style="background: rgba(239, 68, 68, 0.1); padding: 1.5rem; border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.3);">
             <div style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Threats Detected</div>
             <div style="font-size: 2rem; font-weight: bold; color: #ef4444;">{{ stats.threats_detected }}</div>
@@ -54,6 +59,10 @@
         <a href="{{ url_for('admin_requests.requests_dashboard', type='cyberconsultation') }}"
            style="padding: 0.5rem 1rem; background: {% if filter_type == 'cyberconsultation' %}rgba(245, 158, 11, 0.2){% else %}rgba(255,255,255,0.05){% endif %}; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; text-decoration: none; color: var(--text-primary);">
             Consultation
+        </a>
+        <a href="{{ url_for('admin_requests.requests_dashboard', type='cybercrime-report') }}"
+           style="padding: 0.5rem 1rem; background: {% if filter_type == 'cybercrime-report' %}rgba(220, 38, 38, 0.2){% else %}rgba(255,255,255,0.05){% endif %}; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; text-decoration: none; color: var(--text-primary);">
+            Cybercrime
         </a>
     </div>
 </div>
