@@ -1,14 +1,27 @@
-from flask import Flask
+from flask import Flask, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
-from flask_admin import Admin
-from flask_login import LoginManager
+from flask_admin import Admin, AdminIndexView, expose
+from flask_login import LoginManager, current_user
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_wtf.csrf import CSRFProtect
 from config import Config
 
+class SecureAdminIndexView(AdminIndexView):
+    @expose('/')
+    def index(self):
+        if not current_user.is_authenticated or current_user.role != 'admin':
+            return redirect(url_for('main.login', next='/my4dm1n/admin/'))
+        return super(SecureAdminIndexView, self).index()
+
 db = SQLAlchemy()
-admin = Admin(name='CyberConfiance Admin', template_mode='bootstrap3', url='/my4dm1n', endpoint='admin')
+admin = Admin(
+    name='CyberConfiance Admin', 
+    template_mode='bootstrap3', 
+    url='/my4dm1n/admin', 
+    endpoint='admin',
+    index_view=SecureAdminIndexView()
+)
 login_manager = LoginManager()
 csrf = CSRFProtect()
 limiter = Limiter(
