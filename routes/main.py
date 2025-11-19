@@ -406,6 +406,42 @@ def quiz_all_results():
     all_results = QuizResult.query.order_by(QuizResult.created_at.desc()).all()
     return render_template('outils/quiz_all_results.html', results=all_results)
 
+@bp.route('/newsletter', methods=['POST'])
+def newsletter():
+    email = request.form.get('email')
+    
+    if not email:
+        flash('Veuillez fournir une adresse email.', 'error')
+        return redirect(url_for('main.index'))
+    
+    try:
+        from models import Newsletter
+        existing = Newsletter.query.filter_by(email=email).first()
+        
+        if existing:
+            if existing.subscribed:
+                flash('Vous êtes déjà inscrit à notre newsletter !', 'info')
+            else:
+                existing.subscribed = True
+                existing.unsubscribed_at = None
+                db.session.commit()
+                flash('Votre inscription à la newsletter a été réactivée !', 'success')
+        else:
+            newsletter_entry = Newsletter(
+                email=email,
+                ip_address=request.remote_addr,
+                user_agent=request.headers.get('User-Agent', '')[:500]
+            )
+            db.session.add(newsletter_entry)
+            db.session.commit()
+            flash('Merci pour votre inscription à notre newsletter !', 'success')
+    except Exception as e:
+        print(f"Erreur lors de l'inscription newsletter: {str(e)}")
+        db.session.rollback()
+        flash('Une erreur est survenue. Veuillez réessayer.', 'error')
+    
+    return redirect(url_for('main.index'))
+
 @bp.route('/analyze-breach', methods=['POST'])
 def analyze_breach():
     email = request.form.get('email')

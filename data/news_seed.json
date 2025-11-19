@@ -2,61 +2,71 @@
     {
         "title": "L'essor des attaques par ransomware en 2025",
         "content": "Les cyberattaques par ransomware continuent d'augmenter en 2025, avec une hausse de 35% par rapport à l'année précédente. Les entreprises de toutes tailles sont ciblées, en particulier dans les secteurs de la santé et de l'énergie.\n\nLes cybercriminels utilisent des techniques de plus en plus sophistiquées, combinant l'ingénierie sociale avec des exploits zero-day pour infiltrer les réseaux d'entreprise. La double extorsion, où les données sont non seulement chiffrées mais aussi exfiltrées, devient la norme.\n\nLes experts recommandent une approche de sécurité multicouche comprenant des sauvegardes régulières hors ligne, la segmentation du réseau, et une formation continue des employés pour détecter les tentatives de phishing.",
+        "category": "Menaces & Alertes",
         "source": "ANSSI",
         "published_date": "2025-11-15"
     },
     {
-        "title": "Nouvelle vulnérabilité critique découverte dans les serveurs Apache",
+        "title": "Comment protéger vos données personnelles en ligne",
+        "content": "La protection des données personnelles est devenue un enjeu majeur à l'ère numérique. Voici les bonnes pratiques essentielles à adopter pour sécuriser vos informations en ligne.\n\nUtilisez des mots de passe forts et uniques pour chaque compte, activez l'authentification à deux facteurs partout où c'est possible, et méfiez-vous des e-mails et messages suspects. Ne partagez jamais d'informations sensibles via des canaux non sécurisés.\n\nPensez également à vérifier régulièrement les paramètres de confidentialité de vos comptes sur les réseaux sociaux et à limiter les informations personnelles que vous rendez publiques.",
+        "category": "Bonnes Pratiques",
+        "source": "La Cyberconfiance",
+        "published_date": "2025-11-14"
+    },
+    {
+        "title": "Nouvelle vulnérabilité critique dans les serveurs Apache",
         "content": "Une vulnérabilité de sévérité critique a été découverte dans Apache HTTP Server, affectant les versions 2.4.0 à 2.4.57. Cette faille, identifiée CVE-2025-12345, permet l'exécution de code à distance sans authentification.\n\nLes chercheurs en sécurité estiment que plus de 500 000 serveurs sont potentiellement vulnérables. Apache a publié un correctif d'urgence dans la version 2.4.58.\n\nLes administrateurs système sont fortement encouragés à mettre à jour leurs serveurs immédiatement ou à appliquer les mesures d'atténuation recommandées par Apache.",
+        "category": "Menaces & Alertes",
         "source": "SecurityWeek",
         "published_date": "2025-11-10"
     },
     {
-        "title": "L'intelligence artificielle au service de la cyberdéfense",
+        "title": "Guide complet : Sécuriser votre connexion WiFi domestique",
+        "content": "Un réseau WiFi mal sécurisé peut être une porte d'entrée pour les cybercriminels. Découvrez comment renforcer la sécurité de votre réseau domestique en quelques étapes simples.\n\nCommencez par changer le mot de passe par défaut de votre routeur et activez le chiffrement WPA3 (ou WPA2 au minimum). Désactivez le WPS qui présente des failles de sécurité connues. Créez un réseau invité séparé pour vos visiteurs.\n\nMettez régulièrement à jour le firmware de votre routeur et désactivez l'administration à distance si vous ne l'utilisez pas. Enfin, masquez le SSID de votre réseau pour le rendre invisible aux appareils environnants.",
+        "category": "Bonnes Pratiques",
+        "source": "La Cyberconfiance",
+        "published_date": "2025-11-08"
+    },
+    {
+        "title": "Intelligence artificielle : nouvelle arme contre les cybermenaces",
         "content": "Les entreprises adoptent massivement l'intelligence artificielle pour renforcer leur posture de sécurité. Les systèmes de détection basés sur l'IA peuvent analyser des millions d'événements en temps réel pour identifier les comportements anormaux.\n\nSelon une étude récente, 72% des entreprises du CAC 40 utilisent déjà des solutions de cybersécurité assistées par IA. Ces systèmes permettent de réduire le temps de détection des incidents de plusieurs heures à quelques minutes.\n\nCependant, les experts mettent en garde contre une dépendance excessive à l'automatisation, soulignant l'importance de maintenir une expertise humaine pour l'analyse contextuelle des menaces.",
+        "category": "Actualités Cyber",
         "source": "Le Monde Informatique",
         "published_date": "2025-11-05"
     },
     {
-        "title": "Phishing : nouvelle campagne ciblant les utilisateurs de services bancaires",
-        "content": "Une vaste campagne de phishing ciblant les clients des principales banques françaises a été détectée cette semaine. Les cybercriminels utilisent des e-mails et SMS sophistiqués imitant parfaitement les communications officielles.\n\nLes messages incitent les victimes à cliquer sur des liens malveillants menant à des sites web frauduleux reproduisant fidèlement les interfaces bancaires. Les données saisies sont immédiatement transmises aux attaquants.\n\nLes banques rappellent qu'elles ne demandent jamais d'informations sensibles par e-mail ou SMS, et encouragent leurs clients à vérifier systématiquement l'authenticité des communications suspectes.",
-        "source": "FraudWatch",
+        "title": "Le règlement DORA entre en vigueur dans le secteur financier",
+        "content": "Le règlement DORA (Digital Operational Resilience Act) est entré en vigueur ce mois-ci, imposant de nouvelles exigences strictes en matière de résilience opérationnelle numérique pour les entités financières de l'UE.\n\nCe règlement établit un cadre uniforme pour la gestion des risques liés aux TIC, incluant la protection contre les cybermenaces, les tests de résilience obligatoires, et la supervision des prestataires tiers critiques.\n\nLes institutions financières disposent d'une période de transition pour se conformer pleinement aux nouvelles obligations, avec des sanctions significatives prévues en cas de non-conformité.",
+        "category": "Réglementation",
+        "source": "European Banking Authority",
+        "published_date": "2025-11-03"
+    },
+    {
+        "title": "Phishing : reconnaître et éviter les arnaques par e-mail",
+        "content": "Le phishing reste l'une des techniques les plus utilisées par les cybercriminels pour voler des informations personnelles. Apprenez à reconnaître les signes d'un e-mail frauduleux pour vous protéger.\n\nMéfiez-vous des e-mails créant un sentiment d'urgence, demandant des informations personnelles ou contenant des liens suspects. Vérifiez toujours l'adresse de l'expéditeur et survolez les liens sans cliquer pour voir leur vraie destination.\n\nEn cas de doute, contactez directement l'organisation prétendument émettrice par un canal officiel. Ne répondez jamais aux demandes d'informations sensibles par e-mail, les organisations légitimes ne procèdent jamais ainsi.",
+        "category": "Bonnes Pratiques",
+        "source": "La Cyberconfiance",
         "published_date": "2025-11-01"
     },
     {
-        "title": "Le règlement DORA entre en vigueur pour le secteur financier européen",
-        "content": "Le règlement DORA (Digital Operational Resilience Act) est entré en vigueur ce mois-ci, imposant de nouvelles exigences strictes en matière de résilience opérationnelle numérique pour les entités financières de l'UE.\n\nCe règlement établit un cadre uniforme pour la gestion des risques liés aux TIC, incluant la protection contre les cybermenaces, les tests de résilience obligatoires, et la supervision des prestataires tiers critiques.\n\nLes institutions financières disposent d'une période de transition pour se conformer pleinement aux nouvelles obligations, avec des sanctions significatives prévues en cas de non-conformité.",
-        "source": "European Banking Authority",
-        "published_date": "2025-10-28"
+        "title": "Formation gratuite : Les bases de la cybersécurité pour tous",
+        "content": "La Cyberconfiance lance un nouveau programme de formation gratuit destiné au grand public. Ce cours en ligne couvre les fondamentaux de la sécurité numérique de manière accessible et pratique.\n\nLe programme comprend 5 modules : protection des données personnelles, navigation sécurisée, gestion des mots de passe, reconnaissance des arnaques en ligne, et sécurisation des appareils mobiles. Chaque module dure environ 30 minutes.\n\nÀ l'issue de la formation, les participants recevront un certificat attestant de leur compréhension des bonnes pratiques en cybersécurité. Inscrivez-vous dès maintenant sur notre plateforme.",
+        "category": "Formations & Ressources",
+        "source": "La Cyberconfiance",
+        "published_date": "2025-10-30"
     },
     {
-        "title": "Augmentation des attaques DDoS contre les infrastructures critiques",
-        "content": "Le nombre d'attaques par déni de service distribué (DDoS) contre les infrastructures critiques a triplé au cours du dernier trimestre. Les attaquants ciblent principalement les fournisseurs d'énergie, les réseaux de télécommunication et les services d'eau.\n\nCes attaques utilisent des botnets de plus en plus puissants, capables de générer des volumes de trafic dépassant 1 Tbps. Certaines campagnes sont attribuées à des groupes liés à des États-nations.\n\nLes autorités recommandent aux opérateurs d'infrastructures critiques de renforcer leurs capacités de filtrage DDoS et d'établir des plans de réponse aux incidents robustes.",
-        "source": "CERT-FR",
-        "published_date": "2025-10-20"
+        "title": "Augmentation alarmante des attaques DDoS en Afrique",
+        "content": "Le nombre d'attaques par déni de service distribué (DDoS) en Afrique a triplé au cours du dernier trimestre. Les infrastructures critiques, notamment les fournisseurs d'énergie et les réseaux de télécommunication, sont particulièrement visées.\n\nCes attaques utilisent des botnets de plus en plus puissants, capables de générer des volumes de trafic dépassant 1 Tbps. Les pays d'Afrique francophone sont particulièrement touchés, avec une augmentation de 250% des incidents.\n\nLes autorités recommandent aux opérateurs d'infrastructures critiques de renforcer leurs capacités de filtrage DDoS et d'établir des plans de réponse aux incidents robustes.",
+        "category": "Menaces & Alertes",
+        "source": "CERT Afrique",
+        "published_date": "2025-10-25"
     },
     {
-        "title": "Fuite de données massive : 50 millions de comptes exposés",
-        "content": "Une importante fuite de données a été découverte sur un forum clandestin, exposant les informations personnelles de plus de 50 millions d'utilisateurs d'une plateforme de commerce électronique internationale.\n\nLes données compromises incluent des noms, adresses e-mail, numéros de téléphone et adresses physiques. Bien que les mots de passe soient chiffrés, les experts recommandent à tous les utilisateurs concernés de les modifier immédiatement.\n\nL'entreprise a confirmé la violation et travaille avec les autorités pour enquêter sur l'incident. Une notification a été envoyée à tous les utilisateurs potentiellement affectés.",
-        "source": "DataBreachToday",
-        "published_date": "2025-10-15"
-    },
-    {
-        "title": "Nouvelles recommandations de l'ANSSI pour la sécurité du cloud",
-        "content": "L'ANSSI a publié un nouveau guide de recommandations pour la sécurisation des environnements cloud, mettant l'accent sur le modèle de responsabilité partagée entre fournisseurs et utilisateurs.\n\nLe guide couvre des aspects essentiels comme la gestion des identités et des accès, le chiffrement des données au repos et en transit, la journalisation des événements de sécurité, et la réponse aux incidents dans le cloud.\n\nCes recommandations s'adressent particulièrement aux administrations et aux opérateurs d'importance vitale qui migrent leurs infrastructures vers le cloud.",
+        "title": "Nouveau guide ANSSI : Sécurisation des environnements cloud",
+        "content": "L'ANSSI a publié un nouveau guide de recommandations pour la sécurisation des environnements cloud, mettant l'accent sur le modèle de responsabilité partagée entre fournisseurs et utilisateurs.\n\nLe guide couvre des aspects essentiels comme la gestion des identités et des accès, le chiffrement des données au repos et en transit, la journalisation des événements de sécurité, et la réponse aux incidents dans le cloud.\n\nCes recommandations s'adressent particulièrement aux administrations et aux opérateurs d'importance vitale qui migrent leurs infrastructures vers le cloud. Le document complet est disponible en téléchargement gratuit.",
+        "category": "Réglementation",
         "source": "ANSSI",
-        "published_date": "2025-10-10"
-    },
-    {
-        "title": "Le spear phishing : une menace croissante pour les dirigeants",
-        "content": "Les attaques de spear phishing ciblant spécifiquement les cadres dirigeants et les directeurs financiers sont en forte hausse. Ces attaques hautement personnalisées exploitent des informations publiques disponibles sur les réseaux sociaux.\n\nLes cybercriminels se font passer pour des partenaires commerciaux ou des supérieurs hiérarchiques pour obtenir des virements frauduleux ou des informations sensibles. Le préjudice moyen par incident dépasse désormais 500 000 euros.\n\nLes entreprises sont encouragées à mettre en place des procédures de validation strictes pour toute demande de transaction financière, indépendamment de l'apparente légitimité de la requête.",
-        "source": "CLUSIF",
-        "published_date": "2025-10-05"
-    },
-    {
-        "title": "Authentification multifacteur : adoption massive dans les entreprises",
-        "content": "L'authentification multifacteur (MFA) devient la norme dans les entreprises françaises, avec un taux d'adoption atteignant 85% en 2025. Cette progression s'explique par la multiplication des cyberattaques exploitant des identifiants compromis.\n\nLes solutions MFA basées sur des applications d'authentification ou des clés de sécurité physiques sont préférées aux SMS, jugés moins sécurisés. Les standards FIDO2 et WebAuthn gagnent en popularité.\n\nLes experts soulignent que le MFA réduit de 99% le risque de compromission de compte, en constituant une couche de protection essentielle même en cas de vol de mot de passe.",
-        "source": "ITespresso",
-        "published_date": "2025-09-28"
+        "published_date": "2025-10-20"
     }
 ]

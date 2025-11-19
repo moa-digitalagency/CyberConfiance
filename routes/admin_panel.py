@@ -2,7 +2,8 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from flask_login import login_required, current_user
 from functools import wraps
 from models import (db, User, ActivityLog, SecurityLog, QuizResult, SecurityAnalysis, 
-                    BreachAnalysis, Rule, Scenario, Tool, GlossaryTerm, SiteSettings, SEOMetadata)
+                    BreachAnalysis, Rule, Scenario, Tool, GlossaryTerm, SiteSettings, SEOMetadata,
+                    News, Newsletter, Contact)
 from utils.logging_utils import log_activity
 from datetime import datetime, timedelta
 from sqlalchemy import func, desc
@@ -295,6 +296,66 @@ def seo_settings():
     log_activity('ADMIN_SEO_VIEW', 'Consultation paramètres SEO')
     
     return render_template('admin/seo_settings.html', seo_pages=seo_pages)
+
+@bp.route('/blog')
+@moderator_required
+def blog_management():
+    """Gestion des articles de blog"""
+    log_activity('ADMIN_BLOG_VIEW', 'Consultation gestion blog')
+    
+    page = request.args.get('page', 1, type=int)
+    per_page = 20
+    category = request.args.get('category', '')
+    
+    query = News.query
+    
+    if category:
+        query = query.filter(News.category == category)
+    
+    articles = query.order_by(desc(News.created_at)).paginate(page=page, per_page=per_page, error_out=False)
+    categories = db.session.query(News.category).distinct().all()
+    categories = [cat[0] for cat in categories if cat[0]]
+    
+    return render_template('admin/blog.html', articles=articles, categories=categories, selected_category=category)
+
+@bp.route('/newsletter')
+@moderator_required
+def newsletter_management():
+    """Liste des inscriptions newsletter"""
+    log_activity('ADMIN_NEWSLETTER_VIEW', 'Consultation inscriptions newsletter')
+    
+    page = request.args.get('page', 1, type=int)
+    per_page = 50
+    subscribed_only = request.args.get('subscribed', 'true')
+    
+    query = Newsletter.query
+    
+    if subscribed_only == 'true':
+        query = query.filter(Newsletter.subscribed == True)
+    
+    subscriptions = query.order_by(desc(Newsletter.created_at)).paginate(page=page, per_page=per_page, error_out=False)
+    total_subscribed = Newsletter.query.filter(Newsletter.subscribed == True).count()
+    
+    return render_template('admin/newsletter.html', subscriptions=subscriptions, total_subscribed=total_subscribed, subscribed_only=subscribed_only)
+
+@bp.route('/contacts')
+@moderator_required
+def contact_management():
+    """Liste des messages de contact"""
+    log_activity('ADMIN_CONTACTS_VIEW', 'Consultation messages contact')
+    
+    page = request.args.get('page', 1, type=int)
+    per_page = 50
+    status = request.args.get('status', '')
+    
+    query = Contact.query
+    
+    if status:
+        query = query.filter(Contact.status == status)
+    
+    contacts = query.order_by(desc(Contact.created_at)).paginate(page=page, per_page=per_page, error_out=False)
+    
+    return render_template('admin/contacts.html', contacts=contacts, status=status)
 
 @bp.route('/api/stats')
 @admin_required

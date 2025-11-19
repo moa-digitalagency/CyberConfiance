@@ -262,9 +262,24 @@ class SecurityLog(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     user = db.relationship('User', backref='security_logs')
+
     
     def __repr__(self):
         return f'<SecurityLog {self.event_type} - {self.severity}>'
+
+class Newsletter(db.Model):
+    __tablename__ = 'newsletter'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(200), nullable=False, unique=True)
+    subscribed = db.Column(db.Boolean, default=True)
+    ip_address = db.Column(db.String(50))
+    user_agent = db.Column(db.String(500))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    unsubscribed_at = db.Column(db.DateTime)
+    
+    def __repr__(self):
+        return f'<Newsletter {self.email}>'
 
 class SiteSettings(db.Model):
     __tablename__ = 'site_settings'
