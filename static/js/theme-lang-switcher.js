@@ -1,8 +1,8 @@
 // Theme Switcher
 const initTheme = () => {
     const savedTheme = localStorage.getItem('theme');
-    // Default to 'light' without browser detection
-    const theme = savedTheme || 'light';
+    // Default to 'dark' without browser detection
+    const theme = savedTheme || 'dark';
     
     document.documentElement.setAttribute('data-theme', theme);
     updateLogo(theme);

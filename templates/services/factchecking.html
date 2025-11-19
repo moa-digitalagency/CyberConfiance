@@ -7,7 +7,7 @@
     <div class="container">
         <div class="header-content-centered">
             <h1 class="page-title-modern">Fact-Checking & OSINT</h1>
-            <p class="page-subtitle-modern">Verify information and actively fight against online disinformation</p>
+            <p class="page-subtitle-modern">Vérifier les informations et lutter activement contre la désinformation en ligne</p>
         </div>
     </div>
 </section>
@@ -15,26 +15,78 @@
 <section class="section">
     <div class="container">
         <div class="glass-card-enhanced">
-            <h2 class="section-title" style="text-align: center;">About Our Fact-Checking Service</h2>
-            <p style="font-size: 0.95rem; line-height: 1.7; color: var(--text-secondary); text-align: center; max-width: 800px; margin: 0 auto 2rem;">
-                Submit information you want verified. We use OSINT techniques and advanced security scanning to protect you from malicious content.
+            <h2 class="section-title" style="text-align: center;">La lutte contre la désinformation</h2>
+            <p style="font-size: 1.05rem; line-height: 1.8; color: var(--text-secondary); text-align: center; max-width: 800px; margin: 0 auto 2rem;">
+                Dans un contexte où les fake news se propagent rapidement, nous utilisons les techniques OSINT (Open Source Intelligence) pour vérifier les informations et protéger la population contre la manipulation.
             </p>
-            
-            <div style="text-align: center; margin-top: 30px;">
-                <a href="{{ url_for('request_forms.factchecking') }}" class="btn btn-primary" style="display: inline-block; padding: 15px 40px; font-size: 1.1rem; font-weight: 600; text-decoration: none; border-radius: 10px;">
-                    <i class="bi bi-file-earmark-text-fill"></i> Submit Fact-Checking Request
-                </a>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <h2 class="section-title" style="text-align: center;">Nos services de vérification</h2>
+        
+        <div class="pillars-grid">
+            <div class="pillar-card scroll-animate">
+                <h3>Vérification d'informations</h3>
+                <p>Soumettez une information suspecte et nous vérifions sa véracité en utilisant des sources fiables et des techniques d'investigation.</p>
             </div>
             
-            <h3 style="margin-top: 40px; margin-bottom: 20px;">What is Fact-Checking?</h3>
-            <p style="font-size: 0.95rem; line-height: 1.7; color: var(--text-secondary);">
-                Fact-checking is the process of verifying factual information to promote accuracy in reporting and combat misinformation. We use advanced OSINT (Open Source Intelligence) techniques combined with security scanning to ensure both accuracy and safety.
-            </p>
+            <div class="pillar-card scroll-animate">
+                <h3>Détection de manipulations</h3>
+                <p>Identification des images truquées, vidéos deepfake et fausses informations circulant sur les réseaux sociaux.</p>
+            </div>
+            
+            <div class="pillar-card scroll-animate">
+                <h3>Rapports d'analyse</h3>
+                <p>Études approfondies sur les campagnes de désinformation touchant l'Afrique francophone.</p>
+            </div>
+            
+            <div class="pillar-card scroll-animate">
+                <h3>Formation OSINT</h3>
+                <p>Apprenez les techniques d'investigation en sources ouvertes pour vérifier vous-même les informations.</p>
+            </div>
+        </div>
+    </div>
+</section>
 
-            <h3 style="margin-top: 30px; margin-bottom: 20px;">Our OSINT Methodology</h3>
-            <p style="font-size: 0.95rem; line-height: 1.7; color: var(--text-secondary);">
-                Open Source Intelligence involves collecting and analyzing publicly available information from various sources. Our process includes verification of sources, cross-referencing multiple databases, and security scanning to protect our clients from malicious content.
+<section class="section">
+    <div class="container">
+        <h2 class="section-title" style="text-align: center; margin-bottom: 3rem;">Comment soumettre une vérification ?</h2>
+        
+        <div class="pillars-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+            <div class="pillar-card scroll-animate" style="text-align: center;">
+                <div style="font-size: 2.5rem; color: var(--accent-blue); margin-bottom: 1rem;">1</div>
+                <h3>Collectez l'information</h3>
+                <p>Capturez l'image, la vidéo ou le texte que vous souhaitez faire vérifier.</p>
+            </div>
+            
+            <div class="pillar-card scroll-animate" style="text-align: center;">
+                <div style="font-size: 2.5rem; color: var(--accent-blue); margin-bottom: 1rem;">2</div>
+                <h3>Contactez-nous</h3>
+                <p>Envoyez votre demande via notre formulaire avec le maximum de détails.</p>
+            </div>
+            
+            <div class="pillar-card scroll-animate" style="text-align: center;">
+                <div style="font-size: 2.5rem; color: var(--accent-blue); margin-bottom: 1rem;">3</div>
+                <h3>Recevez l'analyse</h3>
+                <p>Nous vous répondons sous 24-48h avec notre verdict et les preuves.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section" style="background: rgba(59, 130, 246, 0.05); padding: 4rem 0;">
+    <div class="container">
+        <div class="glass-card-enhanced" style="text-align: center; padding: 3rem;">
+            <h2 style="font-size: 1.8rem; margin-bottom: 1rem;">Soumettre une vérification</h2>
+            <p style="font-size: 1.05rem; color: var(--text-secondary); margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+                Vous avez une information à vérifier ? Contactez notre équipe d'experts OSINT.
             </p>
+            <a href="{{ url_for('request_forms.factchecking') }}" class="btn btn-primary" style="display: inline-block; padding: 15px 40px; font-size: 1.1rem; font-weight: 600; text-decoration: none; border-radius: 10px;">
+                <i class="bi bi-file-earmark-text-fill"></i> Soumettre une demande de vérification
+            </a>
         </div>
     </div>
 </section>

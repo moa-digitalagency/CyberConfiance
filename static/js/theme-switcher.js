@@ -7,12 +7,12 @@ const ThemeSwitcher = {
     detectAndSetTheme() {
         const savedTheme = localStorage.getItem('theme');
         
-        // Set theme - default to 'light' if no saved preference
+        // Set theme - default to 'dark' if no saved preference
         if (savedTheme) {
             this.setTheme(savedTheme);
         } else {
             // Default theme without browser detection
-            this.setTheme('light');
+            this.setTheme('dark');
         }
 
         // Language is handled by server-side session, no auto-detection needed

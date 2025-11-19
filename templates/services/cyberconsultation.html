@@ -16,15 +16,9 @@
     <div class="container">
         <div class="glass-card-enhanced">
             <h2 class="section-title" style="text-align: center;">Un accompagnement sur mesure</h2>
-            <p style="font-size: 0.95rem; line-height: 1.7; color: var(--text-secondary); text-align: center; max-width: 800px; margin: 0 auto;">
+            <p style="font-size: 1.05rem; line-height: 1.8; color: var(--text-secondary); text-align: center; max-width: 800px; margin: 0 auto;">
                 Que vous soyez une PME, une grande entreprise ou un particulier, nous vous aidons à sécuriser vos systèmes d'information et à protéger vos données contre les cybermenaces.
             </p>
-            
-            <div style="text-align: center; margin-top: 30px;">
-                <a href="{{ url_for('request_forms.cyberconsultation') }}" class="btn btn-primary" style="display: inline-block; padding: 15px 40px; font-size: 1.1rem; font-weight: 600; text-decoration: none; border-radius: 10px;">
-                    <i class="bi bi-calendar-check-fill"></i> Request a Consultation
-                </a>
-            </div>
         </div>
     </div>
 </section>
@@ -67,5 +61,18 @@
     </div>
 </section>
 
+<section class="section" style="background: rgba(59, 130, 246, 0.05); padding: 4rem 0;">
+    <div class="container">
+        <div class="glass-card-enhanced" style="text-align: center; padding: 3rem;">
+            <h2 style="font-size: 1.8rem; margin-bottom: 1rem;">Demander une consultation</h2>
+            <p style="font-size: 1.05rem; color: var(--text-secondary); margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+                Besoin d'un accompagnement en cybersécurité ? Contactez nos experts pour une consultation personnalisée.
+            </p>
+            <a href="{{ url_for('request_forms.cyberconsultation') }}" class="btn btn-primary" style="display: inline-block; padding: 15px 40px; font-size: 1.1rem; font-weight: 600; text-decoration: none; border-radius: 10px;">
+                <i class="bi bi-calendar-check-fill"></i> Demander une consultation
+            </a>
+        </div>
+    </div>
+</section>
 
 {% endblock %}
