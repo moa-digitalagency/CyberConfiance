@@ -31,6 +31,12 @@ def moderator_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+@bp.route('/')
+@admin_required
+def index():
+    """Redirection automatique vers le dashboard"""
+    return redirect(url_for('admin_panel.dashboard'))
+
 @bp.route('/dashboard')
 @admin_required
 def dashboard():

@@ -17,6 +17,12 @@ SQLAlchemy ORM manages PostgreSQL database operations. The schema includes model
 ### Authentication & Authorization
 Flask-Login handles session-based authentication with Werkzeug for secure password hashing. Flask-Admin views are protected by `SecureModelView`, ensuring only authenticated administrators can access content management features. A default admin account is created in development, with production requiring the `ADMIN_PASSWORD` environment variable.
 
+**Admin Panel Access Flow:**
+- Direct access to `/my4dm1n` automatically redirects to `/my4dm1n/dashboard`
+- Unauthenticated users are redirected to login with next parameter: `/login?next=/my4dm1n`
+- After successful login, users are redirected back to `/my4dm1n`, which then redirects to dashboard
+- Flask-Login's `login_view` is configured as `main.login` for automatic redirection handling
+
 ### Frontend Architecture
 Jinja2 templates use a base layout (`base.html`) for consistency. The design features a professional dark theme with glassmorphism effects, CSS custom properties, gradient accents, smooth animations, scroll-triggered effects, and parallax scrolling. Typography uses the Inter font, and the design is fully responsive with CSS Grid and Flexbox. Navigation includes dropdown menus with enhanced glassmorphism.
 
