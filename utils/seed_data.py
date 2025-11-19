@@ -343,12 +343,14 @@ def create_admin_user(db):
         admin.role = 'admin'
         admin.is_admin = True
         admin.is_active = True
+        admin.email = 'admin@cyberconfiance.fr'
+        admin.set_password(admin_password)
         db.session.commit()
         print("[OK] Admin user updated with role and permissions")
     else:
         admin = User(
             username='admin',
-            email='admin@cyberconfiance.cd',
+            email='admin@cyberconfiance.fr',
             role='admin',
             is_admin=True,
             is_active=True,
