@@ -81,42 +81,63 @@
             </tr>
         </thead>
         <tbody>
-            {% for submission in submissions.items %}
-            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-                <td style="padding: 1rem; color: var(--text-secondary);">{{ submission.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
-                <td style="padding: 1rem;">
-                    <span style="padding: 0.25rem 0.75rem; background: rgba(59, 130, 246, 0.2); border-radius: 12px; font-size: 0.85rem; color: var(--accent-blue);">
-                        {{ submission.request_type }}
-                    </span>
-                </td>
-                <td style="padding: 1rem; color: var(--text-primary); max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                    {{ submission.description[:100] }}...
-                </td>
-                <td style="padding: 1rem; color: var(--text-secondary);">
-                    {% if submission.is_anonymous %}
-                        <em>Anonymous</em>
-                    {% else %}
-                        {{ submission.contact_email or submission.contact_name or '-' }}
-                    {% endif %}
-                </td>
-                <td style="padding: 1rem;">
-                    <span style="padding: 0.25rem 0.75rem; background: {% if submission.status == 'pending' %}rgba(251, 191, 36, 0.2){% else %}rgba(34, 197, 94, 0.2){% endif %}; border-radius: 12px; font-size: 0.85rem;">
-                        {{ submission.status }}
-                    </span>
-                </td>
-                <td style="padding: 1rem;">
-                    {% if submission.threat_detected %}
-                        <span style="color: #ef4444; font-weight: bold;">⚠️ Yes</span>
-                    {% else %}
-                        <span style="color: #22c55e;">✓ No</span>
-                    {% endif %}
-                </td>
-                <td style="padding: 1rem;">
-                    <a href="{{ url_for('admin_requests.request_detail', submission_id=submission.id) }}" 
-                       style="color: var(--accent-blue); text-decoration: none;">View →</a>
-                </td>
-            </tr>
-            {% endfor %}
+            {% if submissions.items %}
+                {% for submission in submissions.items %}
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                    <td style="padding: 1rem; color: var(--text-secondary);">{{ submission.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td style="padding: 1rem;">
+                        <span style="padding: 0.25rem 0.75rem; background: rgba(59, 130, 246, 0.2); border-radius: 12px; font-size: 0.85rem; color: var(--accent-blue);">
+                            {{ submission.request_type }}
+                        </span>
+                    </td>
+                    <td style="padding: 1rem; color: var(--text-primary); max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                        {{ submission.description[:100] }}...
+                    </td>
+                    <td style="padding: 1rem; color: var(--text-secondary);">
+                        {% if submission.is_anonymous %}
+                            <em>Anonymous</em>
+                        {% else %}
+                            {{ submission.contact_email or submission.contact_name or '-' }}
+                        {% endif %}
+                    </td>
+                    <td style="padding: 1rem;">
+                        <span style="padding: 0.25rem 0.75rem; background: {% if submission.status == 'pending' %}rgba(251, 191, 36, 0.2){% else %}rgba(34, 197, 94, 0.2){% endif %}; border-radius: 12px; font-size: 0.85rem;">
+                            {{ submission.status }}
+                        </span>
+                    </td>
+                    <td style="padding: 1rem;">
+                        {% if submission.threat_detected %}
+                            <span style="color: #ef4444; font-weight: bold;">⚠️ Yes</span>
+                        {% else %}
+                            <span style="color: #22c55e;">✓ No</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 1rem;">
+                        <a href="{{ url_for('admin_requests.request_detail', submission_id=submission.id) }}" 
+                           style="color: var(--accent-blue); text-decoration: none;">View →</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="7" style="padding: 3rem; text-align: center; color: var(--text-secondary);">
+                        <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">Aucune demande trouvée</div>
+                        <div style="font-size: 0.9rem;">
+                            {% if filter_type == 'all' %}
+                                Il n'y a actuellement aucune soumission dans le système.
+                            {% elif filter_type == 'cybercrime-report' %}
+                                Aucun signalement de cybercriminalité pour le moment.
+                            {% elif filter_type == 'cyberconsultation' %}
+                                Aucune demande de consultation pour le moment.
+                            {% elif filter_type == 'osint' %}
+                                Aucune demande d'analyse OSINT pour le moment.
+                            {% elif filter_type == 'fact-checking' %}
+                                Aucune demande de fact-checking pour le moment.
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+            {% endif %}
         </tbody>
     </table>
 </div>
