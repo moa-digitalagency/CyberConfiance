@@ -1,4 +1,265 @@
-{% extends 'request_form_base.html' %}
+{% extends 'base.html' %}
 
-{% set form_title = "Cybersecurity Consultation Request" %}
-{% set form_description = "Request a cybersecurity consultation. Describe your needs and attach any relevant files or links." %}
+{% block title %}Services de Cybersécurité - CyberConfiance{% endblock %}
+
+{% block content %}
+<section class="page-header-modern">
+    <div class="container">
+        <div class="header-content-centered">
+            <h1 class="page-title-modern">Services de Cybersécurité</h1>
+            <p class="page-subtitle-modern">Demandez une consultation en cybersécurité ou une investigation OSINT professionnelle</p>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <!-- Service Tabs -->
+                <div class="service-tabs" style="margin-bottom: 2rem;">
+                    <div class="tabs-container" style="display: flex; gap: 1rem; background: rgba(255, 255, 255, 0.03); padding: 8px; border-radius: 12px; backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.08);">
+                        <button class="tab-button active" data-tab="consultation" style="flex: 1; padding: 16px 24px; border: none; background: rgba(59, 130, 246, 0.15); color: var(--text-primary); font-weight: 600; font-size: 1.05rem; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 10px; border: 1px solid rgba(59, 130, 246, 0.3);">
+                            <i class="bi bi-shield-check"></i> Cyberconsultation
+                        </button>
+                        <button class="tab-button" data-tab="osint" style="flex: 1; padding: 16px 24px; border: none; background: transparent; color: var(--text-secondary); font-weight: 600; font-size: 1.05rem; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 10px; border: 1px solid transparent;">
+                            <i class="bi bi-search"></i> Investigation OSINT
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Consultation Tab Content -->
+                <div id="consultation-content" class="tab-content active">
+                    <div class="glass-card-enhanced" style="padding: 3rem;">
+                        <div style="text-align: center; padding: 4rem 2rem;">
+                            <i class="bi bi-shield-check" style="font-size: 4rem; color: var(--accent-blue); margin-bottom: 1.5rem; display: block;"></i>
+                            <h2 style="font-size: 2rem; margin-bottom: 1rem; color: var(--text-primary);">Consultation en Cybersécurité</h2>
+                            <p style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 2rem; max-width: 700px; margin-left: auto; margin-right: auto;">
+                                Notre équipe d'experts en cybersécurité est à votre disposition pour vous accompagner dans la sécurisation de votre infrastructure.
+                            </p>
+                            <div style="display: flex; flex-direction: column; gap: 1rem; max-width: 500px; margin: 0 auto; text-align: left;">
+                                <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: rgba(59, 130, 246, 0.05); border-radius: 8px;">
+                                    <i class="bi bi-check-circle-fill" style="color: var(--accent-blue); font-size: 1.3rem;"></i>
+                                    <span style="color: var(--text-secondary);">Audit de sécurité complet</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: rgba(59, 130, 246, 0.05); border-radius: 8px;">
+                                    <i class="bi bi-check-circle-fill" style="color: var(--accent-blue); font-size: 1.3rem;"></i>
+                                    <span style="color: var(--text-secondary);">Analyse des vulnérabilités</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: rgba(59, 130, 246, 0.05); border-radius: 8px;">
+                                    <i class="bi bi-check-circle-fill" style="color: var(--accent-blue); font-size: 1.3rem;"></i>
+                                    <span style="color: var(--text-secondary);">Recommandations personnalisées</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: rgba(59, 130, 246, 0.05); border-radius: 8px;">
+                                    <i class="bi bi-check-circle-fill" style="color: var(--accent-blue); font-size: 1.3rem;"></i>
+                                    <span style="color: var(--text-secondary);">Support technique continu</span>
+                                </div>
+                            </div>
+                            <div style="margin-top: 3rem;">
+                                <a href="mailto:contact@cyberconfiance.com" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 10px; padding: 18px 36px; font-size: 1.1rem; text-decoration: none;">
+                                    <i class="bi bi-envelope-fill"></i> Contactez-nous
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- OSINT Tab Content (Hidden by default) -->
+                <div id="osint-content" class="tab-content" style="display: none;">
+                    <div class="glass-card-enhanced" style="padding: 3rem;">
+                        <div style="text-align: center; padding: 2rem 1rem 3rem;">
+                            <i class="bi bi-search" style="font-size: 4rem; color: var(--accent-blue); margin-bottom: 1.5rem; display: block;"></i>
+                            <h2 style="font-size: 2rem; margin-bottom: 1rem; color: var(--text-primary);">Investigation OSINT</h2>
+                            <p style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 2.5rem; max-width: 700px; margin-left: auto; margin-right: auto;">
+                                Demandez une investigation professionnelle en sources ouvertes (OSINT) pour analyser des données publiques et découvrir des informations critiques.
+                            </p>
+                        </div>
+                        
+                        <form method="POST" action="{{ url_for('request_forms.osint_investigation') }}" enctype="multipart/form-data">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            
+                            <!-- Anonymous Toggle -->
+                            <div class="form-section" style="margin-bottom: 2.5rem;">
+                                <div class="anonymous-toggle" style="display: flex; align-items: center; gap: 15px; padding: 20px; background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 12px; backdrop-filter: blur(10px);">
+                                    <input type="checkbox" id="is_anonymous_osint" name="is_anonymous" style="width: 24px; height: 24px; cursor: pointer; accent-color: var(--accent-blue);">
+                                    <label for="is_anonymous_osint" style="margin: 0; cursor: pointer; font-weight: 600; font-size: 1.05rem; color: var(--text-primary);">
+                                        <i class="bi bi-incognito" style="margin-right: 5px;"></i> Soumettre de manière anonyme
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Contact Information -->
+                            <div id="contact-section-osint" class="form-section" style="margin-bottom: 2.5rem;">
+                                <h3 class="section-heading" style="font-size: 1.4rem; margin-bottom: 1.5rem; color: var(--accent-blue); display: flex; align-items: center; gap: 10px;">
+                                    <i class="bi bi-person-circle"></i> Informations de contact
+                                </h3>
+                                
+                                <div class="row" style="gap: 1.5rem 0;">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="name_osint" class="form-label">Nom complet <span style="color: #ef4444;">*</span></label>
+                                            <input type="text" id="name_osint" name="name" class="form-input" placeholder="Jean Dupont" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem;">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="email_osint" class="form-label">Adresse email <span style="color: #ef4444;">*</span></label>
+                                            <input type="email" id="email_osint" name="email" class="form-input" placeholder="jean.dupont@example.com" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem;">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="phone_osint" class="form-label">Numéro de téléphone (Optionnel)</label>
+                                            <input type="tel" id="phone_osint" name="phone" class="form-input" placeholder="+225 XX XX XX XX XX" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem;">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Investigation Details -->
+                            <div class="form-section" style="margin-bottom: 2.5rem;">
+                                <h3 class="section-heading" style="font-size: 1.4rem; margin-bottom: 1.5rem; color: var(--accent-blue); display: flex; align-items: center; gap: 10px;">
+                                    <i class="bi bi-file-text"></i> Détails de l'investigation
+                                </h3>
+
+                                <div class="form-group" style="margin-bottom: 1.5rem;">
+                                    <label for="description_osint" class="form-label">Description de l'investigation <span style="color: #ef4444;">*</span></label>
+                                    <textarea id="description_osint" name="description" required rows="6" class="form-input" placeholder="Décrivez en détail ce que vous souhaitez investiguer..." style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; resize: vertical;"></textarea>
+                                    <small style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 8px; display: flex; align-items: center; gap: 5px;">
+                                        <i class="bi bi-shield-check"></i> Le contenu textuel est scanné pour détecter tout contenu malveillant
+                                    </small>
+                                </div>
+
+                                <div class="form-group" style="margin-bottom: 1.5rem;">
+                                    <label for="urls_osint" class="form-label">URLs ou sources à investiguer (une par ligne)</label>
+                                    <textarea id="urls_osint" name="urls" rows="4" class="form-input" placeholder="https://example.com&#10;https://another-example.com" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; resize: vertical;"></textarea>
+                                    <small style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 8px; display: flex; align-items: center; gap: 5px;">
+                                        <i class="bi bi-shield-check"></i> Les URLs sont scannées via VirusTotal
+                                    </small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="file_osint" class="form-label">Joindre un fichier (Optionnel)</label>
+                                    <input type="file" id="file_osint" name="file" class="form-input" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem;">
+                                    <small style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 8px; display: flex; align-items: center; gap: 5px;">
+                                        <i class="bi bi-shield-check"></i> Les fichiers sont scannés pour détecter les malwares
+                                    </small>
+                                </div>
+                            </div>
+
+                            <!-- Security Notice -->
+                            <div class="security-notice" style="padding: 20px; background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 12px; margin-bottom: 2rem; backdrop-filter: blur(10px);">
+                                <p style="margin: 0; color: #ef4444; font-size: 1rem; font-weight: 600; display: flex; align-items: flex-start; gap: 10px;">
+                                    <i class="bi bi-exclamation-triangle-fill" style="font-size: 1.2rem; flex-shrink: 0; margin-top: 2px;"></i>
+                                    <span>Avis de sécurité : Toute tentative de soumettre du contenu malveillant (fichiers, liens ou injection de code) sera détectée et enregistrée comme activité illégale.</span>
+                                </p>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 18px; font-size: 1.15rem; font-weight: 600; border-radius: 12px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                                <i class="bi bi-send-fill"></i> Soumettre la demande
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.tab-button:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.tab-button.active {
+    background: rgba(59, 130, 246, 0.15) !important;
+    border-color: rgba(59, 130, 246, 0.3) !important;
+    color: var(--text-primary) !important;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--text-primary);
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: rgba(59, 130, 246, 0.5);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-input::placeholder {
+    color: var(--text-muted);
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -15px;
+}
+
+.col-md-6 {
+    flex: 0 0 50%;
+    max-width: 50%;
+    padding: 0 15px;
+}
+
+.col-md-12 {
+    flex: 0 0 100%;
+    max-width: 100%;
+    padding: 0 15px;
+}
+
+@media (max-width: 768px) {
+    .col-md-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+    
+    .tabs-container {
+        flex-direction: column;
+    }
+}
+</style>
+
+<script>
+// Tab switching
+document.querySelectorAll('.tab-button').forEach(button => {
+    button.addEventListener('click', function() {
+        const tab = this.dataset.tab;
+        
+        // Update buttons
+        document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+        this.classList.add('active');
+        
+        // Update content
+        document.querySelectorAll('.tab-content').forEach(content => content.style.display = 'none');
+        document.getElementById(tab + '-content').style.display = 'block';
+    });
+});
+
+// Anonymous toggle for OSINT
+document.getElementById('is_anonymous_osint').addEventListener('change', function() {
+    const contactSection = document.getElementById('contact-section-osint');
+    const inputs = contactSection.querySelectorAll('input');
+    
+    if (this.checked) {
+        contactSection.style.display = 'none';
+        inputs.forEach(input => {
+            input.required = false;
+            input.value = '';
+        });
+    } else {
+        contactSection.style.display = 'block';
+        document.getElementById('name_osint').required = true;
+        document.getElementById('email_osint').required = true;
+    }
+});
+</script>
+{% endblock %}

@@ -349,3 +349,24 @@ class RequestSubmission(db.Model):
     
     def __repr__(self):
         return f'<RequestSubmission {self.request_type} - {self.id}>'
+
+class ThreatLog(db.Model):
+    __tablename__ = 'threat_logs'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    incident_id = db.Column(db.String(100), unique=True, nullable=False, index=True)
+    threat_type = db.Column(db.String(50), nullable=False)
+    threat_details = db.Column(db.Text)
+    ip_address = db.Column(db.String(50))
+    user_agent = db.Column(db.String(500))
+    platform = db.Column(db.String(100))
+    device_type = db.Column(db.String(50))
+    vpn_detected = db.Column(db.Boolean, default=False)
+    metadata_json = db.Column(db.JSON)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    resolved = db.Column(db.Boolean, default=False)
+    resolved_at = db.Column(db.DateTime)
+    admin_notes = db.Column(db.Text)
+    
+    def __repr__(self):
+        return f'<ThreatLog {self.incident_id} - {self.threat_type}>'

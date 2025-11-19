@@ -27,7 +27,7 @@
     <div class="container">
         <h2 class="section-title" style="text-align: center;">Nos services de vérification</h2>
         
-        <div class="pillars-grid">
+        <div class="pillars-grid" style="grid-template-columns: repeat(2, 1fr); gap: 2.5rem;">
             <div class="pillar-card scroll-animate">
                 <h3>Vérification d'informations</h3>
                 <p>Soumettez une information suspecte et nous vérifions sa véracité en utilisant des sources fiables et des techniques d'investigation.</p>
@@ -50,6 +50,14 @@
         </div>
     </div>
 </section>
+
+<style>
+@media (max-width: 768px) {
+    .pillars-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+</style>
 
 <section class="section">
     <div class="container">

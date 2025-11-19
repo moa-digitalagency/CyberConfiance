@@ -1,0 +1,218 @@
+{% extends 'base.html' %}
+
+{% block title %}⚠️ ALERTE SÉCURITÉ - Activité Illégale Détectée{% endblock %}
+
+{% block content %}
+<section class="page-header" style="background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); padding: 140px 0 4rem; margin: 0;">
+    <div class="container">
+        <div class="header-content-centered" style="text-align: center;">
+            <div style="font-size: 5rem; color: #fff; margin-bottom: 1rem;">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+            </div>
+            <h1 style="font-size: 3rem; font-weight: 700; color: #fff; margin-bottom: 1rem; text-shadow: 0 2px 10px rgba(0,0,0,0.3);">
+                ⚠️ ALERTE SÉCURITÉ ⚠️
+            </h1>
+            <p style="font-size: 1.5rem; color: rgba(255, 255, 255, 0.9); font-weight: 600; text-shadow: 0 1px 5px rgba(0,0,0,0.2);">
+                Tentative d'Activité Illégale Détectée et Enregistrée
+            </p>
+        </div>
+    </div>
+</section>
+
+<section class="section" style="background: #000000;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <!-- Warning Message -->
+                <div style="background: linear-gradient(135deg, rgba(220, 38, 38, 0.15) 0%, rgba(153, 27, 27, 0.15) 100%); border: 3px solid #dc2626; border-radius: 16px; padding: 3rem; margin-bottom: 3rem; backdrop-filter: blur(20px); box-shadow: 0 0 40px rgba(220, 38, 38, 0.3), inset 0 0 20px rgba(220, 38, 38, 0.1);">
+                    <h2 style="color: #fca5a5; font-size: 2rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 15px;">
+                        <i class="bi bi-shield-fill-exclamation" style="font-size: 2.5rem;"></i>
+                        AVERTISSEMENT LÉGAL
+                    </h2>
+                    <div style="font-size: 1.15rem; color: #fecaca; line-height: 1.8; margin-bottom: 2rem;">
+                        <p style="margin-bottom: 1.5rem; font-weight: 600; font-size: 1.25rem;">
+                            Une tentative de soumission de contenu malveillant a été détectée sur ce système.
+                        </p>
+                        <p style="margin-bottom: 1rem;">
+                            <strong style="color: #fff;">TOUTE L'ACTIVITÉ A ÉTÉ ENREGISTRÉE</strong> et sera transmise aux autorités compétentes si nécessaire.
+                        </p>
+                        <p style="margin-bottom: 1rem;">
+                            Conformément aux lois en vigueur, <strong style="color: #fff;">toute tentative délibérée d'infecter un système informatique</strong> (physique ou cloud) est <strong style="color: #fff;">PUNISSABLE PAR LA LOI</strong>.
+                        </p>
+                        <p style="margin-bottom: 0; border-top: 2px solid rgba(252, 165, 165, 0.3); padding-top: 1.5rem; margin-top: 1.5rem; font-weight: 700; font-size: 1.2rem;">
+                            ⚖️ Toute tentative supplémentaire, même dissimulée derrière un VPN, sera considérée comme une ATTAQUE DÉLIBÉRÉE et fera l'objet de poursuites judiciaires.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Threat Details -->
+                <div style="background: rgba(220, 38, 38, 0.08); border: 2px solid rgba(220, 38, 38, 0.4); border-radius: 16px; padding: 2.5rem; margin-bottom: 3rem; backdrop-filter: blur(20px);">
+                    <h3 style="color: #fca5a5; font-size: 1.8rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px;">
+                        <i class="bi bi-bug-fill"></i> Détails de la Menace
+                    </h3>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+                        <div style="padding: 1.25rem; background: rgba(0, 0, 0, 0.4); border-radius: 10px; border: 1px solid rgba(220, 38, 38, 0.3);">
+                            <div style="color: #f87171; font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem;">TYPE DE MENACE</div>
+                            <div style="color: #fff; font-size: 1.1rem; font-weight: 700;">{{ threat_type|upper }}</div>
+                        </div>
+                        <div style="padding: 1.25rem; background: rgba(0, 0, 0, 0.4); border-radius: 10px; border: 1px solid rgba(220, 38, 38, 0.3);">
+                            <div style="color: #f87171; font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem;">DATE & HEURE</div>
+                            <div style="color: #fff; font-size: 1.1rem; font-weight: 700;">{{ timestamp }}</div>
+                        </div>
+                    </div>
+                    {% if threat_details %}
+                    <div style="margin-top: 1.5rem; padding: 1.25rem; background: rgba(0, 0, 0, 0.4); border-radius: 10px; border: 1px solid rgba(220, 38, 38, 0.3);">
+                        <div style="color: #f87171; font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem;">DÉTAILS ADDITIONNELS</div>
+                        <div style="color: #fecaca; font-size: 1rem;">{{ threat_details }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- System Metadata -->
+                <div style="background: rgba(220, 38, 38, 0.08); border: 2px solid rgba(220, 38, 38, 0.4); border-radius: 16px; padding: 2.5rem; backdrop-filter: blur(20px);">
+                    <h3 style="color: #fca5a5; font-size: 1.8rem; margin-bottom: 2rem; display: flex; align-items: center; gap: 10px;">
+                        <i class="bi bi-fingerprint"></i> Métadonnées Enregistrées
+                    </h3>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+                        <!-- IP Address -->
+                        <div style="padding: 1.25rem; background: rgba(0, 0, 0, 0.4); border-radius: 10px; border: 1px solid rgba(220, 38, 38, 0.3);">
+                            <div style="color: #f87171; font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 5px;">
+                                <i class="bi bi-router-fill"></i> ADRESSE IP
+                            </div>
+                            <div style="color: #fff; font-size: 1.15rem; font-weight: 700; font-family: 'Courier New', monospace;">{{ metadata.ip_address }}</div>
+                        </div>
+
+                        <!-- VPN Detection -->
+                        <div style="padding: 1.25rem; background: rgba(0, 0, 0, 0.4); border-radius: 10px; border: 1px solid rgba(220, 38, 38, 0.3);">
+                            <div style="color: #f87171; font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 5px;">
+                                <i class="bi bi-shield-lock-fill"></i> VPN DÉTECTÉ
+                            </div>
+                            <div style="color: #fff; font-size: 1.15rem; font-weight: 700;">{{ 'OUI' if metadata.vpn_detected else 'NON' }}</div>
+                            {% if metadata.vpn_detected %}
+                            <div style="color: #fca5a5; font-size: 0.85rem; margin-top: 0.5rem;">⚠️ Connexion masquée détectée</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- User Agent / Browser -->
+                        <div style="padding: 1.25rem; background: rgba(0, 0, 0, 0.4); border-radius: 10px; border: 1px solid rgba(220, 38, 38, 0.3); grid-column: 1 / -1;">
+                            <div style="color: #f87171; font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 5px;">
+                                <i class="bi bi-browser-chrome"></i> NAVIGATEUR
+                            </div>
+                            <div style="color: #fecaca; font-size: 0.95rem; font-family: 'Courier New', monospace; word-break: break-all;">{{ metadata.user_agent }}</div>
+                        </div>
+
+                        <!-- Platform / OS -->
+                        <div style="padding: 1.25rem; background: rgba(0, 0, 0, 0.4); border-radius: 10px; border: 1px solid rgba(220, 38, 38, 0.3);">
+                            <div style="color: #f87171; font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 5px;">
+                                <i class="bi bi-laptop-fill"></i> SYSTÈME D'EXPLOITATION
+                            </div>
+                            <div style="color: #fff; font-size: 1.15rem; font-weight: 700;">{{ metadata.platform }}</div>
+                        </div>
+
+                        <!-- Device Type -->
+                        <div style="padding: 1.25rem; background: rgba(0, 0, 0, 0.4); border-radius: 10px; border: 1px solid rgba(220, 38, 38, 0.3);">
+                            <div style="color: #f87171; font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 5px;">
+                                <i class="bi bi-device-hdd-fill"></i> TYPE D'APPAREIL
+                            </div>
+                            <div style="color: #fff; font-size: 1.15rem; font-weight: 700;">{{ metadata.device_type }}</div>
+                        </div>
+
+                        <!-- Language -->
+                        <div style="padding: 1.25rem; background: rgba(0, 0, 0, 0.4); border-radius: 10px; border: 1px solid rgba(220, 38, 38, 0.3);">
+                            <div style="color: #f87171; font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 5px;">
+                                <i class="bi bi-translate"></i> LANGUE
+                            </div>
+                            <div style="color: #fff; font-size: 1.15rem; font-weight: 700;">{{ metadata.language }}</div>
+                        </div>
+
+                        <!-- Referrer -->
+                        <div style="padding: 1.25rem; background: rgba(0, 0, 0, 0.4); border-radius: 10px; border: 1px solid rgba(220, 38, 38, 0.3);">
+                            <div style="color: #f87171; font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 5px;">
+                                <i class="bi bi-link-45deg"></i> RÉFÉRENCE
+                            </div>
+                            <div style="color: #fff; font-size: 1.15rem; font-weight: 700;">{{ metadata.referrer if metadata.referrer else 'Direct' }}</div>
+                        </div>
+
+                        <!-- Incident ID -->
+                        <div style="padding: 1.25rem; background: rgba(0, 0, 0, 0.4); border-radius: 10px; border: 1px solid rgba(220, 38, 38, 0.3); grid-column: 1 / -1;">
+                            <div style="color: #f87171; font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 5px;">
+                                <i class="bi bi-hash"></i> ID D'INCIDENT
+                            </div>
+                            <div style="color: #fff; font-size: 1.15rem; font-weight: 700; font-family: 'Courier New', monospace; margin-bottom: 1rem;">{{ incident_id }}</div>
+                            
+                            <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(220, 38, 38, 0.2);">
+                                <div style="color: #f87171; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.75rem;">
+                                    <i class="bi bi-link-45deg"></i> LIEN DIRECT POUR AUDIT
+                                </div>
+                                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                                    <input type="text" id="incidentLink" readonly 
+                                           value="{{ request.url_root }}security-threat?incident_id={{ incident_id }}" 
+                                           style="flex: 1; min-width: 200px; padding: 0.75rem 1rem; background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(220, 38, 38, 0.4); border-radius: 8px; color: #fecaca; font-family: 'Courier New', monospace; font-size: 0.9rem;">
+                                    <button onclick="copyIncidentLink()" 
+                                            style="padding: 0.75rem 1.5rem; background: linear-gradient(135deg, #dc2626, #991b1b); border: none; border-radius: 8px; color: #fff; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);">
+                                        <i class="bi bi-clipboard-check"></i> Copier le lien
+                                    </button>
+                                </div>
+                                <div id="copySuccess" style="color: #86efac; font-size: 0.85rem; margin-top: 0.5rem; display: none;">
+                                    <i class="bi bi-check-circle-fill"></i> Lien copié dans le presse-papiers !
+                                </div>
+                                <div style="color: #fca5a5; font-size: 0.85rem; margin-top: 0.75rem; line-height: 1.6;">
+                                    <i class="bi bi-info-circle-fill"></i> Ce lien permet aux administrateurs d'accéder directement à cet incident pour audit ou investigation, indépendamment de la session active.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Warning Footer -->
+                <div style="text-align: center; margin-top: 3rem; padding: 2rem; background: rgba(220, 38, 38, 0.05); border-radius: 12px; border: 1px solid rgba(220, 38, 38, 0.2);">
+                    <p style="color: #fca5a5; font-size: 1.1rem; margin: 0; font-weight: 600;">
+                        <i class="bi bi-shield-fill-check" style="margin-right: 8px;"></i>
+                        Cet incident a été enregistré dans nos systèmes de sécurité et peut être transmis aux autorités compétentes.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+@media (max-width: 768px) {
+    .col-lg-10 {
+        padding: 0 15px;
+    }
+    
+    .col-lg-10 > div {
+        padding: 2rem 1.5rem !important;
+    }
+    
+    .col-lg-10 > div > div {
+        grid-template-columns: 1fr !important;
+    }
+}
+</style>
+
+<script>
+function copyIncidentLink() {
+    const linkInput = document.getElementById('incidentLink');
+    linkInput.select();
+    linkInput.setSelectionRange(0, 99999); // For mobile devices
+    
+    navigator.clipboard.writeText(linkInput.value).then(() => {
+        const successMsg = document.getElementById('copySuccess');
+        successMsg.style.display = 'block';
+        setTimeout(() => {
+            successMsg.style.display = 'none';
+        }, 3000);
+    }).catch(() => {
+        // Fallback for older browsers
+        document.execCommand('copy');
+        const successMsg = document.getElementById('copySuccess');
+        successMsg.style.display = 'block';
+        setTimeout(() => {
+            successMsg.style.display = 'none';
+        }, 3000);
+    });
+}
+</script>
+{% endblock %}
