@@ -237,6 +237,44 @@
                     </div>
                 </div>
             </div>
+            
+            <div class="tool-card glass-card" style="padding: 2rem; border-radius: 12px; border-left: 3px solid rgba(236, 72, 153, 0.5); transition: all 0.3s ease;">
+                <div style="display: flex; align-items: flex-start; gap: 1rem;">
+                    <div style="flex-shrink: 0; width: 48px; height: 48px; background: rgba(236, 72, 153, 0.15); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(236, 72, 153, 1)" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                            <line x1="12" y1="17" x2="12.01" y2="17"/>
+                        </svg>
+                    </div>
+                    <div style="flex: 1;">
+                        <h4 style="font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--text-primary);">Quiz Cybersécurité</h4>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; margin-bottom: 1rem;">
+                            Testez vos connaissances en cybersécurité et recevez des recommandations personnalisées
+                        </p>
+                        <a href="{{ url_for('main.quiz') }}" style="color: rgba(236, 72, 153, 1); font-size: 0.9rem; text-decoration: none;">Commencer le quiz →</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tool-card glass-card" style="padding: 2rem; border-radius: 12px; border-left: 3px solid rgba(245, 158, 11, 0.5); transition: all 0.3s ease;">
+                <div style="display: flex; align-items: flex-start; gap: 1rem;">
+                    <div style="flex-shrink: 0; width: 48px; height: 48px; background: rgba(245, 158, 11, 0.15); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(245, 158, 11, 1)" stroke-width="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                            <circle cx="12" cy="16" r="1" fill="rgba(245, 158, 11, 1)"/>
+                        </svg>
+                    </div>
+                    <div style="flex: 1;">
+                        <h4 style="font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--text-primary);">Analyse Sécurité</h4>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; margin-bottom: 1rem;">
+                            Analysez des fichiers, URLs et hash pour détecter les menaces potentielles
+                        </p>
+                        <a href="{{ url_for('main.security_analyzer') }}" style="color: rgba(245, 158, 11, 1); font-size: 0.9rem; text-decoration: none;">Analyser →</a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </section>
@@ -247,14 +285,18 @@
         <h2 class="section-title" style="text-align: center;">Actualités cyber</h2>
         
         <div class="news-grid">
-            {% for item in news %}
+            {% for item in news[:2] %}
             <div class="news-card scroll-animate">
                 <div class="news-date">{{ item.created_at.strftime('%d %b %Y') if item.created_at else '' }}</div>
                 <h3>{{ item.title }}</h3>
                 <p>{{ item.content[:150] }}...</p>
-                <a href="{{ url_for('main.news') }}" class="read-more">Lire la suite →</a>
+                <a href="{{ url_for('main.news_detail', news_id=item.id) }}" class="read-more">Lire la suite →</a>
             </div>
             {% endfor %}
+        </div>
+        
+        <div style="text-align: center; margin-top: 2.5rem;">
+            <a href="{{ url_for('main.news') }}" class="btn btn-primary" style="display: inline-block; padding: 0.875rem 2rem; font-size: 1rem;">Voir plus d'actualités →</a>
         </div>
     </div>
 </section>
