@@ -523,7 +523,7 @@ def news_new():
             return redirect(url_for('admin_panel.blog_management'))
         except Exception as e:
             db.session.rollback()
-            log_activity('ADMIN_NEWS_CREATE', f'Erreur création article', success=False, details=str(e))
+            log_activity('ADMIN_NEWS_CREATE', f'Erreur création article', success=False, error_message=str(e))
             flash(f'Erreur lors de la création: {str(e)}', 'danger')
             return redirect(url_for('admin_panel.news_new'))
     
@@ -561,7 +561,7 @@ def news_edit(id):
             return redirect(url_for('admin_panel.blog_management'))
         except Exception as e:
             db.session.rollback()
-            log_activity('ADMIN_NEWS_UPDATE', f'Erreur modification article', success=False, details=str(e))
+            log_activity('ADMIN_NEWS_UPDATE', f'Erreur modification article', success=False, error_message=str(e))
             flash(f'Erreur lors de la modification: {str(e)}', 'danger')
             return redirect(url_for('admin_panel.news_edit', id=id))
     
@@ -582,7 +582,7 @@ def news_delete(id):
         flash('Article supprimé avec succès', 'success')
     except Exception as e:
         db.session.rollback()
-        log_activity('ADMIN_NEWS_DELETE', f'Erreur suppression article', success=False, details=str(e))
+        log_activity('ADMIN_NEWS_DELETE', f'Erreur suppression article', success=False, error_message=str(e))
         flash(f'Erreur lors de la suppression: {str(e)}', 'danger')
     
     return redirect(url_for('admin_panel.blog_management'))

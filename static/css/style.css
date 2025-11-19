@@ -314,23 +314,25 @@ header {
 
 .hero-buttons {
     display: flex;
-    gap: 1rem;
-    justify-content: center;
+    gap: 0.75rem;
+    justify-content: space-between;
     animation: fadeInUp 1s ease 0.4s backwards;
     margin-bottom: 2.5rem;
     flex-wrap: wrap;
-    max-width: 600px;
+    max-width: 580px;
     margin-left: auto;
     margin-right: auto;
 }
 
 .hero-buttons .btn {
-    padding: 0.75rem 1.5rem;
+    padding: 0.85rem 1.5rem;
     font-size: 0.9rem;
+    flex: 1;
+    min-width: 0;
 }
 
 .hero-newsletter {
-    max-width: 600px;
+    max-width: 580px;
     margin: 0 auto;
     animation: fadeInUp 1s ease 0.6s backwards;
 }
@@ -343,8 +345,7 @@ header {
 }
 
 .hero-newsletter-form input[type="email"] {
-    flex: 0 1 auto;
-    max-width: 300px;
+    flex: 1;
     padding: 0.85rem 1.2rem;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(59, 130, 246, 0.3);
@@ -383,14 +384,17 @@ header {
     .hero-newsletter-form input[type="email"],
     .hero-newsletter-form .btn {
         width: 100%;
+        max-width: 100%;
     }
     
     .hero-buttons {
         flex-direction: column;
+        gap: 1rem;
     }
     
     .hero-buttons .btn {
         width: 100%;
+        max-width: 100%;
     }
 }
 
