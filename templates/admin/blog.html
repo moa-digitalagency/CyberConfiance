@@ -10,15 +10,36 @@
 
 <div class="admin-toolbar">
     <div class="filter-group">
-        <label for="category-filter">Filtrer par catégorie:</label>
-        <select id="category-filter" onchange="window.location.href='?category=' + encodeURIComponent(this.value)">
-            <option value="">Toutes les catégories</option>
+        <label for="category-filter">Catégorie:</label>
+        <select id="category-filter" onchange="updateFilters()">
+            <option value="">Toutes</option>
             {% for cat in categories %}
             <option value="{{ cat }}" {% if selected_category == cat %}selected{% endif %}>{{ cat }}</option>
             {% endfor %}
         </select>
     </div>
+    <div class="filter-group">
+        <label for="source-filter">Source:</label>
+        <select id="source-filter" onchange="updateFilters()">
+            <option value="">Toutes</option>
+            {% for src in sources %}
+            <option value="{{ src }}" {% if selected_source == src %}selected{% endif %}>{{ src }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <a href="/my4dm1n/news/new/" class="btn btn-primary">Nouvel article</a>
 </div>
+
+<script>
+function updateFilters() {
+    const category = document.getElementById('category-filter').value;
+    const source = document.getElementById('source-filter').value;
+    let url = '?';
+    if (category) url += 'category=' + encodeURIComponent(category) + '&';
+    if (source) url += 'source=' + encodeURIComponent(source);
+    window.location.href = url;
+}
+</script>
 
 <div class="admin-card">
     <h3>Articles ({{ articles.total }})</h3>
@@ -30,6 +51,7 @@
                 <th>Source</th>
                 <th>Date de publication</th>
                 <th>Créé le</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -40,6 +62,10 @@
                 <td>{{ article.source or 'N/A' }}</td>
                 <td>{{ article.published_date.strftime('%d/%m/%Y') if article.published_date else 'N/A' }}</td>
                 <td>{{ article.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
+                <td>
+                    <a href="/my4dm1n/news/edit/?id={{ article.id }}" class="btn btn-primary" style="font-size: 0.85rem; padding: 0.4rem 0.8rem; margin-right: 0.5rem;">Modifier</a>
+                    <a href="/my4dm1n/news/delete/?id={{ article.id }}" onclick="return confirm('Supprimer cet article ?')" class="btn" style="font-size: 0.85rem; padding: 0.4rem 0.8rem; background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3);">Supprimer</a>
+                </td>
             </tr>
             {% endfor %}
         </tbody>

@@ -8,7 +8,7 @@ from utils.logging_utils import log_activity
 from datetime import datetime, timedelta
 from sqlalchemy import func, desc
 
-bp = Blueprint('admin_panel', __name__, url_prefix='/admin')
+bp = Blueprint('admin_panel', __name__, url_prefix='/my4dm1n')
 
 def admin_required(f):
     @wraps(f)
@@ -37,49 +37,84 @@ def dashboard():
     """Dashboard principal avec statistiques"""
     log_activity('ADMIN_DASHBOARD_VIEW', 'Consultation du dashboard admin')
     
+    period = request.args.get('period', 'week')
+    
+    now = datetime.utcnow()
+    if period == 'day':
+        start_date = now - timedelta(days=1)
+        period_label = "Aujourd'hui"
+    elif period == 'week':
+        start_date = now - timedelta(days=7)
+        period_label = "Cette semaine"
+    elif period == 'month':
+        start_date = now - timedelta(days=30)
+        period_label = "Ce mois"
+    elif period == 'year':
+        start_date = now - timedelta(days=365)
+        period_label = "Cette année"
+    else:
+        start_date = now - timedelta(days=7)
+        period_label = "Cette semaine"
+    
     total_users = User.query.count()
+    new_users_period = User.query.filter(User.created_at >= start_date).count()
+    
+    total_visits = ActivityLog.query.count()
+    visits_period = ActivityLog.query.filter(ActivityLog.created_at >= start_date).count()
+    
+    unique_ips = db.session.query(func.count(func.distinct(ActivityLog.ip_address))).filter(
+        ActivityLog.created_at >= start_date
+    ).scalar() or 0
+    
+    pages_visited = db.session.query(
+        ActivityLog.action_type, 
+        func.count(ActivityLog.id).label('count')
+    ).filter(
+        ActivityLog.created_at >= start_date
+    ).group_by(ActivityLog.action_type).order_by(desc('count')).limit(10).all()
+    
     total_quiz_results = QuizResult.query.count()
+    quiz_period = QuizResult.query.filter(QuizResult.created_at >= start_date).count()
+    avg_quiz_score = db.session.query(func.avg(QuizResult.overall_score)).filter(
+        QuizResult.created_at >= start_date
+    ).scalar() or 0
+    
     total_security_analyses = SecurityAnalysis.query.count()
-    total_breach_analyses = BreachAnalysis.query.count()
-    
-    today = datetime.utcnow().date()
-    week_ago = datetime.utcnow() - timedelta(days=7)
-    month_ago = datetime.utcnow() - timedelta(days=30)
-    
-    quiz_today = QuizResult.query.filter(func.date(QuizResult.created_at) == today).count()
-    quiz_week = QuizResult.query.filter(QuizResult.created_at >= week_ago).count()
-    quiz_month = QuizResult.query.filter(QuizResult.created_at >= month_ago).count()
-    
-    security_today = SecurityAnalysis.query.filter(func.date(SecurityAnalysis.created_at) == today).count()
-    security_week = SecurityAnalysis.query.filter(SecurityAnalysis.created_at >= week_ago).count()
-    
-    threats_detected_week = SecurityAnalysis.query.filter(
-        SecurityAnalysis.created_at >= week_ago,
+    security_period = SecurityAnalysis.query.filter(SecurityAnalysis.created_at >= start_date).count()
+    threats_detected = SecurityAnalysis.query.filter(
+        SecurityAnalysis.created_at >= start_date,
         SecurityAnalysis.threat_detected == True
     ).count()
     
+    total_breach_analyses = BreachAnalysis.query.count()
+    breach_period = BreachAnalysis.query.filter(BreachAnalysis.created_at >= start_date).count()
     high_risk_breaches = BreachAnalysis.query.filter(
+        BreachAnalysis.created_at >= start_date,
         BreachAnalysis.risk_level.in_(['critique', 'élevé'])
     ).count()
     
     recent_activities = ActivityLog.query.order_by(desc(ActivityLog.created_at)).limit(10).all()
     recent_security_logs = SecurityLog.query.order_by(desc(SecurityLog.created_at)).limit(10).all()
     
-    avg_quiz_score = db.session.query(func.avg(QuizResult.overall_score)).scalar() or 0
-    
     return render_template('admin/dashboard.html',
+                         period=period,
+                         period_label=period_label,
                          total_users=total_users,
+                         new_users_period=new_users_period,
+                         total_visits=total_visits,
+                         visits_period=visits_period,
+                         unique_visitors=unique_ips,
+                         unique_ips=unique_ips,
+                         pages_visited=pages_visited,
                          total_quiz_results=total_quiz_results,
-                         total_security_analyses=total_security_analyses,
-                         total_breach_analyses=total_breach_analyses,
-                         quiz_today=quiz_today,
-                         quiz_week=quiz_week,
-                         quiz_month=quiz_month,
-                         security_today=security_today,
-                         security_week=security_week,
-                         threats_detected_week=threats_detected_week,
-                         high_risk_breaches=high_risk_breaches,
+                         quiz_period=quiz_period,
                          avg_quiz_score=round(avg_quiz_score, 1),
+                         total_security_analyses=total_security_analyses,
+                         security_period=security_period,
+                         threats_detected=threats_detected,
+                         total_breach_analyses=total_breach_analyses,
+                         breach_period=breach_period,
+                         high_risk_breaches=high_risk_breaches,
                          recent_activities=recent_activities,
                          recent_security_logs=recent_security_logs)
 
@@ -179,6 +214,30 @@ def breach_history():
     results = query.order_by(desc(BreachAnalysis.created_at)).paginate(page=page, per_page=per_page, error_out=False)
     
     return render_template('admin/breach_history.html', results=results, search=search, risk_level=risk_level)
+
+@bp.route('/history/quiz/<int:quiz_id>')
+@admin_required
+def quiz_detail(quiz_id):
+    """Détails d'un résultat de quiz"""
+    quiz = QuizResult.query.get_or_404(quiz_id)
+    log_activity('ADMIN_QUIZ_DETAIL_VIEW', f'Consultation détails quiz #{quiz_id}')
+    return render_template('admin/quiz_detail.html', quiz=quiz)
+
+@bp.route('/history/security/<int:analysis_id>')
+@admin_required
+def security_detail(analysis_id):
+    """Détails d'une analyse de sécurité"""
+    analysis = SecurityAnalysis.query.get_or_404(analysis_id)
+    log_activity('ADMIN_SECURITY_DETAIL_VIEW', f'Consultation détails analyse sécurité #{analysis_id}')
+    return render_template('admin/security_detail.html', analysis=analysis)
+
+@bp.route('/history/breach/<int:breach_id>')
+@admin_required
+def breach_detail(breach_id):
+    """Détails d'une analyse de fuite"""
+    breach = BreachAnalysis.query.get_or_404(breach_id)
+    log_activity('ADMIN_BREACH_DETAIL_VIEW', f'Consultation détails analyse fuite #{breach_id}')
+    return render_template('admin/breach_detail.html', breach=breach)
 
 @bp.route('/logs/activity')
 @admin_required
@@ -306,17 +365,23 @@ def blog_management():
     page = request.args.get('page', 1, type=int)
     per_page = 20
     category = request.args.get('category', '')
+    source = request.args.get('source', '')
     
     query = News.query
     
     if category:
         query = query.filter(News.category == category)
     
+    if source:
+        query = query.filter(News.source == source)
+    
     articles = query.order_by(desc(News.created_at)).paginate(page=page, per_page=per_page, error_out=False)
     categories = db.session.query(News.category).distinct().all()
     categories = [cat[0] for cat in categories if cat[0]]
+    sources = db.session.query(News.source).distinct().all()
+    sources = [src[0] for src in sources if src[0]]
     
-    return render_template('admin/blog.html', articles=articles, categories=categories, selected_category=category)
+    return render_template('admin/blog.html', articles=articles, categories=categories, sources=sources, selected_category=category, selected_source=source)
 
 @bp.route('/newsletter')
 @moderator_required
@@ -356,6 +421,23 @@ def contact_management():
     contacts = query.order_by(desc(Contact.created_at)).paginate(page=page, per_page=per_page, error_out=False)
     
     return render_template('admin/contacts.html', contacts=contacts, status=status)
+
+@bp.route('/contacts/send', methods=['POST'])
+@moderator_required
+def send_contact_message():
+    """Envoyer un message aux contacts sélectionnés"""
+    recipients = request.form.get('recipients', '')
+    subject = request.form.get('subject', '')
+    message = request.form.get('message', '')
+    
+    if not recipients or not subject or not message:
+        flash('Tous les champs sont requis', 'danger')
+        return redirect(url_for('admin_panel.contact_management'))
+    
+    log_activity('ADMIN_CONTACT_MESSAGE_SEND', f'Envoi message à {recipients}', success=True)
+    flash(f'Message envoyé à {recipients} (fonctionnalité de démonstration - implémentez l\'envoi d\'emails réel)', 'success')
+    
+    return redirect(url_for('admin_panel.contact_management'))
 
 @bp.route('/content/edit/<page>', methods=['GET', 'POST'])
 @moderator_required

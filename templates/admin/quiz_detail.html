@@ -1,0 +1,98 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Détails Quiz #{{ quiz.id }} - Administration{% endblock %}
+
+{% block content %}
+<div class="admin-header">
+    <h1>Détails du Quiz #{{ quiz.id }}</h1>
+    <p>Résultat complet du quiz</p>
+</div>
+
+<div class="admin-card">
+    <h3>Informations générales</h3>
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-top: 1rem;">
+        <div>
+            <strong style="color: var(--text-secondary); display: block; margin-bottom: 0.5rem;">Email:</strong>
+            <span style="color: var(--text-primary);">{{ quiz.email }}</span>
+        </div>
+        <div>
+            <strong style="color: var(--text-secondary); display: block; margin-bottom: 0.5rem;">Score global:</strong>
+            {% if quiz.overall_score >= 80 %}
+            <span class="badge badge-success" style="font-size: 1.2rem; padding: 0.5rem 1rem;">{{ quiz.overall_score }}%</span>
+            {% elif quiz.overall_score >= 60 %}
+            <span class="badge badge-warning" style="font-size: 1.2rem; padding: 0.5rem 1rem;">{{ quiz.overall_score }}%</span>
+            {% else %}
+            <span class="badge badge-danger" style="font-size: 1.2rem; padding: 0.5rem 1rem;">{{ quiz.overall_score }}%</span>
+            {% endif %}
+        </div>
+        <div>
+            <strong style="color: var(--text-secondary); display: block; margin-bottom: 0.5rem;">Date:</strong>
+            <span style="color: var(--text-primary);">{{ quiz.created_at.strftime('%d/%m/%Y %H:%M:%S') }}</span>
+        </div>
+        <div>
+            <strong style="color: var(--text-secondary); display: block; margin-bottom: 0.5rem;">Adresse IP:</strong>
+            <span style="color: var(--text-primary);">{{ quiz.ip_address }}</span>
+        </div>
+    </div>
+</div>
+
+<div class="admin-card">
+    <h3>Scores par catégorie</h3>
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Catégorie</th>
+                <th>Score</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for category, score in quiz.category_scores.items() %}
+            <tr>
+                <td>{{ category }}</td>
+                <td>
+                    {% if score >= 80 %}
+                    <span class="badge badge-success">{{ score }}%</span>
+                    {% elif score >= 60 %}
+                    <span class="badge badge-warning">{{ score }}%</span>
+                    {% else %}
+                    <span class="badge badge-danger">{{ score }}%</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="admin-card">
+    <h3>Réponses détaillées</h3>
+    <div style="display: flex; flex-direction: column; gap: 1rem;">
+        {% for answer in quiz.answers %}
+        <div style="background: rgba(59, 130, 246, 0.05); padding: 1rem; border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.2);">
+            <div style="margin-bottom: 0.5rem;"><strong>Question {{ loop.index }}:</strong> {{ answer.question }}</div>
+            <div style="margin-bottom: 0.5rem;"><strong>Réponse:</strong> {{ answer.answer }}</div>
+            <div>
+                {% if answer.correct %}
+                <span class="badge badge-success">Correct</span>
+                {% else %}
+                <span class="badge badge-danger">Incorrect</span>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% if quiz.hibp_summary %}
+<div class="admin-card">
+    <h3>Résumé HIBP (Have I Been Pwned)</h3>
+    <div style="color: var(--text-secondary);">
+        {{ quiz.hibp_summary|tojson(indent=2) }}
+    </div>
+</div>
+{% endif %}
+
+<div style="margin-top: 2rem;">
+    <a href="{{ url_for('admin_panel.quiz_history') }}" class="btn btn-secondary">Retour à l'historique</a>
+</div>
+{% endblock %}

@@ -3,55 +3,100 @@
 {% block title %}Dashboard - Administration{% endblock %}
 
 {% block content %}
-<div class="admin-header">
-    <h1>Dashboard</h1>
-    <p>Vue d'ensemble des statistiques et activités du site</p>
+<div class="admin-header" style="display: flex; justify-content: space-between; align-items: center;">
+    <div>
+        <h1>Dashboard</h1>
+        <p>Vue d'ensemble des statistiques et activités du site - {{ period_label }}</p>
+    </div>
+    <div class="admin-toolbar" style="margin-bottom: 0;">
+        <div class="filter-group">
+            <label>Période:</label>
+            <select onchange="window.location.href='?period='+this.value" id="period-select">
+                <option value="day" {% if period == 'day' %}selected{% endif %}>Aujourd'hui</option>
+                <option value="week" {% if period == 'week' %}selected{% endif %}>Cette semaine</option>
+                <option value="month" {% if period == 'month' %}selected{% endif %}>Ce mois</option>
+                <option value="year" {% if period == 'year' %}selected{% endif %}>Cette année</option>
+            </select>
+        </div>
+    </div>
 </div>
 
 <div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-value">{{ total_visits }}</div>
+        <div class="stat-label">Visites totales</div>
+        <div class="stat-change positive">+{{ visits_period }} sur la période</div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-value">{{ unique_visitors }}</div>
+        <div class="stat-label">Visiteurs uniques</div>
+        <div class="stat-change info">Période sélectionnée</div>
+    </div>
+    
     <div class="stat-card">
         <div class="stat-value">{{ total_users }}</div>
         <div class="stat-label">Utilisateurs inscrits</div>
-    </div>
-    
-    <div class="stat-card">
-        <div class="stat-value">{{ total_quiz_results }}</div>
-        <div class="stat-label">Quiz complétés</div>
-        <div class="stat-change positive">+{{ quiz_today }} aujourd'hui</div>
-    </div>
-    
-    <div class="stat-card">
-        <div class="stat-value">{{ total_security_analyses }}</div>
-        <div class="stat-label">Analyses de sécurité</div>
-        <div class="stat-change positive">+{{ security_today }} aujourd'hui</div>
-    </div>
-    
-    <div class="stat-card">
-        <div class="stat-value">{{ total_breach_analyses }}</div>
-        <div class="stat-label">Analyses de fuites</div>
-    </div>
-</div>
-
-<div class="stats-grid">
-    <div class="stat-card">
-        <div class="stat-value">{{ quiz_week }}</div>
-        <div class="stat-label">Quiz cette semaine</div>
-    </div>
-    
-    <div class="stat-card">
-        <div class="stat-value">{{ security_week }}</div>
-        <div class="stat-label">Analyses cette semaine</div>
-    </div>
-    
-    <div class="stat-card">
-        <div class="stat-value">{{ threats_detected_week }}</div>
-        <div class="stat-label">Menaces détectées (7j)</div>
+        <div class="stat-change positive">+{{ new_users_period }} nouveaux</div>
     </div>
     
     <div class="stat-card">
         <div class="stat-value">{{ avg_quiz_score }}%</div>
-        <div class="stat-label">Score moyen des quiz</div>
+        <div class="stat-label">Score moyen quiz</div>
+        <div class="stat-change info">Sur {{ quiz_period }} quiz</div>
     </div>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-value">{{ quiz_period }}</div>
+        <div class="stat-label">Quiz complétés</div>
+        <div class="stat-change info">Total: {{ total_quiz_results }}</div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-value">{{ security_period }}</div>
+        <div class="stat-label">Analyses de sécurité</div>
+        <div class="stat-change info">Total: {{ total_security_analyses }}</div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-value">{{ breach_period }}</div>
+        <div class="stat-label">Analyses de fuites</div>
+        <div class="stat-change {% if high_risk_breaches > 0 %}negative{% else %}positive{% endif %}">{{ high_risk_breaches }} à risque élevé</div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-value">{{ threats_detected }}</div>
+        <div class="stat-label">Menaces détectées</div>
+        <div class="stat-change {% if threats_detected > 0 %}negative{% else %}positive{% endif %}">Sur la période</div>
+    </div>
+</div>
+
+<div class="admin-card">
+    <h3>Pages les plus visitées</h3>
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Action/Page</th>
+                <th>Visites</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if pages_visited %}
+                {% for page, count in pages_visited %}
+                <tr>
+                    <td>{{ page }}</td>
+                    <td><span class="badge badge-info">{{ count }}</span></td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="2" style="text-align: center; color: var(--text-secondary);">Aucune donnée disponible</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
 </div>
 
 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">

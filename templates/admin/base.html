@@ -38,6 +38,91 @@
             font-size: 0.85rem;
         }
         
+        .admin-topbar {
+            position: fixed;
+            top: 0;
+            left: 260px;
+            right: 0;
+            height: 70px;
+            background: rgba(15, 31, 53, 0.95);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.3);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            z-index: 100;
+        }
+        
+        .admin-topbar-title {
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .admin-user-profile {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: rgba(59, 130, 246, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+        
+        .admin-user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .admin-user-details {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+        
+        .admin-user-name {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        
+        .admin-user-role {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+        
+        .admin-user-email {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+        
+        .admin-logout-btn {
+            padding: 0.5rem 1rem;
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .admin-logout-btn:hover {
+            background: rgba(239, 68, 68, 0.3);
+            color: white;
+        }
+        
         .admin-nav {
             list-style: none;
             padding: 0;
@@ -79,10 +164,11 @@
         
         .admin-content {
             margin-left: 260px;
+            margin-top: 70px;
             flex: 1;
             padding: 2rem;
             background: linear-gradient(135deg, #0a1628 0%, #1a2332 100%);
-            min-height: 100vh;
+            min-height: calc(100vh - 70px);
         }
         
         .admin-header {
@@ -151,6 +237,10 @@
         
         .stat-change.negative {
             color: #ef4444;
+        }
+        
+        .stat-change.info {
+            color: var(--accent-blue);
         }
         
         .admin-table {
@@ -328,6 +418,23 @@
 </head>
 <body>
     <div class="admin-container">
+        <div class="admin-topbar">
+            <div class="admin-topbar-title">CyberConfiance Admin</div>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                {% if current_user.is_authenticated %}
+                <div class="admin-user-profile">
+                    <div class="admin-user-avatar">{{ current_user.username[0].upper() }}</div>
+                    <div class="admin-user-details">
+                        <div class="admin-user-name">{{ current_user.username }}</div>
+                        <div class="admin-user-role">{{ current_user.role|default('utilisateur') }}</div>
+                        <div class="admin-user-email">{{ current_user.email }}</div>
+                    </div>
+                </div>
+                <a href="{{ url_for('main.logout') }}" class="admin-logout-btn">Déconnexion</a>
+                {% endif %}
+            </div>
+        </div>
+        
         <aside class="admin-sidebar">
             <div class="admin-sidebar-header">
                 <h2>Administration</h2>
@@ -384,7 +491,7 @@
                 <div class="admin-nav-section">
                     <div class="admin-nav-section-title">Système</div>
                     <ul>
-                        <li><a href="/admin">Flask-Admin</a></li>
+                        <li><a href="/my4dm1n">Flask-Admin</a></li>
                         <li><a href="{{ url_for('main.index') }}">Retour au site</a></li>
                     </ul>
                 </div>

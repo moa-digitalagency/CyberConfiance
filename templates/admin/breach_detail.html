@@ -1,0 +1,82 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Détails Analyse Fuite #{{ breach.id }} - Administration{% endblock %}
+
+{% block content %}
+<div class="admin-header">
+    <h1>Détails de l'Analyse de Fuite #{{ breach.id }}</h1>
+    <p>Résultat complet de la vérification</p>
+</div>
+
+<div class="admin-card">
+    <h3>Informations générales</h3>
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-top: 1rem;">
+        <div>
+            <strong style="color: var(--text-secondary); display: block; margin-bottom: 0.5rem;">Email vérifié:</strong>
+            <span style="color: var(--text-primary); word-break: break-all;">{{ breach.email }}</span>
+        </div>
+        <div>
+            <strong style="color: var(--text-secondary); display: block; margin-bottom: 0.5rem;">Nombre de fuites:</strong>
+            {% if breach.breach_count > 5 %}
+            <span class="badge badge-danger" style="font-size: 1.2rem; padding: 0.5rem 1rem;">{{ breach.breach_count }}</span>
+            {% elif breach.breach_count > 0 %}
+            <span class="badge badge-warning" style="font-size: 1.2rem; padding: 0.5rem 1rem;">{{ breach.breach_count }}</span>
+            {% else %}
+            <span class="badge badge-success" style="font-size: 1.2rem; padding: 0.5rem 1rem;">{{ breach.breach_count }}</span>
+            {% endif %}
+        </div>
+        <div>
+            <strong style="color: var(--text-secondary); display: block; margin-bottom: 0.5rem;">Niveau de risque:</strong>
+            {% if breach.risk_level == 'critique' %}
+            <span class="badge badge-danger" style="font-size: 1.1rem; padding: 0.5rem 1rem;">{{ breach.risk_level }}</span>
+            {% elif breach.risk_level == 'élevé' %}
+            <span class="badge badge-warning" style="font-size: 1.1rem; padding: 0.5rem 1rem;">{{ breach.risk_level }}</span>
+            {% else %}
+            <span class="badge badge-info" style="font-size: 1.1rem; padding: 0.5rem 1rem;">{{ breach.risk_level or 'Inconnu' }}</span>
+            {% endif %}
+        </div>
+        <div>
+            <strong style="color: var(--text-secondary); display: block; margin-bottom: 0.5rem;">Date de vérification:</strong>
+            <span style="color: var(--text-primary);">{{ breach.created_at.strftime('%d/%m/%Y %H:%M:%S') }}</span>
+        </div>
+        <div>
+            <strong style="color: var(--text-secondary); display: block; margin-bottom: 0.5rem;">Adresse IP:</strong>
+            <span style="color: var(--text-primary);">{{ breach.ip_address }}</span>
+        </div>
+        <div>
+            <strong style="color: var(--text-secondary); display: block; margin-bottom: 0.5rem;">User Agent:</strong>
+            <span style="color: var(--text-primary); font-size: 0.85rem; word-break: break-all;">{{ breach.user_agent }}</span>
+        </div>
+    </div>
+</div>
+
+{% if breach.breaches_found %}
+<div class="admin-card">
+    <h3>Fuites de données détectées</h3>
+    <div style="background: rgba(239, 68, 68, 0.1); padding: 1rem; border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.3);">
+        <pre style="color: var(--text-primary); white-space: pre-wrap; word-break: break-word; font-size: 0.9rem;">{{ breach.breaches_found }}</pre>
+    </div>
+    
+    <div style="margin-top: 1rem; padding: 1rem; background: rgba(59, 130, 246, 0.1); border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.3);">
+        <strong style="color: var(--accent-blue);">Recommandations:</strong>
+        <ul style="margin-top: 0.5rem; color: var(--text-secondary);">
+            <li>Changer immédiatement les mots de passe des comptes affectés</li>
+            <li>Activer l'authentification à deux facteurs (2FA)</li>
+            <li>Surveiller les activités suspectes sur les comptes</li>
+            <li>Ne jamais réutiliser le même mot de passe</li>
+        </ul>
+    </div>
+</div>
+{% else %}
+<div class="admin-card">
+    <div style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+        <span class="badge badge-success" style="font-size: 1.2rem; padding: 0.8rem 1.5rem;">Aucune fuite détectée</span>
+        <p style="margin-top: 1rem;">Cet email n'apparaît dans aucune base de données de fuites connues.</p>
+    </div>
+</div>
+{% endif %}
+
+<div style="margin-top: 2rem;">
+    <a href="{{ url_for('admin_panel.breach_history') }}" class="btn btn-secondary">Retour à l'historique</a>
+</div>
+{% endblock %}

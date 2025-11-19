@@ -29,6 +29,7 @@
                 <th>Niveau de risque</th>
                 <th>Date</th>
                 <th>IP</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -55,6 +56,9 @@
                 </td>
                 <td>{{ result.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
                 <td>{{ result.ip_address }}</td>
+                <td>
+                    <a href="{{ url_for('admin_panel.breach_detail', breach_id=result.id) }}" class="btn btn-primary" style="font-size: 0.85rem; padding: 0.4rem 0.8rem;">Voir</a>
+                </td>
             </tr>
             {% endfor %}
         </tbody>

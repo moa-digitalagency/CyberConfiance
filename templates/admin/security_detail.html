@@ -1,0 +1,67 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Détails Analyse Sécurité #{{ analysis.id }} - Administration{% endblock %}
+
+{% block content %}
+<div class="admin-header">
+    <h1>Détails de l'Analyse de Sécurité #{{ analysis.id }}</h1>
+    <p>Résultat complet de l'analyse</p>
+</div>
+
+<div class="admin-card">
+    <h3>Informations générales</h3>
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-top: 1rem;">
+        <div>
+            <strong style="color: var(--text-secondary); display: block; margin-bottom: 0.5rem;">Type d'entrée:</strong>
+            <span class="badge badge-info">{{ analysis.input_type }}</span>
+        </div>
+        <div>
+            <strong style="color: var(--text-secondary); display: block; margin-bottom: 0.5rem;">Menace détectée:</strong>
+            {% if analysis.threat_detected %}
+            <span class="badge badge-danger" style="font-size: 1.1rem; padding: 0.5rem 1rem;">OUI</span>
+            {% else %}
+            <span class="badge badge-success" style="font-size: 1.1rem; padding: 0.5rem 1rem;">NON</span>
+            {% endif %}
+        </div>
+        <div>
+            <strong style="color: var(--text-secondary); display: block; margin-bottom: 0.5rem;">Valeur analysée:</strong>
+            <span style="color: var(--text-primary); word-break: break-all;">{{ analysis.input_value }}</span>
+        </div>
+        <div>
+            <strong style="color: var(--text-secondary); display: block; margin-bottom: 0.5rem;">Niveau de menace:</strong>
+            {% if analysis.threat_level %}
+            <span class="badge badge-warning">{{ analysis.threat_level }}</span>
+            {% else %}
+            <span class="badge badge-info">Aucun</span>
+            {% endif %}
+        </div>
+        <div>
+            <strong style="color: var(--text-secondary); display: block; margin-bottom: 0.5rem;">Détections malveillantes:</strong>
+            <span style="color: var(--text-primary);">{{ analysis.malicious_count }} / {{ analysis.total_engines }}</span>
+        </div>
+        <div>
+            <strong style="color: var(--text-secondary); display: block; margin-bottom: 0.5rem;">Date d'analyse:</strong>
+            <span style="color: var(--text-primary);">{{ analysis.created_at.strftime('%d/%m/%Y %H:%M:%S') }}</span>
+        </div>
+        <div>
+            <strong style="color: var(--text-secondary); display: block; margin-bottom: 0.5rem;">Adresse IP:</strong>
+            <span style="color: var(--text-primary);">{{ analysis.ip_address }}</span>
+        </div>
+        <div>
+            <strong style="color: var(--text-secondary); display: block; margin-bottom: 0.5rem;">User Agent:</strong>
+            <span style="color: var(--text-primary); font-size: 0.85rem; word-break: break-all;">{{ analysis.user_agent }}</span>
+        </div>
+    </div>
+</div>
+
+{% if analysis.analysis_results %}
+<div class="admin-card">
+    <h3>Résultats détaillés de l'analyse</h3>
+    <pre style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; overflow-x: auto; color: var(--text-primary); font-size: 0.9rem;">{{ analysis.analysis_results|tojson(indent=2) }}</pre>
+</div>
+{% endif %}
+
+<div style="margin-top: 2rem;">
+    <a href="{{ url_for('admin_panel.security_history') }}" class="btn btn-secondary">Retour à l'historique</a>
+</div>
+{% endblock %}
