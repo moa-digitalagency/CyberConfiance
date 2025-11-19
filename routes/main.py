@@ -1,7 +1,8 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, session
 from flask_login import login_user, logout_user, login_required
 from services import ContentService, HaveIBeenPwnedService, QuizService
-from models import Contact, User, BreachAnalysis
+from services.security_analyzer import SecurityAnalyzerService
+from models import Contact, User, BreachAnalysis, SecurityAnalysis
 import __init__ as app_module
 import json
 import requests
@@ -239,6 +240,40 @@ def link_analyzer():
                          redirects=redirects,
                          final_url=final_url,
                          redirect_count=redirect_count)
+
+@bp.route('/outils/analyseur-securite', methods=['GET', 'POST'])
+def security_analyzer():
+    results = None
+    
+    if request.method == 'POST':
+        input_value = request.form.get('input_value', '').strip()
+        input_type = request.form.get('input_type', 'hash')
+        
+        if not input_value:
+            flash('Veuillez fournir une valeur à analyser.', 'error')
+            return redirect(url_for('main.security_analyzer'))
+        
+        analyzer = SecurityAnalyzerService()
+        results = analyzer.analyze(input_value, input_type)
+        
+        try:
+            analysis_record = SecurityAnalysis(
+                input_value=input_value,
+                input_type=input_type,
+                analysis_results=results,
+                threat_detected=results.get('threat_detected', False),
+                threat_level=results.get('threat_level'),
+                malicious_count=results.get('malicious', 0),
+                total_engines=results.get('total', 0),
+                ip_address=request.remote_addr,
+                user_agent=request.headers.get('User-Agent', '')
+            )
+            db.session.add(analysis_record)
+            db.session.commit()
+        except Exception as e:
+            print(f"Error saving security analysis: {str(e)}")
+    
+    return render_template('outils/security_analyzer.html', results=results)
 
 @bp.route('/quiz', methods=['GET', 'POST'])
 def quiz():

@@ -405,10 +405,31 @@ header {
     background: rgba(59, 130, 246, 0.15);
     color: #ffffff;
     border: 1px solid rgba(59, 130, 246, 0.3);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(30px) saturate(180%);
+    -webkit-backdrop-filter: blur(30px) saturate(180%);
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2),
+                0 4px 16px rgba(59, 130, 246, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15),
+                inset 0 -1px 0 rgba(59, 130, 246, 0.1);
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 0.5s ease;
+    z-index: -1;
+}
+
+.btn-primary:hover::before {
+    left: 100%;
 }
 
 .btn-primary:hover {
@@ -416,7 +437,9 @@ header {
     border-color: rgba(59, 130, 246, 0.5);
     transform: translateY(-2px);
     box-shadow: 0 12px 48px rgba(59, 130, 246, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.15);
+                0 8px 32px rgba(31, 38, 135, 0.25),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2),
+                inset 0 -1px 0 rgba(59, 130, 246, 0.2);
 }
 
 .btn-secondary {
@@ -3700,5 +3723,118 @@ footer {
     
     .actions-card {
         flex-direction: column;
+    }
+    
+    /* Quiz Results Mobile Styles */
+    .overall-score-card {
+        padding: 2rem 1.5rem;
+    }
+    
+    .overall-score-card h2 {
+        font-size: 1.4rem;
+    }
+    
+    .score-circle {
+        width: 160px;
+        height: 160px;
+    }
+    
+    .score-circle::before {
+        width: 135px;
+        height: 135px;
+    }
+    
+    .score-value {
+        font-size: 2.2rem;
+    }
+    
+    .score-value span {
+        font-size: 1.1rem;
+    }
+    
+    .score-label {
+        font-size: 0.95rem;
+    }
+    
+    .detailed-scores {
+        padding: 1.5rem;
+    }
+    
+    .detailed-scores h2 {
+        font-size: 1.3rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .score-header h3 {
+        font-size: 1rem;
+    }
+    
+    .score-bar {
+        height: 35px;
+    }
+    
+    .score-percentage {
+        font-size: 0.9rem;
+        padding-right: 0.5rem;
+    }
+    
+    .recommendations-card {
+        padding: 1.5rem;
+    }
+    
+    .recommendation-header h2 {
+        font-size: 1.3rem;
+    }
+    
+    .recommendation-message {
+        font-size: 0.95rem;
+    }
+    
+    .priority-rules h3,
+    .weak-areas h3,
+    .suggested-tools h3 {
+        font-size: 1.2rem;
+    }
+    
+    .rule-card h4 {
+        font-size: 1rem;
+    }
+    
+    .rule-card p {
+        font-size: 0.85rem;
+    }
+    
+    .weak-areas-list li strong {
+        font-size: 0.95rem;
+    }
+    
+    .weak-areas-list li p {
+        font-size: 0.85rem;
+    }
+    
+    .breach-results-card {
+        padding: 1.5rem;
+    }
+    
+    .breach-results-card h2 {
+        font-size: 1.3rem;
+        word-break: break-word;
+    }
+    
+    .breach-item h4 {
+        font-size: 1rem;
+    }
+    
+    .data-class-tag {
+        font-size: 0.75rem;
+        padding: 0.2rem 0.6rem;
+    }
+    
+    .page-header h1 {
+        font-size: 1.8rem;
+    }
+    
+    .page-header .subtitle {
+        font-size: 0.95rem;
     }
 }

@@ -1,0 +1,553 @@
+{% extends "base.html" %}
+
+{% block title %}Analyseur de Sécurité - CyberConfiance{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1>Analyseur de Sécurité</h1>
+        <p class="subtitle">Vérifiez la sécurité de fichiers, domaines, adresses IP et URLs</p>
+    </div>
+</section>
+
+<section class="analyzer-container">
+    <div class="container">
+        <div class="analyzer-card">
+            <h2>Analyse de Sécurité</h2>
+            <p class="analyzer-description">
+                Vérifiez la réputation et la sécurité de différents éléments numériques en utilisant notre base de données de menaces.
+            </p>
+
+            <form method="POST" action="{{ url_for('main.security_analyzer') }}" class="analyzer-form">
+                <div class="input-type-selector">
+                    <label class="type-option">
+                        <input type="radio" name="input_type" value="hash" checked>
+                        <span class="type-label">
+                            <span class="type-icon">🔐</span>
+                            <span class="type-text">Hash (MD5/SHA)</span>
+                        </span>
+                    </label>
+                    <label class="type-option">
+                        <input type="radio" name="input_type" value="domain">
+                        <span class="type-label">
+                            <span class="type-icon">🌐</span>
+                            <span class="type-text">Domaine</span>
+                        </span>
+                    </label>
+                    <label class="type-option">
+                        <input type="radio" name="input_type" value="ip">
+                        <span class="type-label">
+                            <span class="type-icon">📡</span>
+                            <span class="type-text">Adresse IP</span>
+                        </span>
+                    </label>
+                    <label class="type-option">
+                        <input type="radio" name="input_type" value="url">
+                        <span class="type-label">
+                            <span class="type-icon">🔗</span>
+                            <span class="type-text">URL</span>
+                        </span>
+                    </label>
+                </div>
+
+                <div class="input-group">
+                    <input 
+                        type="text" 
+                        name="input_value" 
+                        id="inputValue" 
+                        placeholder="Entrez la valeur à analyser..." 
+                        required
+                        class="analyzer-input"
+                    >
+                    <button type="submit" class="btn-primary">
+                        <span>Analyser</span>
+                        <span class="btn-icon">🔍</span>
+                    </button>
+                </div>
+
+                <div class="input-hints">
+                    <p class="hint hash-hint active">
+                        <strong>Exemple:</strong> 44d88612fea8a8f36de82e1278abb02f
+                    </p>
+                    <p class="hint domain-hint">
+                        <strong>Exemple:</strong> example.com
+                    </p>
+                    <p class="hint ip-hint">
+                        <strong>Exemple:</strong> 8.8.8.8
+                    </p>
+                    <p class="hint url-hint">
+                        <strong>Exemple:</strong> https://example.com/page
+                    </p>
+                </div>
+            </form>
+        </div>
+
+        {% if results %}
+        <div class="results-card">
+            {% if results.error %}
+            <div class="alert alert-error">
+                <h3>Erreur d'analyse</h3>
+                <p>{{ results.message }}</p>
+            </div>
+            {% elif not results.found %}
+            <div class="alert alert-success">
+                <h3>✓ Élément non répertorié</h3>
+                <p>{{ results.message }}</p>
+                <p class="result-note">Cet élément n'est pas connu dans notre base de données de menaces, ce qui est généralement un bon signe.</p>
+            </div>
+            {% else %}
+            <div class="analysis-summary">
+                <div class="summary-header">
+                    <h3>Résultats de l'Analyse</h3>
+                    <span class="threat-badge threat-{{ results.threat_level }}">
+                        Niveau: {{ results.threat_level|capitalize }}
+                    </span>
+                </div>
+
+                <div class="detection-stats">
+                    <div class="stat-item malicious">
+                        <div class="stat-value">{{ results.malicious }}</div>
+                        <div class="stat-label">Malveillant</div>
+                    </div>
+                    <div class="stat-item suspicious">
+                        <div class="stat-value">{{ results.suspicious }}</div>
+                        <div class="stat-label">Suspect</div>
+                    </div>
+                    <div class="stat-item clean">
+                        <div class="stat-value">{{ results.clean }}</div>
+                        <div class="stat-label">Sûr</div>
+                    </div>
+                    <div class="stat-item total">
+                        <div class="stat-value">{{ results.total }}</div>
+                        <div class="stat-label">Total</div>
+                    </div>
+                </div>
+
+                <div class="threat-meter">
+                    <div class="meter-bar">
+                        <div class="meter-fill" style="width: {{ (results.malicious / results.total * 100) if results.total > 0 else 0 }}%"></div>
+                    </div>
+                    <p class="meter-text">
+                        {{ results.malicious }} sur {{ results.total }} moteurs de sécurité ont détecté une menace
+                    </p>
+                </div>
+
+                {% if results.threat_detected %}
+                <div class="alert alert-warning">
+                    <h4>⚠️ Menace Détectée</h4>
+                    <p>Cet élément a été signalé comme potentiellement dangereux par plusieurs sources de sécurité.</p>
+                    <ul class="safety-recommendations">
+                        <li>Ne téléchargez pas ou n'exécutez pas ce fichier</li>
+                        <li>Ne visitez pas ce site ou cette URL</li>
+                        <li>Vérifiez avec votre équipe de sécurité IT si vous avez des doutes</li>
+                    </ul>
+                </div>
+                {% else %}
+                <div class="alert alert-success">
+                    <h4>✓ Aucune Menace Majeure Détectée</h4>
+                    <p>Cet élément semble sûr selon les analyses de sécurité disponibles.</p>
+                </div>
+                {% endif %}
+
+                <div class="analysis-details">
+                    <h4>Détails de l'Analyse</h4>
+                    
+                    {% if results.type == 'file' %}
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">Type:</span>
+                            <span class="detail-value">{{ results.type_description }}</span>
+                        </div>
+                        {% if results.size %}
+                        <div class="detail-item">
+                            <span class="detail-label">Taille:</span>
+                            <span class="detail-value">{{ (results.size / 1024)|round(2) }} KB</span>
+                        </div>
+                        {% endif %}
+                        {% if results.names %}
+                        <div class="detail-item detail-full">
+                            <span class="detail-label">Noms connus:</span>
+                            <span class="detail-value">{{ results.names|join(', ') }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    {% if results.type == 'domain' %}
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">Domaine:</span>
+                            <span class="detail-value">{{ results.domain }}</span>
+                        </div>
+                        {% if results.reputation %}
+                        <div class="detail-item">
+                            <span class="detail-label">Réputation:</span>
+                            <span class="detail-value">{{ results.reputation }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    {% if results.type == 'ip' %}
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">Adresse IP:</span>
+                            <span class="detail-value">{{ results.ip }}</span>
+                        </div>
+                        {% if results.country %}
+                        <div class="detail-item">
+                            <span class="detail-label">Pays:</span>
+                            <span class="detail-value">{{ results.country }}</span>
+                        </div>
+                        {% endif %}
+                        {% if results.as_owner %}
+                        <div class="detail-item detail-full">
+                            <span class="detail-label">Propriétaire:</span>
+                            <span class="detail-value">{{ results.as_owner }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    {% if results.type == 'url' %}
+                    <div class="detail-grid">
+                        <div class="detail-item detail-full">
+                            <span class="detail-label">URL:</span>
+                            <span class="detail-value url-value">{{ results.url }}</span>
+                        </div>
+                        {% if results.times_submitted %}
+                        <div class="detail-item">
+                            <span class="detail-label">Soumissions:</span>
+                            <span class="detail-value">{{ results.times_submitted }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <div class="info-card">
+            <h3>💡 À Propos de Cet Outil</h3>
+            <p>Cet analyseur de sécurité vérifie la réputation d'éléments numériques contre une vaste base de données de menaces connues. Les résultats proviennent de multiples sources de sécurité pour vous donner une vue complète.</p>
+            
+            <div class="capabilities">
+                <h4>Types d'Analyses Supportés:</h4>
+                <ul>
+                    <li><strong>Hash de Fichier:</strong> MD5, SHA-1, SHA-256 pour vérifier les fichiers suspects</li>
+                    <li><strong>Domaine:</strong> Vérification de la réputation des noms de domaine</li>
+                    <li><strong>Adresse IP:</strong> Analyse de la sécurité des adresses IP</li>
+                    <li><strong>URL:</strong> Vérification de la sécurité des liens web</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const typeOptions = document.querySelectorAll('input[name="input_type"]');
+    const hints = document.querySelectorAll('.hint');
+    
+    typeOptions.forEach(option => {
+        option.addEventListener('change', function() {
+            hints.forEach(hint => hint.classList.remove('active'));
+            const hintClass = this.value + '-hint';
+            const activeHint = document.querySelector('.' + hintClass);
+            if (activeHint) {
+                activeHint.classList.add('active');
+            }
+        });
+    });
+});
+</script>
+
+<style>
+.analyzer-container {
+    padding: 4rem 0;
+    position: relative;
+    z-index: 1;
+}
+
+.analyzer-card, .results-card, .info-card {
+    background: rgba(15, 31, 53, 0.6);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 12px;
+    padding: 2.5rem;
+    margin-bottom: 2rem;
+    backdrop-filter: blur(10px);
+}
+
+.analyzer-card h2, .results-card h3, .info-card h3 {
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.analyzer-description {
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    font-size: 1rem;
+}
+
+.input-type-selector {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.type-option {
+    cursor: pointer;
+}
+
+.type-option input[type="radio"] {
+    display: none;
+}
+
+.type-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem 1rem;
+    background: rgba(59, 130, 246, 0.05);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.type-option input:checked + .type-label {
+    background: rgba(59, 130, 246, 0.15);
+    border-color: var(--accent-blue);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+}
+
+.type-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.type-text {
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.input-group {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.analyzer-input {
+    flex: 1;
+    padding: 1rem 1.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 1rem;
+}
+
+.analyzer-input:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.btn-icon {
+    margin-left: 0.5rem;
+}
+
+.input-hints {
+    min-height: 30px;
+}
+
+.hint {
+    display: none;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+}
+
+.hint.active {
+    display: block;
+}
+
+.detection-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 1.5rem 1rem;
+    background: rgba(59, 130, 246, 0.05);
+    border-radius: 8px;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.stat-item.malicious .stat-value {
+    color: #ef4444;
+}
+
+.stat-item.suspicious .stat-value {
+    color: #f59e0b;
+}
+
+.stat-item.clean .stat-value {
+    color: #10b981;
+}
+
+.stat-item.total .stat-value {
+    color: var(--accent-blue);
+}
+
+.stat-label {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.threat-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.threat-critique {
+    background: rgba(239, 68, 68, 0.2);
+    color: #fca5a5;
+}
+
+.threat-élevé {
+    background: rgba(245, 158, 11, 0.2);
+    color: #fbbf24;
+}
+
+.threat-modéré {
+    background: rgba(251, 191, 36, 0.2);
+    color: #fcd34d;
+}
+
+.threat-faible {
+    background: rgba(59, 130, 246, 0.2);
+    color: #93c5fd;
+}
+
+.threat-sûr, .threat-inconnu {
+    background: rgba(16, 185, 129, 0.2);
+    color: #6ee7b7;
+}
+
+.threat-meter {
+    margin: 2rem 0;
+}
+
+.meter-bar {
+    height: 12px;
+    background: rgba(59, 130, 246, 0.1);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.meter-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ef4444, #f59e0b);
+    transition: width 0.5s ease;
+}
+
+.meter-text {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.analysis-details {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.detail-item {
+    padding: 1rem;
+    background: rgba(59, 130, 246, 0.05);
+    border-radius: 6px;
+}
+
+.detail-full {
+    grid-column: 1 / -1;
+}
+
+.detail-label {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.detail-value {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.url-value {
+    word-break: break-all;
+}
+
+.safety-recommendations {
+    margin-top: 1rem;
+    padding-left: 1.5rem;
+}
+
+.safety-recommendations li {
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.capabilities ul {
+    list-style-position: inside;
+    color: var(--text-secondary);
+}
+
+.capabilities li {
+    margin-bottom: 0.75rem;
+    line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+    .input-type-selector {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .input-group {
+        flex-direction: column;
+    }
+    
+    .detection-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}

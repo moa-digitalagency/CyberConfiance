@@ -262,5 +262,16 @@
     "dangers": "Fuite de données, Brèche de sécurité, Vol d'identité",
     "related_rules": "2, 18",
     "related_scenarios": "4, 7"
+  },
+  {
+    "name": "Analyseur de Sécurité",
+    "description": "Outil d'analyse de réputation et de sécurité pour vérifier les fichiers, domaines, adresses IP et URLs contre une vaste base de données de menaces.",
+    "category": "Analyse",
+    "type": "Service",
+    "url": "/outils/analyseur-securite",
+    "use_case": "Vérifier la sécurité d'un fichier suspect (via son hash MD5/SHA), analyser la réputation d'un domaine ou d'une adresse IP, scanner une URL avant de cliquer. Obtenir un rapport détaillé avec le nombre de détections malveillantes par différents moteurs de sécurité.",
+    "dangers": "Fichiers malveillants, Sites de phishing, Serveurs compromis, URLs dangereuses",
+    "related_rules": "9, 13, 15",
+    "related_scenarios": "2, 4, 7"
   }
 ]

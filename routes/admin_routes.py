@@ -4,7 +4,7 @@ from flask_login import current_user
 import __init__ as app_module
 db = app_module.db
 admin = app_module.admin
-from models import Article, Rule, Tool, Scenario, Resource, News, Contact, GlossaryTerm, User, BreachAnalysis, QuizResult
+from models import Article, Rule, Tool, Scenario, Resource, News, Contact, GlossaryTerm, User, BreachAnalysis, QuizResult, SecurityAnalysis
 
 bp = Blueprint('admin_bp', __name__, url_prefix='/admin_bp')
 
@@ -54,6 +54,28 @@ class QuizResultView(SecureModelView):
         'created_at': 'Date du quiz'
     }
 
+class SecurityAnalysisView(SecureModelView):
+    column_list = ['id', 'input_type', 'input_value', 'threat_detected', 'threat_level', 'malicious_count', 'total_engines', 'created_at']
+    column_searchable_list = ['input_value', 'ip_address']
+    column_filters = ['input_type', 'threat_detected', 'threat_level', 'created_at']
+    column_sortable_list = ['id', 'input_type', 'threat_detected', 'threat_level', 'malicious_count', 'created_at']
+    column_default_sort = ('created_at', True)
+    can_create = False
+    can_edit = False
+    column_labels = {
+        'id': 'ID',
+        'input_value': 'Valeur analysée',
+        'input_type': 'Type',
+        'analysis_results': 'Résultats',
+        'threat_detected': 'Menace détectée',
+        'threat_level': 'Niveau de menace',
+        'malicious_count': 'Détections malveillantes',
+        'total_engines': 'Total moteurs',
+        'ip_address': 'Adresse IP',
+        'user_agent': 'Navigateur',
+        'created_at': 'Date d\'analyse'
+    }
+
 admin.add_view(SecureModelView(User, db.session, name='Utilisateurs'))
 admin.add_view(SecureModelView(Article, db.session, name='Articles'))
 admin.add_view(SecureModelView(Rule, db.session, name='Règles'))
@@ -65,3 +87,4 @@ admin.add_view(SecureModelView(Contact, db.session, name='Contacts'))
 admin.add_view(SecureModelView(GlossaryTerm, db.session, name='Glossaire'))
 admin.add_view(BreachAnalysisView(BreachAnalysis, db.session, name='Analyses de fuites'))
 admin.add_view(QuizResultView(QuizResult, db.session, name='Résultats de quiz'))
+admin.add_view(SecurityAnalysisView(SecurityAnalysis, db.session, name='Analyses de sécurité'))

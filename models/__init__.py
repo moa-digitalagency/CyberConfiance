@@ -193,3 +193,21 @@ class QuizResult(db.Model):
     
     def __repr__(self):
         return f'<QuizResult {self.email} - Score: {self.overall_score}%>'
+
+class SecurityAnalysis(db.Model):
+    __tablename__ = 'security_analyses'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    input_value = db.Column(db.String(500), nullable=False)
+    input_type = db.Column(db.String(20), nullable=False)
+    analysis_results = db.Column(db.JSON)
+    threat_detected = db.Column(db.Boolean, default=False)
+    threat_level = db.Column(db.String(20))
+    malicious_count = db.Column(db.Integer, default=0)
+    total_engines = db.Column(db.Integer, default=0)
+    ip_address = db.Column(db.String(50))
+    user_agent = db.Column(db.String(500))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    def __repr__(self):
+        return f'<SecurityAnalysis {self.input_type}: {self.input_value[:50]}>'
