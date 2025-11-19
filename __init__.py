@@ -2,19 +2,29 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_admin import Admin
 from flask_login import LoginManager
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from config import Config
 
 db = SQLAlchemy()
 admin = Admin(name='CyberConfiance Admin', template_mode='bootstrap3')
 login_manager = LoginManager()
+limiter = Limiter(
+    get_remote_address,
+    default_limits=["200 per day", "50 per hour"],
+    storage_uri="memory://"
+)
 
 def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
     
+    app.config['MAX_CONTENT_LENGTH'] = 32 * 1024 * 1024
+    
     db.init_app(app)
     admin.init_app(app)
     login_manager.init_app(app)
+    limiter.init_app(app)
     login_manager.login_view = 'main.login'
     login_manager.login_message = 'Veuillez vous connecter pour accéder à cette page.'
     
