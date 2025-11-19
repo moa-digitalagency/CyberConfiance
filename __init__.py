@@ -26,6 +26,7 @@ def create_app(config_class=Config):
     db.init_app(app)
     admin.init_app(app)
     login_manager.init_app(app)
+    csrf.init_app(app)
     limiter.init_app(app)
     login_manager.login_view = 'main.login'
     login_manager.login_message = 'Veuillez vous connecter pour accéder à cette page.'
@@ -51,6 +52,18 @@ def create_app(config_class=Config):
         response.headers['Pragma'] = 'no-cache'
         response.headers['Expires'] = '0'
         return response
+    
+    from flask_wtf.csrf import CSRFError
+    
+    @app.errorhandler(CSRFError)
+    def handle_csrf_error(e):
+        from flask import flash, redirect, url_for, request
+        from flask_login import current_user
+        flash('Erreur de validation CSRF. Veuillez réessayer.', 'danger')
+        
+        if current_user.is_authenticated and current_user.role == 'admin':
+            return redirect(url_for('admin_panel.dashboard'))
+        return redirect(url_for('main.index'))
     
     from routes import main, admin_routes, admin_panel
     app.register_blueprint(main.bp)

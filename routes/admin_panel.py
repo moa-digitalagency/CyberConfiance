@@ -16,7 +16,7 @@ def admin_required(f):
     def decorated_function(*args, **kwargs):
         if not (current_user.is_active and current_user.role == 'admin'):
             flash('Accès refusé. Vous devez être administrateur actif.', 'danger')
-            return redirect(url_for('main.index'))
+            return redirect(url_for('main.login'))
         return f(*args, **kwargs)
     return decorated_function
 
@@ -27,7 +27,7 @@ def moderator_required(f):
     def decorated_function(*args, **kwargs):
         if not (current_user.is_active and current_user.role in ['admin', 'moderator']):
             flash('Accès refusé. Rôle modérateur ou administrateur requis.', 'danger')
-            return redirect(url_for('main.index'))
+            return redirect(url_for('main.login'))
         return f(*args, **kwargs)
     return decorated_function
 
