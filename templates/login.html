@@ -13,6 +13,7 @@
     <div class="container">
         <div class="contact-form">
             <form method="POST" action="{{ url_for('main.login') }}">
+                <input type="hidden" name="next" value="{{ request.args.get('next', '') }}">
                 <div class="form-group">
                     <label for="username">Nom d'utilisateur</label>
                     <input type="text" id="username" name="username" required>

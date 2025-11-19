@@ -104,7 +104,7 @@ def login():
             user.last_login = __import__('datetime').datetime.utcnow()
             db.session.commit()
             flash('Connexion réussie!', 'success')
-            next_page = request.args.get('next')
+            next_page = request.form.get('next') or request.args.get('next')
             if user.role == 'admin':
                 return redirect(next_page or url_for('admin_panel.dashboard'))
             return redirect(next_page or url_for('main.index'))
