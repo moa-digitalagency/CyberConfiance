@@ -465,7 +465,7 @@ header {
 }
 
 .section {
-    padding: 0;
+    padding: 4rem 0;
     margin: 0;
     position: relative;
 }
@@ -518,7 +518,7 @@ header {
     position: relative;
     overflow: hidden;
     background: #000000;
-    padding: 2rem 0 2rem 0;
+    padding: 4rem 0;
     margin: 0;
 }
 
@@ -634,7 +634,7 @@ header {
 
 .pillars-section {
     background: #000000;
-    padding: 2rem 0;
+    padding: 4rem 0;
     margin: 0;
 }
 
@@ -757,7 +757,7 @@ header {
 
 .news-section {
     background: #000000;
-    padding: 2rem 0;
+    padding: 4rem 0;
     margin: 0;
 }
 
@@ -898,7 +898,7 @@ header {
 .newsletter-section {
     background: #000000;
     position: relative;
-    padding: 2rem 0;
+    padding: 4rem 0;
     margin: 0;
 }
 
@@ -1115,7 +1115,7 @@ header {
 
 .contact-section {
     text-align: center;
-    padding: 2rem 0;
+    padding: 4rem 0;
     margin: 0;
     background: #000000;
     border: none;
@@ -1143,7 +1143,7 @@ header {
 
 footer {
     border-top: 1px solid var(--border-subtle);
-    padding: 2rem 0;
+    padding: 4rem 0;
     margin: 0;
 }
 
@@ -2515,7 +2515,7 @@ footer {
 /* New Homepage Sections */
 .mission-section {
     text-align: center;
-    padding: 2rem 0;
+    padding: 4rem 0;
     margin: 0;
 }
 
@@ -2605,7 +2605,7 @@ footer {
 
 .footer-newsletter {
     background: linear-gradient(135deg, rgba(0, 102, 255, 0.1) 0%, rgba(0, 82, 204, 0.05) 100%);
-    padding: 2rem 0;
+    padding: 4rem 0;
     margin: 0;
 }
 
@@ -2801,7 +2801,7 @@ footer {
 
 /* Vision et Objectifs Section */
 .vision-section {
-    padding: 2rem 0;
+    padding: 4rem 0;
     margin: 0;
 }
 
@@ -2841,7 +2841,7 @@ footer {
 
 /* Section Spacing Adjustments */
 .section {
-    padding: 0;
+    padding: 4rem 0;
     margin: 0;
 }
 
@@ -2852,7 +2852,7 @@ footer {
 /* Contact Section Enhanced */
 .contact-section {
     text-align: center;
-    padding: 2rem 3rem;
+    padding: 4rem 3rem;
     margin: 0;
 }
 
