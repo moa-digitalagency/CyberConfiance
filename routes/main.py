@@ -56,6 +56,12 @@ def news():
     all_news = ContentService.get_latest_news(limit=50)
     return render_template('news.html', news=all_news)
 
+@bp.route('/news/<int:news_id>')
+def news_detail(news_id):
+    from models import News
+    article = News.query.get_or_404(news_id)
+    return render_template('news_detail.html', article=article)
+
 @bp.route('/contact', methods=['GET', 'POST'])
 def contact():
     if request.method == 'POST':

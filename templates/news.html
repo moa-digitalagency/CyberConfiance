@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}Actualités - CyberConfiance{% endblock %}
+{% block title %}Blog - Actualités Cybersécurité - CyberConfiance{% endblock %}
 
 {% block content %}
 <section class="page-header-modern">
     <div class="container">
         <div class="header-content-centered">
-            <h1 class="page-title-modern">Actualités</h1>
-            <p class="page-subtitle-modern">Les dernières nouvelles et tendances en cybersécurité</p>
+            <h1 class="page-title-modern">Blog - Actualités Cybersécurité</h1>
+            <p class="page-subtitle-modern">Les dernières nouvelles, analyses et tendances en cybersécurité</p>
         </div>
     </div>
 </section>
@@ -15,20 +15,150 @@
 <section class="content-section">
     <div class="container">
         {% if news %}
-        <div class="news-grid">
+        <div class="blog-grid">
             {% for item in news %}
-            <div class="news-card glass-card">
-                {% if item.published_date %}
-                <div class="news-date">{{ item.published_date.strftime('%d %B %Y') }}</div>
-                {% endif %}
-                <h3>{{ item.title }}</h3>
-                <p>{{ item.content }}</p>
-            </div>
+            <article class="blog-card glass-card">
+                <div class="blog-header">
+                    {% if item.published_date %}
+                    <time class="blog-date" datetime="{{ item.published_date.isoformat() }}">
+                        {{ item.published_date.strftime('%d %B %Y') }}
+                    </time>
+                    {% endif %}
+                    {% if item.source %}
+                    <span class="blog-source">{{ item.source }}</span>
+                    {% endif %}
+                </div>
+                <h2 class="blog-title">{{ item.title }}</h2>
+                <div class="blog-excerpt">
+                    {% if item.content|length > 250 %}
+                        {{ item.content[:250] }}...
+                    {% else %}
+                        {{ item.content }}
+                    {% endif %}
+                </div>
+                <a href="{{ url_for('main.news_detail', news_id=item.id) }}" class="blog-read-more">
+                    Lire la suite
+                    <span class="arrow">→</span>
+                </a>
+            </article>
             {% endfor %}
         </div>
         {% else %}
-        <p>Aucune actualité disponible pour le moment.</p>
+        <div class="empty-state">
+            <p>Aucune actualité disponible pour le moment.</p>
+            <p class="empty-hint">Revenez bientôt pour découvrir les dernières actualités en cybersécurité.</p>
+        </div>
         {% endif %}
     </div>
 </section>
+
+<style>
+.blog-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.blog-card {
+    padding: 2rem;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.blog-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(59, 130, 246, 0.2);
+}
+
+.blog-header {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.blog-date {
+    color: var(--accent-blue);
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.blog-source {
+    padding: 0.25rem 0.75rem;
+    background: rgba(59, 130, 246, 0.15);
+    border-radius: 12px;
+    font-size: 0.75rem;
+    color: var(--accent-blue);
+    font-weight: 500;
+}
+
+.blog-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    line-height: 1.3;
+    letter-spacing: -0.5px;
+}
+
+.blog-excerpt {
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+    flex-grow: 1;
+}
+
+.blog-read-more {
+    color: var(--accent-blue);
+    font-weight: 500;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.blog-read-more:hover {
+    gap: 0.75rem;
+    color: var(--accent-purple);
+}
+
+.blog-read-more .arrow {
+    transition: transform 0.3s ease;
+}
+
+.blog-read-more:hover .arrow {
+    transform: translateX(4px);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+}
+
+.empty-state p {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+}
+
+.empty-hint {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+@media (max-width: 768px) {
+    .blog-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .blog-title {
+        font-size: 1.3rem;
+    }
+}
+</style>
 {% endblock %}
