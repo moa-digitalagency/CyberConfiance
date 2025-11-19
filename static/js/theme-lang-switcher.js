@@ -1,8 +1,8 @@
 // Theme Switcher
 const initTheme = () => {
     const savedTheme = localStorage.getItem('theme');
-    const systemPreference = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
-    const theme = savedTheme || systemPreference;
+    // Default to 'light' without browser detection
+    const theme = savedTheme || 'light';
     
     document.documentElement.setAttribute('data-theme', theme);
     updateLogo(theme);
@@ -60,11 +60,4 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// Listen for system theme changes
-window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-    if (!localStorage.getItem('theme')) {
-        const newTheme = e.matches ? 'dark' : 'light';
-        document.documentElement.setAttribute('data-theme', newTheme);
-        updateLogo(newTheme);
-    }
-});
+// Browser theme detection disabled to prevent infinite loops

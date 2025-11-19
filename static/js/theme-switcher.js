@@ -6,21 +6,16 @@ const ThemeSwitcher = {
 
     detectAndSetTheme() {
         const savedTheme = localStorage.getItem('theme');
-        const savedLang = localStorage.getItem('language');
         
+        // Set theme - default to 'light' if no saved preference
         if (savedTheme) {
             this.setTheme(savedTheme);
         } else {
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            this.setTheme(prefersDark ? 'dark' : 'light');
+            // Default theme without browser detection
+            this.setTheme('light');
         }
 
-        if (savedLang) {
-            this.setLanguage(savedLang);
-        } else {
-            const browserLang = navigator.language.split('-')[0];
-            this.setLanguage(['en', 'fr'].includes(browserLang) ? browserLang : 'fr');
-        }
+        // Language is handled by server-side session, no auto-detection needed
     },
 
     setTheme(theme) {
@@ -79,11 +74,7 @@ const ThemeSwitcher = {
             langBtn.addEventListener('click', () => this.toggleLanguage());
         }
 
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-            if (!localStorage.getItem('theme')) {
-                this.setTheme(e.matches ? 'dark' : 'light');
-            }
-        });
+        // Browser theme detection disabled to prevent infinite loops
     }
 };
 
