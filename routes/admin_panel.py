@@ -335,6 +335,7 @@ def site_settings():
     return render_template('admin/site_settings.html', settings=settings)
 
 @bp.route('/settings/seo', methods=['GET', 'POST'])
+@bp.route('/settings/seo/add', methods=['POST'])
 @admin_required
 def seo_settings():
     """Paramètres SEO"""
@@ -367,6 +368,9 @@ def seo_settings():
     log_activity('ADMIN_SEO_VIEW', 'Consultation paramètres SEO')
     
     return render_template('admin/seo_settings.html', seo_pages=seo_pages)
+
+# Alias pour ajouter une page SEO
+add_seo_page = seo_settings
 
 @bp.route('/blog')
 @moderator_required

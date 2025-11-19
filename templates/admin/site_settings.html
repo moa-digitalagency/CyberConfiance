@@ -15,12 +15,12 @@
         </div>
     </div>
     <div class="toolbar-right">
-        <a href="/my4dm1n/sitesettings/new/" class="btn btn-primary">+ Nouveau paramètre</a>
-        <a href="/my4dm1n/sitesettings/" class="btn btn-secondary">Gérer via Flask-Admin</a>
+        <a href="/admin/sitesettings/new/" class="btn btn-primary">+ Nouveau paramètre</a>
+        <a href="/admin/sitesettings/" class="btn btn-secondary">Gérer via Flask-Admin</a>
     </div>
 </div>
 
-<form method="POST" action="{{ url_for('admin_panel.update_site_settings') }}">
+<form method="POST" action="{{ url_for('admin_panel.site_settings') }}">
     <div class="admin-card">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
             <h3 style="margin: 0;">Paramètres configurés ({{ settings|length }})</h3>
@@ -69,7 +69,7 @@
             <p style="font-size: 0.9rem; margin-bottom: 2rem;">
                 Commencez par créer des paramètres personnalisés pour configurer votre site.
             </p>
-            <a href="/my4dm1n/sitesettings/new/" class="btn btn-primary">Créer le premier paramètre</a>
+            <a href="/admin/sitesettings/new/" class="btn btn-primary">Créer le premier paramètre</a>
         </div>
         {% endif %}
     </div>

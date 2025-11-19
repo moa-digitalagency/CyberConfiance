@@ -16,7 +16,7 @@
     </div>
     <div class="toolbar-right">
         <button onclick="document.getElementById('add-seo-modal').style.display='block'" class="btn btn-primary">+ Nouvelle page SEO</button>
-        <a href="/my4dm1n/seometadata/" class="btn btn-secondary">Gérer via Flask-Admin</a>
+        <a href="/admin/seometadata/" class="btn btn-secondary">Gérer via Flask-Admin</a>
     </div>
 </div>
 
@@ -58,8 +58,8 @@
                     <td style="font-size: 0.85rem;">{{ seo.updated_at.strftime('%d/%m/%Y %H:%M') }}</td>
                     <td class="actions-cell">
                         <div class="action-btn-group">
-                            <a href="/my4dm1n/seometadata/edit/?id={{ seo.id }}" class="btn btn-primary btn-sm">Modifier</a>
-                            <form method="POST" action="/my4dm1n/seometadata/delete/?id={{ seo.id }}" style="display: inline;" onsubmit="return confirm('Supprimer cette page SEO ?')">
+                            <a href="/admin/seometadata/edit/?id={{ seo.id }}" class="btn btn-primary btn-sm">Modifier</a>
+                            <form method="POST" action="/admin/seometadata/delete/?id={{ seo.id }}" style="display: inline;" onsubmit="return confirm('Supprimer cette page SEO ?')">
                                 <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
                             </form>
                         </div>
