@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Administration{% endblock %} - CyberConfiance</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        .admin-sidebar {
+            width: 260px;
+            background: rgba(15, 31, 53, 0.95);
+            border-right: 1px solid rgba(59, 130, 246, 0.3);
+            padding: 2rem 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        
+        .admin-sidebar-header {
+            padding: 0 1.5rem 2rem;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+            margin-bottom: 1.5rem;
+        }
+        
+        .admin-sidebar-header h2 {
+            color: var(--accent-blue);
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .admin-user-info {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+        
+        .admin-nav {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .admin-nav-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .admin-nav-section-title {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0 1.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        
+        .admin-nav li a {
+            display: block;
+            padding: 0.75rem 1.5rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+        
+        .admin-nav li a:hover {
+            background: rgba(59, 130, 246, 0.1);
+            border-left-color: var(--accent-blue);
+        }
+        
+        .admin-nav li a.active {
+            background: rgba(59, 130, 246, 0.15);
+            border-left-color: var(--accent-blue);
+            color: var(--accent-blue);
+        }
+        
+        .admin-content {
+            margin-left: 260px;
+            flex: 1;
+            padding: 2rem;
+            background: linear-gradient(135deg, #0a1628 0%, #1a2332 100%);
+            min-height: 100vh;
+        }
+        
+        .admin-header {
+            margin-bottom: 2rem;
+        }
+        
+        .admin-header h1 {
+            color: var(--text-primary);
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .admin-header p {
+            color: var(--text-secondary);
+        }
+        
+        .admin-card {
+            background: rgba(15, 31, 53, 0.6);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+        }
+        
+        .admin-card h3 {
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: rgba(15, 31, 53, 0.6);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent-blue);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .stat-change {
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+        }
+        
+        .stat-change.positive {
+            color: #10b981;
+        }
+        
+        .stat-change.negative {
+            color: #ef4444;
+        }
+        
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .admin-table th {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--text-primary);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.3);
+        }
+        
+        .admin-table td {
+            padding: 1rem;
+            color: var(--text-secondary);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+        }
+        
+        .admin-table tr:hover {
+            background: rgba(59, 130, 246, 0.05);
+        }
+        
+        .admin-filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .admin-filter-input {
+            padding: 0.75rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            color: var(--text-primary);
+            min-width: 200px;
+        }
+        
+        .admin-filter-input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+        
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .badge-success {
+            background: rgba(16, 185, 129, 0.2);
+            color: #6ee7b7;
+        }
+        
+        .badge-warning {
+            background: rgba(245, 158, 11, 0.2);
+            color: #fbbf24;
+        }
+        
+        .badge-danger {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+        }
+        
+        .badge-info {
+            background: rgba(59, 130, 246, 0.2);
+            color: #93c5fd;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+        }
+        
+        .pagination a, .pagination span {
+            padding: 0.5rem 1rem;
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--text-primary);
+            border-radius: 6px;
+            text-decoration: none;
+        }
+        
+        .pagination a:hover {
+            background: rgba(59, 130, 246, 0.2);
+        }
+        
+        .pagination .active {
+            background: var(--accent-blue);
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="admin-container">
+        <aside class="admin-sidebar">
+            <div class="admin-sidebar-header">
+                <h2>Administration</h2>
+                <div class="admin-user-info">
+                    {% if current_user.is_authenticated %}
+                    Connecté en tant que: <strong>{{ current_user.username }}</strong>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <nav class="admin-nav">
+                <div class="admin-nav-section">
+                    <div class="admin-nav-section-title">Vue d'ensemble</div>
+                    <ul>
+                        <li><a href="{{ url_for('admin_panel.dashboard') }}" class="{% if request.endpoint == 'admin_panel.dashboard' %}active{% endif %}">Dashboard</a></li>
+                        <li><a href="{{ url_for('admin_panel.content_management') }}" class="{% if request.endpoint == 'admin_panel.content_management' %}active{% endif %}">Gestion du contenu</a></li>
+                    </ul>
+                </div>
+                
+                <div class="admin-nav-section">
+                    <div class="admin-nav-section-title">Historiques</div>
+                    <ul>
+                        <li><a href="{{ url_for('admin_panel.quiz_history') }}" class="{% if request.endpoint == 'admin_panel.quiz_history' %}active{% endif %}">Quiz</a></li>
+                        <li><a href="{{ url_for('admin_panel.security_history') }}" class="{% if request.endpoint == 'admin_panel.security_history' %}active{% endif %}">Analyses sécurité</a></li>
+                        <li><a href="{{ url_for('admin_panel.breach_history') }}" class="{% if request.endpoint == 'admin_panel.breach_history' %}active{% endif %}">Analyses fuites</a></li>
+                    </ul>
+                </div>
+                
+                <div class="admin-nav-section">
+                    <div class="admin-nav-section-title">Logs</div>
+                    <ul>
+                        <li><a href="{{ url_for('admin_panel.activity_logs') }}" class="{% if request.endpoint == 'admin_panel.activity_logs' %}active{% endif %}">Activité</a></li>
+                        <li><a href="{{ url_for('admin_panel.security_logs') }}" class="{% if request.endpoint == 'admin_panel.security_logs' %}active{% endif %}">Sécurité</a></li>
+                    </ul>
+                </div>
+                
+                <div class="admin-nav-section">
+                    <div class="admin-nav-section-title">Paramètres</div>
+                    <ul>
+                        <li><a href="{{ url_for('admin_panel.site_settings') }}" class="{% if request.endpoint == 'admin_panel.site_settings' %}active{% endif %}">Site</a></li>
+                        <li><a href="{{ url_for('admin_panel.seo_settings') }}" class="{% if request.endpoint == 'admin_panel.seo_settings' %}active{% endif %}">SEO</a></li>
+                    </ul>
+                </div>
+                
+                <div class="admin-nav-section">
+                    <div class="admin-nav-section-title">Système</div>
+                    <ul>
+                        <li><a href="/admin">Flask-Admin</a></li>
+                        <li><a href="{{ url_for('main.index') }}">Retour au site</a></li>
+                    </ul>
+                </div>
+            </nav>
+        </aside>
+        
+        <main class="admin-content">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}" style="margin-bottom: 2rem;">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

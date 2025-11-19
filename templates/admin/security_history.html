@@ -1,0 +1,80 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Historique Analyses Sécurité - Administration{% endblock %}
+
+{% block content %}
+<div class="admin-header">
+    <h1>Historique des Analyses de Sécurité</h1>
+    <p>Toutes les analyses effectuées via l'outil de sécurité</p>
+</div>
+
+<div class="admin-card">
+    <form method="GET" class="admin-filters">
+        <input type="text" name="search" value="{{ search }}" placeholder="Rechercher..." class="admin-filter-input">
+        <select name="type" class="admin-filter-input">
+            <option value="">Tous les types</option>
+            <option value="file" {% if input_type == 'file' %}selected{% endif %}>Fichier</option>
+            <option value="url" {% if input_type == 'url' %}selected{% endif %}>URL</option>
+            <option value="domain" {% if input_type == 'domain' %}selected{% endif %}>Domaine</option>
+            <option value="ip" {% if input_type == 'ip' %}selected{% endif %}>IP</option>
+            <option value="hash" {% if input_type == 'hash' %}selected{% endif %}>Hash</option>
+        </select>
+        <label style="color: var(--text-primary); display: flex; align-items: center; gap: 0.5rem;">
+            <input type="checkbox" name="threat_only" value="true" {% if threat_only == 'true' %}checked{% endif %}>
+            Menaces uniquement
+        </label>
+        <button type="submit" class="btn btn-primary">Filtrer</button>
+    </form>
+    
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Type</th>
+                <th>Valeur</th>
+                <th>Menace</th>
+                <th>Niveau</th>
+                <th>Détections</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for result in results.items %}
+            <tr>
+                <td><span class="badge badge-info">{{ result.input_type }}</span></td>
+                <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis;">{{ result.input_value }}</td>
+                <td>
+                    {% if result.threat_detected %}
+                    <span class="badge badge-danger">Oui</span>
+                    {% else %}
+                    <span class="badge badge-success">Non</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if result.threat_level %}
+                    <span class="badge badge-warning">{{ result.threat_level }}</span>
+                    {% else %}
+                    <span class="badge badge-info">-</span>
+                    {% endif %}
+                </td>
+                <td>{{ result.malicious_count }} / {{ result.total_engines }}</td>
+                <td>{{ result.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    {% if results.pages > 1 %}
+    <div class="pagination">
+        {% if results.has_prev %}
+        <a href="{{ url_for('admin_panel.security_history', page=results.prev_num, search=search, type=input_type, threat_only=threat_only) }}">Précédent</a>
+        {% endif %}
+        
+        <span class="active">Page {{ results.page }} / {{ results.pages }}</span>
+        
+        {% if results.has_next %}
+        <a href="{{ url_for('admin_panel.security_history', page=results.next_num, search=search, type=input_type, threat_only=threat_only) }}">Suivant</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

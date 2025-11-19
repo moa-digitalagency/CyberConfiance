@@ -1,0 +1,132 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Paramètres SEO - Administration{% endblock %}
+
+{% block content %}
+<div class="admin-header">
+    <h1>Paramètres SEO</h1>
+    <p>Gestion des métadonnées SEO pour chaque page</p>
+</div>
+
+<div class="admin-card">
+    <h3>Pages configurées</h3>
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Page</th>
+                <th>Titre</th>
+                <th>Statut</th>
+                <th>Dernière mise à jour</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for seo in seo_pages %}
+            <tr>
+                <td><strong>{{ seo.page_path }}</strong></td>
+                <td>{{ seo.title or '-' }}</td>
+                <td>
+                    {% if seo.is_active %}
+                    <span class="badge badge-success">Actif</span>
+                    {% else %}
+                    <span class="badge badge-danger">Inactif</span>
+                    {% endif %}
+                </td>
+                <td>{{ seo.updated_at.strftime('%d/%m/%Y %H:%M') }}</td>
+                <td>
+                    <a href="/admin/seometadata/edit/?id={{ seo.id }}" class="btn btn-secondary" style="font-size: 0.85rem; padding: 0.4rem 0.8rem;">Modifier</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="admin-card" style="margin-top: 2rem;">
+    <h3>Ajouter une nouvelle page SEO</h3>
+    <form method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        
+        <div style="display: grid; gap: 1.5rem;">
+            <div>
+                <label style="display: block; color: var(--text-primary); margin-bottom: 0.5rem; font-weight: 600;">
+                    Chemin de la page (ex: /, /rules, /contact)
+                </label>
+                <input type="text" name="page_path" required class="admin-filter-input" style="width: 100%;">
+            </div>
+            
+            <div>
+                <label style="display: block; color: var(--text-primary); margin-bottom: 0.5rem; font-weight: 600;">
+                    Titre SEO
+                </label>
+                <input type="text" name="title" class="admin-filter-input" style="width: 100%;">
+            </div>
+            
+            <div>
+                <label style="display: block; color: var(--text-primary); margin-bottom: 0.5rem; font-weight: 600;">
+                    Description
+                </label>
+                <textarea name="description" class="admin-filter-input" rows="3" style="width: 100%;"></textarea>
+            </div>
+            
+            <div>
+                <label style="display: block; color: var(--text-primary); margin-bottom: 0.5rem; font-weight: 600;">
+                    Mots-clés (séparés par des virgules)
+                </label>
+                <input type="text" name="keywords" class="admin-filter-input" style="width: 100%;">
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div>
+                    <label style="display: block; color: var(--text-primary); margin-bottom: 0.5rem; font-weight: 600;">
+                        Open Graph Title
+                    </label>
+                    <input type="text" name="og_title" class="admin-filter-input" style="width: 100%;">
+                </div>
+                
+                <div>
+                    <label style="display: block; color: var(--text-primary); margin-bottom: 0.5rem; font-weight: 600;">
+                        Open Graph Image URL
+                    </label>
+                    <input type="text" name="og_image" class="admin-filter-input" style="width: 100%;">
+                </div>
+            </div>
+            
+            <div>
+                <label style="display: block; color: var(--text-primary); margin-bottom: 0.5rem; font-weight: 600;">
+                    Open Graph Description
+                </label>
+                <textarea name="og_description" class="admin-filter-input" rows="2" style="width: 100%;"></textarea>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div>
+                    <label style="display: block; color: var(--text-primary); margin-bottom: 0.5rem; font-weight: 600;">
+                        URL Canonique
+                    </label>
+                    <input type="text" name="canonical_url" class="admin-filter-input" style="width: 100%;">
+                </div>
+                
+                <div>
+                    <label style="display: block; color: var(--text-primary); margin-bottom: 0.5rem; font-weight: 600;">
+                        Robots (ex: index, follow)
+                    </label>
+                    <input type="text" name="robots" value="index, follow" class="admin-filter-input" style="width: 100%;">
+                </div>
+            </div>
+            
+            <div>
+                <label style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-primary);">
+                    <input type="checkbox" name="is_active" checked>
+                    Activer ces métadonnées
+                </label>
+            </div>
+            
+            <div>
+                <button type="submit" class="btn btn-primary">Ajouter la page SEO</button>
+                <a href="/admin/seometadata/" class="btn btn-secondary">Gérer via Flask-Admin</a>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

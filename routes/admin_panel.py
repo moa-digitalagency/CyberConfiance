@@ -1,0 +1,308 @@
+from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
+from flask_login import login_required, current_user
+from functools import wraps
+from models import (db, User, ActivityLog, SecurityLog, QuizResult, SecurityAnalysis, 
+                    BreachAnalysis, Rule, Scenario, Tool, GlossaryTerm, SiteSettings, SEOMetadata)
+from utils.logging_utils import log_activity
+from datetime import datetime, timedelta
+from sqlalchemy import func, desc
+
+bp = Blueprint('admin_panel', __name__, url_prefix='/admin')
+
+def admin_required(f):
+    @wraps(f)
+    @login_required
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_admin:
+            flash('Accès refusé. Vous devez être administrateur.', 'danger')
+            return redirect(url_for('main.index'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+@bp.route('/dashboard')
+@admin_required
+def dashboard():
+    """Dashboard principal avec statistiques"""
+    log_activity('ADMIN_DASHBOARD_VIEW', 'Consultation du dashboard admin')
+    
+    total_users = User.query.count()
+    total_quiz_results = QuizResult.query.count()
+    total_security_analyses = SecurityAnalysis.query.count()
+    total_breach_analyses = BreachAnalysis.query.count()
+    
+    today = datetime.utcnow().date()
+    week_ago = datetime.utcnow() - timedelta(days=7)
+    month_ago = datetime.utcnow() - timedelta(days=30)
+    
+    quiz_today = QuizResult.query.filter(func.date(QuizResult.created_at) == today).count()
+    quiz_week = QuizResult.query.filter(QuizResult.created_at >= week_ago).count()
+    quiz_month = QuizResult.query.filter(QuizResult.created_at >= month_ago).count()
+    
+    security_today = SecurityAnalysis.query.filter(func.date(SecurityAnalysis.created_at) == today).count()
+    security_week = SecurityAnalysis.query.filter(SecurityAnalysis.created_at >= week_ago).count()
+    
+    threats_detected_week = SecurityAnalysis.query.filter(
+        SecurityAnalysis.created_at >= week_ago,
+        SecurityAnalysis.threat_detected == True
+    ).count()
+    
+    high_risk_breaches = BreachAnalysis.query.filter(
+        BreachAnalysis.risk_level.in_(['critique', 'élevé'])
+    ).count()
+    
+    recent_activities = ActivityLog.query.order_by(desc(ActivityLog.created_at)).limit(10).all()
+    recent_security_logs = SecurityLog.query.order_by(desc(SecurityLog.created_at)).limit(10).all()
+    
+    avg_quiz_score = db.session.query(func.avg(QuizResult.overall_score)).scalar() or 0
+    
+    return render_template('admin/dashboard.html',
+                         total_users=total_users,
+                         total_quiz_results=total_quiz_results,
+                         total_security_analyses=total_security_analyses,
+                         total_breach_analyses=total_breach_analyses,
+                         quiz_today=quiz_today,
+                         quiz_week=quiz_week,
+                         quiz_month=quiz_month,
+                         security_today=security_today,
+                         security_week=security_week,
+                         threats_detected_week=threats_detected_week,
+                         high_risk_breaches=high_risk_breaches,
+                         avg_quiz_score=round(avg_quiz_score, 1),
+                         recent_activities=recent_activities,
+                         recent_security_logs=recent_security_logs)
+
+@bp.route('/content')
+@admin_required
+def content_management():
+    """Gestion du contenu frontend"""
+    log_activity('ADMIN_CONTENT_VIEW', 'Consultation gestion contenu')
+    
+    rules_count = Rule.query.count()
+    scenarios_count = Scenario.query.count()
+    tools_count = Tool.query.count()
+    glossary_count = GlossaryTerm.query.count()
+    
+    return render_template('admin/content.html',
+                         rules_count=rules_count,
+                         scenarios_count=scenarios_count,
+                         tools_count=tools_count,
+                         glossary_count=glossary_count)
+
+@bp.route('/history/quiz')
+@admin_required
+def quiz_history():
+    """Historique des quiz"""
+    log_activity('ADMIN_QUIZ_HISTORY_VIEW', 'Consultation historique quiz')
+    
+    page = request.args.get('page', 1, type=int)
+    per_page = 50
+    
+    search = request.args.get('search', '')
+    date_from = request.args.get('date_from', '')
+    date_to = request.args.get('date_to', '')
+    
+    query = QuizResult.query
+    
+    if search:
+        query = query.filter(QuizResult.email.contains(search))
+    
+    if date_from:
+        query = query.filter(QuizResult.created_at >= datetime.fromisoformat(date_from))
+    
+    if date_to:
+        query = query.filter(QuizResult.created_at <= datetime.fromisoformat(date_to))
+    
+    results = query.order_by(desc(QuizResult.created_at)).paginate(page=page, per_page=per_page, error_out=False)
+    
+    return render_template('admin/quiz_history.html', results=results, search=search, date_from=date_from, date_to=date_to)
+
+@bp.route('/history/security')
+@admin_required
+def security_history():
+    """Historique des analyses de sécurité"""
+    log_activity('ADMIN_SECURITY_HISTORY_VIEW', 'Consultation historique analyses sécurité')
+    
+    page = request.args.get('page', 1, type=int)
+    per_page = 50
+    
+    search = request.args.get('search', '')
+    input_type = request.args.get('type', '')
+    threat_only = request.args.get('threat_only', '')
+    
+    query = SecurityAnalysis.query
+    
+    if search:
+        query = query.filter(SecurityAnalysis.input_value.contains(search))
+    
+    if input_type:
+        query = query.filter(SecurityAnalysis.input_type == input_type)
+    
+    if threat_only == 'true':
+        query = query.filter(SecurityAnalysis.threat_detected == True)
+    
+    results = query.order_by(desc(SecurityAnalysis.created_at)).paginate(page=page, per_page=per_page, error_out=False)
+    
+    return render_template('admin/security_history.html', results=results, search=search, input_type=input_type, threat_only=threat_only)
+
+@bp.route('/history/breach')
+@admin_required
+def breach_history():
+    """Historique des analyses de fuites"""
+    log_activity('ADMIN_BREACH_HISTORY_VIEW', 'Consultation historique analyses fuites')
+    
+    page = request.args.get('page', 1, type=int)
+    per_page = 50
+    
+    search = request.args.get('search', '')
+    risk_level = request.args.get('risk_level', '')
+    
+    query = BreachAnalysis.query
+    
+    if search:
+        query = query.filter(BreachAnalysis.email.contains(search))
+    
+    if risk_level:
+        query = query.filter(BreachAnalysis.risk_level == risk_level)
+    
+    results = query.order_by(desc(BreachAnalysis.created_at)).paginate(page=page, per_page=per_page, error_out=False)
+    
+    return render_template('admin/breach_history.html', results=results, search=search, risk_level=risk_level)
+
+@bp.route('/logs/activity')
+@admin_required
+def activity_logs():
+    """Logs d'activité"""
+    log_activity('ADMIN_ACTIVITY_LOGS_VIEW', 'Consultation logs activité')
+    
+    page = request.args.get('page', 1, type=int)
+    per_page = 100
+    
+    action_type = request.args.get('action_type', '')
+    user_id = request.args.get('user_id', '')
+    success_only = request.args.get('success', '')
+    
+    query = ActivityLog.query
+    
+    if action_type:
+        query = query.filter(ActivityLog.action_type.contains(action_type))
+    
+    if user_id:
+        query = query.filter(ActivityLog.user_id == int(user_id))
+    
+    if success_only == 'true':
+        query = query.filter(ActivityLog.success == True)
+    elif success_only == 'false':
+        query = query.filter(ActivityLog.success == False)
+    
+    logs = query.order_by(desc(ActivityLog.created_at)).paginate(page=page, per_page=per_page, error_out=False)
+    
+    return render_template('admin/activity_logs.html', logs=logs, action_type=action_type, user_id=user_id, success_only=success_only)
+
+@bp.route('/logs/security')
+@admin_required
+def security_logs():
+    """Logs de sécurité"""
+    log_activity('ADMIN_SECURITY_LOGS_VIEW', 'Consultation logs sécurité')
+    
+    page = request.args.get('page', 1, type=int)
+    per_page = 100
+    
+    event_type = request.args.get('event_type', '')
+    severity = request.args.get('severity', '')
+    blocked_only = request.args.get('blocked', '')
+    
+    query = SecurityLog.query
+    
+    if event_type:
+        query = query.filter(SecurityLog.event_type.contains(event_type))
+    
+    if severity:
+        query = query.filter(SecurityLog.severity == severity)
+    
+    if blocked_only == 'true':
+        query = query.filter(SecurityLog.blocked == True)
+    
+    logs = query.order_by(desc(SecurityLog.created_at)).paginate(page=page, per_page=per_page, error_out=False)
+    
+    return render_template('admin/security_logs.html', logs=logs, event_type=event_type, severity=severity, blocked_only=blocked_only)
+
+@bp.route('/settings/site', methods=['GET', 'POST'])
+@admin_required
+def site_settings():
+    """Paramètres du site"""
+    if request.method == 'POST':
+        for key, value in request.form.items():
+            if key.startswith('setting_'):
+                setting_key = key.replace('setting_', '')
+                setting = SiteSettings.query.filter_by(key=setting_key).first()
+                if setting:
+                    setting.value = value
+                    setting.updated_by = current_user.id
+                else:
+                    setting = SiteSettings(key=setting_key, value=value, updated_by=current_user.id)
+                    db.session.add(setting)
+        
+        db.session.commit()
+        log_activity('ADMIN_SETTINGS_UPDATE', 'Mise à jour paramètres site', success=True)
+        flash('Paramètres mis à jour avec succès', 'success')
+        return redirect(url_for('admin_panel.site_settings'))
+    
+    settings = SiteSettings.query.all()
+    log_activity('ADMIN_SETTINGS_VIEW', 'Consultation paramètres site')
+    
+    return render_template('admin/site_settings.html', settings=settings)
+
+@bp.route('/settings/seo', methods=['GET', 'POST'])
+@admin_required
+def seo_settings():
+    """Paramètres SEO"""
+    if request.method == 'POST':
+        page_path = request.form.get('page_path')
+        seo = SEOMetadata.query.filter_by(page_path=page_path).first()
+        
+        if not seo:
+            seo = SEOMetadata(page_path=page_path, updated_by=current_user.id)
+            db.session.add(seo)
+        
+        seo.title = request.form.get('title')
+        seo.description = request.form.get('description')
+        seo.keywords = request.form.get('keywords')
+        seo.og_title = request.form.get('og_title')
+        seo.og_description = request.form.get('og_description')
+        seo.og_image = request.form.get('og_image')
+        seo.canonical_url = request.form.get('canonical_url')
+        seo.robots = request.form.get('robots')
+        seo.is_active = request.form.get('is_active') == 'on'
+        seo.updated_by = current_user.id
+        
+        db.session.commit()
+        log_activity('ADMIN_SEO_UPDATE', f'Mise à jour SEO pour {page_path}', success=True)
+        flash(f'Paramètres SEO pour {page_path} mis à jour', 'success')
+        return redirect(url_for('admin_panel.seo_settings'))
+    
+    seo_pages = SEOMetadata.query.all()
+    log_activity('ADMIN_SEO_VIEW', 'Consultation paramètres SEO')
+    
+    return render_template('admin/seo_settings.html', seo_pages=seo_pages)
+
+@bp.route('/api/stats')
+@admin_required
+def api_stats():
+    """API pour les statistiques en temps réel"""
+    days = request.args.get('days', 7, type=int)
+    start_date = datetime.utcnow() - timedelta(days=days)
+    
+    quiz_stats = db.session.query(
+        func.date(QuizResult.created_at).label('date'),
+        func.count(QuizResult.id).label('count')
+    ).filter(QuizResult.created_at >= start_date).group_by(func.date(QuizResult.created_at)).all()
+    
+    security_stats = db.session.query(
+        func.date(SecurityAnalysis.created_at).label('date'),
+        func.count(SecurityAnalysis.id).label('count')
+    ).filter(SecurityAnalysis.created_at >= start_date).group_by(func.date(SecurityAnalysis.created_at)).all()
+    
+    return jsonify({
+        'quiz_stats': [{'date': str(s.date), 'count': s.count} for s in quiz_stats],
+        'security_stats': [{'date': str(s.date), 'count': s.count} for s in security_stats]
+    })

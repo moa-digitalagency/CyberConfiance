@@ -234,6 +234,98 @@ def seed_attack_types(db):
     db.session.commit()
     print(f"[OK] Attack Types: {created_count} created, {updated_count} updated")
 
+def seed_site_settings(db):
+    """Seed default site settings"""
+    from models import SiteSettings
+    
+    default_settings = [
+        {'key': 'site_name', 'value': 'CyberConfiance', 'description': 'Nom du site', 'category': 'general', 'is_public': True},
+        {'key': 'contact_email', 'value': 'contact@cyberconfiance.fr', 'description': 'Email de contact principal', 'category': 'general', 'is_public': True},
+        {'key': 'maintenance_mode', 'value': 'false', 'value_type': 'boolean', 'description': 'Mode maintenance activé', 'category': 'system', 'is_public': False},
+        {'key': 'analytics_enabled', 'value': 'true', 'value_type': 'boolean', 'description': 'Activer les statistiques', 'category': 'system', 'is_public': False},
+    ]
+    
+    created_count = 0
+    
+    for setting_data in default_settings:
+        existing = SiteSettings.query.filter_by(key=setting_data['key']).first()
+        if not existing:
+            setting = SiteSettings(**setting_data)
+            db.session.add(setting)
+            created_count += 1
+    
+    db.session.commit()
+    print(f"[OK] Site Settings: {created_count} created")
+
+def seed_seo_metadata(db):
+    """Seed default SEO metadata for main pages"""
+    from models import SEOMetadata
+    
+    default_seo = [
+        {
+            'page_path': '/',
+            'title': 'CyberConfiance - Votre bouclier numérique en RDC',
+            'description': 'Plateforme de sensibilisation à la cybersécurité pour les entreprises et particuliers en République Démocratique du Congo. Apprenez à vous protéger des menaces numériques.',
+            'keywords': 'cybersécurité, RDC, Congo, sécurité numérique, protection données, formation cybersécurité',
+            'og_title': 'CyberConfiance - Sécurité Numérique pour Tous',
+            'og_description': 'Protégez votre entreprise et vos données avec CyberConfiance. Formation, outils et conseils en cybersécurité.',
+            'robots': 'index, follow',
+            'is_active': True
+        },
+        {
+            'page_path': '/rules',
+            'title': '20 Règles d\'Or - CyberConfiance',
+            'description': 'Découvrez les 20 règles essentielles pour renforcer votre sécurité numérique au quotidien. Conseils pratiques et applicables immédiatement.',
+            'keywords': 'règles cybersécurité, bonnes pratiques sécurité, conseils protection',
+            'robots': 'index, follow',
+            'is_active': True
+        },
+        {
+            'page_path': '/scenarios',
+            'title': 'Scénarios d\'Attaque - CyberConfiance',
+            'description': 'Apprenez à reconnaître et à vous protéger contre les cybermenaces actuelles avec nos scénarios d\'attaque détaillés.',
+            'keywords': 'scénarios attaque, cybermenaces, phishing, ransomware',
+            'robots': 'index, follow',
+            'is_active': True
+        },
+        {
+            'page_path': '/tools',
+            'title': 'Outils de Cybersécurité - CyberConfiance',
+            'description': 'Découvrez notre collection d\'outils pour tester et améliorer votre sécurité numérique.',
+            'keywords': 'outils cybersécurité, test sécurité, analyse vulnérabilités',
+            'robots': 'index, follow',
+            'is_active': True
+        },
+        {
+            'page_path': '/glossary',
+            'title': 'Glossaire Cybersécurité - CyberConfiance',
+            'description': 'Comprenez les termes techniques de la cybersécurité avec notre glossaire complet et accessible.',
+            'keywords': 'glossaire cybersécurité, termes techniques, définitions sécurité',
+            'robots': 'index, follow',
+            'is_active': True
+        },
+        {
+            'page_path': '/contact',
+            'title': 'Contact - CyberConfiance',
+            'description': 'Contactez-nous pour toute question sur la cybersécurité ou nos services.',
+            'keywords': 'contact, support, cybersécurité RDC',
+            'robots': 'index, follow',
+            'is_active': True
+        }
+    ]
+    
+    created_count = 0
+    
+    for seo_data in default_seo:
+        existing = SEOMetadata.query.filter_by(page_path=seo_data['page_path']).first()
+        if not existing:
+            seo = SEOMetadata(**seo_data)
+            db.session.add(seo)
+            created_count += 1
+    
+    db.session.commit()
+    print(f"[OK] SEO Metadata: {created_count} created")
+
 def seed_all_data(db):
     """Seed all data from JSON files"""
     print("Starting database seeding...")
@@ -242,4 +334,6 @@ def seed_all_data(db):
     seed_glossary(db)
     seed_tools(db)
     seed_attack_types(db)
+    seed_site_settings(db)
+    seed_seo_metadata(db)
     print("Database seeding completed!")

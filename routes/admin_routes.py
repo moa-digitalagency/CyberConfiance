@@ -4,7 +4,9 @@ from flask_login import current_user
 import __init__ as app_module
 db = app_module.db
 admin = app_module.admin
-from models import Article, Rule, Tool, Scenario, Resource, News, Contact, GlossaryTerm, User, BreachAnalysis, QuizResult, SecurityAnalysis
+from models import (Article, Rule, Tool, Scenario, Resource, News, Contact, GlossaryTerm, 
+                    User, BreachAnalysis, QuizResult, SecurityAnalysis, ActivityLog, 
+                    SecurityLog, SiteSettings, SEOMetadata, AttackType)
 
 bp = Blueprint('admin_bp', __name__, url_prefix='/admin_bp')
 
@@ -88,3 +90,8 @@ admin.add_view(SecureModelView(GlossaryTerm, db.session, name='Glossaire'))
 admin.add_view(BreachAnalysisView(BreachAnalysis, db.session, name='Analyses de fuites'))
 admin.add_view(QuizResultView(QuizResult, db.session, name='Résultats de quiz'))
 admin.add_view(SecurityAnalysisView(SecurityAnalysis, db.session, name='Analyses de sécurité'))
+admin.add_view(SecureModelView(ActivityLog, db.session, name='Logs d\'activité'))
+admin.add_view(SecureModelView(SecurityLog, db.session, name='Logs de sécurité'))
+admin.add_view(SecureModelView(AttackType, db.session, name='Types d\'attaques'))
+admin.add_view(SecureModelView(SiteSettings, db.session, name='Paramètres site'))
+admin.add_view(SecureModelView(SEOMetadata, db.session, name='Métadonnées SEO'))

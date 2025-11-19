@@ -1,0 +1,83 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Logs de Sécurité - Administration{% endblock %}
+
+{% block content %}
+<div class="admin-header">
+    <h1>Logs de Sécurité</h1>
+    <p>Événements de sécurité et tentatives d'attaque</p>
+</div>
+
+<div class="admin-card">
+    <form method="GET" class="admin-filters">
+        <input type="text" name="event_type" value="{{ event_type }}" placeholder="Type d'événement..." class="admin-filter-input">
+        <select name="severity" class="admin-filter-input">
+            <option value="">Toutes les sévérités</option>
+            <option value="low" {% if severity == 'low' %}selected{% endif %}>Faible</option>
+            <option value="medium" {% if severity == 'medium' %}selected{% endif %}>Moyen</option>
+            <option value="high" {% if severity == 'high' %}selected{% endif %}>Élevé</option>
+            <option value="critique" {% if severity == 'critique' %}selected{% endif %}>Critique</option>
+        </select>
+        <label style="color: var(--text-primary); display: flex; align-items: center; gap: 0.5rem;">
+            <input type="checkbox" name="blocked" value="true" {% if blocked_only == 'true' %}checked{% endif %}>
+            Bloqués uniquement
+        </label>
+        <button type="submit" class="btn btn-primary">Filtrer</button>
+    </form>
+    
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Type d'événement</th>
+                <th>Sévérité</th>
+                <th>Description</th>
+                <th>Bloqué</th>
+                <th>IP</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in logs.items %}
+            <tr>
+                <td>{{ log.id }}</td>
+                <td><span class="badge badge-info">{{ log.event_type }}</span></td>
+                <td>
+                    {% if log.severity in ['high', 'critique'] %}
+                    <span class="badge badge-danger">{{ log.severity }}</span>
+                    {% elif log.severity == 'medium' %}
+                    <span class="badge badge-warning">{{ log.severity }}</span>
+                    {% else %}
+                    <span class="badge badge-info">{{ log.severity }}</span>
+                    {% endif %}
+                </td>
+                <td style="max-width: 400px; overflow: hidden; text-overflow: ellipsis;">{{ log.description }}</td>
+                <td>
+                    {% if log.blocked %}
+                    <span class="badge badge-danger">Oui</span>
+                    {% else %}
+                    <span class="badge badge-success">Non</span>
+                    {% endif %}
+                </td>
+                <td>{{ log.ip_address }}</td>
+                <td>{{ log.created_at.strftime('%d/%m/%Y %H:%M:%S') }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    {% if logs.pages > 1 %}
+    <div class="pagination">
+        {% if logs.has_prev %}
+        <a href="{{ url_for('admin_panel.security_logs', page=logs.prev_num, event_type=event_type, severity=severity, blocked=blocked_only) }}">Précédent</a>
+        {% endif %}
+        
+        <span class="active">Page {{ logs.page }} / {{ logs.pages }}</span>
+        
+        {% if logs.has_next %}
+        <a href="{{ url_for('admin_panel.security_logs', page=logs.next_num, event_type=event_type, severity=severity, blocked=blocked_only) }}">Suivant</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

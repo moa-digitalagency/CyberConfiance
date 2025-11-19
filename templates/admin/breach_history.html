@@ -1,0 +1,77 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Historique Analyses Fuites - Administration{% endblock %}
+
+{% block content %}
+<div class="admin-header">
+    <h1>Historique des Analyses de Fuites</h1>
+    <p>Toutes les vérifications d'emails effectuées</p>
+</div>
+
+<div class="admin-card">
+    <form method="GET" class="admin-filters">
+        <input type="text" name="search" value="{{ search }}" placeholder="Rechercher par email..." class="admin-filter-input">
+        <select name="risk_level" class="admin-filter-input">
+            <option value="">Tous les niveaux</option>
+            <option value="critique" {% if risk_level == 'critique' %}selected{% endif %}>Critique</option>
+            <option value="élevé" {% if risk_level == 'élevé' %}selected{% endif %}>Élevé</option>
+            <option value="moyen" {% if risk_level == 'moyen' %}selected{% endif %}>Moyen</option>
+            <option value="faible" {% if risk_level == 'faible' %}selected{% endif %}>Faible</option>
+        </select>
+        <button type="submit" class="btn btn-primary">Filtrer</button>
+    </form>
+    
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Email</th>
+                <th>Fuites trouvées</th>
+                <th>Niveau de risque</th>
+                <th>Date</th>
+                <th>IP</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for result in results.items %}
+            <tr>
+                <td>{{ result.email }}</td>
+                <td>
+                    {% if result.breach_count > 5 %}
+                    <span class="badge badge-danger">{{ result.breach_count }}</span>
+                    {% elif result.breach_count > 0 %}
+                    <span class="badge badge-warning">{{ result.breach_count }}</span>
+                    {% else %}
+                    <span class="badge badge-success">{{ result.breach_count }}</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if result.risk_level == 'critique' %}
+                    <span class="badge badge-danger">{{ result.risk_level }}</span>
+                    {% elif result.risk_level == 'élevé' %}
+                    <span class="badge badge-warning">{{ result.risk_level }}</span>
+                    {% else %}
+                    <span class="badge badge-info">{{ result.risk_level }}</span>
+                    {% endif %}
+                </td>
+                <td>{{ result.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
+                <td>{{ result.ip_address }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    {% if results.pages > 1 %}
+    <div class="pagination">
+        {% if results.has_prev %}
+        <a href="{{ url_for('admin_panel.breach_history', page=results.prev_num, search=search, risk_level=risk_level) }}">Précédent</a>
+        {% endif %}
+        
+        <span class="active">Page {{ results.page }} / {{ results.pages }}</span>
+        
+        {% if results.has_next %}
+        <a href="{{ url_for('admin_panel.breach_history', page=results.next_num, search=search, risk_level=risk_level) }}">Suivant</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

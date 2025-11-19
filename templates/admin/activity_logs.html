@@ -1,0 +1,76 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Logs d'Activité - Administration{% endblock %}
+
+{% block content %}
+<div class="admin-header">
+    <h1>Logs d'Activité</h1>
+    <p>Historique des actions effectuées sur le site</p>
+</div>
+
+<div class="admin-card">
+    <form method="GET" class="admin-filters">
+        <input type="text" name="action_type" value="{{ action_type }}" placeholder="Type d'action..." class="admin-filter-input">
+        <input type="text" name="user_id" value="{{ user_id }}" placeholder="ID utilisateur..." class="admin-filter-input">
+        <select name="success" class="admin-filter-input">
+            <option value="">Tous les statuts</option>
+            <option value="true" {% if success_only == 'true' %}selected{% endif %}>Succès uniquement</option>
+            <option value="false" {% if success_only == 'false' %}selected{% endif %}>Échecs uniquement</option>
+        </select>
+        <button type="submit" class="btn btn-primary">Filtrer</button>
+    </form>
+    
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Utilisateur</th>
+                <th>Action</th>
+                <th>Détail</th>
+                <th>Statut</th>
+                <th>IP</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in logs.items %}
+            <tr>
+                <td>{{ log.id }}</td>
+                <td>
+                    {% if log.user %}
+                    {{ log.user.username }}
+                    {% else %}
+                    <em>Anonyme</em>
+                    {% endif %}
+                </td>
+                <td><span class="badge badge-info">{{ log.action_type }}</span></td>
+                <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis;">{{ log.action_detail or '-' }}</td>
+                <td>
+                    {% if log.success %}
+                    <span class="badge badge-success">Succès</span>
+                    {% else %}
+                    <span class="badge badge-danger">Échec</span>
+                    {% endif %}
+                </td>
+                <td>{{ log.ip_address }}</td>
+                <td>{{ log.created_at.strftime('%d/%m/%Y %H:%M:%S') }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    {% if logs.pages > 1 %}
+    <div class="pagination">
+        {% if logs.has_prev %}
+        <a href="{{ url_for('admin_panel.activity_logs', page=logs.prev_num, action_type=action_type, user_id=user_id, success=success_only) }}">Précédent</a>
+        {% endif %}
+        
+        <span class="active">Page {{ logs.page }} / {{ logs.pages }}</span>
+        
+        {% if logs.has_next %}
+        <a href="{{ url_for('admin_panel.activity_logs', page=logs.next_num, action_type=action_type, user_id=user_id, success=success_only) }}">Suivant</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

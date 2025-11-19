@@ -4,11 +4,13 @@ from flask_admin import Admin
 from flask_login import LoginManager
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from flask_wtf.csrf import CSRFProtect
 from config import Config
 
 db = SQLAlchemy()
 admin = Admin(name='CyberConfiance Admin', template_mode='bootstrap3')
 login_manager = LoginManager()
+csrf = CSRFProtect()
 limiter = Limiter(
     get_remote_address,
     default_limits=["200 per day", "50 per hour"],
@@ -50,9 +52,10 @@ def create_app(config_class=Config):
         response.headers['Expires'] = '0'
         return response
     
-    from routes import main, admin_routes
+    from routes import main, admin_routes, admin_panel
     app.register_blueprint(main.bp)
     app.register_blueprint(admin_routes.bp)
+    app.register_blueprint(admin_panel.bp)
     
     with app.app_context():
         db.create_all()

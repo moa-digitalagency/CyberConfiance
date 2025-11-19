@@ -1,0 +1,51 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Paramètres du Site - Administration{% endblock %}
+
+{% block content %}
+<div class="admin-header">
+    <h1>Paramètres du Site</h1>
+    <p>Configuration générale du site</p>
+</div>
+
+<div class="admin-card">
+    <form method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        
+        <div style="display: grid; gap: 2rem;">
+            {% if settings %}
+            {% for setting in settings %}
+            <div>
+                <label style="display: block; color: var(--text-primary); margin-bottom: 0.5rem; font-weight: 600;">
+                    {{ setting.key }}
+                    {% if setting.description %}
+                    <span style="font-weight: normal; color: var(--text-secondary); font-size: 0.85rem;">({{ setting.description }})</span>
+                    {% endif %}
+                </label>
+                <input 
+                    type="text" 
+                    name="setting_{{ setting.key }}" 
+                    value="{{ setting.value }}" 
+                    class="admin-filter-input"
+                    style="width: 100%;"
+                >
+            </div>
+            {% endfor %}
+            {% else %}
+            <p style="color: var(--text-secondary);">Aucun paramètre configuré. Les paramètres peuvent être ajoutés via Flask-Admin.</p>
+            {% endif %}
+            
+            <div style="margin-top: 1rem;">
+                <button type="submit" class="btn btn-primary">Enregistrer les paramètres</button>
+                <a href="/admin/sitesettings/" class="btn btn-secondary">Gérer via Flask-Admin</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="admin-card" style="margin-top: 2rem;">
+    <h3>Ajouter un nouveau paramètre</h3>
+    <p style="color: var(--text-secondary);">Pour ajouter de nouveaux paramètres, utilisez l'interface Flask-Admin.</p>
+    <a href="/admin/sitesettings/new/" class="btn btn-primary">Ajouter un paramètre</a>
+</div>
+{% endblock %}

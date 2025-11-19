@@ -1,0 +1,49 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Gestion du contenu - Administration{% endblock %}
+
+{% block content %}
+<div class="admin-header">
+    <h1>Gestion du contenu</h1>
+    <p>Gérez le contenu affiché sur le site</p>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-value">{{ rules_count }}</div>
+        <div class="stat-label">Règles d'or</div>
+        <a href="/admin/rule/" class="btn btn-primary" style="margin-top: 1rem; display: inline-block; padding: 0.5rem 1rem;">Gérer</a>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-value">{{ scenarios_count }}</div>
+        <div class="stat-label">Scénarios d'attaque</div>
+        <a href="/admin/scenario/" class="btn btn-primary" style="margin-top: 1rem; display: inline-block; padding: 0.5rem 1rem;">Gérer</a>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-value">{{ tools_count }}</div>
+        <div class="stat-label">Outils</div>
+        <a href="/admin/tool/" class="btn btn-primary" style="margin-top: 1rem; display: inline-block; padding: 0.5rem 1rem;">Gérer</a>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-value">{{ glossary_count }}</div>
+        <div class="stat-label">Termes du glossaire</div>
+        <a href="/admin/glossaryterm/" class="btn btn-primary" style="margin-top: 1rem; display: inline-block; padding: 0.5rem 1rem;">Gérer</a>
+    </div>
+</div>
+
+<div class="admin-card">
+    <h3>Actions rapides</h3>
+    <p>Accédez rapidement aux sections de gestion de contenu via Flask-Admin.</p>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1.5rem;">
+        <a href="/admin/article/" class="btn btn-secondary">Articles</a>
+        <a href="/admin/resource/" class="btn btn-secondary">Ressources</a>
+        <a href="/admin/news/" class="btn btn-secondary">Actualités</a>
+        <a href="/admin/contact/" class="btn btn-secondary">Contacts</a>
+        <a href="/admin/attacktype/" class="btn btn-secondary">Types d'attaques</a>
+        <a href="/admin/user/" class="btn btn-secondary">Utilisateurs</a>
+    </div>
+</div>
+{% endblock %}

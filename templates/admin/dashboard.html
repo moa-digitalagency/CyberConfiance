@@ -1,0 +1,116 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Dashboard - Administration{% endblock %}
+
+{% block content %}
+<div class="admin-header">
+    <h1>Dashboard</h1>
+    <p>Vue d'ensemble des statistiques et activités du site</p>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-value">{{ total_users }}</div>
+        <div class="stat-label">Utilisateurs inscrits</div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-value">{{ total_quiz_results }}</div>
+        <div class="stat-label">Quiz complétés</div>
+        <div class="stat-change positive">+{{ quiz_today }} aujourd'hui</div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-value">{{ total_security_analyses }}</div>
+        <div class="stat-label">Analyses de sécurité</div>
+        <div class="stat-change positive">+{{ security_today }} aujourd'hui</div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-value">{{ total_breach_analyses }}</div>
+        <div class="stat-label">Analyses de fuites</div>
+    </div>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-value">{{ quiz_week }}</div>
+        <div class="stat-label">Quiz cette semaine</div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-value">{{ security_week }}</div>
+        <div class="stat-label">Analyses cette semaine</div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-value">{{ threats_detected_week }}</div>
+        <div class="stat-label">Menaces détectées (7j)</div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-value">{{ avg_quiz_score }}%</div>
+        <div class="stat-label">Score moyen des quiz</div>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+    <div class="admin-card">
+        <h3>Activités récentes</h3>
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Action</th>
+                    <th>Date</th>
+                    <th>Statut</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for activity in recent_activities %}
+                <tr>
+                    <td>{{ activity.action_type }}</td>
+                    <td>{{ activity.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
+                    <td>
+                        {% if activity.success %}
+                        <span class="badge badge-success">Succès</span>
+                        {% else %}
+                        <span class="badge badge-danger">Échec</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="admin-card">
+        <h3>Événements de sécurité</h3>
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Événement</th>
+                    <th>Sévérité</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in recent_security_logs %}
+                <tr>
+                    <td>{{ log.event_type }}</td>
+                    <td>
+                        {% if log.severity == 'high' or log.severity == 'critique' %}
+                        <span class="badge badge-danger">{{ log.severity }}</span>
+                        {% elif log.severity == 'medium' or log.severity == 'moyen' %}
+                        <span class="badge badge-warning">{{ log.severity }}</span>
+                        {% else %}
+                        <span class="badge badge-info">{{ log.severity }}</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ log.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
