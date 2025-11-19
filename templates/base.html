@@ -7,15 +7,34 @@
     <meta name="description" content="{% block description %}Plateforme de sensibilisation à la cybersécurité{% endblock %}">
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v={{ range(1, 99999) | random }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme-light.css') }}?v={{ range(1, 99999) | random }}">
 </head>
 <body>
     <div class="background-animation"></div>
+    
+    <!-- Theme and Language Switchers (Bottom Left) -->
+    <div style="position: fixed; bottom: 20px; left: 20px; z-index: 1000; display: flex; gap: 10px;">
+        <button id="theme-toggle" style="width: 45px; height: 45px; border-radius: 50%; background: rgba(59, 130, 246, 0.2); border: 1px solid rgba(59, 130, 246, 0.3); color: var(--text-primary); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 20px; backdrop-filter: blur(10px);" title="Toggle theme">
+            🌓
+        </button>
+        <div style="display: flex; gap: 5px; background: rgba(59, 130, 246, 0.2); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 25px; padding: 5px; backdrop-filter: blur(10px);">
+            <button class="lang-switch-btn" data-lang="en" style="padding: 8px 15px; border: none; background: rgba(255,255,255,0.1); border-radius: 20px; color: var(--text-primary); cursor: pointer; font-size: 13px; font-weight: 500;" title="English">EN</button>
+            <button class="lang-switch-btn" data-lang="fr" style="padding: 8px 15px; border: none; background: rgba(255,255,255,0.1); border-radius: 20px; color: var(--text-primary); cursor: pointer; font-size: 13px; font-weight: 500;" title="Français">FR</button>
+        </div>
+    </div>
     <header>
         <div class="container">
             <nav class="navbar">
                 <div class="logo">
                     <a href="{{ url_for('main.index') }}">
-                        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="CyberConfiance" class="logo-img">
+                        {% set default_logo = url_for('static', filename='img/logo.png') %}
+                        {% set light_logo = site_settings.logo_light if site_settings and site_settings.logo_light else default_logo %}
+                        {% set dark_logo = site_settings.logo_dark if site_settings and site_settings.logo_dark else default_logo %}
+                        <img src="{{ dark_logo }}" 
+                             alt="CyberConfiance" 
+                             class="logo-img logo-image"
+                             data-logo-light="{{ light_logo }}"
+                             data-logo-dark="{{ dark_logo }}">
                     </a>
                 </div>
                 <button class="mobile-menu-toggle" aria-label="Toggle menu">
@@ -95,6 +114,7 @@
     </footer>
 
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/theme-lang-switcher.js') }}"></script>
     {% block scripts %}{% endblock %}
 </body>
 </html>

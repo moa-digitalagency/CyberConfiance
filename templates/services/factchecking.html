@@ -7,7 +7,7 @@
     <div class="container">
         <div class="header-content-centered">
             <h1 class="page-title-modern">Fact-Checking & OSINT</h1>
-            <p class="page-subtitle-modern">Vérifier les informations et lutter activement contre la désinformation en ligne</p>
+            <p class="page-subtitle-modern">Verify information and actively fight against online disinformation</p>
         </div>
     </div>
 </section>
@@ -15,68 +15,122 @@
 <section class="section">
     <div class="container">
         <div class="glass-card-enhanced">
-            <h2 class="section-title" style="text-align: center;">La lutte contre la désinformation</h2>
-            <p style="font-size: 0.95rem; line-height: 1.7; color: var(--text-secondary); text-align: center; max-width: 800px; margin: 0 auto;">
-                Dans un contexte où les fake news se propagent rapidement, nous utilisons les techniques OSINT (Open Source Intelligence) pour vérifier les informations et protéger la population contre la manipulation.
+            <h2 class="section-title" style="text-align: center;">Submit a Fact-Checking Request</h2>
+            <p style="font-size: 0.95rem; line-height: 1.7; color: var(--text-secondary); text-align: center; max-width: 800px; margin: 0 auto 2rem;">
+                Submit information you want verified. We use OSINT techniques and VirusTotal security scanning to protect you from malicious content.
             </p>
+            
+            <form method="POST" enctype="multipart/form-data" style="max-width: 700px; margin: 0 auto;">
+                <div style="margin-bottom: 1.5rem;">
+                    <label for="description" style="display: block; margin-bottom: 0.5rem; color: var(--text-primary); font-weight: 500;">
+                        Description / Information to Verify *
+                    </label>
+                    <textarea 
+                        id="description" 
+                        name="description" 
+                        rows="6" 
+                        required
+                        style="width: 100%; padding: 0.75rem; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); border-radius: 8px; color: var(--text-primary); font-family: inherit;"
+                        placeholder="Describe the information you want us to verify..."></textarea>
+                    <small style="color: var(--text-secondary); display: block; margin-top: 0.25rem;">
+                        🔒 Automatically scanned for malicious content
+                    </small>
+                </div>
+
+                <div style="margin-bottom: 1.5rem;">
+                    <label for="urls" style="display: block; margin-bottom: 0.5rem; color: var(--text-primary); font-weight: 500;">
+                        URLs / Links (one per line)
+                    </label>
+                    <textarea 
+                        id="urls" 
+                        name="urls" 
+                        rows="3"
+                        style="width: 100%; padding: 0.75rem; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); border-radius: 8px; color: var(--text-primary); font-family: inherit;"
+                        placeholder="https://example.com/article&#10;https://example.org/post"></textarea>
+                    <small style="color: var(--text-secondary); display: block; margin-top: 0.25rem;">
+                        🔒 URLs will be scanned with VirusTotal before processing
+                    </small>
+                </div>
+
+                <div style="margin-bottom: 1.5rem;">
+                    <label for="file" style="display: block; margin-bottom: 0.5rem; color: var(--text-primary); font-weight: 500;">
+                        Attach File (optional)
+                    </label>
+                    <input 
+                        type="file" 
+                        id="file" 
+                        name="file"
+                        accept=".pdf,.png,.jpg,.jpeg,.gif,.doc,.docx,.txt,.zip"
+                        style="width: 100%; padding: 0.75rem; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); border-radius: 8px; color: var(--text-primary);">
+                    <small style="color: var(--text-secondary); display: block; margin-top: 0.25rem;">
+                        🔒 Files are scanned with VirusTotal. Max 10MB. Allowed: PDF, images, documents
+                    </small>
+                </div>
+
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: flex; align-items: center; cursor: pointer;">
+                        <input type="checkbox" name="is_anonymous" style="margin-right: 0.5rem;">
+                        <span style="color: var(--text-primary);">Submit anonymously (no contact info required)</span>
+                    </label>
+                </div>
+
+                <div id="contact-fields" style="border: 1px solid rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem; background: rgba(0,0,0,0.2);">
+                    <h4 style="color: var(--accent-blue); margin-bottom: 1rem;">Contact Information</h4>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <label for="name" style="display: block; margin-bottom: 0.5rem; color: var(--text-primary);">Name</label>
+                        <input 
+                            type="text" 
+                            id="name" 
+                            name="name"
+                            style="width: 100%; padding: 0.75rem; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); border-radius: 8px; color: var(--text-primary);">
+                    </div>
+
+                    <div style="margin-bottom: 1rem;">
+                        <label for="email" style="display: block; margin-bottom: 0.5rem; color: var(--text-primary);">Email</label>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            name="email"
+                            style="width: 100%; padding: 0.75rem; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); border-radius: 8px; color: var(--text-primary);">
+                    </div>
+
+                    <div>
+                        <label for="phone" style="display: block; margin-bottom: 0.5rem; color: var(--text-primary);">Phone (optional)</label>
+                        <input 
+                            type="tel" 
+                            id="phone" 
+                            name="phone"
+                            style="width: 100%; padding: 0.75rem; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); border-radius: 8px; color: var(--text-primary);">
+                    </div>
+                </div>
+
+                <div style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                    <p style="color: var(--accent-blue); margin: 0; font-size: 0.9rem;">
+                        ⚠️ <strong>Security Notice:</strong> All submissions are automatically scanned for malicious content using VirusTotal. Any attempt to submit malicious files, URLs, or code will be detected and logged as an illegal activity attempt.
+                    </p>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem; font-size: 1.1rem;">
+                    Submit Fact-Checking Request
+                </button>
+            </form>
         </div>
     </div>
 </section>
 
-<section class="section">
-    <div class="container">
-        <h2 class="section-title" style="text-align: center;">Nos services de vérification</h2>
-        
-        <div class="pillars-grid fact-checking-grid">
-            <div class="pillar-card scroll-animate">
-                <h3>Vérification d'informations</h3>
-                <p>Soumettez une information suspecte et nous vérifions sa véracité en utilisant des sources fiables et des techniques d'investigation.</p>
-            </div>
-            
-            <div class="pillar-card scroll-animate">
-                <h3>Détection de manipulations</h3>
-                <p>Identification des images truquées, vidéos deepfake et fausses informations circulant sur les réseaux sociaux.</p>
-            </div>
-            
-            <div class="pillar-card scroll-animate">
-                <h3>Rapports d'analyse</h3>
-                <p>Études approfondies sur les campagnes de désinformation touchant l'Afrique francophone.</p>
-            </div>
-            
-            <div class="pillar-card scroll-animate">
-                <h3>Formation OSINT</h3>
-                <p>Apprenez les techniques d'investigation en sources ouvertes pour vérifier vous-même les informations.</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section class="section">
-    <div class="container">
-        <div class="glass-card-enhanced" style="padding: 3rem;">
-            <h2 class="section-title" style="text-align: center;">Comment soumettre une vérification ?</h2>
-            
-            <div style="max-width: 700px; margin: 0 auto; text-align: left;">
-                <div style="margin-bottom: 2rem;">
-                    <h3 style="color: var(--accent-blue); margin-bottom: 0.5rem;">1. Collectez l'information</h3>
-                    <p style="color: var(--text-secondary);">Capturez l'image, la vidéo ou le texte que vous souhaitez faire vérifier.</p>
-                </div>
-                
-                <div style="margin-bottom: 2rem;">
-                    <h3 style="color: var(--accent-blue); margin-bottom: 0.5rem;">2. Contactez-nous</h3>
-                    <p style="color: var(--text-secondary);">Envoyez votre demande via notre formulaire de contact avec le maximum de détails.</p>
-                </div>
-                
-                <div style="margin-bottom: 2rem;">
-                    <h3 style="color: var(--accent-blue); margin-bottom: 0.5rem;">3. Recevez l'analyse</h3>
-                    <p style="color: var(--text-secondary);">Nous vous répondons sous 24-48h avec notre verdict et les preuves.</p>
-                </div>
-            </div>
-            
-            <div style="text-align: center; margin-top: 3rem;">
-                <a href="{{ url_for('main.contact') }}" class="btn btn-primary">Soumettre une vérification</a>
-            </div>
-        </div>
-    </div>
-</section>
+<script>
+document.querySelector('input[name="is_anonymous"]').addEventListener('change', function() {
+    const contactFields = document.getElementById('contact-fields');
+    if (this.checked) {
+        contactFields.style.display = 'none';
+        document.getElementById('name').required = false;
+        document.getElementById('email').required = false;
+    } else {
+        contactFields.style.display = 'block';
+        document.getElementById('name').required = false;
+        document.getElementById('email').required = false;
+    }
+});
+</script>
 {% endblock %}

@@ -502,3 +502,21 @@ def analyze_breach():
                          result=result, 
                          recommendations=recommendations,
                          data_scenarios=data_scenarios)
+
+@bp.route('/set-language/<lang>')
+def set_language(lang):
+    """Set user's preferred language"""
+    from urllib.parse import urlparse
+    
+    if lang in ['en', 'fr']:
+        session['language'] = lang
+    
+    referrer = request.referrer
+    if referrer:
+        referrer_host = urlparse(referrer).netloc
+        current_host = request.host
+        
+        if referrer_host == current_host:
+            return redirect(referrer)
+    
+    return redirect(url_for('main.index'))

@@ -53,9 +53,12 @@ class FileUploadService:
         file.save(temp_path)
         
         kind = filetype.guess(temp_path)
-        if kind is None:
+        extension = filename.rsplit('.', 1)[1].lower() if '.' in filename else ''
+        
+        text_based_extensions = {'txt', 'doc', 'docx'}
+        if kind is None and extension not in text_based_extensions:
             os.remove(temp_path)
-            return None, "Unable to determine file type"
+            return None, "Unable to determine file type or unsupported format"
         
         return temp_path, None
     

@@ -1,10 +1,11 @@
-from flask import Flask, redirect, url_for
+from flask import Flask, redirect, url_for, session, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_admin import Admin, AdminIndexView, expose
 from flask_login import LoginManager, current_user
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_wtf.csrf import CSRFProtect
+from flask_babel import Babel
 from config import Config
 
 class SecureAdminIndexView(AdminIndexView):
@@ -29,6 +30,13 @@ limiter = Limiter(
     default_limits=["200 per day", "50 per hour"],
     storage_uri="memory://"
 )
+babel = Babel()
+
+def get_locale():
+    """Determine the best language for the user"""
+    if 'language' in session:
+        return session['language']
+    return request.accept_languages.best_match(['fr', 'en']) or 'fr'
 
 def create_app(config_class=Config):
     app = Flask(__name__)
@@ -41,6 +49,7 @@ def create_app(config_class=Config):
     login_manager.init_app(app)
     csrf.init_app(app)
     limiter.init_app(app)
+    babel.init_app(app, locale_selector=get_locale)
     login_manager.login_view = 'main.login'
     login_manager.login_message = 'Veuillez vous connecter pour accéder à cette page.'
     
@@ -58,6 +67,13 @@ def create_app(config_class=Config):
             return ''
         clean = re.compile('<.*?>')
         return re.sub(clean, '', str(text))
+    
+    @app.context_processor
+    def inject_site_settings():
+        """Make site settings available to all templates"""
+        from models import SiteSettings
+        site_settings = SiteSettings.query.first()
+        return dict(site_settings=site_settings)
     
     @app.after_request
     def add_header(response):
@@ -78,10 +94,12 @@ def create_app(config_class=Config):
             return redirect(url_for('admin_panel.dashboard'))
         return redirect(url_for('main.index'))
     
-    from routes import main, admin_routes, admin_panel
+    from routes import main, admin_routes, admin_panel, request_forms, admin_requests
     app.register_blueprint(main.bp)
     app.register_blueprint(admin_routes.bp)
     app.register_blueprint(admin_panel.bp)
+    app.register_blueprint(request_forms.bp)
+    app.register_blueprint(admin_requests.bp)
     
     with app.app_context():
         db.create_all()

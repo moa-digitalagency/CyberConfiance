@@ -2,6 +2,8 @@
 """
 Migration: Add RequestSubmission table and logo settings
 """
+import sys
+sys.path.insert(0, '/home/runner/workspace')
 
 from __init__ import create_app, db
 from models import SiteSettings, RequestSubmission

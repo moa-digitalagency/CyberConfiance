@@ -1,0 +1,149 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Request #{{ submission.id }} - Admin{% endblock %}
+
+{% block admin_content %}
+<div style="margin-bottom: 2rem;">
+    <a href="{{ url_for('admin_requests.requests_dashboard') }}" style="color: var(--accent-blue); text-decoration: none;">← Back to Requests</a>
+</div>
+
+<h1 style="font-size: 2rem; margin-bottom: 1rem;">Request #{{ submission.id }}</h1>
+
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+    <div>
+        <div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem;">
+            <h3 style="margin-bottom: 1rem; color: var(--accent-blue);">Request Details</h3>
+            <div style="margin-bottom: 1rem;">
+                <strong style="color: var(--text-primary);">Type:</strong>
+                <span style="color: var(--text-secondary);"> {{ submission.request_type }}</span>
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <strong style="color: var(--text-primary);">Description:</strong>
+                <p style="color: var(--text-secondary); margin-top: 0.5rem; line-height: 1.6;">{{ submission.description }}</p>
+            </div>
+            {% if submission.urls %}
+            <div style="margin-bottom: 1rem;">
+                <strong style="color: var(--text-primary);">URLs:</strong>
+                <pre style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 6px; margin-top: 0.5rem; color: var(--text-secondary); overflow-x: auto;">{{ submission.urls }}</pre>
+            </div>
+            {% endif %}
+            {% if submission.file_name %}
+            <div style="margin-bottom: 1rem;">
+                <strong style="color: var(--text-primary);">File:</strong>
+                <span style="color: var(--text-secondary);"> {{ submission.file_name }} ({{ (submission.file_size / 1024) | round(2) }} KB)</span>
+                <br>
+                <strong style="color: var(--text-primary);">Hash:</strong>
+                <code style="color: var(--text-secondary); font-size: 0.9rem;">{{ submission.file_hash }}</code>
+            </div>
+            {% endif %}
+        </div>
+        
+        {% if submission.threat_detected %}
+        <div style="background: rgba(239, 68, 68, 0.1); border: 2px solid rgba(239, 68, 68, 0.5); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem;">
+            <h3 style="margin-bottom: 1rem; color: #ef4444;">⚠️ Threat Detected</h3>
+            <p style="color: var(--text-secondary);">This submission contained malicious content that was detected and blocked by VirusTotal scanning.</p>
+        </div>
+        {% endif %}
+        
+        <div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 1.5rem;">
+            <h3 style="margin-bottom: 1rem; color: var(--accent-blue);">VirusTotal Scan Results</h3>
+            
+            {% if submission.vt_text_results %}
+            <div style="margin-bottom: 1.5rem;">
+                <strong style="color: var(--text-primary);">Text Analysis:</strong>
+                <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 6px; margin-top: 0.5rem;">
+                    <pre style="color: var(--text-secondary); font-size: 0.85rem; white-space: pre-wrap;">{{ submission.vt_text_results | tojson(indent=2) }}</pre>
+                </div>
+            </div>
+            {% endif %}
+            
+            {% if submission.vt_url_results %}
+            <div style="margin-bottom: 1.5rem;">
+                <strong style="color: var(--text-primary);">URL Scans:</strong>
+                <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 6px; margin-top: 0.5rem;">
+                    <pre style="color: var(--text-secondary); font-size: 0.85rem; white-space: pre-wrap;">{{ submission.vt_url_results | tojson(indent=2) }}</pre>
+                </div>
+            </div>
+            {% endif %}
+            
+            {% if submission.vt_file_results %}
+            <div>
+                <strong style="color: var(--text-primary);">File Scan:</strong>
+                <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 6px; margin-top: 0.5rem;">
+                    <pre style="color: var(--text-secondary); font-size: 0.85rem; white-space: pre-wrap;">{{ submission.vt_file_results | tojson(indent=2) }}</pre>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div>
+        <div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem;">
+            <h3 style="margin-bottom: 1rem; color: var(--accent-blue);">Submission Info</h3>
+            <div style="margin-bottom: 1rem;">
+                <strong style="color: var(--text-primary);">Status:</strong>
+                <span style="color: var(--text-secondary);"> {{ submission.status }}</span>
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <strong style="color: var(--text-primary);">Submitted:</strong>
+                <span style="color: var(--text-secondary);"> {{ submission.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</span>
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <strong style="color: var(--text-primary);">IP Address:</strong>
+                <span style="color: var(--text-secondary);"> {{ submission.ip_address }}</span>
+            </div>
+        </div>
+        
+        {% if not submission.is_anonymous %}
+        <div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem;">
+            <h3 style="margin-bottom: 1rem; color: var(--accent-blue);">Contact Information</h3>
+            {% if submission.contact_name %}
+            <div style="margin-bottom: 0.5rem;">
+                <strong style="color: var(--text-primary);">Name:</strong>
+                <span style="color: var(--text-secondary);"> {{ submission.contact_name }}</span>
+            </div>
+            {% endif %}
+            {% if submission.contact_email %}
+            <div style="margin-bottom: 0.5rem;">
+                <strong style="color: var(--text-primary);">Email:</strong>
+                <span style="color: var(--text-secondary);"> {{ submission.contact_email }}</span>
+            </div>
+            {% endif %}
+            {% if submission.contact_phone %}
+            <div style="margin-bottom: 0.5rem;">
+                <strong style="color: var(--text-primary);">Phone:</strong>
+                <span style="color: var(--text-secondary);"> {{ submission.contact_phone }}</span>
+            </div>
+            {% endif %}
+        </div>
+        {% else %}
+        <div style="background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.3); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem;">
+            <p style="color: var(--text-secondary); margin: 0;"><em>This request was submitted anonymously.</em></p>
+        </div>
+        {% endif %}
+        
+        <div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 1.5rem;">
+            <h3 style="margin-bottom: 1rem; color: var(--accent-blue);">Update Status</h3>
+            <form method="POST" action="{{ url_for('admin_requests.update_status', submission_id=submission.id) }}">
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; color: var(--text-primary);">Status:</label>
+                    <select name="status" style="width: 100%; padding: 0.5rem; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: var(--text-primary);">
+                        <option value="pending" {% if submission.status == 'pending' %}selected{% endif %}>Pending</option>
+                        <option value="in-progress" {% if submission.status == 'in-progress' %}selected{% endif %}>In Progress</option>
+                        <option value="completed" {% if submission.status == 'completed' %}selected{% endif %}>Completed</option>
+                        <option value="rejected" {% if submission.status == 'rejected' %}selected{% endif %}>Rejected</option>
+                    </select>
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; color: var(--text-primary);">Admin Notes:</label>
+                    <textarea name="admin_notes" rows="4" style="width: 100%; padding: 0.5rem; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: var(--text-primary); font-family: inherit;">{{ submission.admin_notes or '' }}</textarea>
+                </div>
+                <button type="submit" style="width: 100%; padding: 0.75rem; background: rgba(59, 130, 246, 0.8); border: none; border-radius: 6px; color: white; font-weight: 500; cursor: pointer;">
+                    Update Status
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
