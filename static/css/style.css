@@ -2309,6 +2309,11 @@ footer {
     text-align: left;
 }
 
+.contact-item > div {
+    flex: 1;
+    text-align: left;
+}
+
 .contact-item svg {
     color: var(--accent-blue);
     flex-shrink: 0;
@@ -2338,6 +2343,7 @@ footer {
     display: flex;
     gap: 1rem;
     margin-top: 0.75rem;
+    justify-content: flex-start;
 }
 
 .social-icons a {

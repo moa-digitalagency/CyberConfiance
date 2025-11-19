@@ -458,8 +458,12 @@ def edit_page_content(page):
     page_names = {
         'home': 'Page d\'accueil',
         'about': 'À propos',
-        'services': 'Services',
-        'contact': 'Contact'
+        'services': 'Services (général)',
+        'services_sensibilisation': 'Service Sensibilisation',
+        'services_factchecking': 'Service Fact-checking',
+        'services_cyberconsultation': 'Service Cyber-consultation',
+        'contact': 'Contact',
+        'news': 'Actualités'
     }
     
     if page not in page_names:
