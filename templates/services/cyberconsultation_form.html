@@ -92,15 +92,41 @@
                                     <label for="consultation_type" class="form-label">Type de consultation <span style="color: #ef4444;">*</span></label>
                                     <select id="consultation_type" name="consultation_type" required class="form-input" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; cursor: pointer;">
                                         <option value="">-- Sélectionnez un type --</option>
-                                        <option value="audit_securite">Audit de sécurité informatique</option>
-                                        <option value="protection_donnees">Protection des données (RGPD/Compliance)</option>
-                                        <option value="test_intrusion">Test d'intrusion (Pentest)</option>
-                                        <option value="formation">Formation en cybersécurité</option>
-                                        <option value="incident_response">Réponse à incident de sécurité</option>
-                                        <option value="securisation_infra">Sécurisation d'infrastructure</option>
-                                        <option value="conseil_strategique">Conseil stratégique en cybersécurité</option>
-                                        <option value="evaluation_risques">Évaluation des risques</option>
-                                        <option value="autre">Autre demande</option>
+                                        <optgroup label="Évaluation & Audit">
+                                            <option value="audit_securite">Audit de sécurité informatique complet</option>
+                                            <option value="evaluation_risques">Évaluation des risques et vulnérabilités</option>
+                                            <option value="test_intrusion">Test d'intrusion (Pentest)</option>
+                                            <option value="audit_code">Audit de code et revue de sécurité</option>
+                                        </optgroup>
+                                        <optgroup label="Protection & Conformité">
+                                            <option value="protection_donnees">Protection des données (RGPD/Compliance)</option>
+                                            <option value="mise_conformite">Mise en conformité réglementaire</option>
+                                            <option value="dlp">Prévention de perte de données (DLP)</option>
+                                        </optgroup>
+                                        <optgroup label="Infrastructure & Défense">
+                                            <option value="securisation_infra">Sécurisation d'infrastructure (Cloud/On-premise)</option>
+                                            <option value="soc">Mise en place d'un SOC (Security Operations Center)</option>
+                                            <option value="siem">Déploiement SIEM et monitoring de sécurité</option>
+                                            <option value="pare_feu">Configuration pare-feu et segmentation réseau</option>
+                                        </optgroup>
+                                        <optgroup label="Réponse & Gestion de crise">
+                                            <option value="incident_response">Réponse à incident de sécurité actif</option>
+                                            <option value="investigation_forensic">Investigation forensique et analyse post-incident</option>
+                                            <option value="plan_continuite">Plan de continuité et reprise d'activité (PCA/PRA)</option>
+                                        </optgroup>
+                                        <optgroup label="Formation & Sensibilisation">
+                                            <option value="formation">Formation en cybersécurité (équipes techniques)</option>
+                                            <option value="sensibilisation">Sensibilisation des employés</option>
+                                            <option value="phishing_simulation">Simulation de phishing et tests de vigilance</option>
+                                        </optgroup>
+                                        <optgroup label="Stratégie & Gouvernance">
+                                            <option value="conseil_strategique">Conseil stratégique en cybersécurité</option>
+                                            <option value="politique_securite">Élaboration de politiques de sécurité</option>
+                                            <option value="gestion_identites">Gestion des identités et des accès (IAM)</option>
+                                        </optgroup>
+                                        <optgroup label="Autre">
+                                            <option value="autre">Autre demande spécifique</option>
+                                        </optgroup>
                                     </select>
                                 </div>
 
@@ -140,8 +166,28 @@
                                 </div>
 
                                 <div class="form-group" style="margin-bottom: 1.5rem;">
+                                    <label for="consultation_priority" class="form-label">Niveau de priorité</label>
+                                    <select id="consultation_priority" name="priority" class="form-input" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; cursor: pointer;">
+                                        <option value="normal">Normale - Planification standard</option>
+                                        <option value="urgent">Urgente - Intervention sous 48h</option>
+                                        <option value="critique">Critique - Intervention immédiate requise</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group" style="margin-bottom: 1.5rem;">
+                                    <label for="budget_range" class="form-label">Budget estimé (optionnel)</label>
+                                    <select id="budget_range" name="budget_range" class="form-input" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; cursor: pointer;">
+                                        <option value="">-- Sélectionnez une fourchette --</option>
+                                        <option value="<5000">Moins de 5 000 €</option>
+                                        <option value="5000-15000">5 000 € - 15 000 €</option>
+                                        <option value="15000-50000">15 000 € - 50 000 €</option>
+                                        <option value=">50000">Plus de 50 000 €</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group" style="margin-bottom: 1.5rem;">
                                     <label for="description_cyber" class="form-label">Description détaillée de votre besoin <span style="color: #ef4444;">*</span></label>
-                                    <textarea id="description_cyber" name="description" required rows="7" class="form-input" placeholder="Décrivez votre contexte, vos objectifs de sécurité, les systèmes concernés, et vos attentes pour cette consultation..." style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; resize: vertical;"></textarea>
+                                    <textarea id="description_cyber" name="description" required rows="7" class="form-input" placeholder="Décrivez votre contexte actuel, vos objectifs de sécurité, les systèmes et infrastructures concernés, les problématiques rencontrées et vos attentes précises pour cette consultation..." style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; resize: vertical;"></textarea>
                                     <small style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 8px; display: flex; align-items: center; gap: 5px;">
                                         <i class="bi bi-shield-check"></i> Le contenu textuel est scanné pour détecter tout contenu malveillant
                                     </small>
@@ -243,46 +289,93 @@
                                     <label for="investigation_type" class="form-label">Type d'investigation OSINT <span style="color: #ef4444;">*</span></label>
                                     <select id="investigation_type" name="investigation_type" required class="form-input" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; cursor: pointer;">
                                         <option value="">-- Sélectionnez un type --</option>
-                                        <option value="personne">Investigation sur une personne</option>
-                                        <option value="organisation">Investigation sur une organisation/entreprise</option>
-                                        <option value="site_web">Analyse de site web/domaine</option>
-                                        <option value="compte_social">Investigation de compte sur réseaux sociaux</option>
-                                        <option value="adresse_email">Recherche sur adresse email</option>
-                                        <option value="numero_telephone">Recherche sur numéro de téléphone</option>
-                                        <option value="adresse_ip">Recherche sur adresse IP</option>
-                                        <option value="crypto">Investigation sur portefeuille crypto</option>
-                                        <option value="autre">Autre type d'investigation</option>
+                                        <optgroup label="Identité & Personnes">
+                                            <option value="personne">Investigation approfondie sur une personne physique</option>
+                                            <option value="verification_identite">Vérification d'identité et background check</option>
+                                            <option value="localisation_personne">Localisation géographique d'une personne</option>
+                                            <option value="reseaux_contacts">Cartographie des réseaux et contacts</option>
+                                        </optgroup>
+                                        <optgroup label="Organisations & Entreprises">
+                                            <option value="organisation">Investigation sur une organisation/entreprise</option>
+                                            <option value="due_diligence">Due diligence et analyse de réputation</option>
+                                            <option value="concurrence">Analyse concurrentielle et veille stratégique</option>
+                                            <option value="fraude_entreprise">Détection de fraude d'entreprise</option>
+                                        </optgroup>
+                                        <optgroup label="Numérique & Réseaux sociaux">
+                                            <option value="compte_social">Investigation de compte sur réseaux sociaux</option>
+                                            <option value="empreinte_numerique">Analyse d'empreinte numérique complète</option>
+                                            <option value="fuite_donnees">Recherche de fuites de données</option>
+                                            <option value="deep_web">Investigation sur le deep web/dark web</option>
+                                        </optgroup>
+                                        <optgroup label="Infrastructure & Technique">
+                                            <option value="site_web">Analyse de site web/domaine et infrastructure</option>
+                                            <option value="adresse_ip">Recherche sur adresse IP et géolocalisation</option>
+                                            <option value="serveur_infrastructure">Analyse serveur et infrastructure réseau</option>
+                                            <option value="dns_whois">Analyse DNS, WHOIS et historique de domaine</option>
+                                        </optgroup>
+                                        <optgroup label="Communications">
+                                            <option value="adresse_email">Recherche sur adresse email et validité</option>
+                                            <option value="numero_telephone">Recherche sur numéro de téléphone</option>
+                                            <option value="metadata_analyse">Analyse de métadonnées de communication</option>
+                                        </optgroup>
+                                        <optgroup label="Crypto & Finance">
+                                            <option value="crypto">Investigation sur portefeuille et transactions crypto</option>
+                                            <option value="blockchain_analyse">Analyse de blockchain et traçage de fonds</option>
+                                            <option value="fraude_financiere">Détection de fraude financière</option>
+                                        </optgroup>
+                                        <optgroup label="Menaces & Sécurité">
+                                            <option value="menace_interne">Investigation de menace interne</option>
+                                            <option value="cyber_attaque">Analyse d'attaque cyber et attribution</option>
+                                            <option value="desinformation">Enquête sur campagne de désinformation</option>
+                                        </optgroup>
+                                        <optgroup label="Autre">
+                                            <option value="autre">Autre type d'investigation OSINT</option>
+                                        </optgroup>
+                                    </select>
+                                </div>
+
+                                <div class="form-group" style="margin-bottom: 1.5rem;">
+                                    <label for="investigation_context" class="form-label">Contexte de l'investigation</label>
+                                    <select id="investigation_context" name="context" class="form-input" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; cursor: pointer;">
+                                        <option value="">-- Sélectionnez un contexte --</option>
+                                        <option value="legal">Cadre légal/juridique</option>
+                                        <option value="security">Enquête de sécurité interne</option>
+                                        <option value="fraud">Suspicion de fraude</option>
+                                        <option value="threat">Analyse de menace potentielle</option>
+                                        <option value="compliance">Conformité/Due diligence</option>
+                                        <option value="competitive">Intelligence concurrentielle</option>
+                                        <option value="other">Autre contexte</option>
                                     </select>
                                 </div>
 
                                 <div class="row" style="gap: 1.5rem 0; margin-bottom: 1.5rem;">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="target_identifier" class="form-label">Identifiant de la cible</label>
+                                            <label for="target_identifier" class="form-label">Identifiant principal de la cible</label>
                                             <input type="text" id="target_identifier" name="target_identifier" class="form-input" placeholder="Ex: @username, nom complet, email, numéro..." style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem;">
                                             <small style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 5px; display: block;">
-                                                Nom d'utilisateur, email, numéro, adresse, etc.
+                                                Nom d'utilisateur, email, numéro, adresse, ou tout identifiant unique
                                             </small>
                                         </div>
                                     </div>
                                     
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="urgency_level" class="form-label">Niveau d'urgence</label>
-                                            <select id="urgency_level" name="urgency_level" class="form-input" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; cursor: pointer;">
-                                                <option value="">-- Sélectionnez --</option>
-                                                <option value="faible">Faible (investigation standard)</option>
-                                                <option value="moyen">Moyen (dans la semaine)</option>
-                                                <option value="eleve">Élevé (sous 48h)</option>
-                                                <option value="critique">Critique (urgent)</option>
+                                            <label for="investigation_timeline" class="form-label">Délai souhaité</label>
+                                            <select id="investigation_timeline" name="timeline" class="form-input" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; cursor: pointer;">
+                                                <option value="1week">1 semaine</option>
+                                                <option value="2weeks">2 semaines</option>
+                                                <option value="1month">1 mois</option>
+                                                <option value="urgent">Urgent (sous 48h)</option>
+                                                <option value="flexible">Flexible</option>
                                             </select>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div class="form-group" style="margin-bottom: 1.5rem;">
-                                    <label for="known_information" class="form-label">Informations déjà connues</label>
-                                    <textarea id="known_information" name="known_information" rows="4" class="form-input" placeholder="Listez toutes les informations que vous possédez déjà sur la cible (réseaux sociaux, emploi, localisation approximative, etc.)" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; resize: vertical;"></textarea>
+                                    <label for="known_information" class="form-label">Sources et indices déjà disponibles</label>
+                                    <textarea id="known_information" name="known_information" rows="4" class="form-input" placeholder="Listez toutes les informations, sources ou indices en votre possession : profils réseaux sociaux, numéros, adresses, historique, connections, activités connues, etc." style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; resize: vertical;"></textarea>
                                 </div>
 
                                 <div class="form-group" style="margin-bottom: 1.5rem;">

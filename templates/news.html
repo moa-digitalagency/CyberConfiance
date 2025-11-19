@@ -48,6 +48,9 @@
                     {% if item.source %}
                     <span class="blog-source">{{ item.source }}</span>
                     {% endif %}
+                    {% if item.category %}
+                    <span class="blog-category" style="padding: 0.25rem 0.75rem; background: rgba(34, 197, 94, 0.15); border-radius: 12px; font-size: 0.75rem; color: rgba(34, 197, 94, 1); font-weight: 500;">{{ item.category }}</span>
+                    {% endif %}
                 </div>
                 <h2 class="blog-title">{{ item.title }}</h2>
                 <div class="blog-excerpt">
