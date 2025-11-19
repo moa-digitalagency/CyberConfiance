@@ -129,6 +129,7 @@ class News(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
     content = db.Column(db.Text, nullable=False)
+    category = db.Column(db.String(50), default='Général')
     source = db.Column(db.String(200))
     url = db.Column(db.String(500))
     published_date = db.Column(db.DateTime)

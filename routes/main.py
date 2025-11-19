@@ -53,8 +53,20 @@ def resources():
 
 @bp.route('/news')
 def news():
-    all_news = ContentService.get_latest_news(limit=50)
-    return render_template('news.html', news=all_news)
+    category_filter = request.args.get('category', None)
+    
+    if category_filter and category_filter != 'Toutes':
+        from models import News
+        filtered_news = News.query.filter_by(category=category_filter).order_by(News.created_at.desc()).limit(50).all()
+    else:
+        filtered_news = ContentService.get_latest_news(limit=50)
+    
+    from models import News
+    categories = db.session.query(News.category).distinct().all()
+    categories = [cat[0] for cat in categories if cat[0]]
+    categories.sort()
+    
+    return render_template('news.html', news=filtered_news, categories=categories, selected_category=category_filter)
 
 @bp.route('/news/<int:news_id>')
 def news_detail(news_id):
