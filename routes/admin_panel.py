@@ -151,7 +151,9 @@ def quiz_history():
     
     results = query.order_by(desc(QuizResult.created_at)).paginate(page=page, per_page=per_page, error_out=False)
     
-    return render_template('admin/quiz_history.html', results=results, search=search, date_from=date_from, date_to=date_to)
+    average_score = db.session.query(func.avg(QuizResult.overall_score)).scalar() or 0
+    
+    return render_template('admin/quiz_history.html', results=results, search=search, date_from=date_from, date_to=date_to, average_score=average_score)
 
 @bp.route('/history/security')
 @admin_required
@@ -203,7 +205,9 @@ def breach_history():
     
     results = query.order_by(desc(BreachAnalysis.created_at)).paginate(page=page, per_page=per_page, error_out=False)
     
-    return render_template('admin/breach_history.html', results=results, search=search, risk_level=risk_level)
+    total_breaches = db.session.query(func.sum(BreachAnalysis.breach_count)).scalar() or 0
+    
+    return render_template('admin/breach_history.html', results=results, search=search, risk_level=risk_level, total_breaches=total_breaches)
 
 @bp.route('/history/quiz/<int:quiz_id>')
 @admin_required
