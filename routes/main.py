@@ -332,8 +332,16 @@ def security_analyzer():
         if (input_value or uploaded_file) and input_type != 'email':
             analyzer = SecurityAnalyzerService()
             if input_type == 'file' and uploaded_file:
-                results = analyzer.analyze_file(uploaded_file)
-                input_value = uploaded_file.filename
+                from services.file_upload_service import FileUploadService
+                upload_result = FileUploadService.process_upload(uploaded_file)
+                if upload_result.get('success'):
+                    results = upload_result.get('scan_result', {})
+                    input_value = f"{uploaded_file.filename} (Hash: {upload_result.get('file_hash', 'N/A')[:16]}...)"
+                    if upload_result.get('temp_path') and os.path.exists(upload_result.get('temp_path')):
+                        os.remove(upload_result.get('temp_path'))
+                else:
+                    results = {'error': True, 'message': upload_result.get('error', 'Upload failed')}
+                    input_value = uploaded_file.filename
             else:
                 results = analyzer.analyze(input_value, input_type)
             
