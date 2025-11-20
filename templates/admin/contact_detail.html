@@ -1,0 +1,61 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Détails Contact #{{ contact.id }} - Administration{% endblock %}
+
+{% block content %}
+<div class="admin-header">
+    <h1>Détails du Message de Contact #{{ contact.id }}</h1>
+    <p>Message reçu de {{ contact.name }}</p>
+</div>
+
+<div class="admin-card">
+    <h3>Informations générales</h3>
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-top: 1rem;">
+        <div>
+            <strong style="color: var(--text-secondary); display: block; margin-bottom: 0.5rem;">Nom:</strong>
+            <span style="color: var(--text-primary);">{{ contact.name }}</span>
+        </div>
+        <div>
+            <strong style="color: var(--text-secondary); display: block; margin-bottom: 0.5rem;">Email:</strong>
+            <span style="color: var(--text-primary);">{{ contact.email }}</span>
+        </div>
+        <div>
+            <strong style="color: var(--text-secondary); display: block; margin-bottom: 0.5rem;">Date:</strong>
+            <span style="color: var(--text-primary);">{{ contact.created_at.strftime('%d/%m/%Y %H:%M:%S') }}</span>
+        </div>
+        <div>
+            <strong style="color: var(--text-secondary); display: block; margin-bottom: 0.5rem;">Statut:</strong>
+            {% if contact.status == 'new' %}
+            <span class="badge badge-info">Nouveau</span>
+            {% elif contact.status == 'read' %}
+            <span class="badge badge-secondary">Lu</span>
+            {% elif contact.status == 'replied' %}
+            <span class="badge badge-success">Répondu</span>
+            {% else %}
+            <span class="badge badge-secondary">{{ contact.status }}</span>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="admin-card">
+    <h3>Sujet</h3>
+    <p style="color: var(--text-primary); font-size: 1.1rem; margin-top: 1rem;">{{ contact.subject }}</p>
+</div>
+
+<div class="admin-card">
+    <h3>Message</h3>
+    <div style="background: rgba(0,0,0,0.2); padding: 1.5rem; border-radius: 8px; margin-top: 1rem; border-left: 4px solid var(--accent-blue);">
+        <p style="color: var(--text-primary); white-space: pre-wrap; line-height: 1.6;">{{ contact.message }}</p>
+    </div>
+</div>
+
+<div style="margin-top: 2rem; display: flex; gap: 1rem;">
+    <a href="{{ url_for('admin_panel.contact_management') }}" class="btn btn-secondary">← Retour à la liste</a>
+    <form method="POST" action="{{ url_for('admin_panel.delete_contact', contact_id=contact.id) }}" style="display: inline;" onsubmit="return confirm('Supprimer ce message ?')">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        <button type="submit" class="btn btn-danger">Supprimer</button>
+    </form>
+</div>
+
+{% endblock %}

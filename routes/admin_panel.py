@@ -259,6 +259,23 @@ def security_detail(analysis_id):
     log_activity('ADMIN_SECURITY_DETAIL_VIEW', f'Consultation détails analyse sécurité #{analysis_id}')
     return render_template('admin/security_detail.html', analysis=analysis)
 
+@bp.route('/history/security/<int:analysis_id>/delete', methods=['POST'])
+@admin_required
+def delete_security_result(analysis_id):
+    """Supprimer un résultat d'analyse de sécurité"""
+    analysis = SecurityAnalysis.query.get_or_404(analysis_id)
+    try:
+        db.session.delete(analysis)
+        db.session.commit()
+        log_activity('ADMIN_SECURITY_DELETE', f'Suppression analyse sécurité #{analysis_id}')
+        flash('Résultat d\'analyse de sécurité supprimé avec succès.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        log_activity('ADMIN_SECURITY_DELETE_ERROR', f'Erreur suppression analyse sécurité #{analysis_id}: {str(e)}')
+        flash(f'Erreur lors de la suppression: {str(e)}', 'danger')
+    
+    return redirect(url_for('admin_panel.security_history'))
+
 @bp.route('/history/breach/<int:breach_id>')
 @admin_required
 def breach_detail(breach_id):
@@ -456,6 +473,31 @@ def contact_management():
     
     return render_template('admin/contacts.html', contacts=contacts, status=status)
 
+@bp.route('/contacts/<int:contact_id>')
+@moderator_required
+def contact_detail(contact_id):
+    """Voir les détails d'un message de contact"""
+    contact = Contact.query.get_or_404(contact_id)
+    log_activity('ADMIN_CONTACT_DETAIL_VIEW', f'Consultation détails contact #{contact_id}')
+    return render_template('admin/contact_detail.html', contact=contact)
+
+@bp.route('/contacts/<int:contact_id>/delete', methods=['POST'])
+@moderator_required
+def delete_contact(contact_id):
+    """Supprimer un message de contact"""
+    contact = Contact.query.get_or_404(contact_id)
+    try:
+        db.session.delete(contact)
+        db.session.commit()
+        log_activity('ADMIN_CONTACT_DELETE', f'Suppression contact #{contact_id}')
+        flash('Message de contact supprimé avec succès.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        log_activity('ADMIN_CONTACT_DELETE_ERROR', f'Erreur suppression contact #{contact_id}: {str(e)}')
+        flash(f'Erreur lors de la suppression: {str(e)}', 'danger')
+    
+    return redirect(url_for('admin_panel.contact_management'))
+
 @bp.route('/contacts/send', methods=['POST'])
 @moderator_required
 def send_contact_message():
@@ -472,6 +514,25 @@ def send_contact_message():
     flash(f'Message envoyé à {recipients} (fonctionnalité de démonstration - implémentez l\'envoi d\'emails réel)', 'success')
     
     return redirect(url_for('admin_panel.contact_management'))
+
+@bp.route('/content')
+@moderator_required
+def content_management():
+    """Liste des pages dont le contenu peut être édité"""
+    log_activity('ADMIN_CONTENT_MANAGEMENT_VIEW', 'Consultation gestion contenu')
+    
+    pages = [
+        {'slug': 'home', 'name': 'Page d\'accueil'},
+        {'slug': 'about', 'name': 'À propos'},
+        {'slug': 'services', 'name': 'Services (général)'},
+        {'slug': 'services_sensibilisation', 'name': 'Service Sensibilisation'},
+        {'slug': 'services_factchecking', 'name': 'Service Fact-checking'},
+        {'slug': 'services_cyberconsultation', 'name': 'Service Cyber-consultation'},
+        {'slug': 'contact', 'name': 'Contact'},
+        {'slug': 'news', 'name': 'Actualités'}
+    ]
+    
+    return render_template('admin/content.html', pages=pages)
 
 @bp.route('/content/edit/<page>', methods=['GET', 'POST'])
 @moderator_required

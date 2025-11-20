@@ -232,6 +232,7 @@
         <div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 1.5rem;">
             <h3 style="margin-bottom: 1rem; color: var(--accent-blue);">Update Status</h3>
             <form method="POST" action="{{ url_for('admin_requests.update_status', submission_id=submission.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                 <div style="margin-bottom: 1rem;">
                     <label style="display: block; margin-bottom: 0.5rem; color: var(--text-primary);">Status:</label>
                     <select name="status" style="width: 100%; padding: 0.5rem; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: var(--text-primary);">

@@ -94,6 +94,20 @@ def create_app(config_class=Config):
             return redirect(url_for('admin_panel.dashboard'))
         return redirect(url_for('main.index'))
     
+    @app.errorhandler(404)
+    def handle_not_found(e):
+        from flask import render_template
+        return render_template('error_404.html'), 404
+    
+    @app.errorhandler(500)
+    def handle_internal_error(e):
+        from flask import render_template
+        import traceback
+        print(f"ERROR 500: {str(e)}")
+        print(traceback.format_exc())
+        db.session.rollback()
+        return render_template('error_500.html'), 500
+    
     from routes import main, admin_routes, admin_panel, request_forms, admin_requests
     app.register_blueprint(main.bp)
     app.register_blueprint(admin_routes.bp)
