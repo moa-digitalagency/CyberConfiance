@@ -125,6 +125,30 @@ class RequestSubmissionService:
             platform = form_data.get('platform')
             platform_identifier = form_data.get('platform_identifier')
         
+        # Extract fields for cyberconsultation requests
+        consultation_type = None
+        organization_size = None
+        business_sector = None
+        priority = None
+        if request_type == 'cyberconsultation':
+            consultation_type = form_data.get('consultation_type')
+            organization_size = form_data.get('organization_size')
+            business_sector = form_data.get('business_sector')
+            priority = form_data.get('priority')
+        
+        # Extract fields for OSINT investigation requests (both osint and osint-investigation)
+        investigation_type = None
+        context = None
+        target_identifier = None
+        timeline = None
+        known_information = None
+        if request_type in ['osint', 'osint-investigation']:
+            investigation_type = form_data.get('investigation_type')
+            context = form_data.get('context')
+            target_identifier = form_data.get('target_identifier')
+            timeline = form_data.get('timeline')
+            known_information = form_data.get('known_information')
+        
         contact_name = None if is_anonymous else form_data.get('name')
         contact_email = None if is_anonymous else form_data.get('email')
         contact_phone = None if is_anonymous else form_data.get('phone')
@@ -198,6 +222,15 @@ class RequestSubmissionService:
             crime_type=crime_type,
             platform=platform,
             platform_identifier=platform_identifier,
+            consultation_type=consultation_type,
+            organization_size=organization_size,
+            business_sector=business_sector,
+            priority=priority,
+            investigation_type=investigation_type,
+            context=context,
+            target_identifier=target_identifier,
+            timeline=timeline,
+            known_information=known_information,
             file_name=file_name,
             file_path=file_path,
             file_size=file_size,

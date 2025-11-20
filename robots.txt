@@ -1,0 +1,172 @@
+# Robots.txt for CyberConfiance - Enhanced Security Configuration
+
+# === USER-AGENT WILDCARDS ===
+# Block all robots by default, then allow specific trusted crawlers
+User-agent: *
+Disallow: /
+
+# === TRUSTED SEARCH ENGINES ===
+# Allow major search engines (Google, Bing, DuckDuckGo, Yandex)
+User-agent: Googlebot
+Allow: /
+Disallow: /my4dm1n/
+Disallow: /request/
+Disallow: /api/
+Disallow: /static/uploads/
+
+User-agent: Googlebot-Image
+Allow: /static/img/
+Disallow: /static/uploads/
+
+User-agent: Bingbot
+Allow: /
+Disallow: /my4dm1n/
+Disallow: /request/
+Disallow: /api/
+Disallow: /static/uploads/
+
+User-agent: DuckDuckBot
+Allow: /
+Disallow: /my4dm1n/
+Disallow: /request/
+Disallow: /api/
+Disallow: /static/uploads/
+
+User-agent: Yandex
+Allow: /
+Disallow: /my4dm1n/
+Disallow: /request/
+Disallow: /api/
+Disallow: /static/uploads/
+
+# === BLOCK AI CRAWLERS & SCRAPERS ===
+# Block GPT crawlers (OpenAI)
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+# Block Claude crawler (Anthropic)
+User-agent: Claude-Web
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+# Block Google AI crawlers
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: GoogleOther
+Disallow: /
+
+# Block Common Crawl
+User-agent: CCBot
+Disallow: /
+
+User-agent: cohere-ai
+Disallow: /
+
+# Block Meta/Facebook AI
+User-agent: FacebookBot
+Disallow: /
+
+User-agent: Meta-ExternalAgent
+Disallow: /
+
+# Block Perplexity AI
+User-agent: PerplexityBot
+Disallow: /
+
+# === BLOCK OSINT TOOLS & WEB SCRAPERS ===
+# Block HTTrack (website copier)
+User-agent: HTTrack
+Disallow: /
+
+# Block Wget
+User-agent: Wget
+Disallow: /
+
+# Block cURL
+User-agent: curl
+Disallow: /
+
+# Block generic scrapers
+User-agent: scrapy
+Disallow: /
+
+User-agent: python-requests
+Disallow: /
+
+User-agent: libwww-perl
+Disallow: /
+
+# Block archive crawlers
+User-agent: ia_archiver
+Disallow: /
+
+User-agent: archive.org_bot
+Disallow: /
+
+# Block email harvesters
+User-agent: EmailCollector
+Disallow: /
+
+User-agent: EmailSiphon
+Disallow: /
+
+User-agent: EmailWolf
+Disallow: /
+
+# Block aggressive crawlers
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+# === SECURITY SCANNERS ===
+# Block vulnerability scanners
+User-agent: Nikto
+Disallow: /
+
+User-agent: sqlmap
+Disallow: /
+
+User-agent: Nmap Scripting Engine
+Disallow: /
+
+User-agent: masscan
+Disallow: /
+
+# Block penetration testing tools
+User-agent: w3af
+Disallow: /
+
+User-agent: Acunetix
+Disallow: /
+
+User-agent: Nessus
+Disallow: /
+
+# === SOCIAL MEDIA BOTS ===
+# Block social media scrapers
+User-agent: Twitterbot
+Disallow: /my4dm1n/
+Disallow: /request/
+Disallow: /api/
+
+User-agent: LinkedInBot
+Disallow: /my4dm1n/
+Disallow: /request/
+Disallow: /api/
+
+# === SITEMAP ===
+Sitemap: https://cyberconfiance.replit.app/sitemap.xml

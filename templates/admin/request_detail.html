@@ -35,6 +35,60 @@
                 <span style="color: var(--text-secondary);"> {{ submission.platform_identifier }}</span>
             </div>
             {% endif %}
+            {% if submission.consultation_type %}
+            <div style="margin-bottom: 1rem;">
+                <strong style="color: var(--text-primary);">Type de consultation:</strong>
+                <span style="color: var(--text-secondary);"> {{ submission.consultation_type }}</span>
+            </div>
+            {% endif %}
+            {% if submission.organization_size %}
+            <div style="margin-bottom: 1rem;">
+                <strong style="color: var(--text-primary);">Taille de l'organisation:</strong>
+                <span style="color: var(--text-secondary);"> {{ submission.organization_size }}</span>
+            </div>
+            {% endif %}
+            {% if submission.business_sector %}
+            <div style="margin-bottom: 1rem;">
+                <strong style="color: var(--text-primary);">Secteur d'activité:</strong>
+                <span style="color: var(--text-secondary);"> {{ submission.business_sector }}</span>
+            </div>
+            {% endif %}
+            {% if submission.priority %}
+            <div style="margin-bottom: 1rem;">
+                <strong style="color: var(--text-primary);">Priorité:</strong>
+                <span style="color: var(--text-secondary);"> {{ submission.priority }}</span>
+            </div>
+            {% endif %}
+            {% if submission.investigation_type %}
+            <div style="margin-bottom: 1rem;">
+                <strong style="color: var(--text-primary);">Type d'investigation OSINT:</strong>
+                <span style="color: var(--text-secondary);"> {{ submission.investigation_type }}</span>
+            </div>
+            {% endif %}
+            {% if submission.context %}
+            <div style="margin-bottom: 1rem;">
+                <strong style="color: var(--text-primary);">Contexte:</strong>
+                <span style="color: var(--text-secondary);"> {{ submission.context }}</span>
+            </div>
+            {% endif %}
+            {% if submission.target_identifier %}
+            <div style="margin-bottom: 1rem;">
+                <strong style="color: var(--text-primary);">Identifiant de la cible:</strong>
+                <span style="color: var(--text-secondary);"> {{ submission.target_identifier }}</span>
+            </div>
+            {% endif %}
+            {% if submission.timeline %}
+            <div style="margin-bottom: 1rem;">
+                <strong style="color: var(--text-primary);">Délai souhaité:</strong>
+                <span style="color: var(--text-secondary);"> {{ submission.timeline }}</span>
+            </div>
+            {% endif %}
+            {% if submission.known_information %}
+            <div style="margin-bottom: 1rem;">
+                <strong style="color: var(--text-primary);">Sources et indices disponibles:</strong>
+                <p style="color: var(--text-secondary); margin-top: 0.5rem; line-height: 1.6; white-space: pre-wrap;">{{ submission.known_information }}</p>
+            </div>
+            {% endif %}
             {% if submission.description %}
             <div style="margin-bottom: 1rem;">
                 <strong style="color: var(--text-primary);">Description:</strong>
