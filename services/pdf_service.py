@@ -19,7 +19,7 @@ class PDFReportService:
         self.footer_height = 60
         self.max_y = 780
         
-    def _add_header_footer(self, page, page_num, total_pages, ip_address, site_url="https://Cyberconfiance.com", document_code=None):
+    def _add_header_footer(self, page, page_num, total_pages, ip_address, site_url="https://cyberconfiance.com", document_code=None, qr_url=None):
         """Ajoute en-tête et pied de page à une page"""
         width, height = page.rect.width, page.rect.height
         
@@ -30,9 +30,9 @@ class PDFReportService:
             except:
                 pass
         
-        if document_code:
+        if qr_url:
             try:
-                qr_bytes = generate_qr_code(document_code, box_size=3, border=1)
+                qr_bytes = generate_qr_code(qr_url, box_size=3, border=1)
                 qr_img = Image.open(io.BytesIO(qr_bytes))
                 
                 qr_size = 50
@@ -42,9 +42,10 @@ class PDFReportService:
                 
                 page.insert_image(qr_rect, stream=qr_bytes)
                 
-                code_text_width = page.get_textlength(document_code, fontsize=7)
-                code_x = qr_x + (qr_size - code_text_width) / 2
-                page.insert_text((code_x, qr_y + qr_size + 10), document_code, 
+                qr_label = "Scannez pour accéder"
+                qr_label_width = page.get_textlength(qr_label, fontsize=7)
+                label_x = qr_x + (qr_size - qr_label_width) / 2
+                page.insert_text((label_x, qr_y + qr_size + 10), qr_label, 
                                 fontsize=7, color=(0.3, 0.3, 0.3))
             except Exception as e:
                 pass
@@ -55,7 +56,10 @@ class PDFReportService:
         page.draw_line((30, footer_y - 10), (width - 30, footer_y - 10), color=self.base_color, width=1)
         
         timestamp = datetime.now().strftime("%d/%m/%Y à %H:%M")
-        footer_text = f"Cyberconfiance.com | Rapport généré le {timestamp} par {ip_address} | Page {page_num}/{total_pages}"
+        if document_code:
+            footer_text = f"Cyberconfiance.com | Code: {document_code} | Rapport généré le {timestamp} par {ip_address} | Page {page_num}/{total_pages}"
+        else:
+            footer_text = f"Cyberconfiance.com | Rapport généré le {timestamp} par {ip_address} | Page {page_num}/{total_pages}"
         page.insert_text((30, footer_y + 5), footer_text, fontsize=8, color=(0.5, 0.5, 0.5))
         
     def _get_risk_color(self, risk_level):
@@ -175,7 +179,9 @@ class PDFReportService:
         
         total_pages = len(doc)
         for page_num, page in enumerate(doc, 1):
-            self._add_header_footer(page, page_num, total_pages, ip_address, document_code=breach_analysis.document_code)
+            self._add_header_footer(page, page_num, total_pages, ip_address, 
+                                  document_code=breach_analysis.document_code,
+                                  qr_url="https://cyberconfiance.com/")
         
         pdf_bytes = doc.tobytes()
         doc.close()
@@ -306,7 +312,9 @@ class PDFReportService:
         
         total_pages = len(doc)
         for page_num, page in enumerate(doc, 1):
-            self._add_header_footer(page, page_num, total_pages, ip_address, document_code=security_analysis.document_code)
+            self._add_header_footer(page, page_num, total_pages, ip_address, 
+                                  document_code=security_analysis.document_code,
+                                  qr_url="https://cyberconfiance.com/outils/analyseur-securite")
         
         pdf_bytes = doc.tobytes()
         doc.close()
@@ -479,7 +487,9 @@ class PDFReportService:
         
         total_pages = len(doc)
         for page_num, page in enumerate(doc, 1):
-            self._add_header_footer(page, page_num, total_pages, ip_address, document_code=quiz_result.document_code)
+            self._add_header_footer(page, page_num, total_pages, ip_address, 
+                                  document_code=quiz_result.document_code,
+                                  qr_url="https://cyberconfiance.com/quiz")
         
         pdf_bytes = doc.tobytes()
         doc.close()
