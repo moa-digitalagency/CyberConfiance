@@ -276,13 +276,17 @@ def security_analyzer():
     if request.method == 'POST':
         input_value = request.form.get('input_value', '').strip()
         input_type = request.form.get('input_type', 'hash')
+        uploaded_file = request.files.get('file')
+        
+        if uploaded_file and uploaded_file.filename:
+            input_type = 'file'
         
         if input_type == 'email' and input_value:
             email_to_check = input_value
         else:
             email_to_check = request.form.get('email_check', '').strip()
         
-        if not input_value and not email_to_check:
+        if not input_value and not email_to_check and not uploaded_file:
             flash('Veuillez fournir une valeur à analyser ou un email à vérifier.', 'error')
             return redirect(url_for('main.security_analyzer'))
         
@@ -325,9 +329,13 @@ def security_analyzer():
             elif breach_result and breach_result.get('error'):
                 flash(f"Erreur lors de l'analyse de fuite: {breach_result.get('error')}", 'warning')
         
-        if input_value and input_type != 'email':
+        if (input_value or uploaded_file) and input_type != 'email':
             analyzer = SecurityAnalyzerService()
-            results = analyzer.analyze(input_value, input_type)
+            if input_type == 'file' and uploaded_file:
+                results = analyzer.analyze_file(uploaded_file)
+                input_value = uploaded_file.filename
+            else:
+                results = analyzer.analyze(input_value, input_type)
             
             try:
                 analysis_record = SecurityAnalysis(
@@ -640,12 +648,14 @@ def generate_breach_pdf(analysis_id):
     """Generate and download breach analysis PDF"""
     breach = BreachAnalysis.query.get_or_404(analysis_id)
     
+    user_ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()
+    
     if breach.pdf_report and breach.pdf_generated_at:
         pdf_bytes = breach.pdf_report
     else:
         pdf_service = PDFReportService()
         breach_result = breach.breaches_data or {"breaches": [], "count": breach.breach_count}
-        pdf_bytes = pdf_service.generate_breach_report(breach, breach_result, request.remote_addr)
+        pdf_bytes = pdf_service.generate_breach_report(breach, breach_result, user_ip)
         
         breach.pdf_report = pdf_bytes
         breach.pdf_generated_at = datetime.utcnow()
@@ -663,12 +673,14 @@ def generate_security_pdf(analysis_id):
     """Generate and download security analysis PDF"""
     analysis = SecurityAnalysis.query.get_or_404(analysis_id)
     
+    user_ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()
+    
     if analysis.pdf_report and analysis.pdf_generated_at:
         pdf_bytes = analysis.pdf_report
     else:
         pdf_service = PDFReportService()
         breach_analysis = analysis.breach_analysis if analysis.breach_analysis_id else None
-        pdf_bytes = pdf_service.generate_security_analysis_report(analysis, breach_analysis, request.remote_addr)
+        pdf_bytes = pdf_service.generate_security_analysis_report(analysis, breach_analysis, user_ip)
         
         analysis.pdf_report = pdf_bytes
         analysis.pdf_generated_at = datetime.utcnow()
@@ -687,11 +699,13 @@ def generate_quiz_pdf(result_id):
     from models import QuizResult
     quiz_result = QuizResult.query.get_or_404(result_id)
     
+    user_ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()
+    
     if quiz_result.pdf_report and quiz_result.pdf_generated_at:
         pdf_bytes = quiz_result.pdf_report
     else:
         pdf_service = PDFReportService()
-        pdf_bytes = pdf_service.generate_quiz_report(quiz_result, request.remote_addr)
+        pdf_bytes = pdf_service.generate_quiz_report(quiz_result, user_ip)
         
         quiz_result.pdf_report = pdf_bytes
         quiz_result.pdf_generated_at = datetime.utcnow()

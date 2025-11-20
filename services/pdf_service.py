@@ -9,11 +9,13 @@ class PDFReportService:
     """Service pour générer des rapports PDF forensiques professionnels"""
     
     def __init__(self):
-        self.logo_path = 'static/img/logo.png'
+        self.logo_path = 'static/img/logo_dark.png'
         self.base_color = (59/255, 130/255, 246/255)
         self.danger_color = (239/255, 68/255, 68/255)
         self.warning_color = (245/255, 158/255, 11/255)
         self.success_color = (16/255, 185/255, 129/255)
+        self.footer_height = 60
+        self.max_y = 780
         
     def _add_header_footer(self, page, page_num, total_pages, ip_address, site_url="https://cyberconfiance.cd"):
         """Ajoute en-tête et pied de page à une page"""
@@ -21,7 +23,7 @@ class PDFReportService:
         
         if os.path.exists(self.logo_path):
             try:
-                logo_rect = fitz.Rect(30, 20, 130, 60)
+                logo_rect = fitz.Rect(30, 20, 180, 60)
                 page.insert_image(logo_rect, filename=self.logo_path)
             except:
                 pass
@@ -32,8 +34,9 @@ class PDFReportService:
         page.draw_line((30, footer_y - 10), (width - 30, footer_y - 10), color=self.base_color, width=1)
         
         timestamp = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-        footer_text = f"{site_url} | Généré le: {timestamp} | IP: {ip_address} | Page {page_num}/{total_pages}"
-        page.insert_text((30, footer_y + 10), footer_text, fontsize=8, color=(0.5, 0.5, 0.5))
+        page.insert_text((30, footer_y + 5), f"cyberconfiance.cd | {timestamp}", fontsize=8, color=(0.5, 0.5, 0.5))
+        page.insert_text((30, footer_y + 15), f"IP: {ip_address}", fontsize=8, color=(0.5, 0.5, 0.5))
+        page.insert_text((width - 80, footer_y + 10), f"Page {page_num}/{total_pages}", fontsize=8, color=(0.5, 0.5, 0.5))
         
     def _get_risk_color(self, risk_level):
         """Retourne la couleur selon le niveau de risque"""
@@ -110,8 +113,7 @@ class PDFReportService:
             y_pos += 25
             
             for idx, breach in enumerate(breach_result['breaches'][:15], 1):
-                if y_pos > 750:
-                    self._add_header_footer(page, 1, 2, ip_address)
+                if y_pos > self.max_y:
                     page = doc.new_page(width=595, height=842)
                     y_pos = 90
                 
@@ -256,8 +258,7 @@ class PDFReportService:
             y_pos += 35
         
         if breach_analysis:
-            if y_pos > 650:
-                self._add_header_footer(page, 1, 2, ip_address)
+            if y_pos > self.max_y:
                 page = doc.new_page(width=595, height=842)
                 y_pos = 90
             
@@ -372,8 +373,7 @@ class PDFReportService:
             if breach_count > 0 and quiz_result.hibp_summary.get('breaches'):
                 breaches = quiz_result.hibp_summary['breaches'][:10]
                 for breach in breaches:
-                    if y_pos > 750:
-                        self._add_header_footer(page, 1, 2, ip_address)
+                    if y_pos > self.max_y:
                         page = doc.new_page(width=595, height=842)
                         y_pos = 90
                     
