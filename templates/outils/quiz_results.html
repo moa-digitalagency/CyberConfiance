@@ -184,9 +184,43 @@
         </div>
 
         <div class="actions-card">
+            <a href="{{ url_for('main.generate_quiz_pdf', result_id=quiz_result.id) }}" class="btn-pdf">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 0.5rem;">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                Télécharger le rapport PDF
+            </a>
             <a href="{{ url_for('main.quiz') }}" class="btn-secondary">Refaire le quiz</a>
             <a href="{{ url_for('main.rules') }}" class="btn-primary">Consulter les 20 Règles d'Or</a>
         </div>
     </div>
 </section>
+
+<style>
+.btn-pdf {
+    background: linear-gradient(145deg, rgba(16, 185, 129, 0.2) 0%, rgba(16, 185, 129, 0.1) 100%);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #10b981;
+    padding: 0.875rem 1.75rem;
+    border-radius: 12px;
+    font-weight: 500;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 16px rgba(16, 185, 129, 0.2);
+}
+
+.btn-pdf:hover {
+    background: linear-gradient(145deg, rgba(16, 185, 129, 0.3) 0%, rgba(16, 185, 129, 0.2) 100%);
+    border-color: rgba(16, 185, 129, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
+    color: #10b981;
+}
+</style>
 {% endblock %}

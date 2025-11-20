@@ -206,6 +206,8 @@ class QuizResult(db.Model):
     category_scores = db.Column(db.JSON, nullable=False)
     answers = db.Column(db.JSON, nullable=False)
     hibp_summary = db.Column(db.JSON)
+    pdf_report = db.Column(db.LargeBinary)
+    pdf_generated_at = db.Column(db.DateTime)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     ip_address = db.Column(db.String(50))
     user_agent = db.Column(db.String(500))

@@ -681,6 +681,29 @@ def generate_security_pdf(analysis_id):
         download_name=f"rapport_securite_{analysis.input_type}_{analysis.id}.pdf"
     )
 
+@bp.route("/generate-quiz-pdf/<int:result_id>")
+def generate_quiz_pdf(result_id):
+    """Generate and download quiz results PDF"""
+    from models import QuizResult
+    quiz_result = QuizResult.query.get_or_404(result_id)
+    
+    if quiz_result.pdf_report and quiz_result.pdf_generated_at:
+        pdf_bytes = quiz_result.pdf_report
+    else:
+        pdf_service = PDFReportService()
+        pdf_bytes = pdf_service.generate_quiz_report(quiz_result, request.remote_addr)
+        
+        quiz_result.pdf_report = pdf_bytes
+        quiz_result.pdf_generated_at = datetime.utcnow()
+        db.session.commit()
+    
+    return send_file(
+        io.BytesIO(pdf_bytes),
+        mimetype="application/pdf",
+        as_attachment=True,
+        download_name=f"rapport_quiz_{quiz_result.email}_{quiz_result.id}.pdf"
+    )
+
 @bp.route("/export-breach-pdf/<int:breach_id>")
 def export_breach_pdf(breach_id):
     """Export breach analysis as PDF (legacy route)"""
