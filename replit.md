@@ -108,3 +108,17 @@ The platform features a minimalist design with a pure black background, colorful
   - **Admin File Download**: Added secure download route (`/my4dm1n/requests/<id>/download-file`) with @admin_required decorator and file existence validation
   - **Download Button**: Added styled download button in admin request detail template, displayed conditionally when file is attached
   - **Security**: Download route validates admin permissions and file existence before serving files via Flask's send_file()
+- **Enhanced Request Submission Fields (November 20, 2025)**:
+  - **Cyberconsultation Fields**: Added dedicated columns (consultation_type, organization_size, business_sector, priority) to RequestSubmission model for detailed consultation tracking
+  - **OSINT Investigation Fields**: Added investigation-specific columns (investigation_type, context, target_identifier, timeline, known_information) for comprehensive OSINT request data
+  - **Admin Panel Display**: Updated admin request detail template to display all consultation and OSINT fields line-by-line with conditional rendering
+  - **Service Enhancement**: Modified RequestSubmissionService to capture and persist all new fields for both 'cyberconsultation' and 'osint'/'osint-investigation' request types
+  - **Database Migration**: Created migrations/add_consultation_osint_fields.py to add 9 new columns to request_submissions table
+- **Robots.txt Security Configuration (November 20, 2025)**:
+  - **Static robots.txt File**: Created comprehensive robots.txt with enhanced security blocking rules
+  - **AI Crawler Blocking**: Blocks GPTBot, Claude-Web, Google-Extended, CCBot, cohere-ai, Meta-ExternalAgent, PerplexityBot, and other AI training crawlers
+  - **OSINT Tool Blocking**: Blocks HTTrack, Wget, curl, scrapy, python-requests, libwww-perl, and common web scrapers
+  - **Security Scanner Blocking**: Blocks Nikto, sqlmap, Nmap, masscan, w3af, Acunetix, Nessus, and penetration testing tools
+  - **Trusted Search Engines**: Allows Googlebot, Bingbot, DuckDuckBot, and Yandex while blocking access to admin (/my4dm1n/), API (/api/), request forms (/request/), and uploads (/static/uploads/)
+  - **Archive & Email Harvesters**: Blocks archive.org_bot, ia_archiver, EmailCollector, EmailSiphon, EmailWolf
+  - **Aggressive SEO Crawlers**: Blocks SemrushBot, AhrefsBot, MJ12bot, DotBot
