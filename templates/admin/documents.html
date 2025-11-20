@@ -1,0 +1,136 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Gestion des Documents - Admin{% endblock %}
+
+{% block content %}
+<h1 style="font-size: 2rem; margin-bottom: 1.5rem;">Gestion des Documents Générés</h1>
+
+<div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 1.5rem; margin-bottom: 2rem;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+        <div style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 6px; padding: 1rem; text-align: center;">
+            <div style="font-size: 2rem; font-weight: bold; color: var(--accent-blue);">{{ stats.total }}</div>
+            <div style="color: var(--text-secondary); margin-top: 0.5rem;">Total Documents</div>
+        </div>
+        <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 6px; padding: 1rem; text-align: center;">
+            <div style="font-size: 2rem; font-weight: bold; color: #10b981;">{{ stats.quiz }}</div>
+            <div style="color: var(--text-secondary); margin-top: 0.5rem;">Quiz</div>
+        </div>
+        <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 6px; padding: 1rem; text-align: center;">
+            <div style="font-size: 2rem; font-weight: bold; color: #f59e0b;">{{ stats.breach }}</div>
+            <div style="color: var(--text-secondary); margin-top: 0.5rem;">Analyses de fuite</div>
+        </div>
+        <div style="background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 6px; padding: 1rem; text-align: center;">
+            <div style="font-size: 2rem; font-weight: bold; color: #8b5cf6;">{{ stats.security }}</div>
+            <div style="color: var(--text-secondary); margin-top: 0.5rem;">Analyses de sécurité</div>
+        </div>
+        <div style="background: rgba(236, 72, 153, 0.1); border: 1px solid rgba(236, 72, 153, 0.3); border-radius: 6px; padding: 1rem; text-align: center;">
+            <div style="font-size: 2rem; font-weight: bold; color: #ec4899;">{{ stats.request }}</div>
+            <div style="color: var(--text-secondary); margin-top: 0.5rem;">Demandes</div>
+        </div>
+    </div>
+</div>
+
+<div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 1.5rem; margin-bottom: 2rem;">
+    <form method="GET" style="display: grid; grid-template-columns: 1fr 200px auto; gap: 1rem; align-items: end;">
+        <div>
+            <label style="display: block; margin-bottom: 0.5rem; color: var(--text-primary); font-weight: 500;">Rechercher par code:</label>
+            <input type="text" 
+                   name="search" 
+                   value="{{ search }}" 
+                   placeholder="Ex: QUIZ-2024-..."
+                   style="width: 100%; padding: 0.75rem; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: var(--text-primary);">
+        </div>
+        <div>
+            <label style="display: block; margin-bottom: 0.5rem; color: var(--text-primary); font-weight: 500;">Type:</label>
+            <select name="type" style="width: 100%; padding: 0.75rem; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: var(--text-primary);">
+                <option value="all" {% if doc_type == 'all' %}selected{% endif %}>Tous</option>
+                <option value="quiz" {% if doc_type == 'quiz' %}selected{% endif %}>Quiz</option>
+                <option value="breach" {% if doc_type == 'breach' %}selected{% endif %}>Analyses de fuite</option>
+                <option value="security" {% if doc_type == 'security' %}selected{% endif %}>Analyses de sécurité</option>
+                <option value="request" {% if doc_type == 'request' %}selected{% endif %}>Demandes</option>
+            </select>
+        </div>
+        <div>
+            <button type="submit" style="padding: 0.75rem 1.5rem; background: rgba(59, 130, 246, 0.8); border: none; border-radius: 6px; color: white; font-weight: 500; cursor: pointer;">
+                Filtrer
+            </button>
+        </div>
+    </form>
+</div>
+
+<div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; overflow: hidden;">
+    <table style="width: 100%; border-collapse: collapse;">
+        <thead style="background: rgba(0,0,0,0.3); border-bottom: 1px solid rgba(255,255,255,0.1);">
+            <tr>
+                <th style="padding: 1rem; text-align: left; color: var(--text-primary); font-weight: 600;">Type</th>
+                <th style="padding: 1rem; text-align: left; color: var(--text-primary); font-weight: 600;">Code Document</th>
+                <th style="padding: 1rem; text-align: left; color: var(--text-primary); font-weight: 600;">Email/Info</th>
+                <th style="padding: 1rem; text-align: left; color: var(--text-primary); font-weight: 600;">Date de Création</th>
+                <th style="padding: 1rem; text-align: left; color: var(--text-primary); font-weight: 600;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if documents %}
+                {% for doc in documents %}
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                    <td style="padding: 1rem; color: var(--text-secondary);">
+                        <span style="padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.85rem; font-weight: 500;
+                            {% if doc.type == 'Quiz' %}background: rgba(16, 185, 129, 0.2); color: #10b981;
+                            {% elif doc.type == 'Analyse de fuite' %}background: rgba(245, 158, 11, 0.2); color: #f59e0b;
+                            {% elif doc.type == 'Analyse de sécurité' %}background: rgba(139, 92, 246, 0.2); color: #8b5cf6;
+                            {% elif doc.type == 'Demande' %}background: rgba(236, 72, 153, 0.2); color: #ec4899;
+                            {% endif %}">
+                            {{ doc.type }}
+                        </span>
+                    </td>
+                    <td style="padding: 1rem; color: var(--text-primary); font-family: monospace; font-weight: 500;">
+                        {{ doc.code }}
+                    </td>
+                    <td style="padding: 1rem; color: var(--text-secondary);">
+                        {{ doc.email }}
+                    </td>
+                    <td style="padding: 1rem; color: var(--text-secondary);">
+                        {{ doc.created_at.strftime('%Y-%m-%d %H:%M') }}
+                    </td>
+                    <td style="padding: 1rem;">
+                        <a href="{{ doc.detail_url }}" 
+                           style="padding: 0.5rem 1rem; background: rgba(59, 130, 246, 0.8); border-radius: 6px; color: white; text-decoration: none; font-size: 0.9rem;">
+                            Voir Détails
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="5" style="padding: 2rem; text-align: center; color: var(--text-secondary);">
+                        <p style="margin: 0;">Aucun document trouvé.</p>
+                    </td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+{% if total_pages > 1 %}
+<div style="margin-top: 2rem; display: flex; justify-content: center; gap: 0.5rem;">
+    {% if page > 1 %}
+        <a href="?page={{ page - 1 }}&search={{ search }}&type={{ doc_type }}" 
+           style="padding: 0.5rem 1rem; background: rgba(59, 130, 246, 0.8); border-radius: 6px; color: white; text-decoration: none;">
+            ← Précédent
+        </a>
+    {% endif %}
+    
+    <span style="padding: 0.5rem 1rem; color: var(--text-secondary);">
+        Page {{ page }} / {{ total_pages }}
+    </span>
+    
+    {% if page < total_pages %}
+        <a href="?page={{ page + 1 }}&search={{ search }}&type={{ doc_type }}" 
+           style="padding: 0.5rem 1rem; background: rgba(59, 130, 246, 0.8); border-radius: 6px; color: white; text-decoration: none;">
+            Suivant →
+        </a>
+    {% endif %}
+</div>
+{% endif %}
+
+{% endblock %}

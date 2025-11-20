@@ -78,7 +78,31 @@
             <div style="margin-bottom: 1.5rem;">
                 <strong style="color: var(--text-primary);">Text Analysis:</strong>
                 <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 6px; margin-top: 0.5rem;">
-                    <pre style="color: var(--text-secondary); font-size: 0.85rem; white-space: pre-wrap;">{{ submission.vt_text_results | tojson(indent=2) }}</pre>
+                    {% if submission.vt_text_results.error == false %}
+                        <div style="color: var(--text-secondary);">
+                            {% if submission.vt_text_results.malicious_patterns %}
+                                <div style="margin-bottom: 0.5rem;">
+                                    <strong style="color: #ef4444;">Patterns malveillants détectés:</strong>
+                                    <span style="color: #ef4444;"> {{ submission.vt_text_results.malicious_patterns|length }}</span>
+                                </div>
+                            {% endif %}
+                            {% if submission.vt_text_results.malicious_urls %}
+                                <div style="margin-bottom: 0.5rem;">
+                                    <strong style="color: #ef4444;">URLs malveillantes détectées:</strong>
+                                    <span style="color: #ef4444;"> {{ submission.vt_text_results.malicious_urls|length }}</span>
+                                </div>
+                            {% endif %}
+                            {% if submission.vt_text_results.message %}
+                                <div style="margin-top: 0.5rem; color: var(--text-secondary);">
+                                    {{ submission.vt_text_results.message }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        <div style="color: var(--text-secondary);">
+                            <strong>Résultat:</strong> {{ submission.vt_text_results.message or "Analyse terminée" }}
+                        </div>
+                    {% endif %}
                 </div>
             </div>
             {% endif %}
@@ -87,7 +111,33 @@
             <div style="margin-bottom: 1.5rem;">
                 <strong style="color: var(--text-primary);">URL Scans:</strong>
                 <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 6px; margin-top: 0.5rem;">
-                    <pre style="color: var(--text-secondary); font-size: 0.85rem; white-space: pre-wrap;">{{ submission.vt_url_results | tojson(indent=2) }}</pre>
+                    {% if submission.vt_url_results is iterable and submission.vt_url_results is not string %}
+                        {% for url_result in submission.vt_url_results %}
+                            {% if url_result.error == false %}
+                                <div style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                                    {% if url_result.found == false %}
+                                        <div style="color: var(--text-secondary);">
+                                            <strong>Menace:</strong> <span style="color: #10b981;">Aucune menace connue détectée</span>
+                                        </div>
+                                        <div style="margin-top: 0.5rem; color: var(--text-secondary);">
+                                            {{ url_result.message }}
+                                        </div>
+                                    {% else %}
+                                        <div style="color: #ef4444;">
+                                            <strong>⚠️ Menace détectée!</strong>
+                                        </div>
+                                        <div style="margin-top: 0.5rem; color: var(--text-secondary);">
+                                            {{ url_result.message }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <div style="color: var(--text-secondary);">
+                            Analyse des URLs terminée
+                        </div>
+                    {% endif %}
                 </div>
             </div>
             {% endif %}
@@ -96,9 +146,40 @@
             <div>
                 <strong style="color: var(--text-primary);">File Scan:</strong>
                 <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 6px; margin-top: 0.5rem;">
-                    <pre style="color: var(--text-secondary); font-size: 0.85rem; white-space: pre-wrap;">{{ submission.vt_file_results | tojson(indent=2) }}</pre>
+                    {% if submission.vt_file_results.data and submission.vt_file_results.data.attributes %}
+                        {% set attrs = submission.vt_file_results.data.attributes %}
+                        {% if attrs.last_analysis_stats %}
+                            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; margin-bottom: 1rem;">
+                                <div style="color: var(--text-secondary);">
+                                    <strong>Malicieux:</strong> <span style="color: #ef4444;">{{ attrs.last_analysis_stats.malicious or 0 }}</span>
+                                </div>
+                                <div style="color: var(--text-secondary);">
+                                    <strong>Suspects:</strong> <span style="color: #f59e0b;">{{ attrs.last_analysis_stats.suspicious or 0 }}</span>
+                                </div>
+                                <div style="color: var(--text-secondary);">
+                                    <strong>Inoffensif:</strong> <span style="color: #10b981;">{{ attrs.last_analysis_stats.harmless or 0 }}</span>
+                                </div>
+                                <div style="color: var(--text-secondary);">
+                                    <strong>Non détecté:</strong> {{ attrs.last_analysis_stats.undetected or 0 }}
+                                </div>
+                            </div>
+                        {% endif %}
+                        {% if attrs.type_description %}
+                            <div style="margin-top: 0.5rem; color: var(--text-secondary);">
+                                <strong>Type de fichier:</strong> {{ attrs.type_description }}
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <div style="color: var(--text-secondary);">
+                            Analyse du fichier terminée
+                        </div>
+                    {% endif %}
                 </div>
             </div>
+            {% endif %}
+            
+            {% if not submission.vt_text_results and not submission.vt_url_results and not submission.vt_file_results %}
+                <p style="color: var(--text-secondary); font-style: italic;">Aucune analyse de sécurité disponible pour cette demande.</p>
             {% endif %}
         </div>
     </div>
@@ -171,5 +252,31 @@
         </div>
     </div>
 </div>
+
+{% if submission.document_code %}
+<div style="margin-top: 2rem; padding: 1.5rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; text-align: center;">
+    <div style="display: flex; align-items: center; justify-content: center; gap: 2rem; flex-wrap: wrap;">
+        <div style="flex: 1; min-width: 200px;">
+            <h4 style="margin-bottom: 0.5rem; color: var(--accent-blue);">Code du Document</h4>
+            <p style="font-size: 1.5rem; font-weight: bold; color: var(--text-primary); margin: 0; font-family: monospace; letter-spacing: 2px;">
+                {{ submission.document_code }}
+            </p>
+            <p style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">
+                Type: {{ submission.request_type }}
+            </p>
+        </div>
+        <div style="flex: 0; min-width: 150px;">
+            <div style="background: white; padding: 1rem; border-radius: 8px; display: inline-block;">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ request.host_url }}{% if submission.request_type == 'cybercrime-report' %}outils/analyse-fuites{% elif submission.request_type == 'fact-checking' or submission.request_type == 'osint' %}outils/quiz{% else %}outils/analyseur-securite{% endif %}?code={{ submission.document_code }}" 
+                     alt="QR Code" 
+                     style="display: block; width: 150px; height: 150px;" />
+            </div>
+            <p style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.85rem;">
+                Scan pour accéder à la page
+            </p>
+        </div>
+    </div>
+</div>
+{% endif %}
 
 {% endblock %}

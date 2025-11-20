@@ -608,3 +608,98 @@ def api_stats():
         'quiz_stats': [{'date': str(s.date), 'count': s.count} for s in quiz_stats],
         'security_stats': [{'date': str(s.date), 'count': s.count} for s in security_stats]
     })
+
+@bp.route('/documents')
+@admin_required
+def documents_management():
+    """Gestion de tous les documents générés"""
+    log_activity('ADMIN_DOCUMENTS_VIEW', 'Consultation gestion documents')
+    
+    page = request.args.get('page', 1, type=int)
+    per_page = 50
+    search_code = request.args.get('search', '')
+    doc_type = request.args.get('type', 'all')
+    
+    documents = []
+    
+    if doc_type == 'all' or doc_type == 'quiz':
+        quiz_results = QuizResult.query
+        if search_code:
+            quiz_results = quiz_results.filter(QuizResult.document_code.contains(search_code))
+        for q in quiz_results.all():
+            if q.document_code:
+                documents.append({
+                    'type': 'Quiz',
+                    'code': q.document_code,
+                    'email': q.email,
+                    'created_at': q.created_at,
+                    'detail_url': url_for('admin_panel.quiz_detail', quiz_id=q.id)
+                })
+    
+    if doc_type == 'all' or doc_type == 'breach':
+        breach_results = BreachAnalysis.query
+        if search_code:
+            breach_results = breach_results.filter(BreachAnalysis.document_code.contains(search_code))
+        for b in breach_results.all():
+            if b.document_code:
+                documents.append({
+                    'type': 'Analyse de fuite',
+                    'code': b.document_code,
+                    'email': b.email,
+                    'created_at': b.created_at,
+                    'detail_url': url_for('admin_panel.breach_detail', breach_id=b.id)
+                })
+    
+    if doc_type == 'all' or doc_type == 'security':
+        security_results = SecurityAnalysis.query
+        if search_code:
+            security_results = security_results.filter(SecurityAnalysis.document_code.contains(search_code))
+        for s in security_results.all():
+            if s.document_code:
+                documents.append({
+                    'type': 'Analyse de sécurité',
+                    'code': s.document_code,
+                    'email': s.input_value[:50],
+                    'created_at': s.created_at,
+                    'detail_url': url_for('admin_panel.security_detail', analysis_id=s.id)
+                })
+    
+    if doc_type == 'all' or doc_type == 'request':
+        from models import RequestSubmission
+        request_results = RequestSubmission.query
+        if search_code:
+            request_results = request_results.filter(RequestSubmission.document_code.contains(search_code))
+        for r in request_results.all():
+            if r.document_code:
+                documents.append({
+                    'type': 'Demande',
+                    'code': r.document_code,
+                    'email': r.contact_email or 'Anonyme',
+                    'created_at': r.created_at,
+                    'detail_url': url_for('admin_requests.request_detail', submission_id=r.id)
+                })
+    
+    documents.sort(key=lambda x: x['created_at'], reverse=True)
+    
+    total_docs = len(documents)
+    start = (page - 1) * per_page
+    end = start + per_page
+    paginated_docs = documents[start:end]
+    
+    total_pages = (total_docs + per_page - 1) // per_page
+    
+    stats = {
+        'total': total_docs,
+        'quiz': QuizResult.query.filter(QuizResult.document_code.isnot(None)).count(),
+        'breach': BreachAnalysis.query.filter(BreachAnalysis.document_code.isnot(None)).count(),
+        'security': SecurityAnalysis.query.filter(SecurityAnalysis.document_code.isnot(None)).count(),
+        'request': db.session.query(RequestSubmission).filter(RequestSubmission.document_code.isnot(None)).count()
+    }
+    
+    return render_template('admin/documents.html',
+                         documents=paginated_docs,
+                         stats=stats,
+                         page=page,
+                         total_pages=total_pages,
+                         search=search_code,
+                         doc_type=doc_type)
