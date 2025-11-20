@@ -719,7 +719,7 @@ def generate_quiz_pdf(result_id):
         pdf_bytes = quiz_result.pdf_report
     else:
         answers = quiz_result.answers
-        recommendations = QuizService.generate_recommendations(quiz_result.overall_score, answers)
+        recommendations = QuizService.get_recommendations(quiz_result.overall_score, answers)
         
         pdf_service = PDFReportService()
         pdf_bytes = pdf_service.generate_quiz_report(quiz_result, recommendations, user_ip)
