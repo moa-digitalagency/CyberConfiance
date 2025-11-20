@@ -1,7 +1,7 @@
 from models import RequestSubmission, db
 from services.security_analyzer import SecurityAnalyzerService
 from services.file_upload_service import FileUploadService
-from utils.document_code_generator import generate_document_code
+from utils.document_code_generator import generate_unique_code
 from flask import request
 import os
 
@@ -121,7 +121,7 @@ class RequestSubmissionService:
             contact_phone=contact_phone,
             threat_detected=threat_detected,
             status='pending',
-            document_code=generate_document_code('REQ'),
+            document_code=generate_unique_code(prefix='REQ'),
             ip_address=request.remote_addr,
             user_agent=request.headers.get('User-Agent', '')[:500]
         )
