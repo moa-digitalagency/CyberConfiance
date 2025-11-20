@@ -6,6 +6,7 @@ from services.pdf_service import PDFReportService
 from models import Contact, User, BreachAnalysis, SecurityAnalysis
 import __init__ as app_module
 import json
+import os
 import requests
 import io
 from datetime import datetime
@@ -346,10 +347,13 @@ def security_analyzer():
                 results = analyzer.analyze(input_value, input_type)
             
             try:
+                import json
+                sanitized_results = json.loads(json.dumps(results, default=str))
+                
                 analysis_record = SecurityAnalysis(
                     input_value=input_value,
                     input_type=input_type,
-                    analysis_results=results,
+                    analysis_results=sanitized_results,
                     threat_detected=results.get('threat_detected', False),
                     threat_level=results.get('threat_level'),
                     malicious_count=results.get('malicious', 0),
@@ -363,6 +367,7 @@ def security_analyzer():
                 analysis_id = analysis_record.id
             except Exception as e:
                 print(f"Error saving security analysis: {str(e)}")
+                db.session.rollback()
         elif input_type == 'email' and breach_analysis_record:
             try:
                 email_results = {
