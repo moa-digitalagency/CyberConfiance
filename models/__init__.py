@@ -171,8 +171,11 @@ class BreachAnalysis(db.Model):
     breach_count = db.Column(db.Integer, default=0)
     risk_level = db.Column(db.String(20))
     breaches_found = db.Column(db.Text)
+    breaches_data = db.Column(db.JSON)
     ip_address = db.Column(db.String(50))
     user_agent = db.Column(db.String(500))
+    pdf_report = db.Column(db.LargeBinary)
+    pdf_generated_at = db.Column(db.DateTime)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     def __repr__(self):
@@ -221,9 +224,14 @@ class SecurityAnalysis(db.Model):
     threat_level = db.Column(db.String(20))
     malicious_count = db.Column(db.Integer, default=0)
     total_engines = db.Column(db.Integer, default=0)
+    breach_analysis_id = db.Column(db.Integer, db.ForeignKey('breach_analyses.id'), nullable=True)
     ip_address = db.Column(db.String(50))
     user_agent = db.Column(db.String(500))
+    pdf_report = db.Column(db.LargeBinary)
+    pdf_generated_at = db.Column(db.DateTime)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    breach_analysis = db.relationship('BreachAnalysis', backref='security_analyses')
     
     def __repr__(self):
         return f'<SecurityAnalysis {self.input_type}: {self.input_value[:50]}>'

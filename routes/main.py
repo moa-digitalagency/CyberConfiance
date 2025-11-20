@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for, session, jsonify
+from flask import Blueprint, render_template, request, flash, redirect, url_for, session, jsonify, send_file
 from flask_login import login_user, logout_user, login_required
 from services import ContentService, HaveIBeenPwnedService, QuizService
 from services.security_analyzer import SecurityAnalyzerService
@@ -6,6 +6,8 @@ from models import Contact, User, BreachAnalysis, SecurityAnalysis
 import __init__ as app_module
 import json
 import requests
+import io
+from datetime import datetime
 db = app_module.db
 
 bp = Blueprint('main', __name__)
@@ -266,36 +268,86 @@ def link_analyzer():
 @bp.route('/outils/analyseur-securite', methods=['GET', 'POST'])
 def security_analyzer():
     results = None
+    breach_result = None
+    analysis_id = None
+    breach_analysis_id = None
     
     if request.method == 'POST':
         input_value = request.form.get('input_value', '').strip()
         input_type = request.form.get('input_type', 'hash')
+        email_to_check = request.form.get('email_check', '').strip()
         
-        if not input_value:
-            flash('Veuillez fournir une valeur à analyser.', 'error')
+        if not input_value and not email_to_check:
+            flash('Veuillez fournir une valeur à analyser ou un email à vérifier.', 'error')
             return redirect(url_for('main.security_analyzer'))
         
-        analyzer = SecurityAnalyzerService()
-        results = analyzer.analyze(input_value, input_type)
+        breach_analysis_record = None
         
-        try:
-            analysis_record = SecurityAnalysis(
-                input_value=input_value,
-                input_type=input_type,
-                analysis_results=results,
-                threat_detected=results.get('threat_detected', False),
-                threat_level=results.get('threat_level'),
-                malicious_count=results.get('malicious', 0),
-                total_engines=results.get('total', 0),
-                ip_address=request.remote_addr,
-                user_agent=request.headers.get('User-Agent', '')
-            )
-            db.session.add(analysis_record)
-            db.session.commit()
-        except Exception as e:
-            print(f"Error saving security analysis: {str(e)}")
+        if email_to_check:
+            breach_result = HaveIBeenPwnedService.check_email_breach(email_to_check)
+            
+            if breach_result and not breach_result.get('error'):
+                try:
+                    breach_count = breach_result.get('count', 0)
+                    if breach_count == 0:
+                        risk_level = 'safe'
+                    elif breach_count <= 3:
+                        risk_level = 'warning'
+                    else:
+                        risk_level = 'danger'
+                    
+                    breaches_data_sanitized = {
+                        'breaches': breach_result.get('breaches', [])[:50],
+                        'count': breach_count,
+                        'email': breach_result.get('email')
+                    }
+                    
+                    breach_analysis_record = BreachAnalysis(
+                        email=email_to_check,
+                        breach_count=breach_count,
+                        risk_level=risk_level,
+                        breaches_found=','.join([b.get('Name', '') for b in breach_result.get('breaches', [])[:20]]),
+                        breaches_data=breaches_data_sanitized,
+                        ip_address=request.remote_addr,
+                        user_agent=request.headers.get('User-Agent', '')[:500]
+                    )
+                    db.session.add(breach_analysis_record)
+                    db.session.commit()
+                    breach_analysis_id = breach_analysis_record.id
+                except Exception as e:
+                    print(f"Error saving breach analysis: {str(e)}")
+                    db.session.rollback()
+            elif breach_result and breach_result.get('error'):
+                flash(f"Erreur lors de l'analyse de fuite: {breach_result.get('error')}", 'warning')
+        
+        if input_value:
+            analyzer = SecurityAnalyzerService()
+            results = analyzer.analyze(input_value, input_type)
+            
+            try:
+                analysis_record = SecurityAnalysis(
+                    input_value=input_value,
+                    input_type=input_type,
+                    analysis_results=results,
+                    threat_detected=results.get('threat_detected', False),
+                    threat_level=results.get('threat_level'),
+                    malicious_count=results.get('malicious', 0),
+                    total_engines=results.get('total', 0),
+                    breach_analysis_id=breach_analysis_record.id if breach_analysis_record else None,
+                    ip_address=request.remote_addr,
+                    user_agent=request.headers.get('User-Agent', '')
+                )
+                db.session.add(analysis_record)
+                db.session.commit()
+                analysis_id = analysis_record.id
+            except Exception as e:
+                print(f"Error saving security analysis: {str(e)}")
     
-    return render_template('outils/security_analyzer.html', results=results)
+    return render_template('outils/security_analyzer.html', 
+                         results=results, 
+                         breach_result=breach_result,
+                         analysis_id=analysis_id,
+                         breach_analysis_id=breach_analysis_id)
 
 @bp.route('/quiz', methods=['GET', 'POST'])
 def quiz():
@@ -533,3 +585,57 @@ def set_language(lang=None):
             return redirect(referrer)
     
     return redirect(url_for('main.index'))
+
+
+@bp.route("/export-breach-pdf/<int:breach_id>")
+def export_breach_pdf(breach_id):
+    """Export breach analysis as PDF"""
+    from services.pdf_service import PDFReportService
+    from models import BreachAnalysis
+    
+    breach = BreachAnalysis.query.get_or_404(breach_id)
+    
+    if breach.pdf_report and breach.pdf_generated_at:
+        pdf_bytes = breach.pdf_report
+    else:
+        pdf_service = PDFReportService()
+        breach_result = breach.breaches_data or {"breaches": [], "count": breach.breach_count}
+        pdf_bytes = pdf_service.generate_breach_report(breach, breach_result, request.remote_addr)
+        
+        breach.pdf_report = pdf_bytes
+        breach.pdf_generated_at = datetime.utcnow()
+        db.session.commit()
+    
+    return send_file(
+        io.BytesIO(pdf_bytes),
+        mimetype="application/pdf",
+        as_attachment=True,
+        download_name=f"rapport_fuite_{breach.email}_{breach.id}.pdf"
+    )
+
+@bp.route("/export-security-pdf/<int:analysis_id>")
+def export_security_pdf(analysis_id):
+    """Export security analysis as PDF"""
+    from services.pdf_service import PDFReportService
+    from models import SecurityAnalysis, BreachAnalysis
+    
+    analysis = SecurityAnalysis.query.get_or_404(analysis_id)
+    
+    if analysis.pdf_report and analysis.pdf_generated_at:
+        pdf_bytes = analysis.pdf_report
+    else:
+        pdf_service = PDFReportService()
+        breach = BreachAnalysis.query.get(analysis.breach_analysis_id) if analysis.breach_analysis_id else None
+        pdf_bytes = pdf_service.generate_security_analysis_report(analysis, breach, request.remote_addr)
+        
+        analysis.pdf_report = pdf_bytes
+        analysis.pdf_generated_at = datetime.utcnow()
+        db.session.commit()
+    
+    return send_file(
+        io.BytesIO(pdf_bytes),
+        mimetype="application/pdf",
+        as_attachment=True,
+        download_name=f"rapport_securite_{analysis.input_type}_{analysis.id}.pdf"
+    )
+

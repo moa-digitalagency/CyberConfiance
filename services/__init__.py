@@ -14,7 +14,7 @@ class HaveIBeenPwnedService:
         Vérifie si un email a été compromis en utilisant l'API Have I Been Pwned
         Retourne une liste de breaches et le nombre total
         """
-        api_key = os.environ.get('HIBP_API_KEY')
+        api_key = os.environ.get('SECURITY_ANALYSIS_API_KEY') or os.environ.get('HIBP_API_KEY')
         if not api_key:
             # Log détaillé pour l'admin (console serveur)
             print("[!] HIBP_API_KEY non configurée - Service d'analyse de fuites indisponible")

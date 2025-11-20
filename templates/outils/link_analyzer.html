@@ -30,6 +30,7 @@
         <div class="analyzer-form-card">
             <h2>Analyser un Lien</h2>
             <form method="POST" action="{{ url_for('main.link_analyzer') }}" class="link-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                 <div class="form-group">
                     <label for="url">URL à analyser:</label>
                     <input type="text" 

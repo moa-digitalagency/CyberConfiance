@@ -21,6 +21,7 @@
             </p>
 
             <form method="POST" action="{{ url_for('main.security_analyzer') }}" class="analyzer-form" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                 <div class="input-type-selector">
                     <label class="type-option">
                         <input type="radio" name="input_type" value="url" checked>

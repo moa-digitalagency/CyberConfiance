@@ -9,7 +9,7 @@ class SecurityAnalyzerService:
     """Service for analyzing security threats via VirusTotal API"""
     
     def __init__(self):
-        self.api_key = os.environ.get('VT_API_KEY')
+        self.api_key = os.environ.get('SECURITY_ANALYSIS_API_KEY') or os.environ.get('VT_API_KEY')
         
         self.malicious_patterns = [
             r'<script[^>]*>.*?</script>',

@@ -73,6 +73,7 @@
             <div class="contact-form glass-card">
                 <h2>Envoyez-nous un message</h2>
                 <form method="POST" action="{{ url_for('main.contact') }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                     <div class="form-group">
                         <label for="name">Nom</label>
                         <input type="text" id="name" name="name" placeholder="Votre nom" required>

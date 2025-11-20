@@ -20,6 +20,7 @@
             </p>
 
             <form method="POST" action="{{ url_for('main.quiz_submit_email') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                 <div class="form-group">
                     <label for="email" style="display: block; color: var(--text-primary); margin-bottom: 0.5rem; font-weight: 500;">
                         Votre adresse email
