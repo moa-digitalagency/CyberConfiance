@@ -217,6 +217,23 @@ def quiz_detail(quiz_id):
     log_activity('ADMIN_QUIZ_DETAIL_VIEW', f'Consultation détails quiz #{quiz_id}')
     return render_template('admin/quiz_detail.html', quiz=quiz)
 
+@bp.route('/history/quiz/<int:quiz_id>/delete', methods=['POST'])
+@admin_required
+def delete_quiz_result(quiz_id):
+    """Supprimer un résultat de quiz"""
+    quiz = QuizResult.query.get_or_404(quiz_id)
+    try:
+        db.session.delete(quiz)
+        db.session.commit()
+        log_activity('ADMIN_QUIZ_DELETE', f'Suppression quiz #{quiz_id}')
+        flash('Résultat de quiz supprimé avec succès.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        log_activity('ADMIN_QUIZ_DELETE_ERROR', f'Erreur suppression quiz #{quiz_id}: {str(e)}')
+        flash(f'Erreur lors de la suppression: {str(e)}', 'danger')
+    
+    return redirect(url_for('admin_panel.quiz_history'))
+
 @bp.route('/history/security/<int:analysis_id>')
 @admin_required
 def security_detail(analysis_id):

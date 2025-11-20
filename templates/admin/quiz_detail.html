@@ -46,20 +46,26 @@
             </tr>
         </thead>
         <tbody>
-            {% for category, score in quiz.category_scores.items() %}
-            <tr>
-                <td>{{ category }}</td>
-                <td>
-                    {% if score >= 80 %}
-                    <span class="badge badge-success">{{ score }}%</span>
-                    {% elif score >= 60 %}
-                    <span class="badge badge-warning">{{ score }}%</span>
-                    {% else %}
-                    <span class="badge badge-danger">{{ score }}%</span>
-                    {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
+            {% if quiz.category_scores and quiz.category_scores.get('percentages') %}
+                {% for category, score in quiz.category_scores.get('percentages', {}).items() %}
+                <tr>
+                    <td>{{ category.capitalize() }}</td>
+                    <td>
+                        {% if score >= 80 %}
+                        <span class="badge badge-success">{{ score }}%</span>
+                        {% elif score >= 60 %}
+                        <span class="badge badge-warning">{{ score }}%</span>
+                        {% else %}
+                        <span class="badge badge-danger">{{ score }}%</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="2" style="text-align: center; color: var(--text-muted);">Aucun score détaillé disponible</td>
+                </tr>
+            {% endif %}
         </tbody>
     </table>
 </div>
