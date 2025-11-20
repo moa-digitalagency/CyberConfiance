@@ -92,8 +92,49 @@
 {% if quiz.hibp_summary %}
 <div class="admin-card">
     <h3>Résumé HIBP (Have I Been Pwned)</h3>
-    <div style="color: var(--text-secondary);">
-        {{ quiz.hibp_summary|tojson(indent=2) }}
+    <div style="background: rgba(0,0,0,0.2); padding: 1.5rem; border-radius: 8px; margin-top: 1rem;">
+        {% if quiz.hibp_summary is mapping and 'breach_count' in quiz.hibp_summary %}
+            <div style="margin-bottom: 1rem;">
+                <strong style="color: var(--text-primary);">Nombre de fuites détectées:</strong>
+                <span style="color: {% if quiz.hibp_summary['breach_count'] > 0 %}#ef4444{% else %}#10b981{% endif %}; font-size: 1.2rem; font-weight: bold; margin-left: 0.5rem;">
+                    {{ quiz.hibp_summary['breach_count'] }}
+                </span>
+            </div>
+            
+            {% if quiz.hibp_summary['breach_count'] > 0 and quiz.hibp_summary.get('breaches') %}
+                <div style="margin-top: 1.5rem;">
+                    <strong style="color: var(--text-primary); display: block; margin-bottom: 1rem;">Fuites identifiées:</strong>
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        {% for breach in quiz.hibp_summary['breaches'][:5] %}
+                        <div style="background: rgba(239, 68, 68, 0.1); padding: 1rem; border-radius: 6px; border-left: 3px solid #ef4444;">
+                            <div style="font-weight: bold; color: var(--text-primary); margin-bottom: 0.5rem;">{{ breach.get('Name', 'Inconnu') }}</div>
+                            <div style="color: var(--text-secondary); font-size: 0.9rem;">
+                                {% if breach.get('BreachDate') %}
+                                <div><strong>Date:</strong> {{ breach['BreachDate'] }}</div>
+                                {% endif %}
+                                {% if breach.get('DataClasses') %}
+                                <div style="margin-top: 0.5rem;"><strong>Données compromises:</strong> {{ breach['DataClasses']|join(', ') }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                        {% if quiz.hibp_summary['breaches']|length > 5 %}
+                        <div style="color: var(--text-muted); font-style: italic; text-align: center;">
+                            ... et {{ quiz.hibp_summary['breaches']|length - 5 }} autre(s) fuite(s)
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% elif quiz.hibp_summary['breach_count'] == 0 %}
+                <div style="color: #10b981; padding: 1rem; background: rgba(16, 185, 129, 0.1); border-radius: 6px; margin-top: 1rem;">
+                    ✓ Aucune fuite de données détectée pour cet email
+                </div>
+            {% endif %}
+        {% else %}
+            <div style="color: var(--text-secondary);">
+                <pre style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 6px; overflow-x: auto; font-size: 0.85rem;">{{ quiz.hibp_summary|tojson(indent=2) }}</pre>
+            </div>
+        {% endif %}
     </div>
 </div>
 {% endif %}

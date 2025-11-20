@@ -1,0 +1,54 @@
+# Robots.txt pour CyberConfiance
+# Plateforme de sensibilisation à la cybersécurité
+
+User-agent: *
+# Pages publiques accessibles
+Allow: /
+Allow: /static/
+Allow: /outils/
+Allow: /ressources/
+Allow: /apropos
+Allow: /contact
+
+# Pages administratives - BLOCAGE COMPLET
+Disallow: /my4dm1n/
+Disallow: /admin/
+Disallow: /login
+Disallow: /logout
+
+# Formulaires de soumission - BLOCAGE (protection des utilisateurs)
+Disallow: /request/
+Disallow: /submit
+
+# APIs et endpoints internes
+Disallow: /api/
+Disallow: /_/
+
+# Fichiers sensibles
+Disallow: /*.json$
+Disallow: /*.sql$
+Disallow: /*.db$
+
+# Bots IA - Autoriser l'indexation du contenu éducatif uniquement
+User-agent: GPTBot
+User-agent: ChatGPT-User
+User-agent: CCBot
+User-agent: anthropic-ai
+User-agent: Claude-Web
+User-agent: Google-Extended
+Allow: /
+Allow: /outils/
+Allow: /ressources/
+Disallow: /my4dm1n/
+Disallow: /request/
+Disallow: /admin/
+
+# Crawlers agressifs - BLOCAGE
+User-agent: AhrefsBot
+User-agent: SemrushBot
+User-agent: MJ12bot
+User-agent: DotBot
+Disallow: /
+
+# Sitemap
+Sitemap: https://{{DOMAIN}}/sitemap.xml

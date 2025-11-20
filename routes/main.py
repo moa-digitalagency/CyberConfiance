@@ -793,3 +793,146 @@ def export_security_pdf(analysis_id):
         download_name=f"rapport_securite_{analysis.input_type}_{analysis.id}.pdf"
     )
 
+@bp.route('/robots.txt')
+def robots():
+    """Generate dynamic robots.txt for search engines and AI crawlers"""
+    domain = request.host_url.rstrip('/')
+    
+    robots_content = f"""# Robots.txt pour CyberConfiance
+# Plateforme de sensibilisation à la cybersécurité
+
+User-agent: *
+# Pages publiques accessibles
+Allow: /
+Allow: /static/
+Allow: /outils/
+Allow: /ressources/
+Allow: /apropos
+Allow: /contact
+
+# Pages administratives - BLOCAGE COMPLET
+Disallow: /my4dm1n/
+Disallow: /admin/
+Disallow: /login
+Disallow: /logout
+
+# Formulaires de soumission - BLOCAGE (protection des utilisateurs)
+Disallow: /request/
+Disallow: /submit
+
+# APIs et endpoints internes
+Disallow: /api/
+Disallow: /_/
+
+# Fichiers sensibles
+Disallow: /*.json$
+Disallow: /*.sql$
+Disallow: /*.db$
+
+# Bots IA - Autoriser l'indexation du contenu éducatif uniquement
+User-agent: GPTBot
+User-agent: ChatGPT-User
+User-agent: CCBot
+User-agent: anthropic-ai
+User-agent: Claude-Web
+User-agent: Google-Extended
+Allow: /
+Allow: /outils/
+Allow: /ressources/
+Disallow: /my4dm1n/
+Disallow: /request/
+Disallow: /admin/
+
+# Crawlers agressifs - BLOCAGE
+User-agent: AhrefsBot
+User-agent: SemrushBot
+User-agent: MJ12bot
+User-agent: DotBot
+Disallow: /
+
+# Sitemap
+Sitemap: {domain}/sitemap.xml
+"""
+    
+    response = make_response(robots_content)
+    response.headers['Content-Type'] = 'text/plain'
+    return response
+
+@bp.route('/sitemap.xml')
+def sitemap():
+    """Generate dynamic XML sitemap for SEO"""
+    from models import News, Rule, Tool, AttackType
+    
+    domain = request.host_url.rstrip('/')
+    
+    pages = []
+    
+    static_routes = [
+        ('main.index', '1.0', 'daily'),
+        ('main.about', '0.5', 'monthly'),
+        ('main.rules', '0.8', 'weekly'),
+        ('main.scenarios', '0.8', 'weekly'),
+        ('main.tools', '0.8', 'weekly'),
+        ('main.glossary', '0.7', 'weekly'),
+        ('main.resources', '0.7', 'weekly'),
+        ('main.news', '0.9', 'daily'),
+        ('main.contact', '0.6', 'monthly'),
+        ('main.quiz', '0.9', 'weekly'),
+        ('main.breach_analysis', '0.9', 'weekly'),
+        ('main.security_analyzer', '0.9', 'weekly'),
+        ('main.attack_types', '0.8', 'weekly'),
+        ('main.osint_methodology', '0.7', 'monthly'),
+    ]
+    
+    for route, priority, changefreq in static_routes:
+        try:
+            pages.append({
+                'loc': domain + url_for(route),
+                'priority': priority,
+                'changefreq': changefreq,
+                'lastmod': datetime.utcnow().strftime('%Y-%m-%d')
+            })
+        except:
+            pass
+    
+    try:
+        news_items = News.query.order_by(News.created_at.desc()).limit(50).all()
+        for item in news_items:
+            pages.append({
+                'loc': domain + url_for('main.news_detail', news_id=item.id),
+                'priority': '0.7',
+                'changefreq': 'monthly',
+                'lastmod': item.created_at.strftime('%Y-%m-%d')
+            })
+    except:
+        pass
+    
+    try:
+        rules = Rule.query.all()
+        for rule in rules:
+            pages.append({
+                'loc': domain + url_for('main.rule_detail', rule_id=rule.id),
+                'priority': '0.6',
+                'changefreq': 'monthly',
+                'lastmod': datetime.utcnow().strftime('%Y-%m-%d')
+            })
+    except:
+        pass
+    
+    sitemap_xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
+    sitemap_xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+    
+    for page in pages:
+        sitemap_xml += '  <url>\n'
+        sitemap_xml += f'    <loc>{page["loc"]}</loc>\n'
+        sitemap_xml += f'    <lastmod>{page["lastmod"]}</lastmod>\n'
+        sitemap_xml += f'    <changefreq>{page["changefreq"]}</changefreq>\n'
+        sitemap_xml += f'    <priority>{page["priority"]}</priority>\n'
+        sitemap_xml += '  </url>\n'
+    
+    sitemap_xml += '</urlset>'
+    
+    response = make_response(sitemap_xml)
+    response.headers['Content-Type'] = 'application/xml'
+    return response
+

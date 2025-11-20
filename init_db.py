@@ -6,12 +6,44 @@ Runs migrations and seeds data from JSON files
 Usage:
     python init_db.py           # Full initialization
     python init_db.py --reset   # Drop all tables and reinitialize (DANGER!)
+    python init_db.py --check   # Verify all models are loaded
 """
 
 import os
 import sys
 from __init__ import create_app, db
 from utils.seed_data import seed_all_data
+
+def verify_models_loaded():
+    """Verify all required models are imported and registered"""
+    print("\n[VERIFICATION] Checking all models are loaded...")
+    
+    from models import (
+        User, Rule, Scenario, GlossaryTerm, Tool, News, 
+        RequestSubmission, Contact, QuizResult, BreachAnalysis,
+        SecurityAnalysis, AttackType, Newsletter, ActivityLog,
+        ThreatLog, SiteSettings, PageContentSettings, SEOMetadata
+    )
+    
+    required_tables = [
+        'user', 'rule', 'scenario', 'glossary_term', 'tool', 'news',
+        'request_submission', 'contact', 'quiz_result', 'breach_analysis',
+        'security_analysis', 'attack_type', 'newsletter', 'activity_log',
+        'threat_log', 'site_settings', 'page_content_settings', 'seo_metadata'
+    ]
+    
+    registered_tables = [table.name for table in db.metadata.sorted_tables]
+    
+    print(f"✓ Found {len(registered_tables)} registered tables")
+    
+    missing_tables = set(required_tables) - set(registered_tables)
+    if missing_tables:
+        print(f"⚠️  WARNING: Missing tables: {', '.join(missing_tables)}")
+        print("   This may cause errors during database creation")
+        return False
+    
+    print("✓ All required models are loaded and registered")
+    return True
 
 def init_database(reset=False):
     """Initialize database and seed data
@@ -38,10 +70,18 @@ def init_database(reset=False):
                 db.drop_all()
                 print("✓ All tables dropped")
             
+            # Verify all models are loaded
+            models_ok = verify_models_loaded()
+            if not models_ok:
+                print("\n⚠️  Some models may be missing - continuing anyway...")
+            
             # Create all tables
             print("\n[1/3] Creating database tables...")
             db.create_all()
-            print("✓ Database tables created successfully")
+            
+            created_tables = [table.name for table in db.metadata.sorted_tables]
+            print(f"✓ Database tables created successfully ({len(created_tables)} tables)")
+            print(f"   Tables: {', '.join(created_tables)}")
             
             # Initialize sample data (users, basic content)
             print("\n[2/3] Initializing sample data...")
