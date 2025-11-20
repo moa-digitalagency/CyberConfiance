@@ -27,15 +27,16 @@ class ModeratorModelView(ModelView):
         return redirect(url_for('main.login'))
 
 class BreachAnalysisView(SecureModelView):
-    column_list = ['id', 'email', 'breach_count', 'risk_level', 'ip_address', 'created_at', 'pdf_download']
-    column_searchable_list = ['email', 'ip_address']
+    column_list = ['id', 'document_code', 'email', 'breach_count', 'risk_level', 'ip_address', 'created_at', 'pdf_download']
+    column_searchable_list = ['email', 'ip_address', 'document_code']
     column_filters = ['risk_level', 'breach_count', 'created_at']
-    column_sortable_list = ['id', 'email', 'breach_count', 'risk_level', 'created_at']
+    column_sortable_list = ['id', 'document_code', 'email', 'breach_count', 'risk_level', 'created_at']
     column_default_sort = ('created_at', True)
     can_create = False
     can_edit = False
     column_labels = {
         'id': 'ID',
+        'document_code': 'Code document',
         'email': 'Email',
         'breach_count': 'Nb. de fuites',
         'risk_level': 'Niveau de risque',
@@ -56,15 +57,16 @@ class BreachAnalysisView(SecureModelView):
     }
 
 class QuizResultView(SecureModelView):
-    column_list = ['id', 'email', 'overall_score', 'created_at', 'ip_address']
-    column_searchable_list = ['email', 'ip_address']
+    column_list = ['id', 'document_code', 'email', 'overall_score', 'created_at', 'ip_address']
+    column_searchable_list = ['email', 'ip_address', 'document_code']
     column_filters = ['overall_score', 'created_at']
-    column_sortable_list = ['id', 'email', 'overall_score', 'created_at']
+    column_sortable_list = ['id', 'document_code', 'email', 'overall_score', 'created_at']
     column_default_sort = ('created_at', True)
     can_create = False
     can_edit = False
     column_labels = {
         'id': 'ID',
+        'document_code': 'Code document',
         'email': 'Email',
         'overall_score': 'Score global (%)',
         'category_scores': 'Scores par catégorie',
@@ -76,15 +78,16 @@ class QuizResultView(SecureModelView):
     }
 
 class SecurityAnalysisView(SecureModelView):
-    column_list = ['id', 'input_type', 'input_value', 'threat_detected', 'threat_level', 'malicious_count', 'total_engines', 'created_at', 'pdf_download']
-    column_searchable_list = ['input_value', 'ip_address']
+    column_list = ['id', 'document_code', 'input_type', 'input_value', 'threat_detected', 'threat_level', 'malicious_count', 'total_engines', 'created_at', 'pdf_download']
+    column_searchable_list = ['input_value', 'ip_address', 'document_code']
     column_filters = ['input_type', 'threat_detected', 'threat_level', 'created_at']
-    column_sortable_list = ['id', 'input_type', 'threat_detected', 'threat_level', 'malicious_count', 'created_at']
+    column_sortable_list = ['id', 'document_code', 'input_type', 'threat_detected', 'threat_level', 'malicious_count', 'created_at']
     column_default_sort = ('created_at', True)
     can_create = False
     can_edit = False
     column_labels = {
         'id': 'ID',
+        'document_code': 'Code document',
         'input_value': 'Valeur analysée',
         'input_type': 'Type',
         'analysis_results': 'Résultats',

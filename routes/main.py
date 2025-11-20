@@ -4,6 +4,7 @@ from services import ContentService, HaveIBeenPwnedService, QuizService
 from services.security_analyzer import SecurityAnalyzerService
 from services.pdf_service import PDFReportService
 from models import Contact, User, BreachAnalysis, SecurityAnalysis
+from utils.document_code_generator import ensure_unique_code
 import __init__ as app_module
 import json
 import os
@@ -318,6 +319,7 @@ def security_analyzer():
                         risk_level=risk_level,
                         breaches_found=','.join([b.get('Name', '') for b in breach_result.get('breaches', [])[:20]]),
                         breaches_data=breaches_data_sanitized,
+                        document_code=ensure_unique_code(BreachAnalysis),
                         ip_address=request.remote_addr,
                         user_agent=request.headers.get('User-Agent', '')[:500]
                     )
@@ -359,6 +361,7 @@ def security_analyzer():
                     malicious_count=results.get('malicious', 0),
                     total_engines=results.get('total', 0),
                     breach_analysis_id=breach_analysis_record.id if breach_analysis_record else None,
+                    document_code=ensure_unique_code(SecurityAnalysis),
                     ip_address=request.remote_addr,
                     user_agent=request.headers.get('User-Agent', '')
                 )
@@ -391,6 +394,7 @@ def security_analyzer():
                     malicious_count=breach_analysis_record.breach_count,
                     total_engines=breach_analysis_record.breach_count,
                     breach_analysis_id=breach_analysis_record.id,
+                    document_code=ensure_unique_code(SecurityAnalysis),
                     ip_address=request.remote_addr,
                     user_agent=request.headers.get('User-Agent', '')
                 )
@@ -473,6 +477,7 @@ def quiz_submit_email():
             category_scores=scores,
             answers=answers,
             hibp_summary=hibp_summary,
+            document_code=ensure_unique_code(QuizResult),
             ip_address=request.remote_addr,
             user_agent=request.headers.get('User-Agent', '')[:500]
         )
@@ -606,6 +611,7 @@ def analyze_breach():
             risk_level=recommendations.get('level', 'unknown'),
             breaches_found=','.join(breach_names),
             breaches_data=breaches_data_sanitized,
+            document_code=ensure_unique_code(BreachAnalysis),
             ip_address=request.remote_addr,
             user_agent=request.headers.get('User-Agent', '')[:500]
         )

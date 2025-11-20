@@ -17,7 +17,7 @@ def factchecking():
         )
         
         if result['success']:
-            log_activity('FACTCHECK_SUBMIT', 'Fact-checking request submitted', success=True)
+            log_activity('FACTCHECK_SUBMIT', 'Demande de vérification soumise', success=True)
             flash(result['message'], 'success')
             return redirect(url_for('request_forms.factchecking'))
         else:
@@ -62,7 +62,7 @@ def osint():
         )
         
         if result['success']:
-            log_activity('OSINT_SUBMIT', 'OSINT request submitted', success=True)
+            log_activity('OSINT_SUBMIT', 'Demande OSINT soumise', success=True)
             flash(result['message'], 'success')
             return redirect(url_for('request_forms.osint'))
         else:
@@ -107,7 +107,7 @@ def cyberconsultation():
         )
         
         if result['success']:
-            log_activity('CONSULTATION_SUBMIT', 'Cyberconsultation request submitted', success=True)
+            log_activity('CONSULTATION_SUBMIT', 'Demande de cyberconsultation soumise', success=True)
             flash(result['message'], 'success')
             return redirect(url_for('request_forms.cyberconsultation'))
         else:
@@ -151,7 +151,7 @@ def osint_investigation():
     )
     
     if result['success']:
-        log_activity('OSINT_INVESTIGATION_SUBMIT', 'OSINT Investigation request submitted', success=True)
+        log_activity('OSINT_INVESTIGATION_SUBMIT', 'Demande d\'enquête OSINT soumise', success=True)
         flash(result['message'], 'success')
         return redirect(url_for('request_forms.cyberconsultation'))
     else:

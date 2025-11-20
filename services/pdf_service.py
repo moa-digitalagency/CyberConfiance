@@ -4,6 +4,7 @@ import os
 import re
 from datetime import datetime
 from PIL import Image
+from utils.document_code_generator import generate_qr_code
 
 
 class PDFReportService:
@@ -18,7 +19,7 @@ class PDFReportService:
         self.footer_height = 60
         self.max_y = 780
         
-    def _add_header_footer(self, page, page_num, total_pages, ip_address, site_url="https://Cyberconfiance.com"):
+    def _add_header_footer(self, page, page_num, total_pages, ip_address, site_url="https://Cyberconfiance.com", document_code=None):
         """Ajoute en-tête et pied de page à une page"""
         width, height = page.rect.width, page.rect.height
         
@@ -27,6 +28,25 @@ class PDFReportService:
                 logo_rect = fitz.Rect(30, 20, 180, 60)
                 page.insert_image(logo_rect, filename=self.logo_path)
             except:
+                pass
+        
+        if document_code:
+            try:
+                qr_bytes = generate_qr_code(document_code, box_size=3, border=1)
+                qr_img = Image.open(io.BytesIO(qr_bytes))
+                
+                qr_size = 50
+                qr_x = width - 30 - qr_size
+                qr_y = 15
+                qr_rect = fitz.Rect(qr_x, qr_y, qr_x + qr_size, qr_y + qr_size)
+                
+                page.insert_image(qr_rect, stream=qr_bytes)
+                
+                code_text_width = page.get_textlength(document_code, fontsize=7)
+                code_x = qr_x + (qr_size - code_text_width) / 2
+                page.insert_text((code_x, qr_y + qr_size + 10), document_code, 
+                                fontsize=7, color=(0.3, 0.3, 0.3))
+            except Exception as e:
                 pass
         
         page.draw_line((30, 70), (width - 30, 70), color=self.base_color, width=2)
@@ -155,7 +175,7 @@ class PDFReportService:
         
         total_pages = len(doc)
         for page_num, page in enumerate(doc, 1):
-            self._add_header_footer(page, page_num, total_pages, ip_address)
+            self._add_header_footer(page, page_num, total_pages, ip_address, document_code=breach_analysis.document_code)
         
         pdf_bytes = doc.tobytes()
         doc.close()
@@ -286,7 +306,7 @@ class PDFReportService:
         
         total_pages = len(doc)
         for page_num, page in enumerate(doc, 1):
-            self._add_header_footer(page, page_num, total_pages, ip_address)
+            self._add_header_footer(page, page_num, total_pages, ip_address, document_code=security_analysis.document_code)
         
         pdf_bytes = doc.tobytes()
         doc.close()
@@ -459,7 +479,7 @@ class PDFReportService:
         
         total_pages = len(doc)
         for page_num, page in enumerate(doc, 1):
-            self._add_header_footer(page, page_num, total_pages, ip_address)
+            self._add_header_footer(page, page_num, total_pages, ip_address, document_code=quiz_result.document_code)
         
         pdf_bytes = doc.tobytes()
         doc.close()
