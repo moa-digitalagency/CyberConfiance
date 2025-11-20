@@ -12,7 +12,7 @@ def factchecking():
     if request.method == 'POST':
         result = RequestSubmissionService.process_submission(
             request_type='fact-checking',
-            form_data=request.form,
+            form_data=dict(request.form),
             files=request.files
         )
         
@@ -57,7 +57,7 @@ def osint():
     if request.method == 'POST':
         result = RequestSubmissionService.process_submission(
             request_type='osint',
-            form_data=request.form,
+            form_data=dict(request.form),
             files=request.files
         )
         
@@ -102,7 +102,7 @@ def cyberconsultation():
     if request.method == 'POST':
         result = RequestSubmissionService.process_submission(
             request_type='cyberconsultation',
-            form_data=request.form,
+            form_data=dict(request.form),
             files=request.files
         )
         
@@ -146,7 +146,7 @@ def osint_investigation():
     """OSINT Investigation request form submission (POST only - form is in cyberconsultation page)"""
     result = RequestSubmissionService.process_submission(
         request_type='osint-investigation',
-        form_data=request.form,
+        form_data=dict(request.form),
         files=request.files
     )
     
@@ -194,7 +194,7 @@ def cybercrime_report():
         
         result = RequestSubmissionService.process_submission(
             request_type='cybercrime-report',
-            form_data=request.form,
+            form_data=dict(request.form),
             files=request.files
         )
         
