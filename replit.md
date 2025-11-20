@@ -87,3 +87,12 @@ The platform features a minimalist design with a pure black background, colorful
 - **Robust Error Handling**: API failures gracefully handled with user-friendly messages. Breach data sanitized (max 50 breaches stored), user agent strings truncated (500 chars), automatic database rollback on errors.
 - **Database Schema Updates**: Added `pdf_report` (LargeBinary), `pdf_generated_at` (DateTime), `breach_analysis_id` (ForeignKey) to SecurityAnalysis and BreachAnalysis models. Added `breaches_data` (JSON) column for structured breach storage.
 - **Admin Favicon**: Custom favicon integrated into admin panel (`templates/admin/base.html` using `static/admin_favicon.png`).
+- **SEO Optimization (November 20, 2025)**:
+  - **Dynamic robots.txt**: Generated dynamically at `/robots.txt` with proper domain resolution, rules for search engines and AI bots (GPTBot, Claude-Web, Google-Extended), blocking admin/sensitive pages
+  - **Dynamic sitemap.xml**: Auto-generated XML sitemap at `/sitemap.xml` including all public pages, blog articles, and resources with priorities and update frequencies
+  - **Improved init_db.py**: Added `verify_models_loaded()` function to ensure all 18 database models are loaded before creation, preventing missing table errors during VPS deployment
+- **Admin UI Fixes (November 20, 2025)**:
+  - **Quiz HIBP Display**: Fixed JSON raw display in `/my4dm1n/history/quiz/1` - now shows formatted breach data with counts, breach names, dates, and compromised data types; includes proper dict access with guards and fallback
+  - **Request Detail Layout**: Fixed right column visibility in `/my4dm1n/requests/1` with `align-items: start` for proper grid alignment
+  - **Error Logging**: Enhanced 500 error handler with automatic traceback logging for diagnostics
+- **Complete Documentation**: Updated README.md with comprehensive architecture, all 18 database models, deployment guides (Replit + VPS), SEO configuration, and full feature list
