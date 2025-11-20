@@ -5,19 +5,97 @@ from utils.document_code_generator import ensure_unique_code
 from flask import request
 import os
 import json
+from decimal import Decimal
+from datetime import datetime, date
 
 class RequestSubmissionService:
     """Service for processing form submissions with security scanning"""
     
     @staticmethod
-    def _ensure_json_serializable(data):
-        """Convert any object to JSON-serializable format"""
+    def _ensure_json_serializable(data, _processing=None):
+        """
+        Recursively convert any object to JSON-serializable format.
+        Handles sets, Decimals, datetime, bytes, custom objects, etc.
+        Protects against circular references.
+        
+        Note: Shared references (same object referenced from multiple locations) will be
+        normalized independently each time they're encountered. This ensures data integrity
+        by avoiding mutable cache corruption, at a small performance cost.
+        
+        Args:
+            data: The data to serialize
+            _processing: Set of object IDs currently being processed (for cycle detection)
+        
+        Returns:
+            JSON-serializable version of the data
+        """
+        if _processing is None:
+            _processing = set()
+        
         if data is None:
             return None
+        
+        # Handle primitive types first (no cycle risk)
+        if isinstance(data, (str, int, float, bool)):
+            return data
+        
+        # Handle datetime and date objects
+        if isinstance(data, (datetime, date)):
+            return data.isoformat()
+        
+        # Handle Decimal
+        if isinstance(data, Decimal):
+            try:
+                return float(data)
+            except (OverflowError, ValueError):
+                return str(data)
+        
+        # Handle bytes
+        if isinstance(data, bytes):
+            try:
+                return data.decode('utf-8')
+            except UnicodeDecodeError:
+                return data.hex()
+        
+        # For complex types, check for circular references
+        obj_id = id(data)
+        if obj_id in _processing:
+            return "[Circular Reference]"
+        
+        # Mark as currently processing
+        _processing.add(obj_id)
+        
         try:
-            return json.loads(json.dumps(data))
-        except (TypeError, ValueError):
-            return None
+            # Handle sets
+            if isinstance(data, set):
+                return [RequestSubmissionService._ensure_json_serializable(item, _processing) for item in data]
+            
+            # Handle lists recursively
+            elif isinstance(data, list):
+                return [RequestSubmissionService._ensure_json_serializable(item, _processing) for item in data]
+            
+            # Handle tuples recursively
+            elif isinstance(data, tuple):
+                return [RequestSubmissionService._ensure_json_serializable(item, _processing) for item in data]
+            
+            # Handle dictionaries recursively
+            elif isinstance(data, dict):
+                return {
+                    str(key): RequestSubmissionService._ensure_json_serializable(value, _processing)
+                    for key, value in data.items()
+                }
+            
+            # For any other object type, try to convert to dict if it has __dict__, otherwise use str()
+            elif hasattr(data, '__dict__'):
+                return RequestSubmissionService._ensure_json_serializable(data.__dict__, _processing)
+            
+            else:
+                # Last resort: convert to string
+                return str(data)
+            
+        finally:
+            # Remove from processing set when done
+            _processing.discard(obj_id)
     
     @staticmethod
     def process_submission(request_type, form_data, files):
