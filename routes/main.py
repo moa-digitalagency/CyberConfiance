@@ -568,19 +568,30 @@ def analyze_breach():
     recommendations = HaveIBeenPwnedService.get_breach_recommendations(result['count'])
     data_scenarios = HaveIBeenPwnedService.get_data_breach_scenarios()
     
+    analysis_id = None
     try:
         breach_names = [breach.get('Name', 'Inconnu') for breach in result.get('breaches', [])]
+        
+        # Préparer les données de fuites pour le PDF
+        breaches_data_sanitized = {
+            'breaches': result.get('breaches', []),
+            'count': result.get('count', 0),
+            'email': email
+        }
+        
         analysis = BreachAnalysis(
             email=email,
             breach_count=result.get('count', 0),
             risk_level=recommendations.get('level', 'unknown'),
-            breaches_found=json.dumps(breach_names),
+            breaches_found=','.join(breach_names),
+            breaches_data=breaches_data_sanitized,
             ip_address=request.remote_addr,
             user_agent=request.headers.get('User-Agent', '')[:500]
         )
         db.session.add(analysis)
         db.session.commit()
-        print(f"[OK] Analyse enregistrée: {email} - {result.get('count', 0)} breach(es)")
+        analysis_id = analysis.id
+        print(f"[OK] Analyse enregistrée: {email} - {result.get('count', 0)} breach(es) - ID: {analysis_id}")
     except Exception as e:
         print(f"[!] Erreur lors de l'enregistrement de l'analyse: {str(e)}")
         db.session.rollback()
@@ -589,7 +600,8 @@ def analyze_breach():
                          email=email,
                          result=result, 
                          recommendations=recommendations,
-                         data_scenarios=data_scenarios)
+                         data_scenarios=data_scenarios,
+                         analysis_id=analysis_id)
 
 @bp.route('/set-language', methods=['POST'])
 @bp.route('/set-language/<lang>')
