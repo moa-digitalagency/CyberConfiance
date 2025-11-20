@@ -21,26 +21,26 @@ Flask-Login handles session-based authentication with Werkzeug for secure passwo
 Jinja2 templates use a base layout. The design features a professional dark theme with glassmorphism effects, CSS custom properties, gradient accents, smooth animations, scroll-triggered effects, and parallax scrolling. Typography uses the Inter font, and the design is fully responsive. The platform also supports a light/dark theme system with automatic detection and a user-controlled switcher, along with bilingual support (French/English) via Flask-Babel.
 
 ### Feature Specifications
-- **Admin Panel**: Flask-Admin provides management for user requests (fact-checking & cyberconsultation), history logs (breach analysis, quiz results, security analysis), threat logs, activity/security logs, site settings, and SEO metadata. Content management (articles, rules, tools, etc.) has been removed - content is managed via JSON seed files.
-- **Request Submission Forms**: Three main secure forms plus a cybercrime reporting form, all supporting text, file, and URL inputs with anonymous submission option:
-  - `/request/factchecking` - Fact-checking requests with VirusTotal scanning
+- **Admin Panel**: Flask-Admin provides management for user requests (fact-checking & cyberconsultation), history logs (breach analysis, quiz results, security analysis), threat logs, activity/security logs, site settings, and SEO metadata. Content management (articles, rules, tools, etc.) has been removed - content is managed via JSON seed files. Admin favicon configured at `static/admin_favicon.png`.
+- **Request Submission Forms**: Three main secure forms plus a cybercrime reporting form, all supporting text, file, and URL inputs with anonymous submission option and CSRF protection:
+  - `/request/factchecking` - Fact-checking requests with security scanning
   - `/request/cyberconsultation` - General cybersecurity consultation with two tabs:
     - **Consultation Tab**: General cybersecurity consultation form with anonymous submission option
     - **OSINT Investigation Tab**: Deep OSINT investigations form (posts to `/request/osint-investigation`)
   - `/request/cybercrime-report` - Cybercrime reporting form with 14 crime categories (Pédocriminalité, Cyberbanque, Revenge porn, Cyberharcèlement, Escroquerie en ligne, Vol d'identité, Diffusion de contenu illégal, Piratage de compte, Menaces en ligne, Extorsion en ligne, Usurpation d'identité, Fraude aux cryptomonnaies, Arnaque aux sentiments, Autre), platform field, and anonymous submission enabled by default
   - `/outils/methodologie-osint` - OSINT methodology page with CTA button redirecting to the OSINT Investigation tab on the cyberconsultation page
-  All submissions are automatically scanned using VirusTotal for malicious content detection. The RequestSubmissionService extracts crime type and platform information for cybercrime reports and prepends them to the description field.
+  All submissions are automatically scanned for malicious content detection. The RequestSubmissionService extracts crime type and platform information for cybercrime reports and prepends them to the description field.
 - **Threat Detection & Incident Logging**: Comprehensive security threat detection system with automatic metadata collection and database persistence:
   - **ThreatLog Model**: Stores detected security incidents with unique incident IDs, threat type, IP address, user agent, platform, device type, VPN detection, and complete metadata JSON
   - **Metadata Collection**: Automatic collection of HTTP headers (sanitized to exclude Authorization, Cookie, X-Auth-Token), browser info, OS, language, referrer, device detection, and VPN indicators
   - **Security Alert Page**: Dedicated `/security-threat` route displays full threat details with shareable incident URLs via query parameter (`?incident_id=XXX`) for admin review and audit workflows
   - **Session & URL Resilience**: Incident IDs stored both in session (for page refreshes) and passed as query parameters (for direct access when cookies blocked)
   - **Admin Workflow**: Copy-to-clipboard functionality for sharing incident links with security teams
-- **Email Breach Analysis**: Integrates with Have I Been Pwned API for user email breach detection.
+- **Email Breach Analysis**: Integrates with Have I Been Pwned API for user email breach detection. Includes PDF report export functionality with forensic-style formatting.
 - **Attack Types Catalog**: A comprehensive, categorized, and filterable catalog of 42 common cyber attack types with descriptions, prevention, and severity.
 - **Security Quiz**: An interactive quiz assessing user vigilance, security, and digital hygiene, providing personalized recommendations and an optional email breach check.
 - **Blog & Newsletter System**: A news/blog system with categorized articles and a newsletter subscription management, displayed on homepage.
-- **Security Analyzer**: A tool for analyzing files, domains, IPs, and URLs against threat databases using VirusTotal, storing results for admin review.
+- **Security Analyzer**: A unified tool for analyzing files, domains, IPs, URLs and email addresses against threat databases. Combines reputation checks with breach analysis. Includes PDF export functionality with professional forensic-style reports. Results stored in database for admin review.
 - **Bilingual Support**: Complete English/French translation with automatic browser language detection and user-controlled language switcher (bottom-left corner).
 - **Theme System**: Light and dark themes with automatic system detection and user-controlled theme switcher (bottom-left corner). Logo variants (light/dark) configurable in site settings.
 
@@ -69,7 +69,21 @@ The platform features a minimalist design with a pure black background, colorful
 
 ### Security & API Integration
 - **requests**: HTTP library for external API calls
-- **Have I Been Pwned API v3**: Email breach detection service
-- **vt-py**: Python client for VirusTotal API
+- **Have I Been Pwned API v3**: Email breach detection service (requires HIBP_API_KEY or SECURITY_ANALYSIS_API_KEY)
+- **vt-py**: Python client for security analysis API (requires VT_API_KEY or SECURITY_ANALYSIS_API_KEY)
+- **Flask-WTF & CSRFProtect**: CSRF protection for all forms (enabled globally)
 - **Flask-Babel**: Internationalization and localization framework
 - **filetype**: MIME type detection for uploaded files
+- **PyMuPDF (fitz)**: PDF generation library for forensic reports
+- **Pillow**: Image processing for PDF reports (logos, formatting)
+- **python-magic**: Advanced file type detection
+- **user-agents**: User agent parsing for security logging
+
+### Recent Updates (November 2025)
+- **API Key Unification**: Introduced `SECURITY_ANALYSIS_API_KEY` environment variable that can be used in place of both `VT_API_KEY` and `HIBP_API_KEY` for simplified configuration. Maintains backward compatibility.
+- **CSRF Protection**: Global CSRF protection enabled via Flask-WTF CSRFProtect. All POST/PUT/PATCH/DELETE requests automatically validated. Frontend tokens added to all forms.
+- **PDF Export System**: Professional forensic-style PDF reports for breach analysis and security analysis results. Reports include logo, headers, footers, timestamps, and comprehensive data. PDFs cached in database (LargeBinary fields: `pdf_report`, `pdf_generated_at`) for performance.
+- **Enhanced Security Analyzer**: Integrated email breach analysis directly into the security analyzer page (`/outils/analyseur-securite`). Users can now analyze files, URLs, domains, IPs, and email addresses in one unified interface.
+- **Robust Error Handling**: API failures gracefully handled with user-friendly messages. Breach data sanitized (max 50 breaches stored), user agent strings truncated (500 chars), automatic database rollback on errors.
+- **Database Schema Updates**: Added `pdf_report` (LargeBinary), `pdf_generated_at` (DateTime), `breach_analysis_id` (ForeignKey) to SecurityAnalysis and BreachAnalysis models. Added `breaches_data` (JSON) column for structured breach storage.
+- **Admin Favicon**: Custom favicon integrated into admin panel (`templates/admin/base.html` using `static/admin_favicon.png`).
