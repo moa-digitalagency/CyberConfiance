@@ -96,7 +96,7 @@ Créez un fichier `.env` ou configurez les secrets Replit:
 ```bash
 ADMIN_PASSWORD=VotreMotDePasseSécurisé123!
 HIBP_API_KEY=votre_clé_api_hibp
-VT_API_KEY=votre_clé_api_virustotal
+SECURITY_ANALYSIS_API_KEY=votre_clé_api_analyse_securite
 ```
 
 **Variables recommandées:**
@@ -140,17 +140,16 @@ La clé API HIBP est **OBLIGATOIRE** car la page d'accueil utilise la fonctionna
 
 **Note:** La vérification de mots de passe est gratuite et ne nécessite pas de clé API. Seule la vérification d'emails en nécessite une.
 
-### VirusTotal (Analyse de sécurité)
+### Clé d'Analyse de Sécurité
 
-La clé API VirusTotal est **OBLIGATOIRE** pour scanner les fichiers, URLs et domaines soumis via les formulaires de requêtes (fact-checking, cyberconsultation, OSINT, signalements).
+La clé API d'analyse de sécurité est **OBLIGATOIRE** pour scanner les fichiers, URLs et domaines soumis via les formulaires de requêtes (fact-checking, cyberconsultation, OSINT, signalements).
 
-1. Créez un compte sur https://www.virustotal.com/
-2. Connectez-vous et allez sur https://www.virustotal.com/gui/my-apikey
-3. Copiez votre clé API (gratuite avec limite de 500 requêtes/jour)
-4. Ajoutez-la dans vos secrets: `VT_API_KEY=votre_clé`
+1. Créez un compte sur le service d'analyse de sécurité
+2. Obtenez votre clé API (gratuite avec limite de 500 requêtes/jour)
+3. Ajoutez-la dans vos secrets: `SECURITY_ANALYSIS_API_KEY=votre_clé`
 
 **Plan gratuit:** 500 requêtes/jour - suffisant pour la plupart des usages  
-**Plan premium:** Pour plus de requêtes, consultez https://www.virustotal.com/gui/my-apikey
+**Plan premium:** Pour plus de requêtes, consultez votre fournisseur d'API
 
 ---
 

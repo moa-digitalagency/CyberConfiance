@@ -8,7 +8,7 @@ bp = Blueprint('request_forms', __name__)
 
 @bp.route('/request/factchecking', methods=['GET', 'POST'])
 def factchecking():
-    """Fact-checking request form with VirusTotal security"""
+    """Fact-checking request form with security analysis"""
     if request.method == 'POST':
         result = RequestSubmissionService.process_submission(
             request_type='fact-checking',
@@ -53,7 +53,7 @@ def factchecking():
 
 @bp.route('/outils/methodologie-osint', methods=['GET', 'POST'])
 def osint():
-    """OSINT analysis request form with VirusTotal security"""
+    """OSINT analysis request form with security analysis"""
     if request.method == 'POST':
         result = RequestSubmissionService.process_submission(
             request_type='osint',
@@ -98,7 +98,7 @@ def osint():
 
 @bp.route('/request/cyberconsultation', methods=['GET', 'POST'])
 def cyberconsultation():
-    """Cyberconsultation request form with VirusTotal security"""
+    """Cyberconsultation request form with security analysis"""
     if request.method == 'POST':
         result = RequestSubmissionService.process_submission(
             request_type='cyberconsultation',

@@ -6,20 +6,20 @@ from typing import Dict, List, Optional, Tuple
 
 class VirusTotalService:
     def __init__(self):
-        self.api_key = os.environ.get('VT_API_KEY')
+        self.api_key = os.environ.get('SECURITY_ANALYSIS_API_KEY') or os.environ.get('VT_API_KEY')
         self.client = None
         if self.api_key:
             try:
                 self.client = vt.Client(self.api_key)
             except Exception as e:
-                print(f"VirusTotal client initialization failed: {e}")
+                print(f"Security analysis client initialization failed: {e}")
     
     def is_available(self) -> bool:
         return self.client is not None
     
     def scan_url(self, url: str) -> Tuple[bool, Dict]:
         if not self.is_available():
-            return False, {"error": "VirusTotal API not configured"}
+            return False, {"error": "Security analysis API not configured"}
         
         try:
             url_id = vt.url_id(url)
@@ -54,7 +54,7 @@ class VirusTotalService:
     
     def scan_file(self, file_path: str) -> Tuple[bool, Dict]:
         if not self.is_available():
-            return False, {"error": "VirusTotal API not configured"}
+            return False, {"error": "Security analysis API not configured"}
         
         try:
             file_hash = self._get_file_hash(file_path)

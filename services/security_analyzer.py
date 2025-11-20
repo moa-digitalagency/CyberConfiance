@@ -6,7 +6,7 @@ from datetime import datetime
 from urllib.parse import urlparse
 
 class SecurityAnalyzerService:
-    """Service for analyzing security threats via VirusTotal API"""
+    """Service for analyzing security threats"""
     
     def __init__(self):
         self.api_key = os.environ.get('SECURITY_ANALYSIS_API_KEY') or os.environ.get('VT_API_KEY')

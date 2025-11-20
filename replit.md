@@ -70,7 +70,7 @@ The platform features a minimalist design with a pure black background, colorful
 ### Security & API Integration
 - **requests**: HTTP library for external API calls
 - **Have I Been Pwned API v3**: Email breach detection service (requires HIBP_API_KEY or SECURITY_ANALYSIS_API_KEY)
-- **vt-py**: Python client for security analysis API (requires VT_API_KEY or SECURITY_ANALYSIS_API_KEY)
+- **vt-py**: Python client for security analysis API (requires SECURITY_ANALYSIS_API_KEY)
 - **Flask-WTF & CSRFProtect**: CSRF protection for all forms (enabled globally)
 - **Flask-Babel**: Internationalization and localization framework
 - **filetype**: MIME type detection for uploaded files
@@ -80,7 +80,7 @@ The platform features a minimalist design with a pure black background, colorful
 - **user-agents**: User agent parsing for security logging
 
 ### Recent Updates (November 2025)
-- **API Key Unification**: Introduced `SECURITY_ANALYSIS_API_KEY` environment variable that can be used in place of both `VT_API_KEY` and `HIBP_API_KEY` for simplified configuration. Maintains backward compatibility.
+- **API Key Simplification**: Migrated from VT_API_KEY to `SECURITY_ANALYSIS_API_KEY` environment variable for all security analysis features. This provides a unified, service-agnostic configuration approach.
 - **CSRF Protection**: Global CSRF protection enabled via Flask-WTF CSRFProtect. All POST/PUT/PATCH/DELETE requests automatically validated. Frontend tokens added to all forms.
 - **PDF Export System**: Professional forensic-style PDF reports for breach analysis and security analysis results. Reports include logo, headers, footers, timestamps, and comprehensive data. PDFs cached in database (LargeBinary fields: `pdf_report`, `pdf_generated_at`) for performance.
 - **Enhanced Security Analyzer**: Integrated email breach analysis directly into the security analyzer page (`/outils/analyseur-securite`). Users can now analyze files, URLs, domains, IPs, and email addresses in one unified interface.

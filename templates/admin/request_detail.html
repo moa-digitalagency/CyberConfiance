@@ -41,7 +41,7 @@
         {% if submission.threat_detected %}
         <div style="background: rgba(239, 68, 68, 0.1); border: 2px solid rgba(239, 68, 68, 0.5); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem;">
             <h3 style="margin-bottom: 1rem; color: #ef4444;">⚠️ ALERTE : Menace Détectée</h3>
-            <p style="color: var(--text-secondary); margin-bottom: 1rem;">Cette soumission contient du contenu malveillant qui a été détecté et bloqué par l'analyse VirusTotal.</p>
+            <p style="color: var(--text-secondary); margin-bottom: 1rem;">Cette soumission contient du contenu malveillant qui a été détecté et bloqué par l'analyse de sécurité.</p>
             
             {% if submission.vt_file_results %}
             <div style="margin-top: 1rem; padding: 1rem; background: rgba(0,0,0,0.3); border-radius: 6px;">
@@ -72,7 +72,7 @@
         {% endif %}
         
         <div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 1.5rem;">
-            <h3 style="margin-bottom: 1rem; color: var(--accent-blue);">VirusTotal Scan Results</h3>
+            <h3 style="margin-bottom: 1rem; color: var(--accent-blue);">Résultats de l'Analyse de Sécurité</h3>
             
             {% if submission.vt_text_results %}
             <div style="margin-bottom: 1.5rem;">

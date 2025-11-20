@@ -37,8 +37,8 @@ ADMIN_PASSWORD=VotreMotDePasseSécurisé123!
 # Clé API Have I Been Pwned (requis pour vérification d'emails)
 HIBP_API_KEY=votre_clé_api_hibp
 
-# Clé API VirusTotal (requis pour scanner fichiers/URLs/domaines)
-VT_API_KEY=votre_clé_api_virustotal
+# Clé API pour l'analyse de sécurité (requis pour scanner fichiers/URLs/domaines)
+SECURITY_ANALYSIS_API_KEY=votre_clé_api_analyse_securite
 ```
 
 ### Variables RECOMMANDÉES
