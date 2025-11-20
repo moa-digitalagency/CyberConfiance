@@ -141,19 +141,7 @@ class PDFReportService:
                                     fontsize=9, color=self.danger_color)
                     y_pos += 14
                 
-                if breach.get('Description'):
-                    desc = breach.get('Description', '')
-                    desc = self._strip_html(desc)
-                    desc = desc[:200] + ('...' if len(desc) > 200 else '')
-                    desc_lines = self._wrap_text(desc, 75)
-                    for line in desc_lines:
-                        if y_pos > self.max_y - 20:
-                            page = doc.new_page(width=595, height=842)
-                            y_pos = 90
-                        page.insert_text((40, y_pos), line, fontsize=8, color=(0.4, 0.4, 0.4))
-                        y_pos += 12
-                
-                y_pos += 10
+                y_pos += 15
         else:
             page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + 60), 
                           color=self.success_color, fill=self.success_color, fill_opacity=0.1)
@@ -304,12 +292,13 @@ class PDFReportService:
         doc.close()
         return pdf_bytes
         
-    def generate_quiz_report(self, quiz_result, ip_address):
+    def generate_quiz_report(self, quiz_result, recommendations, ip_address):
         """
         Genere un rapport PDF pour les resultats du quiz
         
         Args:
             quiz_result: QuizResult model instance
+            recommendations: Dict with priority_rules, weak_areas, suggested_tools
             ip_address: IP address of user generating report
             
         Returns:
@@ -363,7 +352,66 @@ class PDFReportService:
         
         y_pos += 15
         
+        if recommendations and recommendations.get('priority_rules'):
+            if y_pos > self.max_y - 100:
+                page = doc.new_page(width=595, height=842)
+                y_pos = 90
+            
+            page.insert_text((30, y_pos), "REGLES D'OR RECOMMANDEES", 
+                            fontsize=14, fontname="helv", color=self.base_color)
+            y_pos += 25
+            
+            for rule in recommendations['priority_rules'][:3]:
+                if y_pos > self.max_y - 60:
+                    page = doc.new_page(width=595, height=842)
+                    y_pos = 90
+                
+                page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + 5), color=self.base_color, fill=self.base_color)
+                y_pos += 15
+                
+                page.insert_text((40, y_pos), f"Regle {rule.order}: {self._strip_html(rule.title)}", 
+                                fontsize=11, fontname="helv")
+                y_pos += 18
+                
+                desc = self._strip_html(rule.description)[:150] + ('...' if len(rule.description) > 150 else '')
+                desc_lines = self._wrap_text(desc, 75)
+                for line in desc_lines[:3]:
+                    page.insert_text((40, y_pos), line, fontsize=9, color=(0.3, 0.3, 0.3))
+                    y_pos += 13
+                
+                y_pos += 10
+        
+        if recommendations and recommendations.get('weak_areas'):
+            if y_pos > self.max_y - 100:
+                page = doc.new_page(width=595, height=842)
+                y_pos = 90
+            
+            page.insert_text((30, y_pos), "POINTS D'ATTENTION", 
+                            fontsize=14, fontname="helv", color=self.base_color)
+            y_pos += 25
+            
+            for area in recommendations['weak_areas'][:5]:
+                if y_pos > self.max_y - 50:
+                    page = doc.new_page(width=595, height=842)
+                    y_pos = 90
+                
+                question = self._strip_html(area['question'])[:80]
+                page.insert_text((40, y_pos), f"• {question}", fontsize=9, fontname="helv", color=self.warning_color)
+                y_pos += 14
+                
+                desc = self._strip_html(area['description'])[:100]
+                desc_lines = self._wrap_text(desc, 70)
+                for line in desc_lines[:2]:
+                    page.insert_text((50, y_pos), line, fontsize=8, color=(0.4, 0.4, 0.4))
+                    y_pos += 12
+                
+                y_pos += 8
+        
         if quiz_result.hibp_summary:
+            if y_pos > self.max_y - 100:
+                page = doc.new_page(width=595, height=842)
+                y_pos = 90
+                
             breach_count = quiz_result.hibp_summary.get('breach_count', 0)
             breach_color = self.danger_color if breach_count > 0 else self.success_color
             
@@ -371,20 +419,42 @@ class PDFReportService:
                             fontsize=14, fontname="helv", color=self.base_color)
             y_pos += 25
             
+            page.insert_text((40, y_pos), f"Email: {quiz_result.email}", fontsize=10)
+            y_pos += 15
             page.insert_text((40, y_pos), f"Fuites detectees: {breach_count}", 
                             fontsize=11, color=breach_color)
             y_pos += 20
             
             if breach_count > 0 and quiz_result.hibp_summary.get('breaches'):
                 breaches = quiz_result.hibp_summary['breaches'][:10]
-                for breach in breaches:
-                    if y_pos > self.max_y:
+                for idx, breach in enumerate(breaches, 1):
+                    if y_pos > self.max_y - 80:
                         page = doc.new_page(width=595, height=842)
                         y_pos = 90
                     
-                    page.insert_text((50, y_pos), f"• {breach.get('name', 'Inconnu')} ({breach.get('date', '')})", 
-                                    fontsize=9, color=self.danger_color)
-                    y_pos += 14
+                    page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + 3), color=self.danger_color, fill=self.danger_color)
+                    y_pos += 12
+                    
+                    page.insert_text((40, y_pos), f"{idx}. {breach.get('name', 'Inconnu')}", 
+                                    fontsize=10, fontname="helv", color=self.danger_color)
+                    y_pos += 16
+                    
+                    if breach.get('date'):
+                        page.insert_text((40, y_pos), f"Date: {breach.get('date')}", fontsize=9, color=(0.3, 0.3, 0.3))
+                        y_pos += 13
+                    
+                    if breach.get('pwn_count'):
+                        page.insert_text((40, y_pos), f"Comptes affectes: {breach.get('pwn_count'):,}", 
+                                        fontsize=9, color=(0.3, 0.3, 0.3))
+                        y_pos += 13
+                    
+                    if breach.get('data_classes'):
+                        data_classes = ', '.join(breach.get('data_classes', [])[:8])
+                        page.insert_text((40, y_pos), f"Donnees: {data_classes}", 
+                                        fontsize=8, color=self.danger_color)
+                        y_pos += 13
+                    
+                    y_pos += 10
         
         total_pages = len(doc)
         for page_num, page in enumerate(doc, 1):

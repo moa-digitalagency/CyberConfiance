@@ -20,38 +20,38 @@
             </div>
         </div>
 
-        <div class="detailed-scores">
-            <h2>Scores Détaillés</h2>
-            <div class="scores-grid">
+        <div class="detailed-scores" style="padding: 1.5rem;">
+            <h2 style="font-size: 1.3rem; margin-bottom: 1rem;">Scores Détaillés</h2>
+            <div class="scores-grid" style="gap: 1rem;">
                 <div class="score-item">
                     <div class="score-header">
-                        <h3>Vigilance</h3>
+                        <h3 style="font-size: 0.95rem;">Vigilance</h3>
                     </div>
-                    <div class="score-bar">
+                    <div class="score-bar" style="height: 28px;">
                         <div class="score-fill" style="width: {{ scores.percentages.vigilance }}%; background: linear-gradient(90deg, #3b82f6, #60a5fa)">
-                            <span class="score-percentage">{{ scores.percentages.vigilance }}%</span>
+                            <span class="score-percentage" style="font-size: 0.85rem;">{{ scores.percentages.vigilance }}%</span>
                         </div>
                     </div>
                 </div>
 
                 <div class="score-item">
                     <div class="score-header">
-                        <h3>Sécurité</h3>
+                        <h3 style="font-size: 0.95rem;">Sécurité</h3>
                     </div>
-                    <div class="score-bar">
+                    <div class="score-bar" style="height: 28px;">
                         <div class="score-fill" style="width: {{ scores.percentages.security }}%; background: linear-gradient(90deg, #10b981, #34d399)">
-                            <span class="score-percentage">{{ scores.percentages.security }}%</span>
+                            <span class="score-percentage" style="font-size: 0.85rem;">{{ scores.percentages.security }}%</span>
                         </div>
                     </div>
                 </div>
 
                 <div class="score-item">
                     <div class="score-header">
-                        <h3>Hygiène Numérique</h3>
+                        <h3 style="font-size: 0.95rem;">Hygiène Numérique</h3>
                     </div>
-                    <div class="score-bar">
+                    <div class="score-bar" style="height: 28px;">
                         <div class="score-fill" style="width: {{ scores.percentages.hygiene }}%; background: linear-gradient(90deg, #8b5cf6, #a78bfa)">
-                            <span class="score-percentage">{{ scores.percentages.hygiene }}%</span>
+                            <span class="score-percentage" style="font-size: 0.85rem;">{{ scores.percentages.hygiene }}%</span>
                         </div>
                     </div>
                 </div>
@@ -66,14 +66,14 @@
 
             {% if recommendations.priority_rules %}
             <div class="priority-rules">
-                <h3>Règles d'Or Recommandées</h3>
-                <div class="rules-grid">
+                <h3 style="font-size: 1.2rem;">Règles d'Or Recommandées</h3>
+                <div class="rules-grid" style="gap: 1rem;">
                     {% for rule in recommendations.priority_rules %}
-                    <a href="{{ url_for('main.rule_detail', rule_id=rule.id) }}" class="rule-card">
-                        <div class="rule-number">Règle {{ rule.order }}</div>
-                        <h4>{{ rule.title }}</h4>
-                        <p>{{ rule.description[:100] }}...</p>
-                        <span class="rule-link">En savoir plus →</span>
+                    <a href="{{ url_for('main.rule_detail', rule_id=rule.id) }}" class="rule-card" style="padding: 1.2rem;">
+                        <div class="rule-number" style="font-size: 1.8rem;">Règle {{ rule.order }}</div>
+                        <h4 style="font-size: 0.95rem;">{{ rule.title|striptags }}</h4>
+                        <p style="font-size: 0.85rem;">{{ rule.description|striptags|truncate(100) }}</p>
+                        <span class="rule-link" style="font-size: 0.85rem;">En savoir plus →</span>
                     </a>
                     {% endfor %}
                 </div>
@@ -146,19 +146,11 @@
                         <p class="breach-impact" style="font-size: 0.9rem;"><strong>{{ "{:,}".format(breach.pwn_count) }}</strong> comptes compromis</p>
                         {% endif %}
                         {% if breach.data_classes %}
-                        <div class="data-classes">
-                            <strong style="font-size: 0.9rem;">Données compromises:</strong>
-                            <div class="data-classes-list">
+                        <div class="data-classes" style="margin-top: 0.8rem;">
+                            <strong style="font-size: 0.9rem; display: block; margin-bottom: 0.6rem;">Données compromises:</strong>
+                            <div class="data-classes-list" style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
                                 {% for data_class in breach.data_classes %}
-                                <div class="data-class-item">
-                                    <span class="data-class-tag" style="font-size: 0.85rem;">{{ data_class }}</span>
-                                    {% if data_scenarios.get(data_class) %}
-                                    <div class="data-class-info">
-                                        <span class="risk-level risk-{{ data_scenarios[data_class].risk|lower|replace('é', 'e')|replace(' ', '-') }}" style="font-size: 0.8rem;">{{ data_scenarios[data_class].risk }}</span>
-                                        <p class="risk-scenario" style="font-size: 0.85rem;">{{ data_scenarios[data_class].scenario }}</p>
-                                    </div>
-                                    {% endif %}
-                                </div>
+                                <span class="data-class-tag" style="font-size: 0.8rem; background: rgba(239, 68, 68, 0.1); color: #ef4444; padding: 0.3rem 0.7rem; border-radius: 6px; border: 1px solid rgba(239, 68, 68, 0.3);">{{ data_class }}</span>
                                 {% endfor %}
                             </div>
                         </div>

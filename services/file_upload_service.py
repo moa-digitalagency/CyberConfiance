@@ -6,7 +6,7 @@ from werkzeug.utils import secure_filename
 from services.security_analyzer import SecurityAnalyzerService
 
 ALLOWED_EXTENSIONS = {'pdf', 'png', 'jpg', 'jpeg', 'gif', 'doc', 'docx', 'txt', 'zip'}
-MAX_FILE_SIZE = 10 * 1024 * 1024
+MAX_FILE_SIZE = 100 * 1024 * 1024
 
 class FileUploadService:
     """Service for handling secure file uploads with VirusTotal scanning"""

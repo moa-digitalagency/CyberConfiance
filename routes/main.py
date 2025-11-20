@@ -705,6 +705,7 @@ def generate_security_pdf(analysis_id):
 def generate_quiz_pdf(result_id):
     """Generate and download quiz results PDF"""
     from models import QuizResult
+    from services.quiz_service import QuizService
     quiz_result = QuizResult.query.get_or_404(result_id)
     
     user_ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()
@@ -712,8 +713,11 @@ def generate_quiz_pdf(result_id):
     if quiz_result.pdf_report and quiz_result.pdf_generated_at:
         pdf_bytes = quiz_result.pdf_report
     else:
+        answers = quiz_result.answers
+        recommendations = QuizService.generate_recommendations(quiz_result.overall_score, answers)
+        
         pdf_service = PDFReportService()
-        pdf_bytes = pdf_service.generate_quiz_report(quiz_result, user_ip)
+        pdf_bytes = pdf_service.generate_quiz_report(quiz_result, recommendations, user_ip)
         
         quiz_result.pdf_report = pdf_bytes
         quiz_result.pdf_generated_at = datetime.utcnow()
