@@ -117,31 +117,31 @@ class PDFReportService:
                     page = doc.new_page(width=595, height=842)
                     y_pos = 90
                 
-                page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + 5), color=self.danger_color, fill=self.danger_color)
-                y_pos += 15
+                page.draw_rect(fitz.Rect(41, y_pos, 565, y_pos + 5), color=self.danger_color, fill=self.danger_color)
+                y_pos += 18
                 
-                page.insert_text((40, y_pos), f"{idx}. {breach.get('Name', 'Inconnu')}", 
+                page.insert_text((54, y_pos), f"{idx}. {breach.get('Name', 'Inconnu')}", 
                                 fontsize=11, fontname="helv")
                 y_pos += 18
                 
                 if breach.get('BreachDate'):
-                    page.insert_text((40, y_pos), f"Date de la fuite: {breach.get('BreachDate')}", 
+                    page.insert_text((54, y_pos), f"Date de la fuite: {breach.get('BreachDate')}", 
                                     fontsize=9, color=(0.3, 0.3, 0.3))
                     y_pos += 14
                 
                 if breach.get('PwnCount'):
-                    page.insert_text((40, y_pos), 
+                    page.insert_text((54, y_pos), 
                                     f"Comptes affectés: {breach.get('PwnCount'):,} utilisateurs", 
                                     fontsize=9, color=(0.3, 0.3, 0.3))
                     y_pos += 14
                 
                 if breach.get('DataClasses'):
                     data_classes = ', '.join(breach.get('DataClasses', [])[:8])
-                    page.insert_text((40, y_pos), f"Données compromises: {data_classes}", 
+                    page.insert_text((54, y_pos), f"Données compromises: {data_classes}", 
                                     fontsize=9, color=self.danger_color)
-                    y_pos += 14
+                    y_pos += 16
                 
-                y_pos += 15
+                y_pos += 8
         else:
             page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + 60), 
                           color=self.success_color, fill=self.success_color, fill_opacity=0.1)

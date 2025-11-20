@@ -5,7 +5,6 @@ import filetype
 from werkzeug.utils import secure_filename
 from services.security_analyzer import SecurityAnalyzerService
 
-ALLOWED_EXTENSIONS = {'pdf', 'png', 'jpg', 'jpeg', 'gif', 'doc', 'docx', 'txt', 'zip'}
 MAX_FILE_SIZE = 100 * 1024 * 1024
 
 class FileUploadService:
@@ -13,8 +12,8 @@ class FileUploadService:
     
     @staticmethod
     def allowed_file(filename):
-        """Check if file extension is allowed"""
-        return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+        """Check if file has an extension (all types allowed)"""
+        return '.' in filename
     
     @staticmethod
     def get_file_hash(file_path):
@@ -40,7 +39,7 @@ class FileUploadService:
             return None, "No file selected"
         
         if not FileUploadService.allowed_file(file.filename):
-            return None, f"File type not allowed. Allowed types: {', '.join(ALLOWED_EXTENSIONS)}"
+            return None, "Fichier invalide. Veuillez fournir un nom de fichier valide avec une extension."
         
         is_valid_size, file_size = FileUploadService.validate_file_size(file)
         if not is_valid_size:
@@ -53,12 +52,6 @@ class FileUploadService:
         file.save(temp_path)
         
         kind = filetype.guess(temp_path)
-        extension = filename.rsplit('.', 1)[1].lower() if '.' in filename else ''
-        
-        text_based_extensions = {'txt', 'doc', 'docx'}
-        if kind is None and extension not in text_based_extensions:
-            os.remove(temp_path)
-            return None, "Unable to determine file type or unsupported format"
         
         return temp_path, None
     
