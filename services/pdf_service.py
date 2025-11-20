@@ -1,6 +1,7 @@
 import fitz
 import io
 import os
+import re
 from datetime import datetime
 from PIL import Image
 
@@ -17,7 +18,7 @@ class PDFReportService:
         self.footer_height = 60
         self.max_y = 780
         
-    def _add_header_footer(self, page, page_num, total_pages, ip_address, site_url="https://cyberconfiance.cd"):
+    def _add_header_footer(self, page, page_num, total_pages, ip_address, site_url="https://Cyberconfiance.com"):
         """Ajoute en-tête et pied de page à une page"""
         width, height = page.rect.width, page.rect.height
         
@@ -30,13 +31,12 @@ class PDFReportService:
         
         page.draw_line((30, 70), (width - 30, 70), color=self.base_color, width=2)
         
-        footer_y = height - 40
+        footer_y = height - 35
         page.draw_line((30, footer_y - 10), (width - 30, footer_y - 10), color=self.base_color, width=1)
         
-        timestamp = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-        page.insert_text((30, footer_y + 5), f"cyberconfiance.cd | {timestamp}", fontsize=8, color=(0.5, 0.5, 0.5))
-        page.insert_text((30, footer_y + 15), f"IP: {ip_address}", fontsize=8, color=(0.5, 0.5, 0.5))
-        page.insert_text((width - 80, footer_y + 10), f"Page {page_num}/{total_pages}", fontsize=8, color=(0.5, 0.5, 0.5))
+        timestamp = datetime.now().strftime("%d/%m/%Y à %H:%M")
+        footer_text = f"Cyberconfiance.com | Rapport généré le {timestamp} par {ip_address} | Page {page_num}/{total_pages}"
+        page.insert_text((30, footer_y + 5), footer_text, fontsize=8, color=(0.5, 0.5, 0.5))
         
     def _get_risk_color(self, risk_level):
         """Retourne la couleur selon le niveau de risque"""
@@ -142,9 +142,14 @@ class PDFReportService:
                     y_pos += 14
                 
                 if breach.get('Description'):
-                    desc = breach.get('Description', '')[:200] + ('...' if len(breach.get('Description', '')) > 200 else '')
+                    desc = breach.get('Description', '')
+                    desc = self._strip_html(desc)
+                    desc = desc[:200] + ('...' if len(desc) > 200 else '')
                     desc_lines = self._wrap_text(desc, 75)
                     for line in desc_lines:
+                        if y_pos > self.max_y - 20:
+                            page = doc.new_page(width=595, height=842)
+                            y_pos = 90
                         page.insert_text((40, y_pos), line, fontsize=8, color=(0.4, 0.4, 0.4))
                         y_pos += 12
                 
@@ -388,6 +393,18 @@ class PDFReportService:
         pdf_bytes = doc.tobytes()
         doc.close()
         return pdf_bytes
+    
+    def _strip_html(self, text):
+        """Supprime les balises HTML du texte"""
+        if not text:
+            return ""
+        clean = re.sub(r'<[^>]+>', '', text)
+        clean = re.sub(r'&quot;', '"', clean)
+        clean = re.sub(r'&amp;', '&', clean)
+        clean = re.sub(r'&lt;', '<', clean)
+        clean = re.sub(r'&gt;', '>', clean)
+        clean = re.sub(r'&nbsp;', ' ', clean)
+        return clean.strip()
     
     def _wrap_text(self, text, width):
         """Divise le texte en lignes de largeur maximale"""
