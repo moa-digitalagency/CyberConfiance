@@ -132,5 +132,5 @@ class RequestSubmissionService:
         return {
             'success': True,
             'submission_id': submission.id,
-            'message': 'Your request has been submitted successfully. We will review it and get back to you.'
+            'message': 'Votre demande a été soumise avec succès. Nous l\'examinerons et vous contacterons.'
         }
