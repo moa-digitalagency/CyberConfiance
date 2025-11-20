@@ -96,3 +96,15 @@ The platform features a minimalist design with a pure black background, colorful
   - **Request Detail Layout**: Fixed right column visibility in `/my4dm1n/requests/1` with `align-items: start` for proper grid alignment
   - **Error Logging**: Enhanced 500 error handler with automatic traceback logging for diagnostics
 - **Complete Documentation**: Updated README.md with comprehensive architecture, all 18 database models, deployment guides (Replit + VPS), SEO configuration, and full feature list
+- **JSON Serialization Fix (November 20, 2025)**:
+  - **Critical Bug Fix**: Resolved JSON serialization errors in RequestSubmissionService that caused 500 errors when submitting forms with VirusTotal scan results
+  - **Robust Normalization**: Implemented recursive `_ensure_json_serializable()` function that handles all non-JSON-serializable types (datetime, Decimal, bytes, sets, tuples, custom objects)
+  - **Circular Reference Protection**: Added detection of circular references to prevent infinite recursion, returns placeholder string for cycles
+  - **Type Conversions**: datetime→isoformat, Decimal→float, bytes→UTF-8/hex, sets/tuples→lists, dicts with normalized keys/values
+  - **Data Integrity**: Shared references normalized independently to avoid mutable cache corruption
+  - Applied to all VirusTotal scan results (vt_text_results, vt_url_results, vt_file_results) before database persistence
+- **File Upload & Download Enhancements (November 20, 2025)**:
+  - **200 MB Upload Limit**: Increased MAX_CONTENT_LENGTH and MAX_FILE_SIZE from 32/100 MB to 200 MB for cybercrime reports with large evidence files
+  - **Admin File Download**: Added secure download route (`/my4dm1n/requests/<id>/download-file`) with @admin_required decorator and file existence validation
+  - **Download Button**: Added styled download button in admin request detail template, displayed conditionally when file is attached
+  - **Security**: Download route validates admin permissions and file existence before serving files via Flask's send_file()
