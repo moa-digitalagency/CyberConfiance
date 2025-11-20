@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for
 from flask_admin.contrib.sqla import ModelView
 from flask_login import current_user
+from markupsafe import Markup
 import __init__ as app_module
 db = app_module.db
 admin = app_module.admin
@@ -26,7 +27,7 @@ class ModeratorModelView(ModelView):
         return redirect(url_for('main.login'))
 
 class BreachAnalysisView(SecureModelView):
-    column_list = ['id', 'email', 'breach_count', 'risk_level', 'ip_address', 'created_at']
+    column_list = ['id', 'email', 'breach_count', 'risk_level', 'ip_address', 'created_at', 'pdf_download']
     column_searchable_list = ['email', 'ip_address']
     column_filters = ['risk_level', 'breach_count', 'created_at']
     column_sortable_list = ['id', 'email', 'breach_count', 'risk_level', 'created_at']
@@ -41,7 +42,17 @@ class BreachAnalysisView(SecureModelView):
         'breaches_found': 'Fuites trouvées',
         'ip_address': 'Adresse IP',
         'user_agent': 'Navigateur',
-        'created_at': 'Date de recherche'
+        'created_at': 'Date de recherche',
+        'pdf_download': 'Rapport PDF'
+    }
+    
+    def _pdf_formatter(view, context, model, name):
+        if model.id:
+            return Markup(f'<a href="/generate-breach-pdf/{model.id}" class="btn btn-sm btn-primary" target="_blank">📄 Télécharger PDF</a>')
+        return ''
+    
+    column_formatters = {
+        'pdf_download': _pdf_formatter
     }
 
 class QuizResultView(SecureModelView):
@@ -65,7 +76,7 @@ class QuizResultView(SecureModelView):
     }
 
 class SecurityAnalysisView(SecureModelView):
-    column_list = ['id', 'input_type', 'input_value', 'threat_detected', 'threat_level', 'malicious_count', 'total_engines', 'created_at']
+    column_list = ['id', 'input_type', 'input_value', 'threat_detected', 'threat_level', 'malicious_count', 'total_engines', 'created_at', 'pdf_download']
     column_searchable_list = ['input_value', 'ip_address']
     column_filters = ['input_type', 'threat_detected', 'threat_level', 'created_at']
     column_sortable_list = ['id', 'input_type', 'threat_detected', 'threat_level', 'malicious_count', 'created_at']
@@ -83,7 +94,17 @@ class SecurityAnalysisView(SecureModelView):
         'total_engines': 'Total moteurs',
         'ip_address': 'Adresse IP',
         'user_agent': 'Navigateur',
-        'created_at': 'Date d\'analyse'
+        'created_at': 'Date d\'analyse',
+        'pdf_download': 'Rapport PDF'
+    }
+    
+    def _pdf_formatter(view, context, model, name):
+        if model.id:
+            return Markup(f'<a href="/generate-security-pdf/{model.id}" class="btn btn-sm btn-primary" target="_blank">📄 Télécharger PDF</a>')
+        return ''
+    
+    column_formatters = {
+        'pdf_download': _pdf_formatter
     }
 
 class RequestSubmissionView(SecureModelView):

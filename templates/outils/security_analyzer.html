@@ -53,6 +53,12 @@
                             <span class="type-text">Hash (MD5/SHA)</span>
                         </span>
                     </label>
+                    <label class="type-option">
+                        <input type="radio" name="input_type" value="email">
+                        <span class="type-label">
+                            <span class="type-text">Email (Fuite)</span>
+                        </span>
+                    </label>
                 </div>
 
                 <div class="input-group" id="textInputGroup" style="display: flex;">
@@ -98,9 +104,81 @@
                     <p class="hint hash-hint">
                         <strong>Exemple:</strong> 44d88612fea8a8f36de82e1278abb02f
                     </p>
+                    <p class="hint email-hint">
+                        <strong>Exemple:</strong> exemple@email.com - Vérifie si un email a été compromis
+                    </p>
                 </div>
             </form>
         </div>
+
+        {% if breach_result %}
+        <div class="results-card">
+            {% if breach_result.error %}
+            <div class="alert alert-error">
+                <h3>Erreur d'analyse</h3>
+                <p>{{ breach_result.message or breach_result.error }}</p>
+            </div>
+            {% else %}
+            <div class="analysis-summary">
+                <div class="summary-header">
+                    <h3>Analyse de Fuite d'Email</h3>
+                    {% if breach_result.count > 0 %}
+                    <span class="threat-badge threat-critique">
+                        {{ breach_result.count }} fuite(s) détectée(s)
+                    </span>
+                    {% else %}
+                    <span class="threat-badge threat-sûr">
+                        Aucune fuite détectée
+                    </span>
+                    {% endif %}
+                </div>
+
+                {% if breach_result.count > 0 %}
+                <div class="alert alert-warning">
+                    <h4>⚠️ Fuites de Données Détectées</h4>
+                    <p>Votre email apparaît dans <strong>{{ breach_result.count }}</strong> base(s) de données compromises.</p>
+                    <p>Changez immédiatement vos mots de passe sur les services concernés.</p>
+                </div>
+
+                {% if breach_result.breaches %}
+                <div class="analysis-details">
+                    <h4>Détails des Fuites</h4>
+                    <div class="breaches-list">
+                        {% for breach in breach_result.breaches[:10] %}
+                        <div class="breach-item">
+                            <div class="breach-header">
+                                <strong>{{ breach.Name }}</strong>
+                                <span class="breach-date">{{ breach.BreachDate }}</span>
+                            </div>
+                            {% if breach.PwnCount %}
+                            <p class="breach-stat">Comptes affectés: {{ "{:,}".format(breach.PwnCount) }}</p>
+                            {% endif %}
+                            {% if breach.DataClasses %}
+                            <p class="breach-data">Données compromises: {{ breach.DataClasses|join(', ') }}</p>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                {% else %}
+                <div class="alert alert-success">
+                    <h4>✓ Aucune Fuite Détectée</h4>
+                    <p>Votre adresse email n'apparaît dans aucune base de données de fuites connues.</p>
+                </div>
+                {% endif %}
+
+                {% if breach_analysis_id %}
+                <div style="margin-top: 2rem; text-align: center;">
+                    <a href="{{ url_for('main.generate_breach_pdf', analysis_id=breach_analysis_id) }}" class="btn-primary" style="display: inline-block; padding: 12px 24px; text-decoration: none;">
+                        <span>📄 Télécharger le Rapport PDF</span>
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
 
         {% if results %}
         <div class="results-card">
@@ -244,6 +322,14 @@
                     </div>
                     {% endif %}
                 </div>
+
+                {% if analysis_id %}
+                <div style="margin-top: 2rem; text-align: center;">
+                    <a href="{{ url_for('main.generate_security_pdf', analysis_id=analysis_id) }}" class="btn-primary" style="display: inline-block; padding: 12px 24px; text-decoration: none;">
+                        <span>📄 Télécharger le Rapport PDF</span>
+                    </a>
+                </div>
+                {% endif %}
             </div>
             {% endif %}
         </div>
@@ -737,6 +823,48 @@ document.addEventListener('DOMContentLoaded', function() {
     .detail-grid {
         grid-template-columns: 1fr;
     }
+}
+
+.breaches-list {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.breach-item {
+    padding: 1rem;
+    background: rgba(239, 68, 68, 0.05);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: 8px;
+}
+
+.breach-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.breach-header strong {
+    color: #ef4444;
+    font-size: 1rem;
+}
+
+.breach-date {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.breach-stat {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin: 0.25rem 0;
+}
+
+.breach-data {
+    color: #ef4444;
+    font-size: 0.85rem;
+    margin: 0.5rem 0 0 0;
 }
 </style>
 {% endblock %}
