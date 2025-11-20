@@ -209,6 +209,23 @@ def breach_history():
     
     return render_template('admin/breach_history.html', results=results, search=search, risk_level=risk_level, total_breaches=total_breaches)
 
+@bp.route('/history/breach/<int:breach_id>/delete', methods=['POST'])
+@admin_required
+def delete_breach_result(breach_id):
+    """Supprimer un résultat d'analyse de fuite"""
+    breach = BreachAnalysis.query.get_or_404(breach_id)
+    try:
+        db.session.delete(breach)
+        db.session.commit()
+        log_activity('ADMIN_BREACH_DELETE', f'Suppression analyse fuite #{breach_id}')
+        flash('Résultat d\'analyse de fuite supprimé avec succès.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        log_activity('ADMIN_BREACH_DELETE_ERROR', f'Erreur suppression analyse fuite #{breach_id}: {str(e)}')
+        flash(f'Erreur lors de la suppression: {str(e)}', 'danger')
+    
+    return redirect(url_for('admin_panel.breach_history'))
+
 @bp.route('/history/quiz/<int:quiz_id>')
 @admin_required
 def quiz_detail(quiz_id):
@@ -654,7 +671,7 @@ def documents_management():
                     'code': q.document_code,
                     'email': q.email,
                     'created_at': q.created_at,
-                    'detail_url': url_for('admin_panel.quiz_detail', quiz_id=q.id)
+                    'download_url': url_for('main.generate_quiz_pdf', result_id=q.id)
                 })
     
     if doc_type == 'all' or doc_type == 'breach':
@@ -668,7 +685,7 @@ def documents_management():
                     'code': b.document_code,
                     'email': b.email,
                     'created_at': b.created_at,
-                    'detail_url': url_for('admin_panel.breach_detail', breach_id=b.id)
+                    'download_url': url_for('main.generate_breach_pdf', analysis_id=b.id)
                 })
     
     if doc_type == 'all' or doc_type == 'security':
@@ -682,7 +699,7 @@ def documents_management():
                     'code': s.document_code,
                     'email': s.input_value[:50],
                     'created_at': s.created_at,
-                    'detail_url': url_for('admin_panel.security_detail', analysis_id=s.id)
+                    'download_url': url_for('main.generate_security_pdf', analysis_id=s.id)
                 })
     
     if doc_type == 'all' or doc_type == 'request':

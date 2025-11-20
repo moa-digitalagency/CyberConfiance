@@ -93,10 +93,18 @@
                         {{ doc.created_at.strftime('%Y-%m-%d %H:%M') }}
                     </td>
                     <td style="padding: 1rem;">
+                        {% if doc.download_url %}
+                        <a href="{{ doc.download_url }}" 
+                           style="padding: 0.5rem 1rem; background: rgba(16, 185, 129, 0.8); border-radius: 6px; color: white; text-decoration: none; font-size: 0.9rem;"
+                           download>
+                            📥 Télécharger PDF
+                        </a>
+                        {% elif doc.detail_url %}
                         <a href="{{ doc.detail_url }}" 
                            style="padding: 0.5rem 1rem; background: rgba(59, 130, 246, 0.8); border-radius: 6px; color: white; text-decoration: none; font-size: 0.9rem;">
-                            Voir Détails
+                            👁️ Voir Détails
                         </a>
+                        {% endif %}
                     </td>
                 </tr>
                 {% endfor %}
