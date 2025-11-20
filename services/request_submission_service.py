@@ -4,9 +4,20 @@ from services.file_upload_service import FileUploadService
 from utils.document_code_generator import ensure_unique_code
 from flask import request
 import os
+import json
 
 class RequestSubmissionService:
     """Service for processing form submissions with security scanning"""
+    
+    @staticmethod
+    def _ensure_json_serializable(data):
+        """Convert any object to JSON-serializable format"""
+        if data is None:
+            return None
+        try:
+            return json.loads(json.dumps(data))
+        except (TypeError, ValueError):
+            return None
     
     @staticmethod
     def process_submission(request_type, form_data, files):
@@ -52,7 +63,7 @@ class RequestSubmissionService:
         file_hash = None
         
         text_scan = analyzer.analyze_text(description)
-        vt_text_results = text_scan
+        vt_text_results = RequestSubmissionService._ensure_json_serializable(text_scan)
         if text_scan.get('threat_detected'):
             threat_detected = True
             return {
@@ -66,7 +77,7 @@ class RequestSubmissionService:
             urls = [url.strip() for url in urls_input.split('\n') if url.strip()]
             for url in urls[:5]:
                 url_scan = analyzer.analyze(url, 'url')
-                vt_url_results.append(url_scan)
+                vt_url_results.append(RequestSubmissionService._ensure_json_serializable(url_scan))
                 if url_scan.get('threat_detected'):
                     threat_detected = True
                     return {
@@ -87,7 +98,7 @@ class RequestSubmissionService:
                         'message': upload_result.get('error', 'File upload failed')
                     }
                 
-                vt_file_results = upload_result['scan_result']
+                vt_file_results = RequestSubmissionService._ensure_json_serializable(upload_result['scan_result'])
                 if upload_result['threat_detected']:
                     if os.path.exists(upload_result['temp_path']):
                         os.remove(upload_result['temp_path'])

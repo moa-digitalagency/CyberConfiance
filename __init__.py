@@ -42,7 +42,7 @@ def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
     
-    app.config['MAX_CONTENT_LENGTH'] = 32 * 1024 * 1024
+    app.config['MAX_CONTENT_LENGTH'] = 200 * 1024 * 1024
     
     db.init_app(app)
     admin.init_app(app)

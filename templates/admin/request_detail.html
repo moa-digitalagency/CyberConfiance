@@ -32,7 +32,12 @@
                 <strong style="color: var(--text-primary);">File:</strong>
                 <span style="color: var(--text-secondary);"> {{ submission.file_name }} ({{ (submission.file_size / 1024) | round(2) }} KB)</span>
                 <br>
-                <strong style="color: var(--text-primary);">Hash:</strong>
+                <a href="{{ url_for('admin_requests.download_file', submission_id=submission.id) }}" 
+                   style="display: inline-block; margin-top: 0.5rem; padding: 0.5rem 1rem; background: rgba(59, 130, 246, 0.8); color: white; text-decoration: none; border-radius: 6px; font-size: 0.9rem;">
+                    ⬇️ Télécharger le fichier
+                </a>
+                <br>
+                <strong style="color: var(--text-primary); margin-top: 0.5rem; display: inline-block;">Hash:</strong>
                 <code style="color: var(--text-secondary); font-size: 0.9rem;">{{ submission.file_hash }}</code>
             </div>
             {% endif %}

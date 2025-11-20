@@ -1,7 +1,8 @@
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, send_file, abort
 from models import RequestSubmission, db
 from routes.admin_panel import admin_required
 from sqlalchemy import desc
+import os
 
 bp = Blueprint('admin_requests', __name__, url_prefix='/my4dm1n/requests')
 
@@ -55,3 +56,18 @@ def update_status(submission_id):
     from flask import flash, redirect, url_for
     flash('Submission status updated', 'success')
     return redirect(url_for('admin_requests.request_detail', submission_id=submission_id))
+
+@bp.route('/<int:submission_id>/download-file')
+@admin_required
+def download_file(submission_id):
+    """Download the attached file for a submission"""
+    submission = RequestSubmission.query.get_or_404(submission_id)
+    
+    if not submission.file_path or not os.path.exists(submission.file_path):
+        abort(404, "Fichier non trouvé")
+    
+    return send_file(
+        submission.file_path,
+        as_attachment=True,
+        download_name=submission.file_name or 'fichier_joint'
+    )
