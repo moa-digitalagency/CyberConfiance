@@ -16,7 +16,10 @@ def requests_dashboard():
     query = RequestSubmission.query
     
     if filter_type != 'all':
-        query = query.filter_by(request_type=filter_type)
+        if filter_type == 'osint':
+            query = query.filter(RequestSubmission.request_type.in_(['osint', 'osint-investigation']))
+        else:
+            query = query.filter_by(request_type=filter_type)
     
     submissions = query.order_by(desc(RequestSubmission.created_at)).paginate(
         page=page, per_page=20, error_out=False
@@ -25,7 +28,7 @@ def requests_dashboard():
     stats = {
         'total': RequestSubmission.query.count(),
         'fact_checking': RequestSubmission.query.filter_by(request_type='fact-checking').count(),
-        'osint': RequestSubmission.query.filter_by(request_type='osint').count(),
+        'osint': RequestSubmission.query.filter(RequestSubmission.request_type.in_(['osint', 'osint-investigation'])).count(),
         'cyberconsultation': RequestSubmission.query.filter_by(request_type='cyberconsultation').count(),
         'cybercrime': RequestSubmission.query.filter_by(request_type='cybercrime-report').count(),
         'threats_detected': RequestSubmission.query.filter_by(threat_detected=True).count(),

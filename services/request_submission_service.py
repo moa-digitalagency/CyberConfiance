@@ -116,16 +116,14 @@ class RequestSubmissionService:
         urls_input = form_data.get('urls', '')
         is_anonymous = form_data.get('is_anonymous') == 'on'
         
-        # For cybercrime reports, prepend crime type, platform and identifier to description
+        # Extract crime type, platform and identifier for cybercrime reports
+        crime_type = None
+        platform = None
+        platform_identifier = None
         if request_type == 'cybercrime-report':
-            crime_type = form_data.get('crime_type', 'Non spécifié')
-            platform = form_data.get('platform', 'Non spécifiée')
-            platform_identifier = form_data.get('platform_identifier', '')
-            
-            crime_info = f"[Type: {crime_type}] [Plateforme: {platform}]"
-            if platform_identifier:
-                crime_info += f" [Identification: {platform_identifier}]"
-            description = f"{crime_info}\n\n{description}"
+            crime_type = form_data.get('crime_type')
+            platform = form_data.get('platform')
+            platform_identifier = form_data.get('platform_identifier')
         
         contact_name = None if is_anonymous else form_data.get('name')
         contact_email = None if is_anonymous else form_data.get('email')
@@ -197,6 +195,9 @@ class RequestSubmissionService:
             request_type=request_type,
             description=description,
             urls=urls_input,
+            crime_type=crime_type,
+            platform=platform,
+            platform_identifier=platform_identifier,
             file_name=file_name,
             file_path=file_path,
             file_size=file_size,

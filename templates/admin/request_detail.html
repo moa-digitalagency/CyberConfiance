@@ -17,10 +17,30 @@
                 <strong style="color: var(--text-primary);">Type:</strong>
                 <span style="color: var(--text-secondary);"> {{ submission.request_type }}</span>
             </div>
+            {% if submission.crime_type %}
+            <div style="margin-bottom: 1rem;">
+                <strong style="color: var(--text-primary);">Type de cybercriminalité:</strong>
+                <span style="color: var(--text-secondary);"> {{ submission.crime_type }}</span>
+            </div>
+            {% endif %}
+            {% if submission.platform %}
+            <div style="margin-bottom: 1rem;">
+                <strong style="color: var(--text-primary);">Plateforme:</strong>
+                <span style="color: var(--text-secondary);"> {{ submission.platform }}</span>
+            </div>
+            {% endif %}
+            {% if submission.platform_identifier %}
+            <div style="margin-bottom: 1rem;">
+                <strong style="color: var(--text-primary);">Identifiant:</strong>
+                <span style="color: var(--text-secondary);"> {{ submission.platform_identifier }}</span>
+            </div>
+            {% endif %}
+            {% if submission.description %}
             <div style="margin-bottom: 1rem;">
                 <strong style="color: var(--text-primary);">Description:</strong>
-                <p style="color: var(--text-secondary); margin-top: 0.5rem; line-height: 1.6;">{{ submission.description }}</p>
+                <p style="color: var(--text-secondary); margin-top: 0.5rem; line-height: 1.6; white-space: pre-wrap;">{{ submission.description }}</p>
             </div>
+            {% endif %}
             {% if submission.urls %}
             <div style="margin-bottom: 1rem;">
                 <strong style="color: var(--text-primary);">URLs:</strong>
