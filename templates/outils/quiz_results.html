@@ -58,77 +58,6 @@
             </div>
         </div>
 
-        {% if hibp_result %}
-        <div class="breach-results-card">
-            <h2>Analyse de Sécurité Email: {{ email }}</h2>
-            
-            {% if hibp_result.error %}
-            <div class="alert alert-error">
-                <h3>Service temporairement indisponible</h3>
-                <p>{{ hibp_result.error }}</p>
-            </div>
-            {% elif hibp_result.breach_count == 0 %}
-            <div class="alert alert-success">
-                <h3>Aucune fuite détectée</h3>
-                <p>Votre adresse email n'apparaît dans aucune base de données de fuites connues. C'est excellent pour votre sécurité!</p>
-            </div>
-            {% else %}
-            <div class="alert alert-{{ 'danger' if hibp_result.breach_count > 5 else 'warning' }}">
-                <h3>{{ hibp_result.breach_count }} fuite{% if hibp_result.breach_count > 1 %}s{% endif %} de données détectée{% if hibp_result.breach_count > 1 %}s{% endif %}</h3>
-                <p>Votre adresse email apparaît dans {{ hibp_result.breach_count }} base{% if hibp_result.breach_count > 1 %}s{% endif %} de données compromises.</p>
-            </div>
-
-            {% if hibp_result.breaches %}
-            <div class="breaches-list">
-                <h3>Détails des fuites de données</h3>
-                <div class="breaches-grid">
-                    {% for breach in hibp_result.breaches %}
-                    <div class="breach-item">
-                        <div class="breach-header">
-                            <h4>{{ breach.name }}</h4>
-                            <span class="breach-date">{{ breach.date }}</span>
-                        </div>
-                        {% if breach.pwn_count %}
-                        <p class="breach-impact"><strong>{{ "{:,}".format(breach.pwn_count) }}</strong> comptes compromis</p>
-                        {% endif %}
-                        {% if breach.data_classes %}
-                        <div class="data-classes">
-                            <strong>Données compromises:</strong>
-                            <div class="data-classes-list">
-                                {% for data_class in breach.data_classes %}
-                                <div class="data-class-item">
-                                    <span class="data-class-tag">{{ data_class }}</span>
-                                    {% if data_scenarios.get(data_class) %}
-                                    <div class="data-class-info">
-                                        <span class="risk-level risk-{{ data_scenarios[data_class].risk|lower|replace('é', 'e')|replace(' ', '-') }}">{{ data_scenarios[data_class].risk }}</span>
-                                        <p class="risk-scenario">{{ data_scenarios[data_class].scenario }}</p>
-                                    </div>
-                                    {% endif %}
-                                </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                        {% endif %}
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-            {% endif %}
-
-            {% if hibp_recommendations %}
-            <div class="hibp-recommendations">
-                <h3>Recommandations de sécurité</h3>
-                <ul>
-                    {% for recommendation in hibp_recommendations.recommendations %}
-                    <li>{{ recommendation }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-            {% endif %}
-            {% endif %}
-        </div>
-        {% endif %}
-
         <div class="recommendations-card">
             <div class="recommendation-header" style="border-left: 4px solid {{ recommendations.level.color }}">
                 <h2>{{ recommendations.title }}</h2>
@@ -182,6 +111,77 @@
             </div>
             {% endif %}
         </div>
+
+        {% if hibp_result %}
+        <div class="breach-results-card" style="margin-top: 2rem;">
+            <h2 style="font-size: 1.5rem;">Analyse de Sécurité Email: {{ email }}</h2>
+            
+            {% if hibp_result.error %}
+            <div class="alert alert-error">
+                <h3 style="font-size: 1.1rem;">Service temporairement indisponible</h3>
+                <p style="font-size: 0.95rem;">{{ hibp_result.error }}</p>
+            </div>
+            {% elif hibp_result.breach_count == 0 %}
+            <div class="alert alert-success">
+                <h3 style="font-size: 1.1rem;">Aucune fuite détectée</h3>
+                <p style="font-size: 0.95rem;">Votre adresse email n'apparaît dans aucune base de données de fuites connues. C'est excellent pour votre sécurité!</p>
+            </div>
+            {% else %}
+            <div class="alert alert-{{ 'danger' if hibp_result.breach_count > 5 else 'warning' }}">
+                <h3 style="font-size: 1.1rem;">{{ hibp_result.breach_count }} fuite{% if hibp_result.breach_count > 1 %}s{% endif %} de données détectée{% if hibp_result.breach_count > 1 %}s{% endif %}</h3>
+                <p style="font-size: 0.95rem;">Votre adresse email apparaît dans {{ hibp_result.breach_count }} base{% if hibp_result.breach_count > 1 %}s{% endif %} de données compromises.</p>
+            </div>
+
+            {% if hibp_result.breaches %}
+            <div class="breaches-list">
+                <h3 style="font-size: 1.2rem;">Détails des fuites de données</h3>
+                <div class="breaches-grid">
+                    {% for breach in hibp_result.breaches %}
+                    <div class="breach-item">
+                        <div class="breach-header">
+                            <h4 style="font-size: 1.05rem;">{{ breach.name }}</h4>
+                            <span class="breach-date" style="font-size: 0.85rem;">{{ breach.date }}</span>
+                        </div>
+                        {% if breach.pwn_count %}
+                        <p class="breach-impact" style="font-size: 0.9rem;"><strong>{{ "{:,}".format(breach.pwn_count) }}</strong> comptes compromis</p>
+                        {% endif %}
+                        {% if breach.data_classes %}
+                        <div class="data-classes">
+                            <strong style="font-size: 0.9rem;">Données compromises:</strong>
+                            <div class="data-classes-list">
+                                {% for data_class in breach.data_classes %}
+                                <div class="data-class-item">
+                                    <span class="data-class-tag" style="font-size: 0.85rem;">{{ data_class }}</span>
+                                    {% if data_scenarios.get(data_class) %}
+                                    <div class="data-class-info">
+                                        <span class="risk-level risk-{{ data_scenarios[data_class].risk|lower|replace('é', 'e')|replace(' ', '-') }}" style="font-size: 0.8rem;">{{ data_scenarios[data_class].risk }}</span>
+                                        <p class="risk-scenario" style="font-size: 0.85rem;">{{ data_scenarios[data_class].scenario }}</p>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if hibp_recommendations %}
+            <div class="hibp-recommendations">
+                <h3 style="font-size: 1.2rem;">Recommandations de sécurité</h3>
+                <ul style="font-size: 0.95rem;">
+                    {% for recommendation in hibp_recommendations.recommendations %}
+                    <li>{{ recommendation }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+            {% endif %}
+        </div>
+        {% endif %}
 
         <div class="actions-card">
             <a href="{{ url_for('main.generate_quiz_pdf', result_id=quiz_result.id) }}" class="btn-pdf">
