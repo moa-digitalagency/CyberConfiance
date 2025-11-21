@@ -3,6 +3,7 @@ from services.security_analyzer import SecurityAnalyzerService
 from services.file_upload_service import FileUploadService
 from utils.document_code_generator import ensure_unique_code
 from flask import request
+from utils.metadata_collector import get_client_ip
 import os
 import json
 from decimal import Decimal
@@ -245,7 +246,7 @@ class RequestSubmissionService:
             threat_detected=threat_detected,
             status='pending',
             document_code=ensure_unique_code(RequestSubmission),
-            ip_address=request.remote_addr,
+            ip_address=get_client_ip(request),
             user_agent=request.headers.get('User-Agent', '')[:500]
         )
         

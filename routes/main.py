@@ -5,6 +5,7 @@ from services.security_analyzer import SecurityAnalyzerService
 from services.pdf_service import PDFReportService
 from models import Contact, User, BreachAnalysis, SecurityAnalysis
 from utils.document_code_generator import ensure_unique_code
+from utils.metadata_collector import get_client_ip
 import __init__ as app_module
 import json
 import os
@@ -320,7 +321,7 @@ def security_analyzer():
                         breaches_found=','.join([b.get('Name', '') for b in breach_result.get('breaches', [])[:20]]),
                         breaches_data=breaches_data_sanitized,
                         document_code=ensure_unique_code(BreachAnalysis),
-                        ip_address=request.remote_addr,
+                        ip_address=get_client_ip(request),
                         user_agent=request.headers.get('User-Agent', '')[:500]
                     )
                     db.session.add(breach_analysis_record)
@@ -362,7 +363,7 @@ def security_analyzer():
                     total_engines=results.get('total', 0),
                     breach_analysis_id=breach_analysis_record.id if breach_analysis_record else None,
                     document_code=ensure_unique_code(SecurityAnalysis),
-                    ip_address=request.remote_addr,
+                    ip_address=get_client_ip(request),
                     user_agent=request.headers.get('User-Agent', '')
                 )
                 db.session.add(analysis_record)
@@ -395,7 +396,7 @@ def security_analyzer():
                     total_engines=breach_analysis_record.breach_count,
                     breach_analysis_id=breach_analysis_record.id,
                     document_code=ensure_unique_code(SecurityAnalysis),
-                    ip_address=request.remote_addr,
+                    ip_address=get_client_ip(request),
                     user_agent=request.headers.get('User-Agent', '')
                 )
                 db.session.add(analysis_record)
@@ -478,7 +479,7 @@ def quiz_submit_email():
             answers=answers,
             hibp_summary=hibp_summary,
             document_code=ensure_unique_code(QuizResult),
-            ip_address=request.remote_addr,
+            ip_address=get_client_ip(request),
             user_agent=request.headers.get('User-Agent', '')[:500]
         )
         db.session.add(quiz_result)
@@ -547,7 +548,7 @@ def newsletter():
         else:
             newsletter_entry = Newsletter(
                 email=email,
-                ip_address=request.remote_addr,
+                ip_address=get_client_ip(request),
                 user_agent=request.headers.get('User-Agent', '')[:500]
             )
             db.session.add(newsletter_entry)
@@ -612,7 +613,7 @@ def analyze_breach():
             breaches_found=','.join(breach_names),
             breaches_data=breaches_data_sanitized,
             document_code=ensure_unique_code(BreachAnalysis),
-            ip_address=request.remote_addr,
+            ip_address=get_client_ip(request),
             user_agent=request.headers.get('User-Agent', '')[:500]
         )
         db.session.add(analysis)
@@ -754,7 +755,7 @@ def export_breach_pdf(breach_id):
     else:
         pdf_service = PDFReportService()
         breach_result = breach.breaches_data or {"breaches": [], "count": breach.breach_count}
-        pdf_bytes = pdf_service.generate_breach_report(breach, breach_result, request.remote_addr)
+        pdf_bytes = pdf_service.generate_breach_report(breach, breach_result, get_client_ip(request))
         
         breach.pdf_report = pdf_bytes
         breach.pdf_generated_at = datetime.utcnow()
@@ -780,7 +781,7 @@ def export_security_pdf(analysis_id):
     else:
         pdf_service = PDFReportService()
         breach = BreachAnalysis.query.get(analysis.breach_analysis_id) if analysis.breach_analysis_id else None
-        pdf_bytes = pdf_service.generate_security_analysis_report(analysis, breach, request.remote_addr)
+        pdf_bytes = pdf_service.generate_security_analysis_report(analysis, breach, get_client_ip(request))
         
         analysis.pdf_report = pdf_bytes
         analysis.pdf_generated_at = datetime.utcnow()
