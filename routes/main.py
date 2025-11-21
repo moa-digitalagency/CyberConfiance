@@ -276,6 +276,8 @@ def security_analyzer():
     analysis_id = None
     breach_analysis_id = None
     
+    print(f"[DEBUG] Security Analyzer POST: {request.method}")
+    
     if request.method == 'POST':
         input_value = request.form.get('input_value', '').strip()
         input_type = request.form.get('input_type', 'hash')
@@ -327,8 +329,9 @@ def security_analyzer():
                     db.session.add(breach_analysis_record)
                     db.session.commit()
                     breach_analysis_id = breach_analysis_record.id
+                    print(f"[OK] BreachAnalysis saved: ID={breach_analysis_id}, email={email_to_check}")
                 except Exception as e:
-                    print(f"Error saving breach analysis: {str(e)}")
+                    print(f"[ERROR] Error saving breach analysis: {str(e)}")
                     db.session.rollback()
             elif breach_result and breach_result.get('error'):
                 flash(f"Erreur lors de l'analyse de fuite: {breach_result.get('error')}", 'warning')
@@ -369,8 +372,9 @@ def security_analyzer():
                 db.session.add(analysis_record)
                 db.session.commit()
                 analysis_id = analysis_record.id
+                print(f"[OK] SecurityAnalysis saved: ID={analysis_id}, type={input_type}")
             except Exception as e:
-                print(f"Error saving security analysis: {str(e)}")
+                print(f"[ERROR] Error saving security analysis: {str(e)}")
                 db.session.rollback()
         elif input_type == 'email' and breach_analysis_record:
             try:
@@ -404,6 +408,8 @@ def security_analyzer():
                 analysis_id = analysis_record.id
             except Exception as e:
                 print(f"Error saving email security analysis: {str(e)}")
+    
+    print(f"[DEBUG] Rendering security_analyzer: analysis_id={analysis_id}, breach_analysis_id={breach_analysis_id}")
     
     return render_template('outils/security_analyzer.html', 
                          results=results, 
@@ -497,7 +503,9 @@ def quiz_submit_email():
 @bp.route('/quiz/results/<int:result_id>')
 def quiz_result_detail(result_id):
     from models import QuizResult
+    print(f"[DEBUG] Loading QuizResult ID={result_id}")
     quiz_result = QuizResult.query.get_or_404(result_id)
+    print(f"[OK] QuizResult loaded: email={quiz_result.email}")
     
     recommendations = QuizService.get_recommendations(
         quiz_result.overall_score,
@@ -515,6 +523,7 @@ def quiz_result_detail(result_id):
                          scores=quiz_result.category_scores,
                          recommendations=recommendations,
                          email=quiz_result.email,
+                         result_id=quiz_result.id,
                          hibp_result=quiz_result.hibp_summary,
                          hibp_recommendations=hibp_recommendations,
                          data_scenarios=data_scenarios)
