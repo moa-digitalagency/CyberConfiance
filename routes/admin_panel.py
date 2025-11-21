@@ -146,8 +146,10 @@ def dashboard():
             recent_security_logs = SecurityLog.query.order_by(desc(SecurityLog.created_at)).limit(10).all()
         except Exception as e:
             print(f"[ERROR] Recent security logs query failed: {e}")
+            db.session.rollback()
             recent_security_logs = []
         
+        db.session.rollback()
         return render_template('admin/dashboard.html',
                              period=period,
                              period_label=period_label,
