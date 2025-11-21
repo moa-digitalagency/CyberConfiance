@@ -22,14 +22,14 @@ def verify_models_loaded():
         User, Rule, Scenario, GlossaryTerm, Tool, News, 
         RequestSubmission, Contact, QuizResult, BreachAnalysis,
         SecurityAnalysis, AttackType, Newsletter, ActivityLog,
-        ThreatLog, SiteSettings, PageContentSettings, SEOMetadata
+        ThreatLog, SiteSettings, SEOMetadata
     )
     
     required_tables = [
-        'user', 'rule', 'scenario', 'glossary_term', 'tool', 'news',
-        'request_submission', 'contact', 'quiz_result', 'breach_analysis',
-        'security_analysis', 'attack_type', 'newsletter', 'activity_log',
-        'threat_log', 'site_settings', 'page_content_settings', 'seo_metadata'
+        'users', 'rules', 'scenarios', 'glossary', 'tools', 'news',
+        'request_submissions', 'contacts', 'quiz_results', 'breach_analyses',
+        'security_analyses', 'attack_types', 'newsletter', 'activity_logs',
+        'threat_logs', 'site_settings', 'seo_metadata'
     ]
     
     registered_tables = [table.name for table in db.metadata.sorted_tables]
