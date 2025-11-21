@@ -45,6 +45,49 @@ def verify_models_loaded():
     print("✓ All required models are loaded and registered")
     return True
 
+def verify_table_columns():
+    """Verify all critical tables have required columns"""
+    print("\n[VERIFICATION] Checking table columns...")
+    
+    from sqlalchemy import inspect
+    
+    inspector = inspect(db.engine)
+    
+    # Define required columns for critical tables
+    required_columns = {
+        'breach_analyses': ['id', 'email', 'breach_count', 'pdf_report', 'pdf_generated_at', 'ip_address'],
+        'security_analyses': ['id', 'input_value', 'input_type', 'pdf_report', 'pdf_generated_at', 'breach_analysis_id'],
+        'quiz_results': ['id', 'email', 'overall_score', 'pdf_report', 'pdf_generated_at', 'document_code'],
+    }
+    
+    all_valid = True
+    
+    for table_name, expected_cols in required_columns.items():
+        if table_name not in inspector.get_table_names():
+            print(f"✗ Table missing: {table_name}")
+            all_valid = False
+            continue
+        
+        actual_cols = {col['name'] for col in inspector.get_columns(table_name)}
+        missing_cols = set(expected_cols) - actual_cols
+        
+        if missing_cols:
+            print(f"✗ {table_name}: Missing columns: {', '.join(missing_cols)}")
+            all_valid = False
+        else:
+            print(f"✓ {table_name}: All required columns present")
+            # Show column details
+            for col in inspector.get_columns(table_name):
+                if col['name'] in ['id', 'pdf_report', 'pdf_generated_at']:
+                    print(f"    - {col['name']:25} {str(col['type']):20}")
+    
+    if all_valid:
+        print("\n✓ All critical table columns verified!")
+    else:
+        print("\n⚠️  Some columns are missing - this may cause issues")
+    
+    return all_valid
+
 def init_database(reset=False):
     """Initialize database and seed data
     
@@ -78,6 +121,11 @@ def init_database(reset=False):
             # Create all tables
             print("\n[1/3] Creating database tables...")
             db.create_all()
+            
+            # Verify all columns are created
+            columns_ok = verify_table_columns()
+            if not columns_ok:
+                print("\n⚠️  Some columns may be missing - please check model definitions")
             
             created_tables = [table.name for table in db.metadata.sorted_tables]
             print(f"✓ Database tables created successfully ({len(created_tables)} tables)")

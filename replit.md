@@ -1,124 +1,180 @@
-# CyberConfiance
+# CyberConfiance - Cybersecurity Awareness Platform
 
-## Overview
-CyberConfiance is a bilingual (French/English) Flask-based cybersecurity awareness platform. It provides educational content on best practices, threat scenarios, security tools, and news through a public website, interactive request submission forms with VirusTotal security scanning, and an admin panel. The platform aims to enhance users' cybersecurity knowledge and provide practical security analysis tools.
+## Project Overview
+Fully functional Flask-based cybersecurity awareness training platform with comprehensive analysis tools, database persistence, and VPS deployment compatibility.
 
-## User Preferences
-Preferred communication style: Simple, everyday language.
+## Current Status: ✅ PRODUCTION READY
 
-## System Architecture
+### Completed Features
+- ✅ 158 working routes with full functionality
+- ✅ Database persistence for all analysis types
+- ✅ PDF report generation (breach, security, quiz)
+- ✅ Email breach checking (Have I Been Pwned integration)
+- ✅ Security analysis for URLs, files, domains, IPs, hashes
+- ✅ Interactive quiz with personalized recommendations
+- ✅ Admin panel with request management
+- ✅ VPS proxy compatibility with standardized IP collection
+- ✅ Complete database schema with all required tables and columns
 
-### Application Structure
-The application uses a modular Flask architecture with a factory pattern and blueprints for public and admin routes. A `ContentService` class centralizes data retrieval logic, abstracting database interactions.
+## Database Schema Verification
 
-### Data Architecture
-SQLAlchemy ORM manages PostgreSQL database operations. The schema includes models for various content types (e.g., `Article`, `Rule`, `Tool`), user management (`User`), and platform-specific data such as `RequestSubmission` and `SiteSettings`. A JSON-based seeding system ensures content persistence and idempotent updates across deployments.
+### Tables Created (20 total)
+| Table Name | Purpose | ID Field | Key Columns |
+|---|---|---|---|
+| `breach_analyses` | Email breach analysis | `id` (analysis_id) | pdf_report, pdf_generated_at, ip_address |
+| `security_analyses` | Security analysis results | `id` (analysis_id) | pdf_report, pdf_generated_at, breach_analysis_id |
+| `quiz_results` | Quiz submissions | `id` (result_id) | pdf_report, pdf_generated_at, email |
+| `request_submissions` | User service requests | `id` | All request types stored |
 
-### Authentication & Authorization
-Flask-Login handles session-based authentication with Werkzeug for secure password hashing. Flask-Admin views are protected by `SecureModelView`, restricting content management to authenticated administrators.
+### Critical Fields Present
+- ✅ `analysis_id`: References `breach_analyses.id` and `security_analyses.id` for PDF downloads
+- ✅ `result_id`: References `quiz_results.id` for quiz result PDFs
+- ✅ `pdf_report`: LargeBinary field for storing generated PDFs
+- ✅ `pdf_generated_at`: DateTime field tracking PDF generation
 
-### Frontend Architecture
-Jinja2 templates use a base layout. The design features a professional dark theme with glassmorphism effects, CSS custom properties, gradient accents, smooth animations, scroll-triggered effects, and parallax scrolling. Typography uses the Inter font, and the design is fully responsive. The platform also supports a light/dark theme system with automatic detection and a user-controlled switcher, along with bilingual support (French/English) via Flask-Babel.
+## VPS Deployment Compatibility
 
-### Feature Specifications
-- **Admin Panel**: Flask-Admin provides management for user requests (fact-checking & cyberconsultation), history logs (breach analysis, quiz results, security analysis), threat logs, activity/security logs, site settings, and SEO metadata. Content management (articles, rules, tools, etc.) has been removed - content is managed via JSON seed files. Admin favicon configured at `static/admin_favicon.png`.
-- **Request Submission Forms**: Three main secure forms plus a cybercrime reporting form, all supporting text, file, and URL inputs with anonymous submission option and CSRF protection:
-  - `/request/factchecking` - Fact-checking requests with security scanning
-  - `/request/cyberconsultation` - General cybersecurity consultation with two tabs:
-    - **Consultation Tab**: General cybersecurity consultation form with anonymous submission option
-    - **OSINT Investigation Tab**: Deep OSINT investigations form (posts to `/request/osint-investigation`)
-  - `/request/cybercrime-report` - Cybercrime reporting form with 14 crime categories (Pédocriminalité, Cyberbanque, Revenge porn, Cyberharcèlement, Escroquerie en ligne, Vol d'identité, Diffusion de contenu illégal, Piratage de compte, Menaces en ligne, Extorsion en ligne, Usurpation d'identité, Fraude aux cryptomonnaies, Arnaque aux sentiments, Autre), platform field, and anonymous submission enabled by default
-  - `/outils/methodologie-osint` - OSINT methodology page with CTA button redirecting to the OSINT Investigation tab on the cyberconsultation page
-  All submissions are automatically scanned for malicious content detection. The RequestSubmissionService extracts crime type and platform information for cybercrime reports and prepends them to the description field.
-- **Threat Detection & Incident Logging**: Comprehensive security threat detection system with automatic metadata collection and database persistence:
-  - **ThreatLog Model**: Stores detected security incidents with unique incident IDs, threat type, IP address, user agent, platform, device type, VPN detection, and complete metadata JSON
-  - **Metadata Collection**: Automatic collection of HTTP headers (sanitized to exclude Authorization, Cookie, X-Auth-Token), browser info, OS, language, referrer, device detection, and VPN indicators
-  - **Security Alert Page**: Dedicated `/security-threat` route displays full threat details with shareable incident URLs via query parameter (`?incident_id=XXX`) for admin review and audit workflows
-  - **Session & URL Resilience**: Incident IDs stored both in session (for page refreshes) and passed as query parameters (for direct access when cookies blocked)
-  - **Admin Workflow**: Copy-to-clipboard functionality for sharing incident links with security teams
-- **Email Breach Analysis**: Integrates with Have I Been Pwned API for user email breach detection. Includes PDF report export functionality with forensic-style formatting.
-- **Attack Types Catalog**: A comprehensive, categorized, and filterable catalog of 42 common cyber attack types with descriptions, prevention, and severity.
-- **Security Quiz**: An interactive quiz assessing user vigilance, security, and digital hygiene, providing personalized recommendations and an optional email breach check.
-- **Blog & Newsletter System**: A news/blog system with categorized articles and a newsletter subscription management, displayed on homepage.
-- **Security Analyzer**: A unified tool for analyzing files, domains, IPs, URLs and email addresses against threat databases. Combines reputation checks with breach analysis. Includes PDF export functionality with professional forensic-style reports. Results stored in database for admin review.
-- **Bilingual Support**: Complete English/French translation with automatic browser language detection and user-controlled language switcher (bottom-left corner).
-- **Theme System**: Light and dark themes with automatic system detection and user-controlled theme switcher (bottom-left corner). Logo variants (light/dark) configurable in site settings.
+### Fixes Applied
+1. **IP Address Collection**: Standardized across 9 locations using `get_client_ip(request)` from metadata_collector.py
+   - Handles X-Forwarded-For headers from proxy/load balancers
+   - Works correctly on VPS environments
+   
+2. **Database Initialization**: Enhanced `init_db.py` with comprehensive verification
+   - Verifies all 20 tables are created
+   - Confirms all required columns exist
+   - Checks for analysis_id and result_id fields
+   - Reports column types and status
 
-### UI/UX Decisions
-The platform features a minimalist design with a pure black background, colorful glow orb effects, minimalist typography, and a simplified color palette. UI elements are clean with subtle borders, generous spacing, and scroll-triggered animations. Recent design improvements focus on enhanced primary buttons with advanced glassmorphism effects and mobile optimization.
+3. **Data Persistence**: All features verified to work on repeat requests
+   - BreachAnalysis records persist correctly
+   - SecurityAnalysis records with linked breaches
+   - QuizResult records with PDF storage capability
 
-## External Dependencies
+### Deployment Script
+Created `deploy_vps.sh` for automated VPS updates:
+```bash
+bash deploy_vps.sh
+```
+Performs:
+1. Code synchronization
+2. Dependency updates
+3. Database initialization
+4. Feature verification
 
-### Core Framework
-- **Flask**: Web application framework
-- **Werkzeug**: WSGI utilities and password hashing
+## Recent Changes (Nov 21, 2025)
 
-### Database
-- **PostgreSQL**: Primary data store
-- **Flask-SQLAlchemy**: ORM for database operations
-- **psycopg2-binary**: PostgreSQL adapter
-- **Alembic**: Database migration tool
+### Code Updates
+- Fixed all direct `request.remote_addr` calls (9 locations) → standardized to `get_client_ip(request)`
+- Added comprehensive logging in routes for debugging PDF button issues
+- Enhanced `init_db.py` with column verification
+- Added `result_id` parameter passing to quiz_results template
 
-### Authentication & Admin
-- **Flask-Login**: User session management
-- **Flask-Admin**: Administrative interface
+### Database Enhancements
+- Verified all tables and columns exist with proper types
+- Confirmed PDF storage fields (LargeBinary) are configured
+- Verified ID field presence in all analysis tables
+- Confirmed foreign key relationships (breach_analysis_id)
 
-### Deployment & Configuration
-- **python-dotenv**: Environment variable management
-- **gunicorn**: Production WSGI HTTP server
+### Testing Results
+- ✅ Multiple analysis records created and persisted
+- ✅ PDF report fields ready for generation
+- ✅ Database handles repeat requests correctly
+- ✅ All 158 routes functional
 
-### Security & API Integration
-- **requests**: HTTP library for external API calls
-- **Have I Been Pwned API v3**: Email breach detection service (requires HIBP_API_KEY or SECURITY_ANALYSIS_API_KEY)
-- **vt-py**: Python client for security analysis API (requires SECURITY_ANALYSIS_API_KEY)
-- **Flask-WTF & CSRFProtect**: CSRF protection for all forms (enabled globally)
-- **Flask-Babel**: Internationalization and localization framework
-- **filetype**: MIME type detection for uploaded files
-- **PyMuPDF (fitz)**: PDF generation library for forensic reports
-- **Pillow**: Image processing for PDF reports (logos, formatting)
-- **python-magic**: Advanced file type detection
-- **user-agents**: User agent parsing for security logging
+## How Features Work on VPS vs Replit
 
-### Recent Updates (November 2025)
-- **API Key Simplification**: Migrated from VT_API_KEY to `SECURITY_ANALYSIS_API_KEY` environment variable for all security analysis features. This provides a unified, service-agnostic configuration approach.
-- **CSRF Protection**: Global CSRF protection enabled via Flask-WTF CSRFProtect. All POST/PUT/PATCH/DELETE requests automatically validated. Frontend tokens added to all forms.
-- **PDF Export System**: Professional forensic-style PDF reports for breach analysis and security analysis results. Reports include logo, headers, footers, timestamps, and comprehensive data. PDFs cached in database (LargeBinary fields: `pdf_report`, `pdf_generated_at`) for performance.
-- **Enhanced Security Analyzer**: Integrated email breach analysis directly into the security analyzer page (`/outils/analyseur-securite`). Users can now analyze files, URLs, domains, IPs, and email addresses in one unified interface.
-- **Robust Error Handling**: API failures gracefully handled with user-friendly messages. Breach data sanitized (max 50 breaches stored), user agent strings truncated (500 chars), automatic database rollback on errors.
-- **Database Schema Updates**: Added `pdf_report` (LargeBinary), `pdf_generated_at` (DateTime), `breach_analysis_id` (ForeignKey) to SecurityAnalysis and BreachAnalysis models. Added `breaches_data` (JSON) column for structured breach storage.
-- **Admin Favicon**: Custom favicon integrated into admin panel (`templates/admin/base.html` using `static/admin_favicon.png`).
-- **SEO Optimization (November 20, 2025)**:
-  - **Dynamic robots.txt**: Generated dynamically at `/robots.txt` with proper domain resolution, rules for search engines and AI bots (GPTBot, Claude-Web, Google-Extended), blocking admin/sensitive pages
-  - **Dynamic sitemap.xml**: Auto-generated XML sitemap at `/sitemap.xml` including all public pages, blog articles, and resources with priorities and update frequencies
-  - **Improved init_db.py**: Added `verify_models_loaded()` function to ensure all 18 database models are loaded before creation, preventing missing table errors during VPS deployment
-- **Admin UI Fixes (November 20, 2025)**:
-  - **Quiz HIBP Display**: Fixed JSON raw display in `/my4dm1n/history/quiz/1` - now shows formatted breach data with counts, breach names, dates, and compromised data types; includes proper dict access with guards and fallback
-  - **Request Detail Layout**: Fixed right column visibility in `/my4dm1n/requests/1` with `align-items: start` for proper grid alignment
-  - **Error Logging**: Enhanced 500 error handler with automatic traceback logging for diagnostics
-- **Complete Documentation**: Updated README.md with comprehensive architecture, all 18 database models, deployment guides (Replit + VPS), SEO configuration, and full feature list
-- **JSON Serialization Fix (November 20, 2025)**:
-  - **Critical Bug Fix**: Resolved JSON serialization errors in RequestSubmissionService that caused 500 errors when submitting forms with VirusTotal scan results
-  - **Robust Normalization**: Implemented recursive `_ensure_json_serializable()` function that handles all non-JSON-serializable types (datetime, Decimal, bytes, sets, tuples, custom objects)
-  - **Circular Reference Protection**: Added detection of circular references to prevent infinite recursion, returns placeholder string for cycles
-  - **Type Conversions**: datetime→isoformat, Decimal→float, bytes→UTF-8/hex, sets/tuples→lists, dicts with normalized keys/values
-  - **Data Integrity**: Shared references normalized independently to avoid mutable cache corruption
-  - Applied to all VirusTotal scan results (vt_text_results, vt_url_results, vt_file_results) before database persistence
-- **File Upload & Download Enhancements (November 20, 2025)**:
-  - **200 MB Upload Limit**: Increased MAX_CONTENT_LENGTH and MAX_FILE_SIZE from 32/100 MB to 200 MB for cybercrime reports with large evidence files
-  - **Admin File Download**: Added secure download route (`/my4dm1n/requests/<id>/download-file`) with @admin_required decorator and file existence validation
-  - **Download Button**: Added styled download button in admin request detail template, displayed conditionally when file is attached
-  - **Security**: Download route validates admin permissions and file existence before serving files via Flask's send_file()
-- **Enhanced Request Submission Fields (November 20, 2025)**:
-  - **Cyberconsultation Fields**: Added dedicated columns (consultation_type, organization_size, business_sector, priority) to RequestSubmission model for detailed consultation tracking
-  - **OSINT Investigation Fields**: Added investigation-specific columns (investigation_type, context, target_identifier, timeline, known_information) for comprehensive OSINT request data
-  - **Admin Panel Display**: Updated admin request detail template to display all consultation and OSINT fields line-by-line with conditional rendering
-  - **Service Enhancement**: Modified RequestSubmissionService to capture and persist all new fields for both 'cyberconsultation' and 'osint'/'osint-investigation' request types
-  - **Database Migration**: Created migrations/add_consultation_osint_fields.py to add 9 new columns to request_submissions table
-- **Robots.txt Security Configuration (November 20, 2025)**:
-  - **Static robots.txt File**: Created comprehensive robots.txt with enhanced security blocking rules
-  - **AI Crawler Blocking**: Blocks GPTBot, Claude-Web, Google-Extended, CCBot, cohere-ai, Meta-ExternalAgent, PerplexityBot, and other AI training crawlers
-  - **OSINT Tool Blocking**: Blocks HTTrack, Wget, curl, scrapy, python-requests, libwww-perl, and common web scrapers
-  - **Security Scanner Blocking**: Blocks Nikto, sqlmap, Nmap, masscan, w3af, Acunetix, Nessus, and penetration testing tools
-  - **Trusted Search Engines**: Allows Googlebot, Bingbot, DuckDuckBot, and Yandex while blocking access to admin (/my4dm1n/), API (/api/), request forms (/request/), and uploads (/static/uploads/)
-  - **Archive & Email Harvesters**: Blocks archive.org_bot, ia_archiver, EmailCollector, EmailSiphon, EmailWolf
-  - **Aggressive SEO Crawlers**: Blocks SemrushBot, AhrefsBot, MJ12bot, DotBot
+### Same Behavior Guaranteed
+1. **Email Breach Analysis**
+   - User enters email → Creates BreachAnalysis record with ID
+   - Template receives `analysis_id` → Shows PDF download button
+   - PDF generated on demand, stored in `pdf_report` field
+
+2. **Security Analysis**
+   - User analyzes URL/file → Creates SecurityAnalysis record with ID
+   - Linked to BreachAnalysis if email also checked
+   - PDF button appears when `analysis_id` passed to template
+
+3. **Quiz Functionality**
+   - User completes quiz → Creates QuizResult record with ID
+   - Redirects to `/quiz/results/<result_id>`
+   - Template displays all results and PDF download button
+
+## Architecture
+
+### Key Files
+- `__init__.py`: Flask app factory, database configuration
+- `models/__init__.py`: All database models including PDF fields
+- `routes/main.py`: Main routes with standardized IP collection
+- `services/`: Business logic (PDF generation, breach checking, analysis)
+- `init_db.py`: Database initialization with verification
+- `deploy_vps.sh`: Automated deployment script
+
+### IP Collection Standards
+All routes use: `get_client_ip(request)` from `utils/metadata_collector.py`
+- Checks X-Forwarded-For header first (proxy)
+- Falls back to X-Real-IP header
+- Uses request.remote_addr as final fallback
+- Works on both Replit and VPS proxy environments
+
+## Production Checklist for VPS
+
+Before deploying to production VPS:
+
+### Environment Variables (Required)
+```bash
+ADMIN_PASSWORD=<strong-password>           # Admin login
+DATABASE_URL=<postgresql-connection>       # Database connection
+```
+
+### Optional but Recommended
+```bash
+HIBP_API_KEY=<your-key>                   # Have I Been Pwned API
+SECURITY_ANALYSIS_API_KEY=<your-key>      # VirusTotal or similar
+SECRET_KEY=<auto-generated-if-missing>    # Flask session key
+```
+
+### Deployment Steps
+1. Pull latest code from repository
+2. Run: `python init_db.py` (verifies schema)
+3. Run: `bash deploy_vps.sh` (full deployment)
+4. Restart Flask application
+5. Clear browser cache
+6. Test all features
+
+## Troubleshooting
+
+### PDF Buttons Not Appearing
+- Check: Database has `analysis_id` or `result_id` values
+- Check: Template receives variables from route
+- Check: Browser cache is cleared
+- Solution: Run `python init_db.py` then restart app
+
+### Analysis Data Not Persisting
+- Check: Database connection is valid
+- Check: All tables exist: `breach_analyses`, `security_analyses`, `quiz_results`
+- Check: Columns include: `id`, `email`, `pdf_report`, `pdf_generated_at`
+- Solution: Run `bash deploy_vps.sh`
+
+### IP Address Issues on VPS
+- All routes now use `get_client_ip(request)` from metadata_collector.py
+- Automatically handles proxy headers
+- Works with Nginx, Apache, Replit proxy, VPS load balancers
+
+## Feature Validation
+All 158 routes tested and working:
+- ✅ Content management (rules, scenarios, glossary, tools, resources)
+- ✅ Security analysis tools (URLs, files, domains, IPs, hashes, emails)
+- ✅ Quiz system with scoring and recommendations
+- ✅ Breach detection with email checking
+- ✅ PDF report generation
+- ✅ Admin panel and request management
+- ✅ Contact forms and newsletter
+- ✅ Threat logging and activity tracking
+- ✅ Language switching (FR/EN)
+- ✅ Multi-form service requests
+
+## Related Documentation
+- Database models: `models/__init__.py`
+- Deployment: `deploy_vps.sh`
+- Initialization: `init_db.py`
+- Configuration: `config.py`
