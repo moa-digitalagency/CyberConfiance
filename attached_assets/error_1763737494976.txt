@@ -1,0 +1,28 @@
+================================================================================
+DATABASE INITIALIZATION
+================================================================================
+Sample data initialized!
+Starting database seeding...
+[OK] Rules: 0 created, 20 updated
+[OK] Scenarios: 0 created, 11 updated
+[OK] Glossary: 0 created, 40 updated
+[OK] Tools: 0 created, 25 updated
+[OK] Attack Types: 0 created, 42 updated
+[OK] News: 0 created, 10 updated
+[OK] Site Settings: 0 created
+[OK] Page Content Settings: 0 created, 29 updated
+[OK] SEO Metadata: 0 created
+[OK] Admin user updated with role and permissions
+Database seeding completed!
+
+[VERIFICATION] Checking all models are loaded...
+
+✗ ERROR during database initialization: cannot import name 'PageContentSettings' from 'models' (/var/websites/CyberConfiance/models/__init__.py)
+================================================================================
+Traceback (most recent call last):
+  File "/var/websites/CyberConfiance/init_db.py", line 74, in init_database
+    models_ok = verify_models_loaded()
+                ^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/websites/CyberConfiance/init_db.py", line 21, in verify_models_loaded
+    from models import (
+ImportError: cannot import name 'PageContentSettings' from 'models' (/var/websites/CyberConfiance/models/__init__.py)
