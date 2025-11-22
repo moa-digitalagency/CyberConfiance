@@ -42,6 +42,20 @@
                         <form method="POST" action="{{ url_for('request_forms.cyberconsultation') }}" enctype="multipart/form-data">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             
+                            <!-- Privacy Disclaimer -->
+                            <div style="padding: 15px; background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%); border-left: 3px solid #3b82f6; border-radius: 8px; margin-bottom: 2rem;">
+                                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2.5">
+                                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                                        <circle cx="12" cy="12" r="3"/>
+                                    </svg>
+                                    <h4 style="color: #3b82f6; font-size: 0.95rem; font-weight: 700; margin: 0;">🔒 Vos données sont protégées</h4>
+                                </div>
+                                <p style="margin: 0; color: #94a3b8; font-size: 0.875rem; line-height: 1.5;">
+                                    Aucun marketing ni tracking. Stockage chiffré et anonymisé. Vos informations restent confidentielles.
+                                </p>
+                            </div>
+                            
                             <!-- Anonymous Toggle -->
                             <div class="form-section" style="margin-bottom: 2.5rem;">
                                 <div class="anonymous-toggle" style="display: flex; align-items: center; gap: 15px; padding: 20px; background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 12px; backdrop-filter: blur(10px);">
@@ -207,22 +221,6 @@
                                 </p>
                             </div>
 
-                            <!-- Privacy Disclaimer -->
-                            <div class="privacy-disclaimer" style="padding: 20px; background: linear-gradient(145deg, rgba(59, 130, 246, 0.08) 0%, rgba(59, 130, 246, 0.03) 100%); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 12px; margin-bottom: 2rem; backdrop-filter: blur(10px);">
-                                <div style="display: flex; align-items: flex-start; gap: 12px;">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(59, 130, 246, 1)" stroke-width="2" style="flex-shrink: 0; margin-top: 2px;">
-                                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                                        <circle cx="12" cy="12" r="3"/>
-                                    </svg>
-                                    <div>
-                                        <h4 style="color: var(--accent-blue); font-size: 1rem; font-weight: 600; margin-bottom: 8px;">Protection de vos données</h4>
-                                        <p style="margin: 0; color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6;">
-                                            La plateforme Cyberconfiance prend très au sérieux la confidentialité des données et la vie privée de chaque utilisateur. Aucune information transmise ne sera utilisée à des fins marketing ou de tracking, ni communiquée à des tiers pour des objectifs similaires. Les données sont stockées de façon chiffrée et anonymisées si nécessaire afin d'améliorer nos services et de vous offrir les meilleures solutions pour atteindre le niveau de sécurité numérique souhaité.
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-
                             <button type="submit" class="btn btn-primary" style="width: 100%; padding: 18px; font-size: 1.15rem; font-weight: 600; border-radius: 12px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;">
                                 <i class="bi bi-send-fill"></i> Soumettre la demande
                             </button>
@@ -243,6 +241,20 @@
                         
                         <form method="POST" action="{{ url_for('request_forms.osint_investigation') }}" enctype="multipart/form-data">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            
+                            <!-- Privacy Disclaimer -->
+                            <div style="padding: 15px; background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%); border-left: 3px solid #3b82f6; border-radius: 8px; margin-bottom: 2rem;">
+                                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2.5">
+                                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                                        <circle cx="12" cy="12" r="3"/>
+                                    </svg>
+                                    <h4 style="color: #3b82f6; font-size: 0.95rem; font-weight: 700; margin: 0;">🔒 Vos données sont protégées</h4>
+                                </div>
+                                <p style="margin: 0; color: #94a3b8; font-size: 0.875rem; line-height: 1.5;">
+                                    Aucun marketing ni tracking. Stockage chiffré et anonymisé. Vos informations restent confidentielles.
+                                </p>
+                            </div>
                             
                             <!-- Anonymous Toggle -->
                             <div class="form-section" style="margin-bottom: 2.5rem;">
@@ -414,22 +426,6 @@
                                     <i class="bi bi-exclamation-triangle-fill" style="font-size: 1.2rem; flex-shrink: 0; margin-top: 2px;"></i>
                                     <span>Avis de sécurité : Toute tentative de soumettre du contenu malveillant (fichiers, liens ou injection de code) sera détectée et enregistrée comme activité illégale.</span>
                                 </p>
-                            </div>
-
-                            <!-- Privacy Disclaimer -->
-                            <div class="privacy-disclaimer" style="padding: 20px; background: linear-gradient(145deg, rgba(59, 130, 246, 0.08) 0%, rgba(59, 130, 246, 0.03) 100%); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 12px; margin-bottom: 2rem; backdrop-filter: blur(10px);">
-                                <div style="display: flex; align-items: flex-start; gap: 12px;">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(59, 130, 246, 1)" stroke-width="2" style="flex-shrink: 0; margin-top: 2px;">
-                                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                                        <circle cx="12" cy="12" r="3"/>
-                                    </svg>
-                                    <div>
-                                        <h4 style="color: var(--accent-blue); font-size: 1rem; font-weight: 600; margin-bottom: 8px;">Protection de vos données</h4>
-                                        <p style="margin: 0; color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6;">
-                                            La plateforme Cyberconfiance prend très au sérieux la confidentialité des données et la vie privée de chaque utilisateur. Aucune information transmise ne sera utilisée à des fins marketing ou de tracking, ni communiquée à des tiers pour des objectifs similaires. Les données sont stockées de façon chiffrée et anonymisées si nécessaire afin d'améliorer nos services et de vous offrir les meilleures solutions pour atteindre le niveau de sécurité numérique souhaité.
-                                        </p>
-                                    </div>
-                                </div>
                             </div>
 
                             <button type="submit" class="btn btn-primary" style="width: 100%; padding: 18px; font-size: 1.15rem; font-weight: 600; border-radius: 12px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;">
