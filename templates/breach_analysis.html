@@ -542,9 +542,23 @@ body {
     color: #10b981;
 }
 
+@media (max-width: 1024px) {
+    .container {
+        padding: 0 2rem;
+        max-width: 100%;
+    }
+}
+
 @media (max-width: 768px) {
+    .container {
+        padding: 0 1rem;
+        max-width: 100%;
+    }
+    
     .breach-result-card {
         padding: 2rem 1rem;
+        margin-left: 0;
+        margin-right: 0;
     }
     
     .breach-icon-wrapper {
@@ -561,17 +575,22 @@ body {
         font-size: 1.5rem;
         word-wrap: break-word;
         overflow-wrap: break-word;
+        hyphens: auto;
     }
     
     .breach-message {
         font-size: 1rem;
         padding: 0 0.5rem;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
     }
     
     .breach-count {
-        padding: 1.5rem 2rem;
-        width: 100%;
+        padding: 1.5rem 1.5rem;
+        width: calc(100% - 1rem);
         max-width: 100%;
+        margin-left: 0.5rem;
+        margin-right: 0.5rem;
     }
     
     .count-number {
@@ -583,19 +602,35 @@ body {
         font-size: 1.4rem;
         word-wrap: break-word;
         overflow-wrap: break-word;
+        padding: 0 0.5rem;
     }
     
     .recommendation-item {
         padding: 1rem;
         gap: 0.75rem;
+        margin-left: 0;
+        margin-right: 0;
     }
     
     .recommendation-item:hover {
         transform: translateX(4px);
     }
     
+    .recommendation-item svg {
+        flex-shrink: 0;
+        min-width: 24px;
+    }
+    
     .breach-card {
         padding: 1.5rem 1rem;
+        margin-left: 0;
+        margin-right: 0;
+    }
+    
+    .breach-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
     }
     
     .breach-header h4 {
@@ -603,6 +638,7 @@ body {
         word-wrap: break-word;
         overflow-wrap: break-word;
         max-width: 100%;
+        hyphens: auto;
     }
     
     .breach-date {
@@ -613,6 +649,8 @@ body {
     
     .data-class-scenario {
         padding: 0.75rem;
+        margin-left: 0;
+        margin-right: 0;
     }
     
     .data-class-header {
@@ -625,32 +663,44 @@ body {
         word-wrap: break-word;
         overflow-wrap: break-word;
         max-width: 100%;
+        flex: 1 1 100%;
+    }
+    
+    .risk-badge {
+        flex-shrink: 0;
     }
     
     .data-class-description {
         font-size: 0.85rem;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
     }
     
     .action-buttons {
         flex-direction: column;
         padding: 0 1rem;
+        gap: 0.75rem;
     }
     
-    .action-buttons .btn {
+    .action-buttons .btn,
+    .action-buttons a {
         width: 100%;
-    }
-    
-    .breach-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.5rem;
+        text-align: center;
+        justify-content: center;
     }
 }
 
 @media (max-width: 480px) {
+    .container {
+        padding: 0 0.75rem;
+        max-width: 100%;
+    }
+    
     .breach-result-card {
         padding: 1.5rem 0.75rem;
         border-radius: 16px;
+        margin-left: 0;
+        margin-right: 0;
     }
     
     .breach-icon-wrapper {
@@ -665,14 +715,24 @@ body {
     
     .breach-title {
         font-size: 1.25rem;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        hyphens: auto;
+        padding: 0 0.25rem;
     }
     
     .breach-message {
         font-size: 0.9rem;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        padding: 0 0.25rem;
     }
     
     .breach-count {
-        padding: 1rem 1.5rem;
+        padding: 1rem 1rem;
+        width: calc(100% - 0.5rem);
+        margin-left: 0.25rem;
+        margin-right: 0.25rem;
     }
     
     .count-number {
@@ -681,21 +741,30 @@ body {
     
     .count-label {
         font-size: 0.8rem;
+        word-wrap: break-word;
+        text-align: center;
     }
     
     .recommendations-title,
     .breaches-title {
         font-size: 1.2rem;
+        padding: 0 0.25rem;
     }
     
     .recommendation-item {
-        padding: 0.75rem;
+        padding: 0.75rem 0.5rem;
         font-size: 0.9rem;
     }
     
     .recommendation-item svg {
         width: 20px;
         height: 20px;
+        flex-shrink: 0;
+    }
+    
+    .recommendation-item span {
+        word-wrap: break-word;
+        overflow-wrap: break-word;
     }
     
     .breach-card {
@@ -703,8 +772,19 @@ body {
         border-radius: 8px;
     }
     
+    .breach-header {
+        gap: 0.75rem;
+    }
+    
     .breach-header h4 {
         font-size: 1rem;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        hyphens: auto;
+    }
+    
+    .breach-description {
+        font-size: 0.85rem;
     }
     
     .data-class-scenario {
@@ -713,11 +793,27 @@ body {
     
     .data-class-name {
         font-size: 0.9rem;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+    
+    .data-class-description {
+        font-size: 0.8rem;
     }
     
     .risk-badge {
         font-size: 0.7rem;
         padding: 0.2rem 0.5rem;
+    }
+    
+    .action-buttons {
+        padding: 0 0.5rem;
+    }
+    
+    .action-buttons .btn,
+    .action-buttons a {
+        font-size: 0.9rem;
+        padding: 0.75rem 1rem;
     }
 }
 </style>

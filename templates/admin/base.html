@@ -561,16 +561,238 @@
             border-color: rgba(59, 130, 246, 0.3);
             color: #93c5fd;
         }
+        
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1001;
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid rgba(59, 130, 246, 0.4);
+            color: white;
+            padding: 0.75rem;
+            border-radius: 8px;
+            cursor: pointer;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        
+        @media (max-width: 1024px) {
+            .admin-sidebar {
+                width: 250px;
+            }
+            
+            .admin-topbar {
+                left: 250px;
+            }
+            
+            .admin-content {
+                margin-left: 250px;
+                padding: 1.5rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+            
+            .admin-sidebar {
+                position: fixed;
+                left: -280px;
+                transition: left 0.3s ease;
+                z-index: 1000;
+            }
+            
+            .admin-sidebar.active {
+                left: 0;
+            }
+            
+            .admin-topbar {
+                left: 0;
+                padding: 0 1rem 0 4rem;
+            }
+            
+            .admin-topbar-title {
+                font-size: 1.25rem;
+            }
+            
+            .admin-content {
+                margin-left: 0;
+                margin-top: 70px;
+                padding: 1rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .stat-card {
+                padding: 1rem;
+            }
+            
+            .stat-value {
+                font-size: 2rem;
+            }
+            
+            .admin-card {
+                padding: 1.5rem 1rem;
+            }
+            
+            .table-container {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                margin: 0 -1rem;
+                padding: 0 1rem;
+            }
+            
+            .admin-table {
+                min-width: 600px;
+            }
+            
+            .admin-table th,
+            .admin-table td {
+                padding: 0.75rem 0.75rem;
+                font-size: 0.85rem;
+            }
+            
+            .admin-toolbar {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 1rem;
+            }
+            
+            .toolbar-left,
+            .toolbar-right {
+                width: 100%;
+                flex-direction: column;
+            }
+            
+            .filter-group {
+                width: 100%;
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .filter-group select,
+            .filter-group input {
+                width: 100%;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .action-btn-group {
+                flex-wrap: wrap;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .admin-topbar {
+                height: 60px;
+                padding: 0 0.75rem 0 3.5rem;
+            }
+            
+            .admin-topbar-title {
+                font-size: 1rem;
+            }
+            
+            .admin-content {
+                margin-top: 60px;
+                padding: 0.75rem;
+            }
+            
+            .admin-header h1 {
+                font-size: 1.75rem;
+            }
+            
+            .admin-card {
+                padding: 1rem 0.75rem;
+                border-radius: 8px;
+            }
+            
+            .admin-card h3 {
+                font-size: 1.1rem;
+            }
+            
+            .stat-value {
+                font-size: 1.75rem;
+            }
+            
+            .admin-table {
+                min-width: 500px;
+            }
+            
+            .admin-table th,
+            .admin-table td {
+                padding: 0.5rem;
+                font-size: 0.8rem;
+            }
+            
+            .badge {
+                font-size: 0.7rem;
+                padding: 0.25rem 0.6rem;
+            }
+            
+            .btn-sm {
+                padding: 0.3rem 0.6rem;
+                font-size: 0.75rem;
+            }
+            
+            .pagination {
+                gap: 0.25rem;
+                flex-wrap: wrap;
+            }
+            
+            .pagination a,
+            .pagination span {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.85rem;
+            }
+        }
+        
+        .admin-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+        
+        .admin-overlay.active {
+            display: block;
+        }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
 <body>
     <div class="admin-container">
+        <button class="mobile-menu-toggle" id="mobileMenuToggle">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+        </button>
+        
+        <div class="admin-overlay" id="adminOverlay"></div>
+        
         <div class="admin-topbar">
             <div class="admin-topbar-title">{% block page_title %}CyberConfiance Admin{% endblock %}</div>
         </div>
         
-        <aside class="admin-sidebar">
+        <aside class="admin-sidebar" id="adminSidebar">
             {% if current_user.is_authenticated %}
             <div class="admin-user-profile-sidebar">
                 <div class="admin-user-avatar">{{ current_user.username[0].upper() }}</div>
@@ -663,6 +885,36 @@
             {% block content %}{% endblock %}
         </main>
     </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuToggle = document.getElementById('mobileMenuToggle');
+            const sidebar = document.getElementById('adminSidebar');
+            const overlay = document.getElementById('adminOverlay');
+            
+            if (menuToggle && sidebar && overlay) {
+                menuToggle.addEventListener('click', function() {
+                    sidebar.classList.toggle('active');
+                    overlay.classList.toggle('active');
+                });
+                
+                overlay.addEventListener('click', function() {
+                    sidebar.classList.remove('active');
+                    overlay.classList.remove('active');
+                });
+                
+                const sidebarLinks = sidebar.querySelectorAll('a');
+                sidebarLinks.forEach(link => {
+                    link.addEventListener('click', function() {
+                        if (window.innerWidth <= 768) {
+                            sidebar.classList.remove('active');
+                            overlay.classList.remove('active');
+                        }
+                    });
+                });
+            }
+        });
+    </script>
     
     {% block extra_js %}{% endblock %}
 </body>
