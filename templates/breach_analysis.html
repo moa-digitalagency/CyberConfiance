@@ -92,7 +92,7 @@
                         {% endif %}
                     </div>
                     {% if breach.get('Description') %}
-                    <p class="breach-description">{{ (breach['Description']|striptags if breach['Description']|length < 200 else breach['Description'][:200]|striptags + '...') }}</p>
+                    <p class="breach-description">{{ (breach['Description']|striptags)[:200] }}{% if (breach['Description']|striptags)|length > 200 %}...{% endif %}</p>
                     {% endif %}
                     <div class="breach-details">
                         {% if breach.get('DataClasses') %}
@@ -405,7 +405,9 @@ body {
     font-size: 0.9rem;
     word-wrap: break-word;
     overflow-wrap: break-word;
+    word-break: break-word;
     max-width: 100%;
+    overflow: hidden;
 }
 
 .breach-details {
@@ -514,6 +516,10 @@ body {
     color: var(--text-secondary);
     line-height: 1.6;
     margin: 0;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    overflow: hidden;
 }
 
 .more-breaches {
@@ -638,6 +644,7 @@ body {
         padding: 1.5rem 1rem;
         margin-left: 0;
         margin-right: 0;
+        overflow: hidden;
     }
     
     .breach-header {
