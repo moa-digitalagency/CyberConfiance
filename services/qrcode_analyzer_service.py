@@ -2,9 +2,11 @@ import os
 import re
 import io
 import requests
-from urllib.parse import urlparse, urljoin
+from urllib.parse import urlparse, urljoin, parse_qs, unquote
 import tempfile
 from PIL import Image
+from bs4 import BeautifulSoup
+
 try:
     from pyzbar.pyzbar import decode as pyzbar_decode
     PYZBAR_AVAILABLE = True
@@ -12,12 +14,13 @@ except ImportError:
     PYZBAR_AVAILABLE = False
     pyzbar_decode = None
 
+
 class QRCodeAnalyzerService:
     
     def __init__(self):
         self.api_key = os.environ.get('SECURITY_ANALYSIS_API_KEY') or os.environ.get('VT_API_KEY')
-        self.max_redirects = 15
-        self.request_timeout = 10
+        self.max_redirects = 20
+        self.request_timeout = 15
         
         self.phishing_keywords = [
             'login', 'signin', 'verify', 'account', 'secure', 'update',
@@ -34,17 +37,29 @@ class QRCodeAnalyzerService:
         ]
         
         self.js_redirect_patterns = [
-            r'window\.location\s*=',
-            r'window\.location\.href\s*=',
-            r'window\.location\.replace\s*\(',
-            r'window\.location\.assign\s*\(',
-            r'document\.location\s*=',
-            r'location\.href\s*=',
-            r'location\.replace\s*\(',
-            r'meta\s+http-equiv\s*=\s*["\']refresh["\']',
-            r'<meta[^>]+url\s*=',
-            r'setTimeout\s*\([^)]*location',
-            r'\.redirect\s*\(',
+            (r'window\.location\s*=\s*["\']([^"\']+)["\']', 'window.location'),
+            (r'window\.location\.href\s*=\s*["\']([^"\']+)["\']', 'window.location.href'),
+            (r'window\.location\.replace\s*\(\s*["\']([^"\']+)["\']', 'window.location.replace'),
+            (r'window\.location\.assign\s*\(\s*["\']([^"\']+)["\']', 'window.location.assign'),
+            (r'document\.location\s*=\s*["\']([^"\']+)["\']', 'document.location'),
+            (r'document\.location\.href\s*=\s*["\']([^"\']+)["\']', 'document.location.href'),
+            (r'location\.href\s*=\s*["\']([^"\']+)["\']', 'location.href'),
+            (r'location\.replace\s*\(\s*["\']([^"\']+)["\']', 'location.replace'),
+            (r'location\.assign\s*\(\s*["\']([^"\']+)["\']', 'location.assign'),
+            (r'location\s*=\s*["\']([^"\']+)["\']', 'location'),
+            (r'self\.location\s*=\s*["\']([^"\']+)["\']', 'self.location'),
+            (r'top\.location\s*=\s*["\']([^"\']+)["\']', 'top.location'),
+            (r'parent\.location\s*=\s*["\']([^"\']+)["\']', 'parent.location'),
+            (r'window\.open\s*\(\s*["\']([^"\']+)["\']', 'window.open'),
+            (r'\.redirect\s*\(\s*["\']([^"\']+)["\']', '.redirect()'),
+            (r'window\.navigate\s*\(\s*["\']([^"\']+)["\']', 'window.navigate'),
+            (r'history\.pushState\s*\([^,]*,\s*[^,]*,\s*["\']([^"\']+)["\']', 'history.pushState'),
+            (r'history\.replaceState\s*\([^,]*,\s*[^,]*,\s*["\']([^"\']+)["\']', 'history.replaceState'),
+        ]
+        
+        self.js_timeout_redirect_patterns = [
+            (r'setTimeout\s*\(\s*(?:function\s*\(\)\s*\{[^}]*location[^}]*\}|[^,]*location[^,]*)\s*,\s*(\d+)', 'setTimeout+location'),
+            (r'setInterval\s*\(\s*(?:function\s*\(\)\s*\{[^}]*location[^}]*\}|[^,]*location[^,]*)\s*,', 'setInterval+location'),
         ]
         
         self.dangerous_patterns = [
@@ -57,7 +72,7 @@ class QRCodeAnalyzerService:
     
     def decode_qr_from_image(self, image_data):
         if not PYZBAR_AVAILABLE:
-            return None, "Bibliothèque de décodage QR non disponible"
+            return None, "Bibliotheque de decodage QR non disponible"
         
         try:
             if isinstance(image_data, bytes):
@@ -80,10 +95,10 @@ class QRCodeAnalyzerService:
                         return obj.data.decode('utf-8'), None
                 return decoded_objects[0].data.decode('utf-8'), None
             
-            return None, "Aucun QR code détecté dans l'image"
+            return None, "Aucun QR code detecte dans l'image"
             
         except Exception as e:
-            return None, f"Erreur lors du décodage: {str(e)}"
+            return None, f"Erreur lors du decodage: {str(e)}"
     
     def is_safe_url(self, url):
         try:
@@ -125,25 +140,252 @@ class QRCodeAnalyzerService:
         except Exception as e:
             return False, str(e)
     
+    def _create_session(self):
+        session = requests.Session()
+        session.headers.update({
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+            'Accept-Language': 'fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache',
+            'Sec-Ch-Ua': '"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"',
+            'Sec-Ch-Ua-Mobile': '?0',
+            'Sec-Ch-Ua-Platform': '"Windows"',
+            'Sec-Fetch-Dest': 'document',
+            'Sec-Fetch-Mode': 'navigate',
+            'Sec-Fetch-Site': 'none',
+            'Sec-Fetch-User': '?1',
+            'Upgrade-Insecure-Requests': '1',
+        })
+        return session
+    
+    def _parse_meta_refresh(self, soup, base_url):
+        redirects = []
+        
+        for meta in soup.find_all('meta'):
+            http_equiv = meta.get('http-equiv', '').lower()
+            if http_equiv == 'refresh':
+                content = meta.get('content', '')
+                url_match = re.search(r'url\s*=\s*["\']?([^"\'>\s;]+)', content, re.IGNORECASE)
+                if url_match:
+                    redirect_url = url_match.group(1).strip()
+                    if not redirect_url.startswith('http'):
+                        redirect_url = urljoin(base_url, redirect_url)
+                    delay_match = re.search(r'^(\d+)', content)
+                    delay = int(delay_match.group(1)) if delay_match else 0
+                    redirects.append({
+                        'url': redirect_url,
+                        'type': 'meta_refresh',
+                        'delay': delay
+                    })
+        
+        return redirects
+    
+    def _parse_js_redirects(self, soup, html_content, base_url):
+        redirects = []
+        found_urls = set()
+        
+        scripts = soup.find_all('script')
+        for script in scripts:
+            script_content = script.string or ''
+            
+            for pattern, redirect_type in self.js_redirect_patterns:
+                matches = re.finditer(pattern, script_content, re.IGNORECASE | re.DOTALL)
+                for match in matches:
+                    url = match.group(1)
+                    if url and url not in found_urls and not url.startswith('#'):
+                        if not url.startswith('http') and not url.startswith('//'):
+                            url = urljoin(base_url, url)
+                        elif url.startswith('//'):
+                            parsed_base = urlparse(base_url)
+                            url = f"{parsed_base.scheme}:{url}"
+                        
+                        found_urls.add(url)
+                        redirects.append({
+                            'url': url,
+                            'type': f'javascript_{redirect_type}',
+                            'method': redirect_type
+                        })
+            
+            for pattern, redirect_type in self.js_timeout_redirect_patterns:
+                matches = re.finditer(pattern, script_content, re.IGNORECASE | re.DOTALL)
+                for match in matches:
+                    for js_pattern, js_type in self.js_redirect_patterns:
+                        url_match = re.search(js_pattern, script_content, re.IGNORECASE)
+                        if url_match:
+                            url = url_match.group(1)
+                            if url and url not in found_urls:
+                                if not url.startswith('http'):
+                                    url = urljoin(base_url, url)
+                                found_urls.add(url)
+                                redirects.append({
+                                    'url': url,
+                                    'type': f'javascript_{redirect_type}',
+                                    'method': redirect_type,
+                                    'delayed': True
+                                })
+        
+        inline_scripts = re.findall(r'<script[^>]*>(.*?)</script>', html_content, re.IGNORECASE | re.DOTALL)
+        for script_content in inline_scripts:
+            for pattern, redirect_type in self.js_redirect_patterns:
+                matches = re.finditer(pattern, script_content, re.IGNORECASE | re.DOTALL)
+                for match in matches:
+                    url = match.group(1)
+                    if url and url not in found_urls and not url.startswith('#'):
+                        if not url.startswith('http') and not url.startswith('//'):
+                            url = urljoin(base_url, url)
+                        elif url.startswith('//'):
+                            parsed_base = urlparse(base_url)
+                            url = f"{parsed_base.scheme}:{url}"
+                        found_urls.add(url)
+                        redirects.append({
+                            'url': url,
+                            'type': f'javascript_{redirect_type}',
+                            'method': redirect_type
+                        })
+        
+        return redirects
+    
+    def _parse_link_redirects(self, soup, base_url):
+        redirects = []
+        
+        canonical = soup.find('link', rel='canonical')
+        if canonical and canonical.get('href'):
+            canonical_url = canonical['href']
+            if not canonical_url.startswith('http'):
+                canonical_url = urljoin(base_url, canonical_url)
+            parsed_base = urlparse(base_url)
+            parsed_canonical = urlparse(canonical_url)
+            if parsed_base.netloc != parsed_canonical.netloc or parsed_base.path != parsed_canonical.path:
+                redirects.append({
+                    'url': canonical_url,
+                    'type': 'link_canonical',
+                    'note': 'URL canonique differente'
+                })
+        
+        return redirects
+    
+    def _parse_frame_redirects(self, soup, base_url):
+        redirects = []
+        
+        for frame in soup.find_all(['iframe', 'frame']):
+            src = frame.get('src', '')
+            if src and not src.startswith('about:') and not src.startswith('javascript:'):
+                if not src.startswith('http'):
+                    src = urljoin(base_url, src)
+                
+                style = frame.get('style', '')
+                width = frame.get('width', '')
+                height = frame.get('height', '')
+                
+                is_fullpage = False
+                if '100%' in str(width) or '100%' in str(height):
+                    is_fullpage = True
+                if 'width: 100%' in style or 'height: 100%' in style:
+                    is_fullpage = True
+                if width == '0' or height == '0' or 'display:none' in style.replace(' ', ''):
+                    continue
+                
+                if is_fullpage:
+                    redirects.append({
+                        'url': src,
+                        'type': 'iframe_fullpage',
+                        'note': 'iframe pleine page detecte'
+                    })
+        
+        return redirects
+    
+    def _check_header_redirects(self, response, base_url):
+        redirects = []
+        
+        refresh = response.headers.get('Refresh', '')
+        if refresh:
+            url_match = re.search(r'url\s*=\s*["\']?([^"\'>\s;]+)', refresh, re.IGNORECASE)
+            if url_match:
+                redirect_url = url_match.group(1)
+                if not redirect_url.startswith('http'):
+                    redirect_url = urljoin(base_url, redirect_url)
+                redirects.append({
+                    'url': redirect_url,
+                    'type': 'header_refresh'
+                })
+        
+        content_location = response.headers.get('Content-Location', '')
+        if content_location:
+            if not content_location.startswith('http'):
+                content_location = urljoin(base_url, content_location)
+            if content_location != base_url:
+                redirects.append({
+                    'url': content_location,
+                    'type': 'header_content_location'
+                })
+        
+        link_header = response.headers.get('Link', '')
+        if link_header:
+            canonical_match = re.search(r'<([^>]+)>\s*;\s*rel\s*=\s*["\']?canonical', link_header)
+            if canonical_match:
+                canonical_url = canonical_match.group(1)
+                if not canonical_url.startswith('http'):
+                    canonical_url = urljoin(base_url, canonical_url)
+                redirects.append({
+                    'url': canonical_url,
+                    'type': 'header_link_canonical'
+                })
+        
+        return redirects
+    
+    def _parse_url_params_redirect(self, url):
+        redirects = []
+        parsed = urlparse(url)
+        params = parse_qs(parsed.query)
+        
+        redirect_params = ['url', 'redirect', 'redirect_uri', 'redirect_url', 'next', 'return', 
+                          'return_url', 'returnUrl', 'goto', 'target', 'destination', 'continue',
+                          'link', 'href', 'to', 'out', 'redir', 'u', 'q']
+        
+        for param in redirect_params:
+            if param in params:
+                potential_url = params[param][0]
+                try:
+                    potential_url = unquote(potential_url)
+                except:
+                    pass
+                
+                if potential_url.startswith('http://') or potential_url.startswith('https://'):
+                    redirects.append({
+                        'url': potential_url,
+                        'type': 'url_parameter',
+                        'param': param
+                    })
+        
+        return redirects
+    
     def follow_redirects_safely(self, url):
         redirect_chain = []
+        all_redirects_found = []
         current_url = url
         visited = set()
         js_redirects = []
         final_url = url
+        session = self._create_session()
         
-        request_headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-            'Accept-Language': 'fr-FR,fr;q=0.9,en;q=0.8'
-        }
+        param_redirects = self._parse_url_params_redirect(url)
+        for pr in param_redirects:
+            all_redirects_found.append({
+                'from': url,
+                'to': pr['url'],
+                'type': pr['type'],
+                'param': pr.get('param', '')
+            })
         
-        for i in range(self.max_redirects):
+        for iteration in range(self.max_redirects):
             if current_url in visited:
                 redirect_chain.append({
                     'url': current_url,
                     'status': 'loop_detected',
-                    'error': 'Boucle de redirection détectée'
+                    'error': 'Boucle de redirection detectee',
+                    'redirect_type': 'loop'
                 })
                 break
             
@@ -154,23 +396,33 @@ class QRCodeAnalyzerService:
                 redirect_chain.append({
                     'url': current_url,
                     'status': 'blocked',
-                    'error': error
+                    'error': error,
+                    'redirect_type': 'blocked'
                 })
                 break
             
             try:
-                response = requests.head(
-                    current_url,
-                    allow_redirects=False,
-                    timeout=self.request_timeout,
-                    headers=request_headers,
-                    verify=True
-                )
+                try:
+                    response = session.head(
+                        current_url,
+                        allow_redirects=False,
+                        timeout=self.request_timeout,
+                        verify=True
+                    )
+                except requests.exceptions.RequestException:
+                    response = session.get(
+                        current_url,
+                        allow_redirects=False,
+                        timeout=self.request_timeout,
+                        verify=True,
+                        stream=True
+                    )
                 
                 redirect_info = {
                     'url': current_url,
                     'status_code': response.status_code,
                     'content_type': response.headers.get('Content-Type', 'unknown'),
+                    'server': response.headers.get('Server', 'unknown'),
                 }
                 
                 if 300 <= response.status_code < 400:
@@ -178,119 +430,196 @@ class QRCodeAnalyzerService:
                     if next_url:
                         if not next_url.startswith('http'):
                             next_url = urljoin(current_url, next_url)
+                        
                         redirect_info['redirect_to'] = next_url
-                        redirect_info['redirect_type'] = 'http'
+                        redirect_info['redirect_type'] = f'http_{response.status_code}'
                         redirect_chain.append(redirect_info)
+                        
+                        all_redirects_found.append({
+                            'from': current_url,
+                            'to': next_url,
+                            'type': f'http_{response.status_code}',
+                            'status_code': response.status_code
+                        })
+                        
                         current_url = next_url
                         continue
                 
+                header_redirects = self._check_header_redirects(response, current_url)
+                for hr in header_redirects:
+                    all_redirects_found.append({
+                        'from': current_url,
+                        'to': hr['url'],
+                        'type': hr['type']
+                    })
+                
                 if response.status_code == 200:
-                    content_response = requests.get(
-                        current_url,
-                        allow_redirects=False,
-                        timeout=self.request_timeout,
-                        headers=request_headers,
-                        verify=True,
-                        stream=True
-                    )
+                    content_type = response.headers.get('Content-Type', '')
                     
-                    content_length = content_response.headers.get('Content-Length')
-                    if content_length and int(content_length) > 5 * 1024 * 1024:
-                        redirect_info['warning'] = 'Contenu volumineux (> 5 MB)'
+                    if 'text/html' in content_type:
+                        try:
+                            if hasattr(response, 'text'):
+                                content = response.text[:100000]
+                            else:
+                                get_response = session.get(
+                                    current_url,
+                                    allow_redirects=False,
+                                    timeout=self.request_timeout,
+                                    verify=True
+                                )
+                                content = get_response.text[:100000]
+                                get_response.close()
+                            
+                            soup = BeautifulSoup(content, 'html.parser')
+                            
+                            meta_redirects = self._parse_meta_refresh(soup, current_url)
+                            for mr in meta_redirects:
+                                redirect_info['meta_refresh_detected'] = True
+                                redirect_info['meta_refresh_url'] = mr['url']
+                                redirect_info['meta_refresh_delay'] = mr.get('delay', 0)
+                                all_redirects_found.append({
+                                    'from': current_url,
+                                    'to': mr['url'],
+                                    'type': 'meta_refresh',
+                                    'delay': mr.get('delay', 0)
+                                })
+                            
+                            js_found = self._parse_js_redirects(soup, content, current_url)
+                            for js in js_found:
+                                redirect_info['js_redirect_detected'] = True
+                                redirect_info['js_redirect_url'] = js['url']
+                                redirect_info['js_redirect_method'] = js.get('method', 'unknown')
+                                js_redirects.append({
+                                    'from': current_url,
+                                    'to': js['url'],
+                                    'type': js['type'],
+                                    'method': js.get('method', 'unknown')
+                                })
+                                all_redirects_found.append({
+                                    'from': current_url,
+                                    'to': js['url'],
+                                    'type': js['type'],
+                                    'method': js.get('method', 'unknown')
+                                })
+                            
+                            link_redirects = self._parse_link_redirects(soup, current_url)
+                            for lr in link_redirects:
+                                all_redirects_found.append({
+                                    'from': current_url,
+                                    'to': lr['url'],
+                                    'type': lr['type']
+                                })
+                            
+                            frame_redirects = self._parse_frame_redirects(soup, current_url)
+                            for fr in frame_redirects:
+                                redirect_info['iframe_detected'] = True
+                                redirect_info['iframe_url'] = fr['url']
+                                all_redirects_found.append({
+                                    'from': current_url,
+                                    'to': fr['url'],
+                                    'type': fr['type']
+                                })
+                            
+                            next_redirect = None
+                            if meta_redirects:
+                                next_redirect = meta_redirects[0]['url']
+                                redirect_info['redirect_to'] = next_redirect
+                                redirect_info['redirect_type'] = 'meta_refresh'
+                            elif js_found:
+                                next_redirect = js_found[0]['url']
+                                redirect_info['redirect_to'] = next_redirect
+                                redirect_info['redirect_type'] = js_found[0]['type']
+                            elif header_redirects:
+                                next_redirect = header_redirects[0]['url']
+                                redirect_info['redirect_to'] = next_redirect
+                                redirect_info['redirect_type'] = header_redirects[0]['type']
+                            
+                            redirect_chain.append(redirect_info)
+                            
+                            if next_redirect and next_redirect not in visited:
+                                is_next_safe, _ = self.is_safe_url(next_redirect)
+                                if is_next_safe:
+                                    current_url = next_redirect
+                                    continue
+                            
+                            final_url = current_url
+                            break
+                            
+                        except Exception as e:
+                            redirect_info['content_error'] = str(e)[:100]
+                            redirect_chain.append(redirect_info)
+                            final_url = current_url
+                            break
                     else:
-                        content_type = content_response.headers.get('Content-Type', '')
-                        if 'text/html' in content_type:
-                            try:
-                                content = content_response.text[:50000]
-                                js_redirect = self.detect_js_redirects(content, current_url)
-                                if js_redirect:
-                                    redirect_info['js_redirect_detected'] = True
-                                    redirect_info['js_redirect_url'] = js_redirect
-                                    js_redirects.append({
-                                        'from': current_url,
-                                        'to': js_redirect,
-                                        'type': 'javascript'
-                                    })
-                            except Exception as e:
-                                redirect_info['content_error'] = str(e)[:100]
+                        redirect_chain.append(redirect_info)
+                        final_url = current_url
+                        break
+                else:
+                    redirect_chain.append(redirect_info)
+                    final_url = current_url
+                    break
                     
-                    content_response.close()
-                
-                redirect_chain.append(redirect_info)
-                final_url = current_url
-                break
-                
             except requests.exceptions.Timeout:
                 redirect_chain.append({
                     'url': current_url,
                     'status': 'timeout',
-                    'error': 'Délai d\'attente dépassé (10s)'
+                    'error': 'Delai d\'attente depasse (15s)',
+                    'redirect_type': 'error'
                 })
                 break
             except requests.exceptions.SSLError as e:
                 redirect_chain.append({
                     'url': current_url,
                     'status': 'ssl_error',
-                    'error': f'Erreur de certificat SSL: {str(e)[:100]}'
+                    'error': f'Erreur de certificat SSL: {str(e)[:100]}',
+                    'redirect_type': 'error'
                 })
                 break
             except requests.exceptions.ConnectionError:
                 redirect_chain.append({
                     'url': current_url,
                     'status': 'connection_error',
-                    'error': 'Impossible de se connecter au serveur'
+                    'error': 'Impossible de se connecter au serveur',
+                    'redirect_type': 'error'
                 })
                 break
             except requests.exceptions.RequestException as e:
                 redirect_chain.append({
                     'url': current_url,
                     'status': 'error',
-                    'error': str(e)[:200]
+                    'error': str(e)[:200],
+                    'redirect_type': 'error'
                 })
                 break
         
-        if js_redirects:
-            last_js = js_redirects[-1]['to']
-            js_safe, js_error = self.is_safe_url(last_js)
-            if js_safe and last_js not in visited:
-                try:
-                    js_response = requests.head(
-                        last_js,
-                        allow_redirects=False,
-                        timeout=5,
-                        headers={'User-Agent': 'Mozilla/5.0'},
-                        verify=True
-                    )
-                    redirect_chain.append({
-                        'url': last_js,
-                        'status_code': js_response.status_code,
-                        'redirect_type': 'javascript_follow'
-                    })
-                    final_url = last_js
-                except:
-                    pass
+        session.close()
+        
+        redirect_count = 0
+        for item in redirect_chain:
+            if item.get('redirect_to') or item.get('status_code') in [301, 302, 303, 307, 308]:
+                redirect_count += 1
         
         return {
             'redirect_chain': redirect_chain,
             'final_url': final_url,
-            'redirect_count': len(redirect_chain) - 1 if redirect_chain else 0,
-            'js_redirects': js_redirects
+            'redirect_count': redirect_count,
+            'js_redirects': js_redirects,
+            'all_redirects_found': all_redirects_found,
+            'total_urls_visited': len(visited)
         }
     
     def detect_js_redirects(self, html_content, base_url):
-        for pattern in self.js_redirect_patterns:
+        for pattern, redirect_type in self.js_redirect_patterns:
             matches = re.finditer(pattern, html_content, re.IGNORECASE | re.DOTALL)
             for match in matches:
-                context = html_content[match.start():match.end() + 200]
-                url_match = re.search(r'["\']((https?://[^"\']+)|(/[^"\']+))["\']', context)
-                if url_match:
-                    found_url = url_match.group(1)
-                    if not found_url.startswith('http'):
-                        found_url = urljoin(base_url, found_url)
-                    return found_url
+                url = match.group(1)
+                if url and not url.startswith('#'):
+                    if not url.startswith('http'):
+                        url = urljoin(base_url, url)
+                    return url
         
         meta_refresh = re.search(
-            r'<meta[^>]+http-equiv\s*=\s*["\']refresh["\'][^>]+content\s*=\s*["\'][^"\']*url\s*=\s*([^"\'>\s]+)',
+            r'<meta[^>]+http-equiv\s*=\s*["\']refresh["\'][^>]+content\s*=\s*["\'][^"\']*url\s*=\s*([^"\'>\s;]+)',
             html_content, re.IGNORECASE
         )
         if meta_refresh:
@@ -321,7 +650,7 @@ class QRCodeAnalyzerService:
             issues.append({
                 'type': 'phishing_keywords',
                 'severity': 'high' if len(found_keywords) > 2 else 'medium',
-                'message': f'Mots-clés suspects détectés: {", ".join(found_keywords[:5])}'
+                'message': f'Mots-cles suspects detectes: {", ".join(found_keywords[:5])}'
             })
         
         if len(url) > 200:
@@ -349,7 +678,7 @@ class QRCodeAnalyzerService:
             issues.append({
                 'type': 'no_https',
                 'severity': 'medium',
-                'message': 'Connexion non sécurisée (HTTP au lieu de HTTPS)'
+                'message': 'Connexion non securisee (HTTP au lieu de HTTPS)'
             })
         
         subdomain_count = len(parsed.netloc.split('.')) - 2
@@ -364,7 +693,7 @@ class QRCodeAnalyzerService:
     
     def check_blacklist(self, url):
         if not self.api_key:
-            return None, "API de vérification non configurée"
+            return None, "API de verification non configuree"
         
         try:
             import base64
@@ -416,7 +745,7 @@ class QRCodeAnalyzerService:
                         'harmless': 0,
                         'undetected': 0,
                         'is_blacklisted': False,
-                        'message': 'URL soumise pour analyse - pas encore dans la base de données'
+                        'message': 'URL soumise pour analyse - pas encore dans la base de donnees'
                     }, None
                 else:
                     return {
@@ -424,20 +753,20 @@ class QRCodeAnalyzerService:
                         'malicious': 0,
                         'suspicious': 0,
                         'is_blacklisted': False,
-                        'message': 'URL non répertoriée dans la base de données'
+                        'message': 'URL non repertoriee dans la base de donnees'
                     }, None
                     
             elif response.status_code == 401:
-                return None, "Clé API VirusTotal invalide"
+                return None, "Cle API VirusTotal invalide"
             elif response.status_code == 429:
-                return None, "Limite de requêtes API dépassée"
+                return None, "Limite de requetes API depassee"
             else:
                 return None, f"Erreur API VirusTotal: {response.status_code}"
                 
         except requests.exceptions.Timeout:
-            return None, "Délai d'attente API VirusTotal dépassé"
+            return None, "Delai d'attente API VirusTotal depasse"
         except requests.exceptions.RequestException as e:
-            return None, f"Erreur de connexion à VirusTotal: {str(e)[:100]}"
+            return None, f"Erreur de connexion a VirusTotal: {str(e)[:100]}"
         except Exception as e:
             return None, f"Erreur inattendue: {str(e)[:100]}"
     
@@ -453,6 +782,7 @@ class QRCodeAnalyzerService:
             'issues': [],
             'blacklist_result': None,
             'js_redirects': [],
+            'all_redirects_found': [],
             'original_filename': filename
         }
         
@@ -463,7 +793,7 @@ class QRCodeAnalyzerService:
             return result
         
         if not extracted_data:
-            result['error'] = "Aucune donnée extraite du QR code"
+            result['error'] = "Aucune donnee extraite du QR code"
             return result
         
         result['extracted_data'] = extracted_data
@@ -495,6 +825,21 @@ class QRCodeAnalyzerService:
         result['final_url'] = redirect_result['final_url']
         result['redirect_count'] = redirect_result['redirect_count']
         result['js_redirects'] = redirect_result['js_redirects']
+        result['all_redirects_found'] = redirect_result.get('all_redirects_found', [])
+        
+        if result['js_redirects']:
+            result['issues'].append({
+                'type': 'js_redirect',
+                'severity': 'medium',
+                'message': f'{len(result["js_redirects"])} redirection(s) JavaScript detectee(s)'
+            })
+        
+        if result['redirect_count'] > 3:
+            result['issues'].append({
+                'type': 'many_redirects',
+                'severity': 'medium',
+                'message': f'Nombre eleve de redirections: {result["redirect_count"]}'
+            })
         
         if result['final_url'] and result['final_url'] != url:
             final_issues = self.analyze_url_patterns(result['final_url'])
@@ -509,7 +854,7 @@ class QRCodeAnalyzerService:
                 result['issues'].append({
                     'type': 'blacklisted',
                     'severity': 'critical',
-                    'message': f"URL détectée comme malveillante par {blacklist_result.get('malicious', 0)} sources"
+                    'message': f"URL detectee comme malveillante par {blacklist_result.get('malicious', 0)} sources"
                 })
         
         if result['final_url'] and result['final_url'] != url:
@@ -518,7 +863,7 @@ class QRCodeAnalyzerService:
                 result['issues'].append({
                     'type': 'final_url_blacklisted',
                     'severity': 'critical',
-                    'message': f"URL finale détectée comme malveillante"
+                    'message': f"URL finale detectee comme malveillante"
                 })
         
         severity_scores = {'critical': 4, 'high': 3, 'medium': 2, 'low': 1}

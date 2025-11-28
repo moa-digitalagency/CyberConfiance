@@ -616,123 +616,172 @@ class PDFReportService:
         return lines
     
     def generate_qrcode_analysis_report(self, analysis, ip_address):
-        """Generate PDF report for QR code analysis"""
+        """
+        Genere un rapport PDF pour l'analyse de QR code (Anti-Quishing)
+        Format identique aux rapports breach et security
+        """
         doc = fitz.open()
         page = doc.new_page(width=595, height=842)
         
-        self._add_cover_page(page, "Rapport d'Analyse QR Code", "Analyse Anti-Quishing")
-        
-        page = doc.new_page(width=595, height=842)
         y_pos = 90
         
-        threat_level = analysis.threat_level or 'safe'
-        threat_colors = {
-            'safe': self.success_color,
-            'low': self.text_color,
-            'medium': self.warning_color,
-            'high': (0.97, 0.45, 0.09),
-            'critical': self.danger_color
-        }
-        threat_color = threat_colors.get(threat_level, self.text_color)
+        page.insert_text((30, y_pos), "RAPPORT D'ANALYSE QR CODE (ANTI-QUISHING)", 
+                        fontsize=18, fontname="helv", color=self.base_color)
+        y_pos += 30
         
-        page.insert_text((50, y_pos), "RESUME DE L'ANALYSE", fontsize=14, fontname="hebo", color=self.primary_color)
-        y_pos += 35
-        
-        page.insert_text((50, y_pos), f"Niveau de menace: {threat_level.upper()}", fontsize=12, fontname="hebo", color=threat_color)
-        y_pos += 25
-        
-        page.insert_text((50, y_pos), f"Date: {analysis.created_at.strftime('%d/%m/%Y %H:%M')}", fontsize=10, color=self.text_color)
-        y_pos += 20
-        
-        page.insert_text((50, y_pos), f"Code document: {analysis.document_code or 'N/A'}", fontsize=10, color=self.text_color)
+        page.insert_text((30, y_pos), "Type de rapport: Analyse de securite des QR codes", 
+                        fontsize=10, color=(0.3, 0.3, 0.3))
+        y_pos += 15
+        page.insert_text((30, y_pos), f"ID du rapport: #{analysis.id}", 
+                        fontsize=10, color=(0.3, 0.3, 0.3))
         y_pos += 40
         
-        page.insert_text((50, y_pos), "URL EXTRAITE DU QR CODE", fontsize=12, fontname="hebo", color=self.primary_color)
-        y_pos += 25
-        
-        url = analysis.extracted_url or 'Aucune URL extraite'
-        url_lines = self._wrap_text(url, 80)
-        for line in url_lines[:3]:
-            page.insert_text((50, y_pos), line, fontsize=9, color=self.text_color)
-            y_pos += 15
+        page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + 100), color=None, fill=(0.95, 0.95, 0.95))
         y_pos += 15
         
-        if analysis.final_url and analysis.final_url != analysis.extracted_url:
-            page.insert_text((50, y_pos), "URL FINALE (apres redirections)", fontsize=12, fontname="hebo", color=self.primary_color)
-            y_pos += 25
-            
-            final_lines = self._wrap_text(analysis.final_url, 80)
-            for line in final_lines[:3]:
-                page.insert_text((50, y_pos), line, fontsize=9, color=self.text_color)
-                y_pos += 15
-            y_pos += 15
-        
-        page.insert_text((50, y_pos), f"Nombre de redirections: {analysis.redirect_count or 0}", fontsize=10, color=self.text_color)
+        page.insert_text((40, y_pos), "INFORMATIONS DE L'ANALYSE", 
+                        fontsize=12, fontname="helv")
         y_pos += 20
         
-        if analysis.js_redirects_detected:
-            page.insert_text((50, y_pos), "Redirections JavaScript detectees", fontsize=10, fontname="hebo", color=self.warning_color)
+        page.insert_text((40, y_pos), f"Date de l'analyse: {analysis.created_at.strftime('%d/%m/%Y a %H:%M:%S')}", 
+                        fontsize=10)
+        y_pos += 15
+        
+        page.insert_text((40, y_pos), f"Code document: {analysis.document_code or 'N/A'}", fontsize=10)
+        y_pos += 15
+        
+        page.insert_text((40, y_pos), f"Nombre de redirections detectees: {analysis.redirect_count or 0}", 
+                        fontsize=10, color=self.warning_color if (analysis.redirect_count or 0) > 0 else self.success_color)
+        y_pos += 15
+        
+        js_status = "Oui" if analysis.js_redirects_detected else "Non"
+        js_color = self.warning_color if analysis.js_redirects_detected else self.success_color
+        page.insert_text((40, y_pos), f"Redirections JavaScript: {js_status}", fontsize=10, color=js_color)
+        y_pos += 30
+        
+        threat_level = analysis.threat_level or 'safe'
+        threat_color = self._get_risk_color(threat_level)
+        page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + 50), color=threat_color, fill=threat_color, fill_opacity=0.1)
+        y_pos += 15
+        page.insert_text((40, y_pos), "NIVEAU DE MENACE", fontsize=12, fontname="helv")
+        y_pos += 20
+        threat_text = threat_level.upper()
+        page.insert_text((40, y_pos), threat_text, fontsize=14, fontname="helv", color=threat_color)
+        y_pos += 40
+        
+        page.insert_text((30, y_pos), "URL EXTRAITE DU QR CODE", 
+                        fontsize=14, fontname="helv", color=self.base_color)
+        y_pos += 25
+        
+        page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + 40), color=None, fill=(0.95, 0.95, 0.95))
+        y_pos += 15
+        url = analysis.extracted_url or 'Aucune URL extraite'
+        url_display = url[:90] + ('...' if len(url) > 90 else '')
+        page.insert_text((40, y_pos), url_display, fontsize=9, color=(0.2, 0.2, 0.2))
+        y_pos += 40
+        
+        if analysis.final_url and analysis.final_url != analysis.extracted_url:
+            page.insert_text((30, y_pos), "URL FINALE (APRES REDIRECTIONS)", 
+                            fontsize=14, fontname="helv", color=self.warning_color)
             y_pos += 25
+            
+            page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + 40), color=self.warning_color, fill=self.warning_color, fill_opacity=0.1)
+            y_pos += 15
+            final_display = analysis.final_url[:90] + ('...' if len(analysis.final_url) > 90 else '')
+            page.insert_text((40, y_pos), final_display, fontsize=9, color=(0.2, 0.2, 0.2))
+            y_pos += 40
         
         threat_details = analysis.threat_details or []
         if threat_details:
-            y_pos += 20
-            page.insert_text((50, y_pos), "PROBLEMES DETECTES", fontsize=12, fontname="hebo", color=self.danger_color)
+            if y_pos > self.max_y - 100:
+                page = doc.new_page(width=595, height=842)
+                y_pos = 90
+            
+            page.insert_text((30, y_pos), "PROBLEMES DE SECURITE DETECTES", 
+                            fontsize=14, fontname="helv", color=self.danger_color)
             y_pos += 25
             
-            for issue in threat_details[:10]:
-                if y_pos > self.max_y - 80:
+            for idx, issue in enumerate(threat_details[:15], 1):
+                if y_pos > self.max_y - 60:
                     page = doc.new_page(width=595, height=842)
                     y_pos = 90
                 
                 severity = issue.get('severity', 'low')
-                severity_colors = {
-                    'critical': self.danger_color,
-                    'high': (0.97, 0.45, 0.09),
-                    'medium': self.warning_color,
-                    'low': self.text_color
-                }
-                sev_color = severity_colors.get(severity, self.text_color)
+                severity_color = self._get_risk_color(severity)
                 
-                page.insert_text((50, y_pos), f"[{severity.upper()}]", fontsize=9, fontname="hebo", color=sev_color)
-                page.insert_text((110, y_pos), issue.get('message', ''), fontsize=9, color=self.text_color)
+                page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + 5), color=severity_color, fill=severity_color)
                 y_pos += 18
+                
+                page.insert_text((40, y_pos), f"{idx}. [{severity.upper()}] {issue.get('message', '')[:70]}", 
+                                fontsize=10, fontname="helv")
+                y_pos += 20
+        else:
+            page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + 60), 
+                          color=self.success_color, fill=self.success_color, fill_opacity=0.1)
+            y_pos += 25
+            page.insert_text((40, y_pos), "Aucun probleme de securite majeur detecte", 
+                            fontsize=12, fontname="helv", color=self.success_color)
+            y_pos += 20
+            page.insert_text((40, y_pos), 
+                            "Ce QR code semble sur selon notre analyse.", 
+                            fontsize=10)
+            y_pos += 35
         
         if analysis.blacklist_matches:
-            y_pos += 20
-            page.insert_text((50, y_pos), "VERIFICATION LISTE NOIRE", fontsize=12, fontname="hebo", color=self.primary_color)
+            if y_pos > self.max_y - 80:
+                page = doc.new_page(width=595, height=842)
+                y_pos = 90
+            
+            page.insert_text((30, y_pos), "VERIFICATION LISTE NOIRE", 
+                            fontsize=14, fontname="helv", color=self.base_color)
             y_pos += 25
             
             bl = analysis.blacklist_matches
             if bl.get('is_blacklisted'):
-                page.insert_text((50, y_pos), f"URL MALVEILLANTE - Detectee par {bl.get('malicious', 0)} source(s)", 
-                               fontsize=10, fontname="hebo", color=self.danger_color)
+                page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + 50), 
+                              color=self.danger_color, fill=self.danger_color, fill_opacity=0.1)
+                y_pos += 20
+                page.insert_text((40, y_pos), f"URL MALVEILLANTE - Detectee par {bl.get('malicious', 0)} source(s)", 
+                               fontsize=11, fontname="helv", color=self.danger_color)
+                y_pos += 50
             else:
-                page.insert_text((50, y_pos), "URL non repertoriee dans les listes noires", 
-                               fontsize=10, color=self.success_color)
-            y_pos += 25
+                page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + 50), 
+                              color=self.success_color, fill=self.success_color, fill_opacity=0.1)
+                y_pos += 20
+                page.insert_text((40, y_pos), "URL non repertoriee dans les listes noires connues", 
+                               fontsize=11, fontname="helv", color=self.success_color)
+                y_pos += 50
         
+        if y_pos > self.max_y - 120:
+            page = doc.new_page(width=595, height=842)
+            y_pos = 90
+        
+        page.draw_line((30, y_pos), (565, y_pos), color=self.base_color, width=1)
         y_pos += 20
-        page.insert_text((50, y_pos), "RECOMMANDATIONS DE SECURITE", fontsize=12, fontname="hebo", color=self.primary_color)
+        
+        page.insert_text((30, y_pos), "RECOMMANDATIONS DE SECURITE", 
+                        fontsize=14, fontname="helv", color=self.base_color)
         y_pos += 25
         
         if analysis.threat_detected:
             recommendations = [
-                "Ne scannez pas ce QR code avec votre telephone",
-                "N'ouvrez pas cette URL directement",
-                "Ne saisissez aucune information personnelle",
-                "Signalez ce QR code si trouve dans un lieu public"
+                "Ne scannez pas ce QR code avec votre telephone personnel",
+                "N'ouvrez pas cette URL directement dans votre navigateur",
+                "Ne saisissez aucune information personnelle ou bancaire",
+                "Signalez ce QR code aux autorites si trouve dans un lieu public",
+                "Verifiez l'authenticite du QR code aupres de l'emetteur officiel"
             ]
         else:
             recommendations = [
-                "Ce QR code semble sur, mais restez vigilant",
-                "Verifiez toujours l'URL avant de saisir des donnees",
-                "Ne partagez pas d'informations sensibles sur des sites inconnus"
+                "Ce QR code semble sur, mais restez toujours vigilant",
+                "Verifiez toujours l'URL avant de saisir des donnees sensibles",
+                "Ne partagez pas d'informations personnelles sur des sites inconnus",
+                "En cas de doute, contactez directement l'organisme concerne"
             ]
         
         for rec in recommendations:
-            page.insert_text((50, y_pos), f"- {rec}", fontsize=9, color=self.text_color)
-            y_pos += 18
+            page.insert_text((40, y_pos), f"- {rec}", fontsize=9, color=(0.3, 0.3, 0.3))
+            y_pos += 16
         
         total_pages = len(doc)
         for page_num, p in enumerate(doc, 1):
@@ -745,136 +794,178 @@ class PDFReportService:
         return pdf_bytes
     
     def generate_prompt_analysis_report(self, analysis, ip_address):
-        """Generate PDF report for prompt injection analysis"""
+        """
+        Genere un rapport PDF pour l'analyse d'injection de prompt IA
+        Format identique aux rapports breach et security
+        """
         doc = fitz.open()
         page = doc.new_page(width=595, height=842)
         
-        self._add_cover_page(page, "Rapport d'Analyse de Prompt", "Detection d'Injection IA")
-        
-        page = doc.new_page(width=595, height=842)
         y_pos = 90
         
-        threat_level = analysis.threat_level or 'safe'
-        threat_colors = {
-            'safe': self.success_color,
-            'low': self.text_color,
-            'medium': self.warning_color,
-            'high': (0.97, 0.45, 0.09),
-            'critical': self.danger_color
-        }
-        threat_color = threat_colors.get(threat_level, self.text_color)
+        page.insert_text((30, y_pos), "RAPPORT D'ANALYSE D'INJECTION DE PROMPT", 
+                        fontsize=18, fontname="helv", color=self.base_color)
+        y_pos += 30
         
-        page.insert_text((50, y_pos), "RESUME DE L'ANALYSE", fontsize=14, fontname="hebo", color=self.primary_color)
-        y_pos += 35
-        
-        page.insert_text((50, y_pos), f"Niveau de menace: {threat_level.upper()}", fontsize=12, fontname="hebo", color=threat_color)
-        y_pos += 25
-        
-        page.insert_text((50, y_pos), f"Date: {analysis.created_at.strftime('%d/%m/%Y %H:%M')}", fontsize=10, color=self.text_color)
-        y_pos += 20
-        
-        page.insert_text((50, y_pos), f"Code document: {analysis.document_code or 'N/A'}", fontsize=10, color=self.text_color)
-        y_pos += 20
-        
-        page.insert_text((50, y_pos), f"Longueur du prompt: {analysis.prompt_length or 0} caracteres", fontsize=10, color=self.text_color)
+        page.insert_text((30, y_pos), "Type de rapport: Detection d'injection IA et code malveillant", 
+                        fontsize=10, color=(0.3, 0.3, 0.3))
+        y_pos += 15
+        page.insert_text((30, y_pos), f"ID du rapport: #{analysis.id}", 
+                        fontsize=10, color=(0.3, 0.3, 0.3))
         y_pos += 40
         
-        page.insert_text((50, y_pos), "STATUT DES DETECTIONS", fontsize=12, fontname="hebo", color=self.primary_color)
-        y_pos += 25
+        page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + 100), color=None, fill=(0.95, 0.95, 0.95))
+        y_pos += 15
         
-        injection_status = "DETECTEE" if analysis.injection_detected else "Non detectee"
-        injection_color = self.danger_color if analysis.injection_detected else self.success_color
-        page.insert_text((50, y_pos), f"Injection de prompt: {injection_status}", fontsize=10, color=injection_color)
+        page.insert_text((40, y_pos), "INFORMATIONS DE L'ANALYSE", 
+                        fontsize=12, fontname="helv")
         y_pos += 20
         
-        code_status = "DETECTE" if analysis.code_detected else "Non detecte"
-        code_color = self.warning_color if analysis.code_detected else self.success_color
-        page.insert_text((50, y_pos), f"Code malveillant: {code_status}", fontsize=10, color=code_color)
-        y_pos += 20
+        page.insert_text((40, y_pos), f"Date de l'analyse: {analysis.created_at.strftime('%d/%m/%Y a %H:%M:%S')}", 
+                        fontsize=10)
+        y_pos += 15
         
-        obf_status = "DETECTEE" if analysis.obfuscation_detected else "Non detectee"
-        obf_color = self.warning_color if analysis.obfuscation_detected else self.success_color
-        page.insert_text((50, y_pos), f"Obfuscation: {obf_status}", fontsize=10, color=obf_color)
-        y_pos += 35
+        page.insert_text((40, y_pos), f"Code document: {analysis.document_code or 'N/A'}", fontsize=10)
+        y_pos += 15
+        
+        page.insert_text((40, y_pos), f"Longueur du prompt: {analysis.prompt_length or 0} caracteres", fontsize=10)
+        y_pos += 15
         
         detected_issues = analysis.detected_issues or []
+        page.insert_text((40, y_pos), f"Nombre de problemes detectes: {len(detected_issues)}", 
+                        fontsize=10, color=self.danger_color if len(detected_issues) > 0 else self.success_color)
+        y_pos += 30
+        
+        threat_level = analysis.threat_level or 'safe'
+        threat_color = self._get_risk_color(threat_level)
+        page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + 50), color=threat_color, fill=threat_color, fill_opacity=0.1)
+        y_pos += 15
+        page.insert_text((40, y_pos), "NIVEAU DE MENACE", fontsize=12, fontname="helv")
+        y_pos += 20
+        threat_text = threat_level.upper()
+        page.insert_text((40, y_pos), threat_text, fontsize=14, fontname="helv", color=threat_color)
+        y_pos += 40
+        
+        page.insert_text((30, y_pos), "STATUT DES DETECTIONS", 
+                        fontsize=14, fontname="helv", color=self.base_color)
+        y_pos += 25
+        
+        detections = [
+            ("Injection de prompt", analysis.injection_detected, self.danger_color),
+            ("Code malveillant", analysis.code_detected, self.warning_color),
+            ("Obfuscation", analysis.obfuscation_detected, self.warning_color)
+        ]
+        
+        for label, detected, color in detections:
+            status = "DETECTE" if detected else "Non detecte"
+            status_color = color if detected else self.success_color
+            page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + 25), color=status_color, fill=status_color, fill_opacity=0.05)
+            page.insert_text((40, y_pos + 15), f"{label}: {status}", fontsize=10, fontname="helv", color=status_color)
+            y_pos += 30
+        
+        y_pos += 10
+        
         if detected_issues:
-            page.insert_text((50, y_pos), "PROBLEMES DETECTES", fontsize=12, fontname="hebo", color=self.danger_color)
+            if y_pos > self.max_y - 100:
+                page = doc.new_page(width=595, height=842)
+                y_pos = 90
+            
+            page.insert_text((30, y_pos), "PROBLEMES DETECTES", 
+                            fontsize=14, fontname="helv", color=self.danger_color)
             y_pos += 25
             
             severity_order = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
             sorted_issues = sorted(detected_issues, key=lambda x: severity_order.get(x.get('severity', 'low'), 4))
             
-            for issue in sorted_issues[:15]:
-                if y_pos > self.max_y - 80:
+            for idx, issue in enumerate(sorted_issues[:15], 1):
+                if y_pos > self.max_y - 60:
                     page = doc.new_page(width=595, height=842)
                     y_pos = 90
                 
                 severity = issue.get('severity', 'low')
-                severity_colors = {
-                    'critical': self.danger_color,
-                    'high': (0.97, 0.45, 0.09),
-                    'medium': self.warning_color,
-                    'low': self.text_color
-                }
-                sev_color = severity_colors.get(severity, self.text_color)
+                severity_color = self._get_risk_color(severity)
                 
-                page.insert_text((50, y_pos), f"[{severity.upper()}]", fontsize=9, fontname="hebo", color=sev_color)
-                
-                message = issue.get('message', '')[:70]
-                page.insert_text((110, y_pos), message, fontsize=9, color=self.text_color)
+                page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + 5), color=severity_color, fill=severity_color)
                 y_pos += 18
                 
+                page.insert_text((40, y_pos), f"{idx}. [{severity.upper()}] {issue.get('message', '')[:65]}", 
+                                fontsize=10, fontname="helv")
+                y_pos += 16
+                
                 if issue.get('category'):
-                    page.insert_text((110, y_pos), f"Categorie: {issue.get('category')}", fontsize=8, color=(0.5, 0.5, 0.5))
+                    page.insert_text((50, y_pos), f"Categorie: {issue.get('category')}", 
+                                    fontsize=8, color=(0.5, 0.5, 0.5))
                     y_pos += 14
+                
+                y_pos += 6
+        else:
+            page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + 60), 
+                          color=self.success_color, fill=self.success_color, fill_opacity=0.1)
+            y_pos += 25
+            page.insert_text((40, y_pos), "Aucune injection detectee", 
+                            fontsize=12, fontname="helv", color=self.success_color)
+            y_pos += 20
+            page.insert_text((40, y_pos), 
+                            "Ce prompt ne contient pas de tentatives d'injection connues.", 
+                            fontsize=10)
+            y_pos += 35
         
-        y_pos += 20
-        if y_pos > self.max_y - 150:
+        if y_pos > self.max_y - 180:
             page = doc.new_page(width=595, height=842)
             y_pos = 90
         
-        page.insert_text((50, y_pos), "EXTRAIT DU PROMPT ANALYSE", fontsize=12, fontname="hebo", color=self.primary_color)
+        page.insert_text((30, y_pos), "EXTRAIT DU PROMPT ANALYSE", 
+                        fontsize=14, fontname="helv", color=self.base_color)
         y_pos += 25
         
-        prompt_preview = (analysis.prompt_text or '')[:500]
+        prompt_preview = (analysis.prompt_text or '')[:400]
         prompt_lines = self._wrap_text(prompt_preview, 85)
         
-        page.draw_rect(fitz.Rect(48, y_pos - 5, 565, y_pos + (len(prompt_lines[:10]) * 14) + 10), 
+        box_height = min(len(prompt_lines[:8]) * 14 + 20, 140)
+        page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + box_height), 
                       color=(0.9, 0.9, 0.9), fill=(0.95, 0.95, 0.95))
+        y_pos += 10
         
-        for line in prompt_lines[:10]:
-            page.insert_text((53, y_pos + 5), line, fontsize=8, color=(0.3, 0.3, 0.3))
+        for line in prompt_lines[:8]:
+            page.insert_text((40, y_pos + 5), line, fontsize=8, color=(0.3, 0.3, 0.3))
             y_pos += 14
         
-        if len(prompt_lines) > 10:
-            page.insert_text((53, y_pos + 5), "...[truncated]", fontsize=8, color=(0.5, 0.5, 0.5))
+        if len(prompt_lines) > 8:
+            page.insert_text((40, y_pos + 5), "...[texte tronque]", fontsize=8, color=(0.5, 0.5, 0.5))
             y_pos += 14
         
         y_pos += 30
         
-        page.insert_text((50, y_pos), "RECOMMANDATIONS", fontsize=12, fontname="hebo", color=self.primary_color)
+        if y_pos > self.max_y - 120:
+            page = doc.new_page(width=595, height=842)
+            y_pos = 90
+        
+        page.draw_line((30, y_pos), (565, y_pos), color=self.base_color, width=1)
+        y_pos += 20
+        
+        page.insert_text((30, y_pos), "RECOMMANDATIONS DE SECURITE", 
+                        fontsize=14, fontname="helv", color=self.base_color)
         y_pos += 25
         
         if analysis.threat_detected:
             recommendations = [
                 "N'utilisez pas ce prompt tel quel dans un systeme IA",
-                "Verifiez et nettoyez le contenu avant utilisation",
+                "Verifiez et nettoyez le contenu avant toute utilisation",
                 "Implementez des filtres de securite sur vos systemes IA",
-                "Surveillez les logs pour detecter les patterns d'attaque"
+                "Surveillez les logs pour detecter les patterns d'attaque",
+                "Formez vos equipes aux risques d'injection de prompt"
             ]
         else:
             recommendations = [
                 "Ce prompt ne contient pas de menaces evidentes",
                 "Restez vigilant face aux nouveaux patterns d'injection",
-                "Mettez en place une validation des entrees utilisateur"
+                "Mettez en place une validation des entrees utilisateur",
+                "Maintenez vos systemes de detection a jour"
             ]
         
         for rec in recommendations:
-            if y_pos > self.max_y - 40:
-                break
-            page.insert_text((50, y_pos), f"- {rec}", fontsize=9, color=self.text_color)
-            y_pos += 18
+            page.insert_text((40, y_pos), f"- {rec}", fontsize=9, color=(0.3, 0.3, 0.3))
+            y_pos += 16
         
         total_pages = len(doc)
         for page_num, p in enumerate(doc, 1):
