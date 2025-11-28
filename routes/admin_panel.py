@@ -493,6 +493,9 @@ def seo_settings():
 @admin_required
 def seo_edit(seo_id):
     """Éditer une entrée SEO spécifique"""
+    import os
+    from werkzeug.utils import secure_filename
+    
     seo = SEOMetadata.query.get_or_404(seo_id)
     
     if request.method == 'POST':
@@ -502,11 +505,28 @@ def seo_edit(seo_id):
         seo.keywords = request.form.get('keywords')
         seo.og_title = request.form.get('og_title')
         seo.og_description = request.form.get('og_description')
-        seo.og_image = request.form.get('og_image')
         seo.canonical_url = request.form.get('canonical_url')
         seo.robots = request.form.get('robots')
         seo.is_active = request.form.get('is_active') == 'on'
         seo.updated_by = current_user.id
+        
+        og_image_file = request.files.get('og_image_file')
+        if og_image_file and og_image_file.filename:
+            filename = secure_filename(og_image_file.filename)
+            ext = filename.rsplit('.', 1)[-1].lower() if '.' in filename else ''
+            if ext in ['png', 'jpg', 'jpeg', 'gif', 'svg', 'webp']:
+                new_filename = f"og_{seo.page_path.replace('/', '_').strip('_')}_{os.urandom(4).hex()}.{ext}"
+                upload_path = os.path.join('static', 'img', 'og')
+                os.makedirs(upload_path, exist_ok=True)
+                file_path = os.path.join(upload_path, new_filename)
+                og_image_file.save(file_path)
+                seo.og_image = f"/static/img/og/{new_filename}"
+            else:
+                flash('Format d\'image non supporté. Utilisez PNG, JPG, GIF, SVG ou WebP.', 'warning')
+        else:
+            og_image_url = request.form.get('og_image')
+            if og_image_url:
+                seo.og_image = og_image_url
         
         db.session.commit()
         log_activity('ADMIN_SEO_UPDATE', f'Mise à jour SEO pour {seo.page_path}', success=True)
