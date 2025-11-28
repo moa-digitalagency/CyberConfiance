@@ -18,13 +18,11 @@ bp = Blueprint('main', __name__)
 
 @bp.route('/admin')
 @bp.route('/admin/')
-@login_required
-def admin_redirect():
-    """Redirect /admin to the custom admin panel"""
-    from flask_login import current_user
-    if current_user.role == 'admin':
-        return redirect(url_for('admin_panel.dashboard'))
-    return redirect(url_for('main.index'))
+@bp.route('/admin/<path:subpath>')
+def admin_block(subpath=None):
+    """Block all /admin access - return 404 for security"""
+    from flask import abort
+    abort(404)
 
 @bp.route('/')
 def index():
