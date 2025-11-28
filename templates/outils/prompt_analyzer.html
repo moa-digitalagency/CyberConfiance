@@ -1,0 +1,644 @@
+{% extends "base.html" %}
+
+{% block title %}Analyseur de Prompt (Anti-Injection) - CyberConfiance{% endblock %}
+
+{% block content %}
+<section class="page-header-modern">
+    <div class="container">
+        <div class="header-content-centered">
+            <h1 class="page-title-modern">Analyseur de Prompt</h1>
+            <p class="page-subtitle-modern">Protection contre les injections de prompt et le code malveillant</p>
+        </div>
+    </div>
+</section>
+
+<section class="analyzer-container">
+    <div class="container">
+        <div class="analyzer-card">
+            <h2>Analyse Anti-Injection</h2>
+            <p class="analyzer-description">
+                Analysez les prompts et textes pour détecter les tentatives d'injection, le code caché ou obfusqué, 
+                et les patterns malveillants. Protégez vos systèmes IA contre les attaques par manipulation de prompt.
+            </p>
+
+            <form method="POST" action="{{ url_for('main.prompt_analyzer') }}" class="analyzer-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                
+                <div class="textarea-wrapper">
+                    <textarea 
+                        name="prompt_text" 
+                        id="promptText" 
+                        placeholder="Collez ici le prompt ou texte à analyser..."
+                        rows="10"
+                        maxlength="50000"
+                        required
+                    ></textarea>
+                    <div class="char-counter">
+                        <span id="charCount">0</span> / 50 000 caractères
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn-primary btn-full">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        <path d="M9 12l2 2 4-4"/>
+                    </svg>
+                    <span>Analyser le Prompt</span>
+                </button>
+            </form>
+            
+            <div style="padding: 15px; background: linear-gradient(135deg, rgba(168, 85, 247, 0.15) 0%, rgba(168, 85, 247, 0.05) 100%); border-left: 3px solid #a855f7; border-radius: 8px; margin-top: 1.5rem;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2.5">
+                        <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/>
+                        <path d="M12 6v6l4 2"/>
+                    </svg>
+                    <h4 style="color: #a855f7; font-size: 0.95rem; font-weight: 700; margin: 0;">Qu'est-ce que l'Injection de Prompt ?</h4>
+                </div>
+                <p style="margin: 0; color: #94a3b8; font-size: 0.875rem; line-height: 1.5;">
+                    L'injection de prompt est une technique où un attaquant insère des instructions malveillantes 
+                    dans un prompt pour manipuler le comportement d'une IA ou exécuter du code non autorisé.
+                </p>
+            </div>
+        </div>
+
+        {% if results %}
+        <div class="results-card">
+            {% if results.error %}
+            <div class="alert alert-error">
+                <h3>Erreur d'analyse</h3>
+                <p>{{ results.error }}</p>
+            </div>
+            {% else %}
+            <div class="analysis-summary">
+                <div class="summary-header">
+                    <h3>Résultats de l'Analyse</h3>
+                    <span class="threat-badge threat-{{ results.threat_level }}">
+                        Niveau: {{ results.threat_level|capitalize }}
+                    </span>
+                </div>
+
+                <div class="detection-stats">
+                    <div class="stat-item {% if results.injection_detected %}detected{% else %}clean{% endif %}">
+                        <div class="stat-icon">
+                            {% if results.injection_detected %}
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                                <line x1="12" y1="9" x2="12" y2="13"/>
+                                <line x1="12" y1="17" x2="12.01" y2="17"/>
+                            </svg>
+                            {% else %}
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                <polyline points="22 4 12 14.01 9 11.01"/>
+                            </svg>
+                            {% endif %}
+                        </div>
+                        <div class="stat-label">Injection</div>
+                        <div class="stat-status">{{ 'Detectee' if results.injection_detected else 'Non detectee' }}</div>
+                    </div>
+                    <div class="stat-item {% if results.code_detected %}detected{% else %}clean{% endif %}">
+                        <div class="stat-icon">
+                            {% if results.code_detected %}
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="16 18 22 12 16 6"/>
+                                <polyline points="8 6 2 12 8 18"/>
+                            </svg>
+                            {% else %}
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                <polyline points="22 4 12 14.01 9 11.01"/>
+                            </svg>
+                            {% endif %}
+                        </div>
+                        <div class="stat-label">Code</div>
+                        <div class="stat-status">{{ 'Detecte' if results.code_detected else 'Non detecte' }}</div>
+                    </div>
+                    <div class="stat-item {% if results.obfuscation_detected %}detected{% else %}clean{% endif %}">
+                        <div class="stat-icon">
+                            {% if results.obfuscation_detected %}
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                                <line x1="1" y1="1" x2="23" y2="23"/>
+                            </svg>
+                            {% else %}
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                <polyline points="22 4 12 14.01 9 11.01"/>
+                            </svg>
+                            {% endif %}
+                        </div>
+                        <div class="stat-label">Obfuscation</div>
+                        <div class="stat-status">{{ 'Detectee' if results.obfuscation_detected else 'Non detectee' }}</div>
+                    </div>
+                </div>
+
+                {% if results.summary %}
+                <div class="summary-stats">
+                    <div class="summary-item">
+                        <span class="summary-value">{{ results.prompt_length }}</span>
+                        <span class="summary-label">Caractères</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-value">{{ results.summary.total_issues }}</span>
+                        <span class="summary-label">Problèmes</span>
+                    </div>
+                    {% if results.summary.severity_counts %}
+                    <div class="summary-item critical">
+                        <span class="summary-value">{{ results.summary.severity_counts.critical }}</span>
+                        <span class="summary-label">Critiques</span>
+                    </div>
+                    <div class="summary-item high">
+                        <span class="summary-value">{{ results.summary.severity_counts.high }}</span>
+                        <span class="summary-label">Hauts</span>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                {% if results.issues %}
+                <div class="issues-section">
+                    <h4>Problèmes Détectés ({{ results.issues|length }})</h4>
+                    <div class="issues-list">
+                        {% for issue in results.issues %}
+                        <div class="issue-item severity-{{ issue.severity }}">
+                            <div class="issue-header">
+                                <span class="issue-severity">{{ issue.severity|upper }}</span>
+                                <span class="issue-category">{{ issue.category|default('detection')|upper }}</span>
+                            </div>
+                            <span class="issue-message">{{ issue.message }}</span>
+                            {% if issue.matches and issue.matches > 1 %}
+                            <span class="issue-count">{{ issue.matches }} occurrences</span>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if results.cleaned_text %}
+                <div class="cleaned-text-section">
+                    <h4>Texte Nettoyé</h4>
+                    <p class="cleaned-info">Des caractères cachés ou obfusqués ont été détectés et nettoyés :</p>
+                    <div class="cleaned-preview">
+                        <code>{{ results.cleaned_text[:500] }}{% if results.cleaned_text|length > 500 %}...{% endif %}</code>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if results.threat_detected %}
+                <div class="alert alert-danger">
+                    <h4>Menace Potentielle Détectée</h4>
+                    <p>Ce prompt contient des éléments suspects qui pourraient être utilisés pour manipuler un système IA ou exécuter du code malveillant.</p>
+                    <ul class="safety-recommendations">
+                        <li>N'utilisez pas ce prompt tel quel dans un système IA</li>
+                        <li>Vérifiez et nettoyez le contenu avant utilisation</li>
+                        <li>Implémentez des filtres de sécurité sur vos systèmes IA</li>
+                    </ul>
+                </div>
+                {% else %}
+                <div class="alert alert-success">
+                    <h4>Aucune Menace Majeure Détectée</h4>
+                    <p>Ce prompt ne contient pas de patterns d'injection ou de code malveillant évidents.</p>
+                </div>
+                {% endif %}
+
+                {% if analysis_id %}
+                <div style="margin-top: 2rem; text-align: center;">
+                    <a href="{{ url_for('main.generate_prompt_pdf', analysis_id=analysis_id) }}" class="btn-primary" style="display: inline-block; padding: 12px 24px; text-decoration: none;">
+                        <span>Telecharger le Rapport PDF</span>
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <div class="info-card">
+            <h3>À Propos de Cet Outil</h3>
+            
+            <div class="info-section">
+                <h4>Types de Menaces Détectées</h4>
+                <div class="threat-types-grid">
+                    <div class="threat-type">
+                        <div class="threat-icon" style="background: rgba(239, 68, 68, 0.15);">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            </svg>
+                        </div>
+                        <strong>Injection de Prompt</strong>
+                        <p>Détection des tentatives de manipulation comme "ignore previous instructions", jailbreaks, etc.</p>
+                    </div>
+                    <div class="threat-type">
+                        <div class="threat-icon" style="background: rgba(168, 85, 247, 0.15);">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2">
+                                <polyline points="16 18 22 12 16 6"/>
+                                <polyline points="8 6 2 12 8 18"/>
+                            </svg>
+                        </div>
+                        <strong>Code Malveillant</strong>
+                        <p>Identification de code Python, JavaScript ou commandes système dangereuses (eval, exec, etc.).</p>
+                    </div>
+                    <div class="threat-type">
+                        <div class="threat-icon" style="background: rgba(245, 158, 11, 0.15);">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
+                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                                <line x1="1" y1="1" x2="23" y2="23"/>
+                            </svg>
+                        </div>
+                        <strong>Obfuscation</strong>
+                        <p>Détection de caractères invisibles, encodage base64, et techniques de masquage.</p>
+                    </div>
+                    <div class="threat-type">
+                        <div class="threat-icon" style="background: rgba(59, 130, 246, 0.15);">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                            </svg>
+                        </div>
+                        <strong>Injection de Rôle</strong>
+                        <p>Tentatives de redéfinition du rôle système [admin], [developer], etc.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="info-section">
+                <h4>Recommandations de Sécurité</h4>
+                <ul style="color: var(--text-secondary); line-height: 1.8; padding-left: 1.5rem;">
+                    <li>Validez toujours les entrées utilisateur avant de les envoyer à un modèle IA</li>
+                    <li>Implémentez des filtres de contenu côté serveur</li>
+                    <li>Limitez les capacités d'exécution de code dans vos applications IA</li>
+                    <li>Surveillez les logs pour détecter les patterns d'attaque</li>
+                    <li>Gardez vos systèmes IA isolés des données sensibles</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const textarea = document.getElementById('promptText');
+    const charCount = document.getElementById('charCount');
+    
+    function updateCount() {
+        charCount.textContent = textarea.value.length.toLocaleString();
+    }
+    
+    textarea.addEventListener('input', updateCount);
+    updateCount();
+});
+</script>
+
+<style>
+.analyzer-container {
+    padding: 4rem 0;
+    position: relative;
+    z-index: 1;
+}
+
+.analyzer-card, .results-card, .info-card {
+    background: rgba(15, 31, 53, 0.6);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 12px;
+    padding: 2.5rem;
+    margin-bottom: 2rem;
+    backdrop-filter: blur(10px);
+}
+
+.analyzer-card h2, .results-card h3, .info-card h3 {
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.analyzer-description {
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    font-size: 1rem;
+}
+
+.textarea-wrapper {
+    margin-bottom: 1.5rem;
+}
+
+.textarea-wrapper textarea {
+    width: 100%;
+    padding: 1.5rem;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.95rem;
+    resize: vertical;
+    min-height: 200px;
+}
+
+.textarea-wrapper textarea:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+}
+
+.textarea-wrapper textarea::placeholder {
+    color: var(--text-secondary);
+}
+
+.char-counter {
+    text-align: right;
+    margin-top: 0.5rem;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.btn-full {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    font-size: 1.1rem;
+}
+
+.detection-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.stat-item {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 1.5rem;
+    border-radius: 12px;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stat-item.clean {
+    border-color: rgba(34, 197, 94, 0.3);
+}
+
+.stat-item.clean .stat-icon {
+    color: #22c55e;
+}
+
+.stat-item.detected {
+    border-color: rgba(239, 68, 68, 0.3);
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.stat-item.detected .stat-icon {
+    color: #ef4444;
+}
+
+.stat-icon {
+    margin-bottom: 0.75rem;
+}
+
+.stat-label {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    margin-bottom: 0.25rem;
+}
+
+.stat-status {
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.summary-stats {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+}
+
+.summary-item {
+    text-align: center;
+}
+
+.summary-value {
+    display: block;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.summary-label {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.summary-item.critical .summary-value { color: #ef4444; }
+.summary-item.high .summary-value { color: #f97316; }
+
+.issues-section {
+    margin: 2rem 0;
+}
+
+.issues-section h4 {
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.issues-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.issue-item {
+    padding: 1rem 1.25rem;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.issue-item.severity-critical { border-left: 3px solid #ef4444; }
+.issue-item.severity-high { border-left: 3px solid #f97316; }
+.issue-item.severity-medium { border-left: 3px solid #eab308; }
+.issue-item.severity-low { border-left: 3px solid #3b82f6; }
+
+.issue-header {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.issue-severity, .issue-category {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.severity-critical .issue-severity { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+.severity-high .issue-severity { background: rgba(249, 115, 22, 0.2); color: #f97316; }
+.severity-medium .issue-severity { background: rgba(234, 179, 8, 0.2); color: #eab308; }
+.severity-low .issue-severity { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+
+.issue-category {
+    background: rgba(168, 85, 247, 0.2);
+    color: #a855f7;
+}
+
+.issue-message {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    display: block;
+}
+
+.issue-count {
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    opacity: 0.7;
+    margin-left: 0.5rem;
+}
+
+.cleaned-text-section {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    border-radius: 8px;
+}
+
+.cleaned-text-section h4 {
+    color: #f59e0b;
+    margin-bottom: 0.5rem;
+}
+
+.cleaned-info {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.cleaned-preview {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 1rem;
+    border-radius: 6px;
+    overflow-x: auto;
+}
+
+.cleaned-preview code {
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.alert {
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+}
+
+.alert h3, .alert h4 {
+    margin-bottom: 0.5rem;
+}
+
+.alert-success { background: rgba(34, 197, 94, 0.15); border-left: 3px solid #22c55e; }
+.alert-success h3, .alert-success h4 { color: #22c55e; }
+
+.alert-danger { background: rgba(239, 68, 68, 0.15); border-left: 3px solid #ef4444; }
+.alert-danger h3, .alert-danger h4 { color: #ef4444; }
+
+.alert-error { background: rgba(239, 68, 68, 0.15); border-left: 3px solid #ef4444; }
+.alert-error h3 { color: #ef4444; }
+
+.threat-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.threat-safe { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+.threat-low { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+.threat-medium { background: rgba(234, 179, 8, 0.2); color: #eab308; }
+.threat-high { background: rgba(249, 115, 22, 0.2); color: #f97316; }
+.threat-critical { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+
+.summary-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.safety-recommendations {
+    margin: 1rem 0 0 1.5rem;
+    color: var(--text-secondary);
+}
+
+.safety-recommendations li {
+    margin-bottom: 0.5rem;
+}
+
+.info-section {
+    margin-bottom: 2rem;
+}
+
+.info-section:last-child {
+    margin-bottom: 0;
+}
+
+.info-section h4 {
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.threat-types-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+}
+
+.threat-type {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 1.5rem;
+    border-radius: 8px;
+}
+
+.threat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.threat-type strong {
+    color: var(--text-primary);
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.threat-type p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin: 0;
+    line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+    .detection-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .summary-stats {
+        flex-wrap: wrap;
+    }
+}
+</style>
+{% endblock %}

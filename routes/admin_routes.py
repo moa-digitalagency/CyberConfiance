@@ -6,7 +6,7 @@ import __init__ as app_module
 db = app_module.db
 admin = app_module.admin
 from models import (User, BreachAnalysis, QuizResult, SecurityAnalysis, ActivityLog, 
-                    SecurityLog, SiteSettings, RequestSubmission)
+                    SecurityLog, SiteSettings, RequestSubmission, QRCodeAnalysis, PromptAnalysis)
 
 bp = Blueprint('admin_bp', __name__, url_prefix='/admin_bp')
 
@@ -246,11 +246,78 @@ class SiteSettingsView(SecureModelView):
     }
     form_excluded_columns = ['updated_by', 'updater']
 
+class QRCodeAnalysisView(SecureModelView):
+    column_list = ['id', 'document_code', 'extracted_url', 'threat_detected', 'threat_level', 'redirect_count', 'created_at', 'pdf_download']
+    column_searchable_list = ['extracted_url', 'final_url', 'ip_address', 'document_code']
+    column_filters = ['threat_detected', 'threat_level', 'created_at']
+    column_sortable_list = ['id', 'document_code', 'threat_detected', 'threat_level', 'redirect_count', 'created_at']
+    column_default_sort = ('created_at', True)
+    can_create = False
+    can_edit = False
+    column_labels = {
+        'id': 'ID',
+        'document_code': 'Code document',
+        'original_filename': 'Fichier original',
+        'extracted_url': 'URL extraite',
+        'final_url': 'URL finale',
+        'redirect_count': 'Nb. redirections',
+        'threat_detected': 'Menace detectee',
+        'threat_level': 'Niveau de menace',
+        'js_redirects_detected': 'Redirections JS',
+        'ip_address': 'Adresse IP',
+        'user_agent': 'Navigateur',
+        'created_at': 'Date d\'analyse',
+        'pdf_download': 'Rapport PDF'
+    }
+    
+    def _pdf_formatter(view, context, model, name):
+        if model.id:
+            return Markup(f'<a href="/generate-qrcode-pdf/{model.id}" class="btn btn-sm btn-primary" target="_blank">Telecharger PDF</a>')
+        return ''
+    
+    column_formatters = {
+        'pdf_download': _pdf_formatter
+    }
+
+class PromptAnalysisView(SecureModelView):
+    column_list = ['id', 'document_code', 'prompt_length', 'threat_detected', 'threat_level', 'injection_detected', 'code_detected', 'created_at', 'pdf_download']
+    column_searchable_list = ['prompt_text', 'ip_address', 'document_code']
+    column_filters = ['threat_detected', 'threat_level', 'injection_detected', 'code_detected', 'created_at']
+    column_sortable_list = ['id', 'document_code', 'prompt_length', 'threat_detected', 'threat_level', 'created_at']
+    column_default_sort = ('created_at', True)
+    can_create = False
+    can_edit = False
+    column_labels = {
+        'id': 'ID',
+        'document_code': 'Code document',
+        'prompt_length': 'Longueur',
+        'threat_detected': 'Menace detectee',
+        'threat_level': 'Niveau de menace',
+        'injection_detected': 'Injection',
+        'code_detected': 'Code detecte',
+        'obfuscation_detected': 'Obfuscation',
+        'ip_address': 'Adresse IP',
+        'user_agent': 'Navigateur',
+        'created_at': 'Date d\'analyse',
+        'pdf_download': 'Rapport PDF'
+    }
+    
+    def _pdf_formatter(view, context, model, name):
+        if model.id:
+            return Markup(f'<a href="/generate-prompt-pdf/{model.id}" class="btn btn-sm btn-primary" target="_blank">Telecharger PDF</a>')
+        return ''
+    
+    column_formatters = {
+        'pdf_download': _pdf_formatter
+    }
+
 admin.add_view(UserManagementView(User, db.session, name='Utilisateurs'))
 admin.add_view(RequestSubmissionView(RequestSubmission, db.session, name='Demandes - Fact-checking & Consultation'))
 admin.add_view(BreachAnalysisView(BreachAnalysis, db.session, name='Historique - Analyses de fuites'))
-admin.add_view(QuizResultView(QuizResult, db.session, name='Historique - Résultats de quiz'))
-admin.add_view(SecurityAnalysisView(SecurityAnalysis, db.session, name='Historique - Analyses de sécurité'))
+admin.add_view(QuizResultView(QuizResult, db.session, name='Historique - Resultats de quiz'))
+admin.add_view(SecurityAnalysisView(SecurityAnalysis, db.session, name='Historique - Analyses de securite'))
+admin.add_view(QRCodeAnalysisView(QRCodeAnalysis, db.session, name='Historique - Analyses QR Code'))
+admin.add_view(PromptAnalysisView(PromptAnalysis, db.session, name='Historique - Analyses Prompt'))
 admin.add_view(ActivityLogView(ActivityLog, db.session, name='Historique - Logs d\'activité'))
 admin.add_view(SecurityLogView(SecurityLog, db.session, name='Historique - Logs de sécurité'))
 admin.add_view(SiteSettingsView(SiteSettings, db.session, name='Paramètres site'))

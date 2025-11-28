@@ -3,7 +3,9 @@ from flask_login import login_user, logout_user, login_required
 from services import ContentService, HaveIBeenPwnedService, QuizService
 from services.security_analyzer import SecurityAnalyzerService
 from services.pdf_service import PDFReportService
-from models import Contact, User, BreachAnalysis, SecurityAnalysis
+from services.qrcode_analyzer_service import QRCodeAnalyzerService
+from services.prompt_analyzer_service import PromptAnalyzerService
+from models import Contact, User, BreachAnalysis, SecurityAnalysis, QRCodeAnalysis, PromptAnalysis
 from utils.document_code_generator import ensure_unique_code
 from utils.metadata_collector import get_client_ip
 import __init__ as app_module
@@ -965,4 +967,180 @@ def sitemap():
     response = make_response(sitemap_xml)
     response.headers['Content-Type'] = 'application/xml'
     return response
+
+
+@bp.route('/outils/analyseur-qrcode', methods=['GET', 'POST'])
+def qrcode_analyzer():
+    results = None
+    analysis_id = None
+    
+    if request.method == 'POST':
+        try:
+            uploaded_file = request.files.get('qrcode_image')
+            
+            if not uploaded_file or not uploaded_file.filename:
+                flash('Veuillez sélectionner une image contenant un QR code.', 'error')
+                return redirect(url_for('main.qrcode_analyzer'))
+            
+            allowed_extensions = {'png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp'}
+            file_ext = uploaded_file.filename.rsplit('.', 1)[-1].lower() if '.' in uploaded_file.filename else ''
+            
+            if file_ext not in allowed_extensions:
+                flash('Format d\'image non supporté. Utilisez PNG, JPG, GIF, BMP ou WebP.', 'error')
+                return redirect(url_for('main.qrcode_analyzer'))
+            
+            image_data = uploaded_file.read()
+            
+            if len(image_data) > 10 * 1024 * 1024:
+                flash('L\'image est trop volumineuse. Taille maximale: 10 MB.', 'error')
+                return redirect(url_for('main.qrcode_analyzer'))
+            
+            analyzer = QRCodeAnalyzerService()
+            try:
+                results = analyzer.analyze_qr_image(image_data, uploaded_file.filename)
+            except Exception as e:
+                results = {
+                    'success': False,
+                    'error': f"Erreur lors de l'analyse: {str(e)}"
+                }
+            
+            if results and results.get('success') and results.get('extracted_url'):
+                try:
+                    threat_level = results.get('threat_level', 'safe')
+                    
+                    qr_analysis = QRCodeAnalysis(
+                        original_filename=uploaded_file.filename,
+                        extracted_url=results.get('extracted_url'),
+                        final_url=results.get('final_url'),
+                        redirect_chain=results.get('redirect_chain', []),
+                        redirect_count=results.get('redirect_count', 0),
+                        threat_detected=results.get('threat_detected', False),
+                        threat_level=threat_level,
+                        threat_details=results.get('issues', []),
+                        blacklist_matches=results.get('blacklist_result'),
+                        suspicious_patterns=results.get('issues', []),
+                        js_redirects_detected=len(results.get('js_redirects', [])) > 0,
+                        analysis_results=results,
+                        document_code=ensure_unique_code(QRCodeAnalysis),
+                        ip_address=get_client_ip(request),
+                        user_agent=request.headers.get('User-Agent', '')[:500]
+                    )
+                    db.session.add(qr_analysis)
+                    db.session.commit()
+                    analysis_id = qr_analysis.id
+                except Exception as e:
+                    db.session.rollback()
+                    print(f"[ERROR] Failed to save QR analysis: {e}")
+            
+        except Exception as e:
+            flash(f'Erreur lors de l\'analyse: {str(e)}', 'error')
+            return redirect(url_for('main.qrcode_analyzer'))
+    
+    return render_template('outils/qrcode_analyzer.html', results=results, analysis_id=analysis_id)
+
+
+@bp.route('/outils/analyseur-prompt', methods=['GET', 'POST'])
+def prompt_analyzer():
+    results = None
+    analysis_id = None
+    
+    if request.method == 'POST':
+        try:
+            prompt_text = request.form.get('prompt_text', '').strip()
+            
+            if not prompt_text:
+                flash('Veuillez entrer un texte à analyser.', 'error')
+                return redirect(url_for('main.prompt_analyzer'))
+            
+            if len(prompt_text) > 50000:
+                flash('Le texte est trop long. Taille maximale: 50 000 caractères.', 'error')
+                return redirect(url_for('main.prompt_analyzer'))
+            
+            analyzer = PromptAnalyzerService()
+            try:
+                results = analyzer.analyze_prompt(prompt_text)
+            except Exception as e:
+                results = {
+                    'success': False,
+                    'error': f"Erreur lors de l'analyse: {str(e)}"
+                }
+            
+            if results and results.get('success'):
+                try:
+                    prompt_analysis = PromptAnalysis(
+                        prompt_text=prompt_text[:10000],
+                        prompt_length=len(prompt_text),
+                        threat_detected=results.get('threat_detected', False),
+                        threat_level=results.get('threat_level', 'safe'),
+                        injection_detected=results.get('injection_detected', False),
+                        code_detected=results.get('code_detected', False),
+                        obfuscation_detected=results.get('obfuscation_detected', False),
+                        dangerous_patterns=results.get('issues', []),
+                        analysis_results=results,
+                        cleaned_text=results.get('cleaned_text', '')[:10000] if results.get('cleaned_text') else None,
+                        detected_issues=results.get('issues', []),
+                        document_code=ensure_unique_code(PromptAnalysis),
+                        ip_address=get_client_ip(request),
+                        user_agent=request.headers.get('User-Agent', '')[:500]
+                    )
+                    db.session.add(prompt_analysis)
+                    db.session.commit()
+                    analysis_id = prompt_analysis.id
+                except Exception as e:
+                    db.session.rollback()
+                    print(f"[ERROR] Failed to save prompt analysis: {e}")
+            
+        except Exception as e:
+            flash(f'Erreur lors de l\'analyse: {str(e)}', 'error')
+            return redirect(url_for('main.prompt_analyzer'))
+    
+    return render_template('outils/prompt_analyzer.html', results=results, analysis_id=analysis_id)
+
+
+@bp.route("/generate-qrcode-pdf/<int:analysis_id>")
+def generate_qrcode_pdf(analysis_id):
+    analysis = QRCodeAnalysis.query.get_or_404(analysis_id)
+    
+    user_ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()
+    
+    if analysis.pdf_report and analysis.pdf_generated_at:
+        pdf_bytes = analysis.pdf_report
+    else:
+        pdf_service = PDFReportService()
+        pdf_bytes = pdf_service.generate_qrcode_analysis_report(analysis, user_ip)
+        
+        analysis.pdf_report = pdf_bytes
+        analysis.pdf_generated_at = datetime.utcnow()
+        db.session.commit()
+    
+    return send_file(
+        io.BytesIO(pdf_bytes),
+        mimetype="application/pdf",
+        as_attachment=True,
+        download_name=f"rapport_qrcode_{analysis.id}.pdf"
+    )
+
+
+@bp.route("/generate-prompt-pdf/<int:analysis_id>")
+def generate_prompt_pdf(analysis_id):
+    analysis = PromptAnalysis.query.get_or_404(analysis_id)
+    
+    user_ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()
+    
+    if analysis.pdf_report and analysis.pdf_generated_at:
+        pdf_bytes = analysis.pdf_report
+    else:
+        pdf_service = PDFReportService()
+        pdf_bytes = pdf_service.generate_prompt_analysis_report(analysis, user_ip)
+        
+        analysis.pdf_report = pdf_bytes
+        analysis.pdf_generated_at = datetime.utcnow()
+        db.session.commit()
+    
+    return send_file(
+        io.BytesIO(pdf_bytes),
+        mimetype="application/pdf",
+        as_attachment=True,
+        download_name=f"rapport_prompt_{analysis.id}.pdf"
+    )
 

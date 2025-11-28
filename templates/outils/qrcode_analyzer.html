@@ -1,0 +1,649 @@
+{% extends "base.html" %}
+
+{% block title %}Analyseur de QR Code (Anti-Quishing) - CyberConfiance{% endblock %}
+
+{% block content %}
+<section class="page-header-modern">
+    <div class="container">
+        <div class="header-content-centered">
+            <h1 class="page-title-modern">Analyseur de QR Code</h1>
+            <p class="page-subtitle-modern">Protection contre le Quishing - Analysez les QR codes avant de les scanner</p>
+        </div>
+    </div>
+</section>
+
+<section class="analyzer-container">
+    <div class="container">
+        <div class="analyzer-card">
+            <h2>Analyse Anti-Quishing</h2>
+            <p class="analyzer-description">
+                Uploadez une image contenant un QR code pour analyser son contenu en toute sécurité. 
+                Notre outil extrait l'URL, suit la chaîne de redirections et vérifie si les liens sont malveillants - 
+                <strong>sans jamais ouvrir ni exécuter le lien</strong>.
+            </p>
+
+            <form method="POST" action="{{ url_for('main.qrcode_analyzer') }}" class="analyzer-form" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                
+                <div class="upload-zone" id="uploadZone">
+                    <div class="upload-icon">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="3" y="3" width="7" height="7" rx="1"/>
+                            <rect x="14" y="3" width="7" height="7" rx="1"/>
+                            <rect x="3" y="14" width="7" height="7" rx="1"/>
+                            <rect x="14" y="14" width="7" height="7" rx="1"/>
+                            <rect x="5" y="5" width="3" height="3"/>
+                            <rect x="16" y="5" width="3" height="3"/>
+                            <rect x="5" y="16" width="3" height="3"/>
+                        </svg>
+                    </div>
+                    <p class="upload-text">Glissez-déposez une image ici ou cliquez pour sélectionner</p>
+                    <p class="upload-hint">Formats supportés: PNG, JPG, GIF, BMP, WebP (max 10 MB)</p>
+                    <input type="file" name="qrcode_image" id="qrcodeImage" accept="image/*" required class="file-input-hidden">
+                    <div id="filePreview" class="file-preview" style="display: none;">
+                        <span class="file-name"></span>
+                        <button type="button" class="remove-file" onclick="removeFile()">×</button>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn-primary btn-full">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="m21 21-4.35-4.35"/>
+                    </svg>
+                    <span>Analyser le QR Code</span>
+                </button>
+            </form>
+            
+            <div style="padding: 15px; background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0.05) 100%); border-left: 3px solid #ef4444; border-radius: 8px; margin-top: 1.5rem;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                        <line x1="12" y1="9" x2="12" y2="13"/>
+                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                    </svg>
+                    <h4 style="color: #ef4444; font-size: 0.95rem; font-weight: 700; margin: 0;">Qu'est-ce que le Quishing ?</h4>
+                </div>
+                <p style="margin: 0; color: #94a3b8; font-size: 0.875rem; line-height: 1.5;">
+                    Le Quishing (QR + Phishing) est une attaque où des QR codes malveillants redirigent vers des sites de phishing. 
+                    Ne scannez jamais un QR code sans vérification préalable.
+                </p>
+            </div>
+        </div>
+
+        {% if results %}
+        <div class="results-card">
+            {% if results.error %}
+            <div class="alert alert-error">
+                <h3>Erreur d'analyse</h3>
+                <p>{{ results.error }}</p>
+            </div>
+            {% elif results.data_type == 'text' %}
+            <div class="alert alert-info">
+                <h3>Contenu Texte Détecté</h3>
+                <p>{{ results.message }}</p>
+                <p><strong>Données extraites:</strong> {{ results.extracted_data[:200] }}{% if results.extracted_data|length > 200 %}...{% endif %}</p>
+            </div>
+            {% else %}
+            <div class="analysis-summary">
+                <div class="summary-header">
+                    <h3>Résultats de l'Analyse QR Code</h3>
+                    <span class="threat-badge threat-{{ results.threat_level }}">
+                        Niveau: {{ results.threat_level|capitalize }}
+                    </span>
+                </div>
+
+                <div class="url-display">
+                    <div class="url-item">
+                        <span class="url-label">URL extraite:</span>
+                        <code class="url-value">{{ results.extracted_url }}</code>
+                    </div>
+                    {% if results.final_url and results.final_url != results.extracted_url %}
+                    <div class="url-item">
+                        <span class="url-label">URL finale:</span>
+                        <code class="url-value">{{ results.final_url }}</code>
+                    </div>
+                    {% endif %}
+                </div>
+
+                {% if results.redirect_count > 0 %}
+                <div class="redirect-chain">
+                    <h4>Chaîne de Redirections ({{ results.redirect_count }})</h4>
+                    <div class="redirect-timeline">
+                        {% for redirect in results.redirect_chain %}
+                        <div class="redirect-step">
+                            <span class="step-number">{{ loop.index }}</span>
+                            <div class="step-content">
+                                <code class="step-url">{{ redirect.url[:80] }}{% if redirect.url|length > 80 %}...{% endif %}</code>
+                                {% if redirect.status_code %}
+                                <span class="status-code status-{{ redirect.status_code }}">{{ redirect.status_code }}</span>
+                                {% endif %}
+                                {% if redirect.redirect_type %}
+                                <span class="redirect-type">{{ redirect.redirect_type }}</span>
+                                {% endif %}
+                                {% if redirect.js_redirect_detected %}
+                                <span class="js-redirect-badge">JS Redirect</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if results.js_redirects %}
+                <div class="alert alert-warning">
+                    <h4>Redirections JavaScript Détectées</h4>
+                    <p>Des redirections côté client ont été détectées. Ces redirections peuvent être utilisées pour masquer la destination finale.</p>
+                </div>
+                {% endif %}
+
+                {% if results.issues %}
+                <div class="issues-section">
+                    <h4>Problèmes Détectés ({{ results.issues|length }})</h4>
+                    <div class="issues-list">
+                        {% for issue in results.issues %}
+                        <div class="issue-item severity-{{ issue.severity }}">
+                            <span class="issue-severity">{{ issue.severity|upper }}</span>
+                            <span class="issue-message">{{ issue.message }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if results.blacklist_result %}
+                <div class="blacklist-result">
+                    <h4>Vérification Liste Noire</h4>
+                    {% if results.blacklist_result.is_blacklisted %}
+                    <div class="alert alert-danger">
+                        <p><strong>URL détectée comme malveillante</strong> par {{ results.blacklist_result.malicious }} source(s) de sécurité.</p>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-success">
+                        <p>URL non répertoriée dans les listes noires connues.</p>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                {% if results.threat_detected %}
+                <div class="alert alert-danger">
+                    <h4>Menace Potentielle Détectée</h4>
+                    <p>Ce QR code présente des caractéristiques suspectes. <strong>Ne scannez pas ce QR code</strong> avec votre téléphone.</p>
+                    <ul class="safety-recommendations">
+                        <li>N'ouvrez pas cette URL directement</li>
+                        <li>Ne saisissez aucune information personnelle</li>
+                        <li>Signalez ce QR code si vous l'avez trouvé dans un lieu public</li>
+                    </ul>
+                </div>
+                {% else %}
+                <div class="alert alert-success">
+                    <h4>Aucune Menace Majeure Détectée</h4>
+                    <p>Ce QR code semble sûr, mais restez vigilant lors de la navigation.</p>
+                </div>
+                {% endif %}
+
+                {% if analysis_id %}
+                <div style="margin-top: 2rem; text-align: center;">
+                    <a href="{{ url_for('main.generate_qrcode_pdf', analysis_id=analysis_id) }}" class="btn-primary" style="display: inline-block; padding: 12px 24px; text-decoration: none;">
+                        <span>Telecharger le Rapport PDF</span>
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <div class="info-card">
+            <h3>À Propos de Cet Outil</h3>
+            
+            <div class="info-section">
+                <h4>Comment fonctionne l'analyseur ?</h4>
+                <p>Notre outil analyse les QR codes de manière sécurisée en plusieurs étapes :</p>
+                <ol style="color: var(--text-secondary); line-height: 1.8; padding-left: 1.5rem;">
+                    <li><strong>Extraction</strong> : Le QR code est décodé pour extraire son contenu (URL, texte, etc.)</li>
+                    <li><strong>Analyse des redirections</strong> : L'outil suit la chaîne de redirections HTTP sans ouvrir les pages</li>
+                    <li><strong>Détection JavaScript</strong> : Les redirections côté client sont identifiées dans le code source</li>
+                    <li><strong>Vérification blacklist</strong> : Les URLs sont vérifiées contre les bases de données de menaces</li>
+                    <li><strong>Analyse de patterns</strong> : Détection de mots-clés suspects et de techniques de phishing</li>
+                </ol>
+            </div>
+            
+            <div class="info-section">
+                <h4>Pourquoi utiliser cet outil ?</h4>
+                <div class="analysis-types">
+                    <div class="analysis-type">
+                        <strong>Protection Quishing</strong>
+                        <p>Évitez les attaques par QR codes malveillants dans les espaces publics, emails ou documents.</p>
+                    </div>
+                    <div class="analysis-type">
+                        <strong>Analyse Sans Risque</strong>
+                        <p>L'URL n'est jamais ouverte ni exécutée, évitant tout risque d'infection ou de tracking.</p>
+                    </div>
+                    <div class="analysis-type">
+                        <strong>Transparence Complète</strong>
+                        <p>Visualisez toute la chaîne de redirections et découvrez la vraie destination du lien.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const uploadZone = document.getElementById('uploadZone');
+    const fileInput = document.getElementById('qrcodeImage');
+    const filePreview = document.getElementById('filePreview');
+    const fileName = filePreview.querySelector('.file-name');
+
+    uploadZone.addEventListener('click', function(e) {
+        if (e.target.closest('.remove-file')) return;
+        fileInput.click();
+    });
+
+    uploadZone.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        uploadZone.classList.add('dragover');
+    });
+
+    uploadZone.addEventListener('dragleave', function() {
+        uploadZone.classList.remove('dragover');
+    });
+
+    uploadZone.addEventListener('drop', function(e) {
+        e.preventDefault();
+        uploadZone.classList.remove('dragover');
+        if (e.dataTransfer.files.length) {
+            fileInput.files = e.dataTransfer.files;
+            updatePreview(e.dataTransfer.files[0]);
+        }
+    });
+
+    fileInput.addEventListener('change', function() {
+        if (this.files.length) {
+            updatePreview(this.files[0]);
+        }
+    });
+
+    function updatePreview(file) {
+        fileName.textContent = file.name;
+        filePreview.style.display = 'flex';
+        uploadZone.classList.add('has-file');
+    }
+
+    window.removeFile = function() {
+        fileInput.value = '';
+        filePreview.style.display = 'none';
+        uploadZone.classList.remove('has-file');
+    };
+});
+</script>
+
+<style>
+.analyzer-container {
+    padding: 4rem 0;
+    position: relative;
+    z-index: 1;
+}
+
+.analyzer-card, .results-card, .info-card {
+    background: rgba(15, 31, 53, 0.6);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 12px;
+    padding: 2.5rem;
+    margin-bottom: 2rem;
+    backdrop-filter: blur(10px);
+}
+
+.analyzer-card h2, .results-card h3, .info-card h3 {
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.analyzer-description {
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    font-size: 1rem;
+}
+
+.upload-zone {
+    border: 2px dashed rgba(59, 130, 246, 0.4);
+    border-radius: 12px;
+    padding: 3rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 1.5rem;
+    background: rgba(59, 130, 246, 0.05);
+}
+
+.upload-zone:hover, .upload-zone.dragover {
+    border-color: var(--accent-blue);
+    background: rgba(59, 130, 246, 0.1);
+}
+
+.upload-zone.has-file {
+    border-color: rgba(34, 197, 94, 0.5);
+    background: rgba(34, 197, 94, 0.1);
+}
+
+.upload-icon {
+    color: var(--accent-blue);
+    margin-bottom: 1rem;
+}
+
+.upload-text {
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+.upload-hint {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.file-input-hidden {
+    display: none;
+}
+
+.file-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    background: rgba(34, 197, 94, 0.15);
+    border-radius: 8px;
+}
+
+.file-name {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.remove-file {
+    background: rgba(239, 68, 68, 0.2);
+    border: none;
+    color: #ef4444;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.2rem;
+    line-height: 1;
+}
+
+.btn-full {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    font-size: 1.1rem;
+}
+
+.url-display {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+}
+
+.url-item {
+    margin-bottom: 1rem;
+}
+
+.url-item:last-child {
+    margin-bottom: 0;
+}
+
+.url-label {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.url-value {
+    color: var(--accent-blue);
+    word-break: break-all;
+    font-size: 0.9rem;
+}
+
+.redirect-chain {
+    margin: 2rem 0;
+}
+
+.redirect-chain h4 {
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.redirect-timeline {
+    position: relative;
+    padding-left: 2rem;
+}
+
+.redirect-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    position: relative;
+}
+
+.redirect-step::before {
+    content: '';
+    position: absolute;
+    left: -1.5rem;
+    top: 1.5rem;
+    bottom: -1rem;
+    width: 2px;
+    background: rgba(59, 130, 246, 0.3);
+}
+
+.redirect-step:last-child::before {
+    display: none;
+}
+
+.step-number {
+    width: 24px;
+    height: 24px;
+    background: var(--accent-blue);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.step-content {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.step-url {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    word-break: break-all;
+}
+
+.status-code {
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.status-code.status-200 { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+.status-code.status-301, .status-code.status-302 { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+.status-code.status-404, .status-code.status-500 { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+
+.redirect-type, .js-redirect-badge {
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    background: rgba(168, 85, 247, 0.2);
+    color: #a855f7;
+}
+
+.js-redirect-badge {
+    background: rgba(245, 158, 11, 0.2);
+    color: #f59e0b;
+}
+
+.issues-section {
+    margin: 2rem 0;
+}
+
+.issues-section h4 {
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.issues-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.issue-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.issue-item.severity-critical { border-left: 3px solid #ef4444; }
+.issue-item.severity-high { border-left: 3px solid #f97316; }
+.issue-item.severity-medium { border-left: 3px solid #eab308; }
+.issue-item.severity-low { border-left: 3px solid #3b82f6; }
+
+.issue-severity {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.severity-critical .issue-severity { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+.severity-high .issue-severity { background: rgba(249, 115, 22, 0.2); color: #f97316; }
+.severity-medium .issue-severity { background: rgba(234, 179, 8, 0.2); color: #eab308; }
+.severity-low .issue-severity { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+
+.issue-message {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.alert {
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+}
+
+.alert h3, .alert h4 {
+    margin-bottom: 0.5rem;
+}
+
+.alert-success { background: rgba(34, 197, 94, 0.15); border-left: 3px solid #22c55e; }
+.alert-success h3, .alert-success h4 { color: #22c55e; }
+
+.alert-warning { background: rgba(245, 158, 11, 0.15); border-left: 3px solid #f59e0b; }
+.alert-warning h3, .alert-warning h4 { color: #f59e0b; }
+
+.alert-danger { background: rgba(239, 68, 68, 0.15); border-left: 3px solid #ef4444; }
+.alert-danger h3, .alert-danger h4 { color: #ef4444; }
+
+.alert-error { background: rgba(239, 68, 68, 0.15); border-left: 3px solid #ef4444; }
+.alert-error h3 { color: #ef4444; }
+
+.alert-info { background: rgba(59, 130, 246, 0.15); border-left: 3px solid #3b82f6; }
+.alert-info h3 { color: #3b82f6; }
+
+.threat-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.threat-safe { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+.threat-low { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+.threat-medium { background: rgba(234, 179, 8, 0.2); color: #eab308; }
+.threat-high { background: rgba(249, 115, 22, 0.2); color: #f97316; }
+.threat-critical { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+
+.summary-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.safety-recommendations {
+    margin: 1rem 0 0 1.5rem;
+    color: var(--text-secondary);
+}
+
+.safety-recommendations li {
+    margin-bottom: 0.5rem;
+}
+
+.info-section {
+    margin-bottom: 2rem;
+}
+
+.info-section:last-child {
+    margin-bottom: 0;
+}
+
+.info-section h4 {
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.info-section p, .info-section li {
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.analysis-types {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.analysis-type {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 1.5rem;
+    border-radius: 8px;
+}
+
+.analysis-type strong {
+    color: var(--text-primary);
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.analysis-type p {
+    font-size: 0.9rem;
+    margin: 0;
+}
+</style>
+{% endblock %}

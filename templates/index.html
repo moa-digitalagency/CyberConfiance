@@ -268,11 +268,49 @@
                         </svg>
                     </div>
                     <div style="flex: 1;">
-                        <h4 style="font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--text-primary);">Analyse Sécurité</h4>
+                        <h4 style="font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--text-primary);">Analyse Securite</h4>
                         <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; margin-bottom: 1rem;">
-                            Analysez des fichiers, URLs et hash pour détecter les menaces potentielles
+                            Analysez des fichiers, URLs et hash pour detecter les menaces potentielles
                         </p>
-                        <a href="{{ url_for('main.security_analyzer') }}" style="color: rgba(245, 158, 11, 1); font-size: 0.9rem; text-decoration: none;">Analyser →</a>
+                        <a href="{{ url_for('main.security_analyzer') }}" style="color: rgba(245, 158, 11, 1); font-size: 0.9rem; text-decoration: none;">Analyser</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tool-card glass-card" style="padding: 2rem; border-radius: 12px; border-left: 3px solid rgba(239, 68, 68, 0.5); transition: all 0.3s ease;">
+                <div style="display: flex; align-items: flex-start; gap: 1rem;">
+                    <div style="flex-shrink: 0; width: 48px; height: 48px; background: rgba(239, 68, 68, 0.15); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(239, 68, 68, 1)" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7" rx="1"/>
+                            <rect x="14" y="3" width="7" height="7" rx="1"/>
+                            <rect x="3" y="14" width="7" height="7" rx="1"/>
+                            <rect x="14" y="14" width="7" height="7" rx="1"/>
+                        </svg>
+                    </div>
+                    <div style="flex: 1;">
+                        <h4 style="font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--text-primary);">Analyseur QR Code (Anti-Quishing)</h4>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; margin-bottom: 1rem;">
+                            Analysez les QR codes pour detecter les tentatives de phishing avant de les scanner
+                        </p>
+                        <a href="{{ url_for('main.qrcode_analyzer') }}" style="color: rgba(239, 68, 68, 1); font-size: 0.9rem; text-decoration: none;">Analyser QR Code</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tool-card glass-card" style="padding: 2rem; border-radius: 12px; border-left: 3px solid rgba(139, 92, 246, 0.5); transition: all 0.3s ease;">
+                <div style="display: flex; align-items: flex-start; gap: 1rem;">
+                    <div style="flex-shrink: 0; width: 48px; height: 48px; background: rgba(139, 92, 246, 0.15); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(139, 92, 246, 1)" stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            <path d="M9 12l2 2 4-4"/>
+                        </svg>
+                    </div>
+                    <div style="flex: 1;">
+                        <h4 style="font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--text-primary);">Analyseur de Prompt (Anti-Injection)</h4>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; margin-bottom: 1rem;">
+                            Detectez les tentatives d'injection de prompt et le code malveillant cache
+                        </p>
+                        <a href="{{ url_for('main.prompt_analyzer') }}" style="color: rgba(139, 92, 246, 1); font-size: 0.9rem; text-decoration: none;">Analyser Prompt</a>
                     </div>
                 </div>
             </div>

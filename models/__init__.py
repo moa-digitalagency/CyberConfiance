@@ -398,3 +398,54 @@ class ThreatLog(db.Model):
     
     def __repr__(self):
         return f'<ThreatLog {self.incident_id} - {self.threat_type}>'
+
+class QRCodeAnalysis(db.Model):
+    __tablename__ = 'qrcode_analyses'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    original_filename = db.Column(db.String(500))
+    extracted_url = db.Column(db.String(2000))
+    final_url = db.Column(db.String(2000))
+    redirect_chain = db.Column(db.JSON)
+    redirect_count = db.Column(db.Integer, default=0)
+    threat_detected = db.Column(db.Boolean, default=False)
+    threat_level = db.Column(db.String(20))
+    threat_details = db.Column(db.JSON)
+    blacklist_matches = db.Column(db.JSON)
+    suspicious_patterns = db.Column(db.JSON)
+    js_redirects_detected = db.Column(db.Boolean, default=False)
+    analysis_results = db.Column(db.JSON)
+    document_code = db.Column(db.String(20), unique=True, index=True)
+    ip_address = db.Column(db.String(50))
+    user_agent = db.Column(db.String(500))
+    pdf_report = db.Column(db.LargeBinary)
+    pdf_generated_at = db.Column(db.DateTime)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    def __repr__(self):
+        return f'<QRCodeAnalysis {self.id} - {self.extracted_url[:50] if self.extracted_url else "No URL"}>'
+
+class PromptAnalysis(db.Model):
+    __tablename__ = 'prompt_analyses'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    prompt_text = db.Column(db.Text, nullable=False)
+    prompt_length = db.Column(db.Integer)
+    threat_detected = db.Column(db.Boolean, default=False)
+    threat_level = db.Column(db.String(20))
+    injection_detected = db.Column(db.Boolean, default=False)
+    code_detected = db.Column(db.Boolean, default=False)
+    obfuscation_detected = db.Column(db.Boolean, default=False)
+    dangerous_patterns = db.Column(db.JSON)
+    analysis_results = db.Column(db.JSON)
+    cleaned_text = db.Column(db.Text)
+    detected_issues = db.Column(db.JSON)
+    document_code = db.Column(db.String(20), unique=True, index=True)
+    ip_address = db.Column(db.String(50))
+    user_agent = db.Column(db.String(500))
+    pdf_report = db.Column(db.LargeBinary)
+    pdf_generated_at = db.Column(db.DateTime)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    def __repr__(self):
+        return f'<PromptAnalysis {self.id} - Threat: {self.threat_detected}>'
