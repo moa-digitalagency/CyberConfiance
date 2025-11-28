@@ -22,13 +22,13 @@ args = "CyberConfiance"
 name = "CyberConfiance"
 author = "agent"
 
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "python main.py"
-waitForPort = 5000
-
 [workflows.workflow.metadata]
 outputType = "webview"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "LD_LIBRARY_PATH=\"/nix/store/lcjf0hd46s7b16vr94q3bcas7yg05c3c-zbar-0.23.93-lib/lib:$LD_LIBRARY_PATH\" python main.py"
+waitForPort = 5000
 
 [[ports]]
 localPort = 5000

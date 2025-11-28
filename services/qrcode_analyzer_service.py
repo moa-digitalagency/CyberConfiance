@@ -6,13 +6,28 @@ from urllib.parse import urlparse, urljoin, parse_qs, unquote
 import tempfile
 from PIL import Image
 from bs4 import BeautifulSoup
+from ctypes import cdll
+import ctypes.util
+
+ZBAR_LIB_PATH = "/nix/store/lcjf0hd46s7b16vr94q3bcas7yg05c3c-zbar-0.23.93-lib/lib/libzbar.so.0"
+
+_original_find_library = ctypes.util.find_library
+
+def _patched_find_library(name):
+    if name == 'zbar':
+        return ZBAR_LIB_PATH
+    return _original_find_library(name)
+
+ctypes.util.find_library = _patched_find_library
 
 try:
+    cdll.LoadLibrary(ZBAR_LIB_PATH)
     from pyzbar.pyzbar import decode as pyzbar_decode
     PYZBAR_AVAILABLE = True
-except ImportError:
+except (ImportError, OSError) as e:
     PYZBAR_AVAILABLE = False
     pyzbar_decode = None
+    print(f"Warning: pyzbar not available: {e}")
 
 
 class QRCodeAnalyzerService:
