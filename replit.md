@@ -6,11 +6,13 @@ Fully functional Flask-based cybersecurity awareness training platform with comp
 ## Current Status: ✅ PRODUCTION READY
 
 ### Completed Features
-- ✅ 158 working routes with full functionality
+- ✅ 160+ working routes with full functionality
 - ✅ Database persistence for all analysis types
-- ✅ PDF report generation (breach, security, quiz)
+- ✅ PDF report generation (breach, security, quiz, QR code, prompt)
 - ✅ Email breach checking (Have I Been Pwned integration)
 - ✅ Security analysis for URLs, files, domains, IPs, hashes
+- ✅ **NEW: QR Code Analyzer (Anti-Quishing)** - Detects phishing via QR codes
+- ✅ **NEW: Prompt Analyzer (Anti-Injection)** - Detects prompt injection attacks
 - ✅ Interactive quiz with personalized recommendations
 - ✅ Admin panel with request management
 - ✅ VPS proxy compatibility with standardized IP collection
@@ -25,6 +27,8 @@ Fully functional Flask-based cybersecurity awareness training platform with comp
 | `security_analyses` | Security analysis results | `id` (analysis_id) | pdf_report, pdf_generated_at, breach_analysis_id |
 | `quiz_results` | Quiz submissions | `id` (result_id) | pdf_report, pdf_generated_at, email |
 | `request_submissions` | User service requests | `id` | All request types stored |
+| `qr_code_analyses` | QR code analysis results | `id` (analysis_id) | extracted_url, threat_level, pdf_report |
+| `prompt_analyses` | Prompt injection analysis | `id` (analysis_id) | prompt_text, threat_level, pdf_report |
 
 ### Critical Fields Present
 - ✅ `analysis_id`: References `breach_analyses.id` and `security_analyses.id` for PDF downloads
@@ -62,6 +66,46 @@ Performs:
 4. Feature verification
 
 ## Recent Changes (Nov 28, 2025)
+
+### New Security Analysis Tools Added
+Two new security analysis tools have been implemented:
+
+#### 1. QR Code Analyzer (Anti-Quishing)
+- **Route**: `/outils/analyseur-qrcode`
+- **Features**:
+  - Decodes QR codes from uploaded images (PNG, JPG, GIF)
+  - Extracts URLs safely without executing them
+  - Follows redirect chains to detect final destinations
+  - Detects JavaScript redirects in page source
+  - Checks URLs against VirusTotal blacklists
+  - Analyzes URL patterns for phishing indicators
+- **Security Hardening**:
+  - SSRF protection (IPv4/IPv6 private IP blocking)
+  - DNS rebinding prevention
+  - Content-length limits (5 MB per response, 10 MB upload)
+  - Cloud metadata endpoint protection
+  - Request timeout (10 seconds)
+
+#### 2. Prompt Analyzer (Anti-Injection)
+- **Route**: `/outils/analyseur-prompt`
+- **Features**:
+  - Pattern-based detection for injection keywords
+  - AST analysis for dangerous Python code (eval, exec, os.system)
+  - Obfuscation detection (invisible chars, base64, unicode escapes)
+  - Jailbreak attempt detection
+  - Role manipulation detection
+- **Security Hardening**:
+  - Input size limits (50,000 characters)
+  - Graceful AST parsing error handling
+  - Enhanced dunder detection (__subclasses__, __globals__, etc.)
+
+#### Implementation Details
+- **Models**: `QRCodeAnalysis`, `PromptAnalysis` in models/__init__.py
+- **Services**: `services/qrcode_analyzer_service.py`, `services/prompt_analyzer_service.py`
+- **Routes**: Added to `routes/main.py` with comprehensive error handling
+- **Templates**: `templates/outils/qrcode_analyzer.html`, `templates/outils/prompt_analyzer.html`
+- **PDF Reports**: Forensic-style reports via `services/pdf_service.py`
+- **Admin Views**: History views in `routes/admin_routes.py`
 
 ### Admin Routing & Flask-Admin Fixes
 - **/admin redirect fixed**: Now redirects authenticated admins to `/my4dm1n/dashboard` (custom admin panel) instead of Flask-Admin
