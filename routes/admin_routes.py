@@ -255,7 +255,6 @@ class SEOMetadataView(SecureModelView):
     can_create = True
     can_edit = True
     can_delete = True
-    form_columns = ['page_path', 'title', 'description', 'keywords', 'og_title', 'og_description', 'og_image', 'canonical_url', 'robots', 'is_active']
     form_excluded_columns = ['updated_by', 'updater', 'updated_at']
     column_labels = {
         'id': 'ID',
@@ -270,11 +269,6 @@ class SEOMetadataView(SecureModelView):
         'robots': 'Robots',
         'is_active': 'Actif',
         'updated_at': 'Mis à jour le'
-    }
-    form_widget_args = {
-        'description': {'rows': 3},
-        'keywords': {'rows': 2},
-        'og_description': {'rows': 3}
     }
 
 admin.add_view(UserManagementView(User, db.session, name='Utilisateurs'))
