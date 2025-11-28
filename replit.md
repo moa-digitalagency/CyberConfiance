@@ -29,7 +29,14 @@ I prefer that the agent adheres to existing architectural patterns and design de
 - **Security Analysis**: Provides analysis for URLs, files, domains, IPs, and hashes.
 - **QR Code Analyzer (Anti-Quishing)**:
     - Decodes QR codes from images or real-time camera feeds.
-    - Extracts and safely analyzes URLs, following redirect chains and detecting JavaScript redirects.
+    - **Comprehensive Multi-Protocol Redirect Detection**:
+        - HTTP redirects (301, 302, 303, 307, 308 status codes)
+        - Meta refresh tags parsed with BeautifulSoup
+        - JavaScript redirects (18+ patterns: window.location, document.location, location.href, setTimeout+location, history.pushState, etc.)
+        - HTTP header redirects (Refresh, Content-Location, Link rel=canonical)
+        - URL parameter redirects (common params: url, redirect, next, return_url, etc.)
+        - Frame/iframe full-page embed detection
+    - Session-backed HTTP client with realistic browser headers
     - Checks URLs against blacklists (e.g., VirusTotal).
     - Hardened with SSRF protection, DNS rebinding prevention, content-length limits, and cloud metadata endpoint protection.
 - **Prompt Analyzer (Anti-Injection)**:
