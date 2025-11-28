@@ -127,119 +127,148 @@ class QRCodeAnalyzerService:
     
     def follow_redirects_safely(self, url):
         redirect_chain = []
+        current_url = url
+        visited = set()
         js_redirects = []
         final_url = url
         
-        is_safe, error = self.is_safe_url(url)
-        if not is_safe:
-            redirect_chain.append({
-                'url': url,
-                'status': 'blocked',
-                'error': error
-            })
-            return {
-                'redirect_chain': redirect_chain,
-                'final_url': url,
-                'redirect_count': 0,
-                'js_redirects': []
-            }
+        request_headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Accept-Language': 'fr-FR,fr;q=0.9,en;q=0.8'
+        }
         
-        try:
-            response = requests.get(
-                url,
-                allow_redirects=True,
-                timeout=self.request_timeout,
-                headers={
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-                    'Accept-Language': 'fr-FR,fr;q=0.9,en;q=0.8'
-                },
-                verify=True,
-                stream=True
-            )
+        for i in range(self.max_redirects):
+            if current_url in visited:
+                redirect_chain.append({
+                    'url': current_url,
+                    'status': 'loop_detected',
+                    'error': 'Boucle de redirection détectée'
+                })
+                break
             
-            for i, resp in enumerate(response.history):
+            visited.add(current_url)
+            
+            is_safe, error = self.is_safe_url(current_url)
+            if not is_safe:
+                redirect_chain.append({
+                    'url': current_url,
+                    'status': 'blocked',
+                    'error': error
+                })
+                break
+            
+            try:
+                response = requests.head(
+                    current_url,
+                    allow_redirects=False,
+                    timeout=self.request_timeout,
+                    headers=request_headers,
+                    verify=True
+                )
+                
                 redirect_info = {
-                    'url': resp.url,
-                    'status_code': resp.status_code,
-                    'content_type': resp.headers.get('Content-Type', 'unknown'),
-                    'redirect_type': 'http'
+                    'url': current_url,
+                    'status_code': response.status_code,
+                    'content_type': response.headers.get('Content-Type', 'unknown'),
                 }
-                if resp.headers.get('Location'):
-                    redirect_info['redirect_to'] = resp.headers.get('Location')
-                redirect_chain.append(redirect_info)
-            
-            redirect_chain.append({
-                'url': response.url,
-                'status_code': response.status_code,
-                'content_type': response.headers.get('Content-Type', 'unknown'),
-            })
-            
-            final_url = response.url
-            
-            content_length = response.headers.get('Content-Length')
-            if content_length and int(content_length) > 5 * 1024 * 1024:
-                redirect_chain[-1]['warning'] = 'Contenu volumineux (> 5 MB)'
-            else:
+                
+                if 300 <= response.status_code < 400:
+                    next_url = response.headers.get('Location')
+                    if next_url:
+                        if not next_url.startswith('http'):
+                            next_url = urljoin(current_url, next_url)
+                        redirect_info['redirect_to'] = next_url
+                        redirect_info['redirect_type'] = 'http'
+                        redirect_chain.append(redirect_info)
+                        current_url = next_url
+                        continue
+                
                 if response.status_code == 200:
-                    content_type = response.headers.get('Content-Type', '')
-                    if 'text/html' in content_type:
-                        try:
-                            content = response.text[:50000]
-                            js_redirect = self.detect_js_redirects(content, response.url)
-                            if js_redirect:
-                                redirect_chain[-1]['js_redirect_detected'] = True
-                                redirect_chain[-1]['js_redirect_url'] = js_redirect
-                                js_redirects.append({
-                                    'from': response.url,
-                                    'to': js_redirect,
-                                    'type': 'javascript'
-                                })
-                                
-                                js_safe, js_error = self.is_safe_url(js_redirect)
-                                if js_safe:
-                                    try:
-                                        js_response = requests.head(
-                                            js_redirect,
-                                            allow_redirects=True,
-                                            timeout=5,
-                                            headers={'User-Agent': 'Mozilla/5.0'}
-                                        )
-                                        final_url = js_response.url
-                                        redirect_chain.append({
-                                            'url': js_response.url,
-                                            'status_code': js_response.status_code,
-                                            'redirect_type': 'javascript_follow'
-                                        })
-                                    except:
-                                        pass
-                        except Exception as e:
-                            redirect_chain[-1]['content_error'] = str(e)
-                            
-        except requests.exceptions.Timeout:
-            redirect_chain.append({
-                'url': url,
-                'status': 'timeout',
-                'error': 'Délai d\'attente dépassé (10s)'
-            })
-        except requests.exceptions.SSLError as e:
-            redirect_chain.append({
-                'url': url,
-                'status': 'ssl_error',
-                'error': f'Erreur de certificat SSL: {str(e)[:100]}'
-            })
-        except requests.exceptions.ConnectionError as e:
-            redirect_chain.append({
-                'url': url,
-                'status': 'connection_error',
-                'error': 'Impossible de se connecter au serveur'
-            })
-        except requests.exceptions.RequestException as e:
-            redirect_chain.append({
-                'url': url,
-                'status': 'error',
-                'error': str(e)[:200]
-            })
+                    content_response = requests.get(
+                        current_url,
+                        allow_redirects=False,
+                        timeout=self.request_timeout,
+                        headers=request_headers,
+                        verify=True,
+                        stream=True
+                    )
+                    
+                    content_length = content_response.headers.get('Content-Length')
+                    if content_length and int(content_length) > 5 * 1024 * 1024:
+                        redirect_info['warning'] = 'Contenu volumineux (> 5 MB)'
+                    else:
+                        content_type = content_response.headers.get('Content-Type', '')
+                        if 'text/html' in content_type:
+                            try:
+                                content = content_response.text[:50000]
+                                js_redirect = self.detect_js_redirects(content, current_url)
+                                if js_redirect:
+                                    redirect_info['js_redirect_detected'] = True
+                                    redirect_info['js_redirect_url'] = js_redirect
+                                    js_redirects.append({
+                                        'from': current_url,
+                                        'to': js_redirect,
+                                        'type': 'javascript'
+                                    })
+                            except Exception as e:
+                                redirect_info['content_error'] = str(e)[:100]
+                    
+                    content_response.close()
+                
+                redirect_chain.append(redirect_info)
+                final_url = current_url
+                break
+                
+            except requests.exceptions.Timeout:
+                redirect_chain.append({
+                    'url': current_url,
+                    'status': 'timeout',
+                    'error': 'Délai d\'attente dépassé (10s)'
+                })
+                break
+            except requests.exceptions.SSLError as e:
+                redirect_chain.append({
+                    'url': current_url,
+                    'status': 'ssl_error',
+                    'error': f'Erreur de certificat SSL: {str(e)[:100]}'
+                })
+                break
+            except requests.exceptions.ConnectionError:
+                redirect_chain.append({
+                    'url': current_url,
+                    'status': 'connection_error',
+                    'error': 'Impossible de se connecter au serveur'
+                })
+                break
+            except requests.exceptions.RequestException as e:
+                redirect_chain.append({
+                    'url': current_url,
+                    'status': 'error',
+                    'error': str(e)[:200]
+                })
+                break
+        
+        if js_redirects:
+            last_js = js_redirects[-1]['to']
+            js_safe, js_error = self.is_safe_url(last_js)
+            if js_safe and last_js not in visited:
+                try:
+                    js_response = requests.head(
+                        last_js,
+                        allow_redirects=False,
+                        timeout=5,
+                        headers={'User-Agent': 'Mozilla/5.0'},
+                        verify=True
+                    )
+                    redirect_chain.append({
+                        'url': last_js,
+                        'status_code': js_response.status_code,
+                        'redirect_type': 'javascript_follow'
+                    })
+                    final_url = last_js
+                except:
+                    pass
         
         return {
             'redirect_chain': redirect_chain,
