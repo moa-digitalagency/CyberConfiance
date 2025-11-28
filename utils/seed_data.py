@@ -246,6 +246,8 @@ def seed_site_settings(db):
         {'key': 'logo_dark', 'value': '/static/img/logo.png', 'description': 'Logo for dark theme', 'category': 'appearance', 'is_public': True},
         {'key': 'maintenance_mode', 'value': 'false', 'value_type': 'boolean', 'description': 'Mode maintenance activé', 'category': 'system', 'is_public': False},
         {'key': 'analytics_enabled', 'value': 'true', 'value_type': 'boolean', 'description': 'Activer les statistiques', 'category': 'system', 'is_public': False},
+        {'key': 'custom_head_code', 'value': '', 'value_type': 'textarea', 'description': 'Code personnalisé à injecter dans le <head> (analytics, pixels, etc.) - HTML/JS autorisé', 'category': 'advanced', 'is_public': False},
+        {'key': 'default_og_image', 'value': '/static/img/og-default.png', 'description': 'Image Open Graph par défaut pour le partage social', 'category': 'seo', 'is_public': True},
     ]
     
     created_count = 0
@@ -264,54 +266,182 @@ def seed_seo_metadata(db):
     """Seed default SEO metadata for main pages"""
     from models import SEOMetadata
     
+    default_og_image = '/static/img/og-default.png'
+    
     default_seo = [
         {
             'page_path': '/',
-            'title': 'CyberConfiance - Votre bouclier numérique en RDC',
-            'description': 'Plateforme de sensibilisation à la cybersécurité pour les entreprises et particuliers en République Démocratique du Congo. Apprenez à vous protéger des menaces numériques.',
-            'keywords': 'cybersécurité, RDC, Congo, sécurité numérique, protection données, formation cybersécurité',
+            'title': 'CyberConfiance - Votre bouclier numérique en Afrique',
+            'description': 'Plateforme de sensibilisation à la cybersécurité pour les entreprises et particuliers en Afrique francophone. Apprenez à vous protéger des menaces numériques.',
+            'keywords': 'cybersécurité, Afrique, sécurité numérique, protection données, formation cybersécurité, sensibilisation',
             'og_title': 'CyberConfiance - Sécurité Numérique pour Tous',
-            'og_description': 'Protégez votre entreprise et vos données avec CyberConfiance. Formation, outils et conseils en cybersécurité.',
+            'og_description': 'Protégez votre entreprise et vos données avec CyberConfiance. Formation, outils et conseils en cybersécurité adaptés au contexte africain.',
+            'og_image': default_og_image,
+            'robots': 'index, follow',
+            'is_active': True
+        },
+        {
+            'page_path': '/about',
+            'title': 'À Propos - CyberConfiance',
+            'description': 'Découvrez CyberConfiance, votre partenaire en cybersécurité en Afrique francophone. Notre mission, vision et engagement pour un espace numérique sûr.',
+            'keywords': 'à propos, CyberConfiance, mission, vision, cybersécurité Afrique',
+            'og_title': 'À Propos de CyberConfiance',
+            'og_description': 'Notre mission est de démocratiser la cybersécurité en Afrique francophone. Découvrez notre histoire et nos valeurs.',
+            'og_image': default_og_image,
             'robots': 'index, follow',
             'is_active': True
         },
         {
             'page_path': '/rules',
-            'title': '20 Règles d\'Or - CyberConfiance',
+            'title': '20 Règles d\'Or de la Cybersécurité - CyberConfiance',
             'description': 'Découvrez les 20 règles essentielles pour renforcer votre sécurité numérique au quotidien. Conseils pratiques et applicables immédiatement.',
-            'keywords': 'règles cybersécurité, bonnes pratiques sécurité, conseils protection',
+            'keywords': 'règles cybersécurité, bonnes pratiques sécurité, conseils protection, guide sécurité',
+            'og_title': '20 Règles d\'Or pour Votre Sécurité Numérique',
+            'og_description': 'Les 20 règles essentielles pour protéger vos données et votre vie privée en ligne. Guide pratique par CyberConfiance.',
+            'og_image': default_og_image,
             'robots': 'index, follow',
             'is_active': True
         },
         {
             'page_path': '/scenarios',
-            'title': 'Scénarios d\'Attaque - CyberConfiance',
-            'description': 'Apprenez à reconnaître et à vous protéger contre les cybermenaces actuelles avec nos scénarios d\'attaque détaillés.',
-            'keywords': 'scénarios attaque, cybermenaces, phishing, ransomware',
+            'title': 'Scénarios de Cybermenaces - CyberConfiance',
+            'description': 'Apprenez à reconnaître et à vous protéger contre les cybermenaces actuelles avec nos scénarios d\'attaque détaillés et réalistes.',
+            'keywords': 'scénarios attaque, cybermenaces, phishing, ransomware, arnaque en ligne',
+            'og_title': 'Scénarios de Cybermenaces Réelles',
+            'og_description': 'Comprenez les techniques des cybercriminels à travers des scénarios réels. Apprenez à vous protéger efficacement.',
+            'og_image': default_og_image,
             'robots': 'index, follow',
             'is_active': True
         },
         {
             'page_path': '/tools',
             'title': 'Outils de Cybersécurité - CyberConfiance',
-            'description': 'Découvrez notre collection d\'outils pour tester et améliorer votre sécurité numérique.',
-            'keywords': 'outils cybersécurité, test sécurité, analyse vulnérabilités',
+            'description': 'Découvrez notre collection d\'outils recommandés pour tester et améliorer votre sécurité numérique. Gratuits et professionnels.',
+            'keywords': 'outils cybersécurité, test sécurité, analyse vulnérabilités, antivirus, VPN',
+            'og_title': 'Outils Essentiels de Cybersécurité',
+            'og_description': 'Les meilleurs outils pour protéger vos appareils et données. Sélection vérifiée par nos experts.',
+            'og_image': default_og_image,
             'robots': 'index, follow',
             'is_active': True
         },
         {
             'page_path': '/glossary',
             'title': 'Glossaire Cybersécurité - CyberConfiance',
-            'description': 'Comprenez les termes techniques de la cybersécurité avec notre glossaire complet et accessible.',
-            'keywords': 'glossaire cybersécurité, termes techniques, définitions sécurité',
+            'description': 'Comprenez les termes techniques de la cybersécurité avec notre glossaire complet et accessible à tous les niveaux.',
+            'keywords': 'glossaire cybersécurité, termes techniques, définitions sécurité, vocabulaire cyber',
+            'og_title': 'Glossaire de la Cybersécurité',
+            'og_description': 'Tous les termes de la cybersécurité expliqués simplement. Devenez expert du vocabulaire cyber.',
+            'og_image': default_og_image,
             'robots': 'index, follow',
             'is_active': True
         },
         {
             'page_path': '/contact',
             'title': 'Contact - CyberConfiance',
-            'description': 'Contactez-nous pour toute question sur la cybersécurité ou nos services.',
-            'keywords': 'contact, support, cybersécurité RDC',
+            'description': 'Contactez notre équipe pour toute question sur la cybersécurité, nos services ou pour demander un accompagnement personnalisé.',
+            'keywords': 'contact, support, cybersécurité, consultation, aide',
+            'og_title': 'Contactez CyberConfiance',
+            'og_description': 'Notre équipe d\'experts est à votre disposition pour répondre à vos questions sur la cybersécurité.',
+            'og_image': default_og_image,
+            'robots': 'index, follow',
+            'is_active': True
+        },
+        {
+            'page_path': '/news',
+            'title': 'Actualités Cybersécurité - CyberConfiance',
+            'description': 'Restez informé des dernières actualités en cybersécurité. Menaces, tendances et conseils par nos experts.',
+            'keywords': 'actualités cybersécurité, news sécurité, menaces cyber, tendances',
+            'og_title': 'Actualités Cybersécurité',
+            'og_description': 'Les dernières nouvelles du monde de la cybersécurité. Restez informé pour rester protégé.',
+            'og_image': default_og_image,
+            'robots': 'index, follow',
+            'is_active': True
+        },
+        {
+            'page_path': '/quiz',
+            'title': 'Quiz de Sécurité - CyberConfiance',
+            'description': 'Évaluez vos connaissances en cybersécurité avec notre quiz interactif. Testez-vous et découvrez vos points d\'amélioration.',
+            'keywords': 'quiz cybersécurité, test sécurité, évaluation, formation',
+            'og_title': 'Quiz de Sécurité Numérique',
+            'og_description': 'Testez vos connaissances en cybersécurité en quelques minutes. Êtes-vous bien protégé ?',
+            'og_image': default_og_image,
+            'robots': 'index, follow',
+            'is_active': True
+        },
+        {
+            'page_path': '/security-analyzer',
+            'title': 'Analyseur de Sécurité - CyberConfiance',
+            'description': 'Analysez la sécurité de vos fichiers, URLs et domaines avec notre outil d\'analyse avancé. Détection de menaces en temps réel.',
+            'keywords': 'analyseur sécurité, scan virus, vérification URL, analyse fichier',
+            'og_title': 'Analyseur de Sécurité en Ligne',
+            'og_description': 'Vérifiez gratuitement la sécurité de vos fichiers et liens. Protection contre les menaces en temps réel.',
+            'og_image': default_og_image,
+            'robots': 'index, follow',
+            'is_active': True
+        },
+        {
+            'page_path': '/attack-types',
+            'title': 'Types d\'Attaques Cyber - CyberConfiance',
+            'description': 'Guide complet des différents types d\'attaques informatiques. Apprenez à les reconnaître et à vous en protéger.',
+            'keywords': 'types attaques, cyberattaques, malware, phishing, ransomware, DDoS',
+            'og_title': 'Guide des Types d\'Attaques Cyber',
+            'og_description': 'Connaissez votre ennemi : tous les types d\'attaques informatiques expliqués avec leurs méthodes de protection.',
+            'og_image': default_og_image,
+            'robots': 'index, follow',
+            'is_active': True
+        },
+        {
+            'page_path': '/resources',
+            'title': 'Ressources Cybersécurité - CyberConfiance',
+            'description': 'Accédez à nos ressources gratuites : guides, vidéos, articles et outils pour améliorer votre sécurité numérique.',
+            'keywords': 'ressources cybersécurité, guides, tutoriels, documentation, formation gratuite',
+            'og_title': 'Ressources Gratuites en Cybersécurité',
+            'og_description': 'Téléchargez nos guides et accédez à nos ressources pour renforcer votre sécurité numérique.',
+            'og_image': default_og_image,
+            'robots': 'index, follow',
+            'is_active': True
+        },
+        {
+            'page_path': '/osint-methodology',
+            'title': 'Méthodologie OSINT - CyberConfiance',
+            'description': 'Apprenez les techniques d\'investigation en sources ouvertes (OSINT). Guide méthodologique pour la recherche d\'informations.',
+            'keywords': 'OSINT, investigation, renseignement sources ouvertes, méthodologie recherche',
+            'og_title': 'Guide Méthodologique OSINT',
+            'og_description': 'Maîtrisez les techniques d\'investigation en sources ouvertes avec notre guide complet.',
+            'og_image': default_og_image,
+            'robots': 'index, follow',
+            'is_active': True
+        },
+        {
+            'page_path': '/services/sensibilisation',
+            'title': 'Sensibilisation Cybersécurité - CyberConfiance',
+            'description': 'Formations et ateliers de sensibilisation à la cybersécurité pour entreprises et organisations. Programmes adaptés à tous les niveaux.',
+            'keywords': 'sensibilisation, formation cybersécurité, atelier, entreprise, éducation',
+            'og_title': 'Programmes de Sensibilisation',
+            'og_description': 'Formez vos équipes à la cybersécurité avec nos programmes de sensibilisation adaptés.',
+            'og_image': default_og_image,
+            'robots': 'index, follow',
+            'is_active': True
+        },
+        {
+            'page_path': '/services/factchecking',
+            'title': 'Fact-Checking & Vérification - CyberConfiance',
+            'description': 'Service de vérification d\'informations et fact-checking. Luttez contre la désinformation avec nos experts.',
+            'keywords': 'fact-checking, vérification, désinformation, fake news, investigation',
+            'og_title': 'Service de Fact-Checking',
+            'og_description': 'Vérifiez l\'authenticité des informations avec notre service de fact-checking professionnel.',
+            'og_image': default_og_image,
+            'robots': 'index, follow',
+            'is_active': True
+        },
+        {
+            'page_path': '/services/cyberconsultation',
+            'title': 'Cyberconsultation & Audit - CyberConfiance',
+            'description': 'Consultation experte en cybersécurité et audits de sécurité. Accompagnement personnalisé pour votre organisation.',
+            'keywords': 'consultation, audit sécurité, conseil cybersécurité, accompagnement, expertise',
+            'og_title': 'Cyberconsultation Professionnelle',
+            'og_description': 'Bénéficiez de l\'expertise de nos consultants pour sécuriser votre organisation.',
+            'og_image': default_og_image,
             'robots': 'index, follow',
             'is_active': True
         }

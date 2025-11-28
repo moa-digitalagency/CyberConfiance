@@ -71,9 +71,44 @@ def create_app(config_class=Config):
     @app.context_processor
     def inject_site_settings():
         """Make site settings available to all templates"""
-        from models import SiteSettings
-        site_settings = SiteSettings.query.first()
-        return dict(site_settings=site_settings)
+        from models import SiteSettings, SEOMetadata
+        from urllib.parse import urljoin
+        
+        settings = {}
+        all_settings = SiteSettings.query.all()
+        for s in all_settings:
+            settings[s.key] = s.value
+        
+        class SettingsObj:
+            def __init__(self, data):
+                for key, value in data.items():
+                    setattr(self, key, value)
+            def get(self, key, default=None):
+                return getattr(self, key, default)
+        
+        site_settings = SettingsObj(settings) if settings else None
+        
+        current_path = request.path
+        seo_meta = SEOMetadata.query.filter_by(page_path=current_path, is_active=True).first()
+        
+        if not seo_meta:
+            seo_meta = SEOMetadata.query.filter_by(page_path='/', is_active=True).first()
+        
+        og_image_absolute = None
+        if seo_meta and seo_meta.og_image:
+            if seo_meta.og_image.startswith(('http://', 'https://')):
+                og_image_absolute = seo_meta.og_image
+            else:
+                og_image_absolute = urljoin(request.url_root, seo_meta.og_image.lstrip('/'))
+        
+        custom_head_code = settings.get('custom_head_code', '')
+        
+        return dict(
+            site_settings=site_settings, 
+            seo_meta=seo_meta,
+            og_image_absolute=og_image_absolute,
+            custom_head_code=custom_head_code
+        )
     
     @app.after_request
     def add_header(response):

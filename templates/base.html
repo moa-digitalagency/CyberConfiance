@@ -4,11 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{% block title %}CyberConfiance - Cybersécurité{% endblock %}</title>
-    <meta name="description" content="{% block description %}Plateforme de sensibilisation à la cybersécurité{% endblock %}">
+    
+    {% set page_title = seo_meta.title if seo_meta and seo_meta.title else 'CyberConfiance - Cybersécurité' %}
+    {% set page_description = seo_meta.description if seo_meta and seo_meta.description else 'Plateforme de sensibilisation à la cybersécurité pour vous protéger contre les menaces numériques.' %}
+    {% set page_keywords = seo_meta.keywords if seo_meta and seo_meta.keywords else 'cybersécurité, sécurité numérique, protection données, sensibilisation, cybermenaces' %}
+    {% set og_title = seo_meta.og_title if seo_meta and seo_meta.og_title else page_title %}
+    {% set og_description = seo_meta.og_description if seo_meta and seo_meta.og_description else page_description %}
+    {% set og_image = og_image_absolute if og_image_absolute else url_for('static', filename='img/og-default.png', _external=True) %}
+    {% set canonical_url = seo_meta.canonical_url if seo_meta and seo_meta.canonical_url else request.url %}
+    {% set robots = seo_meta.robots if seo_meta and seo_meta.robots else 'index, follow' %}
+    
+    <title>{% block title %}{{ page_title }}{% endblock %}</title>
+    <meta name="description" content="{% block description %}{{ page_description }}{% endblock %}">
+    <meta name="keywords" content="{{ page_keywords }}">
+    <meta name="robots" content="{{ robots }}">
+    <meta name="author" content="CyberConfiance">
+    <link rel="canonical" href="{{ canonical_url }}">
+    
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="CyberConfiance">
+    <meta property="og:title" content="{{ og_title }}">
+    <meta property="og:description" content="{{ og_description }}">
+    <meta property="og:image" content="{{ og_image }}">
+    <meta property="og:url" content="{{ request.url }}">
+    <meta property="og:locale" content="{{ session.get('language', 'fr') }}_{{ 'FR' if session.get('language', 'fr') == 'fr' else 'US' }}">
+    
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ og_title }}">
+    <meta name="twitter:description" content="{{ og_description }}">
+    <meta name="twitter:image" content="{{ og_image }}">
+    
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v={{ range(1, 99999) | random }}">
+    
+    {% if custom_head_code %}
+    {{ custom_head_code|safe }}
+    {% endif %}
+    
     <script>
         window.siteSettings = {
             logo_light_url: "{{ site_settings.logo_light if site_settings and site_settings.logo_light else url_for('static', filename='img/logo.png') }}",
