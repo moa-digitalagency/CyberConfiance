@@ -37,21 +37,21 @@ class PDFReportService:
             except:
                 pass
         
-        title_width = page.get_textlength(title, fontsize=28, fontname="hebo")
+        title_width = fitz.get_text_length(title, fontsize=28, fontname="helv")
         page.insert_text(((width - title_width) / 2, height/2 - 20), title, 
-                        fontsize=28, fontname="hebo", color=(1, 1, 1))
+                        fontsize=28, fontname="helv", color=(1, 1, 1))
         
-        subtitle_width = page.get_textlength(subtitle, fontsize=14)
+        subtitle_width = fitz.get_text_length(subtitle, fontsize=14, fontname="helv")
         page.insert_text(((width - subtitle_width) / 2, height/2 + 20), subtitle, 
-                        fontsize=14, color=(0.7, 0.7, 0.7))
+                        fontsize=14, fontname="helv", color=(0.7, 0.7, 0.7))
         
         timestamp = datetime.now().strftime("%d/%m/%Y")
-        ts_width = page.get_textlength(f"Genere le {timestamp}", fontsize=10)
+        ts_width = fitz.get_text_length(f"Genere le {timestamp}", fontsize=10, fontname="helv")
         page.insert_text(((width - ts_width) / 2, height - 80), f"Genere le {timestamp}", 
-                        fontsize=10, color=(0.5, 0.5, 0.5))
+                        fontsize=10, fontname="helv", color=(0.5, 0.5, 0.5))
         
         page.insert_text((30, height - 40), "cyberconfiance.com", 
-                        fontsize=10, color=self.primary_color)
+                        fontsize=10, fontname="helv", color=self.primary_color)
         
     def _add_header_footer(self, page, page_num, total_pages, ip_address, site_url="https://cyberconfiance.com", document_code=None, qr_url=None):
         """Ajoute en-tête et pied de page à une page"""
@@ -76,11 +76,11 @@ class PDFReportService:
                 
                 page.insert_image(qr_rect, stream=qr_bytes)
                 
-                qr_label = "Scannez pour accéder"
-                qr_label_width = page.get_textlength(qr_label, fontsize=7)
+                qr_label = "Scannez pour acceder"
+                qr_label_width = fitz.get_text_length(qr_label, fontsize=7, fontname="helv")
                 label_x = qr_x + (qr_size - qr_label_width) / 2
                 page.insert_text((label_x, qr_y + qr_size + 10), qr_label, 
-                                fontsize=7, color=(0.3, 0.3, 0.3))
+                                fontsize=7, fontname="helv", color=(0.3, 0.3, 0.3))
             except Exception as e:
                 pass
         
