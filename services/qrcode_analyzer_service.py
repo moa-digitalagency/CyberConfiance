@@ -61,7 +61,7 @@ class QRCodeAnalyzerService:
             (r'location\.href\s*=\s*["\']([^"\']+)["\']', 'location.href'),
             (r'location\.replace\s*\(\s*["\']([^"\']+)["\']', 'location.replace'),
             (r'location\.assign\s*\(\s*["\']([^"\']+)["\']', 'location.assign'),
-            (r'location\s*=\s*["\']([^"\']+)["\']', 'location'),
+            (r'(?<![\.\w])location\s*=\s*["\']([^"\']+)["\']', 'location'),
             (r'self\.location\s*=\s*["\']([^"\']+)["\']', 'self.location'),
             (r'top\.location\s*=\s*["\']([^"\']+)["\']', 'top.location'),
             (r'parent\.location\s*=\s*["\']([^"\']+)["\']', 'parent.location'),
@@ -70,11 +70,25 @@ class QRCodeAnalyzerService:
             (r'window\.navigate\s*\(\s*["\']([^"\']+)["\']', 'window.navigate'),
             (r'history\.pushState\s*\([^,]*,\s*[^,]*,\s*["\']([^"\']+)["\']', 'history.pushState'),
             (r'history\.replaceState\s*\([^,]*,\s*[^,]*,\s*["\']([^"\']+)["\']', 'history.replaceState'),
+            (r'document\.write\s*\([^)]*<meta[^>]*refresh[^>]*url\s*=\s*([^"\'>\s]+)', 'document.write+meta'),
         ]
         
         self.js_timeout_redirect_patterns = [
             (r'setTimeout\s*\(\s*(?:function\s*\(\)\s*\{[^}]*location[^}]*\}|[^,]*location[^,]*)\s*,\s*(\d+)', 'setTimeout+location'),
             (r'setInterval\s*\(\s*(?:function\s*\(\)\s*\{[^}]*location[^}]*\}|[^,]*location[^,]*)\s*,', 'setInterval+location'),
+            (r'setTimeout\s*\([^)]*(?:window\.location|document\.location|location\.href)[^)]*,\s*\d+\)', 'setTimeout+redirect'),
+            (r'requestAnimationFrame\s*\([^)]*(?:location|redirect)[^)]*\)', 'raf+redirect'),
+        ]
+        
+        self.meta_refresh_patterns = [
+            r'<meta[^>]*http-equiv\s*=\s*["\']?refresh["\']?[^>]*content\s*=\s*["\']?\d*;?\s*url\s*=\s*["\']?(https?://[^"\'>\s;]+)',
+            r'<meta[^>]*content\s*=\s*["\']?\d*;?\s*url\s*=\s*["\']?(https?://[^"\'>\s;]+)[^>]*http-equiv\s*=\s*["\']?refresh',
+        ]
+        
+        self.link_redirect_patterns = [
+            r'<a[^>]*href\s*=\s*["\']([^"\']+)["\'][^>]*(?:onclick|rel\s*=\s*["\']?noopener)',
+            r'<link[^>]*rel\s*=\s*["\']?canonical["\']?[^>]*href\s*=\s*["\']([^"\']+)',
+            r'<base[^>]*href\s*=\s*["\']([^"\']+)',
         ]
         
         self.dangerous_patterns = [
@@ -177,6 +191,7 @@ class QRCodeAnalyzerService:
     
     def _parse_meta_refresh(self, soup, base_url):
         redirects = []
+        found_urls = set()
         
         for meta in soup.find_all('meta'):
             http_equiv = meta.get('http-equiv', '').lower()
@@ -184,16 +199,49 @@ class QRCodeAnalyzerService:
                 content = meta.get('content', '')
                 url_match = re.search(r'url\s*=\s*["\']?([^"\'>\s;]+)', content, re.IGNORECASE)
                 if url_match:
-                    redirect_url = url_match.group(1).strip()
+                    redirect_url = url_match.group(1).strip().strip('"\'')
                     if not redirect_url.startswith('http'):
                         redirect_url = urljoin(base_url, redirect_url)
-                    delay_match = re.search(r'^(\d+)', content)
-                    delay = int(delay_match.group(1)) if delay_match else 0
-                    redirects.append({
-                        'url': redirect_url,
-                        'type': 'meta_refresh',
-                        'delay': delay
-                    })
+                    if redirect_url not in found_urls:
+                        found_urls.add(redirect_url)
+                        delay_match = re.search(r'^(\d+)', content)
+                        delay = int(delay_match.group(1)) if delay_match else 0
+                        redirects.append({
+                            'url': redirect_url,
+                            'type': 'meta_refresh',
+                            'delay': delay
+                        })
+                else:
+                    simple_match = re.search(r'^(\d+);\s*([^\s"\']+)', content)
+                    if simple_match:
+                        redirect_url = simple_match.group(2).strip().strip('"\'')
+                        if not redirect_url.startswith('http'):
+                            redirect_url = urljoin(base_url, redirect_url)
+                        if redirect_url not in found_urls:
+                            found_urls.add(redirect_url)
+                            redirects.append({
+                                'url': redirect_url,
+                                'type': 'meta_refresh',
+                                'delay': int(simple_match.group(1))
+                            })
+        
+        html_content = str(soup) if soup else ''
+        for pattern in self.meta_refresh_patterns:
+            matches = re.finditer(pattern, html_content, re.IGNORECASE | re.DOTALL)
+            for match in matches:
+                try:
+                    redirect_url = match.group(1).strip().strip('"\'')
+                    if not redirect_url.startswith('http'):
+                        redirect_url = urljoin(base_url, redirect_url)
+                    if redirect_url not in found_urls:
+                        found_urls.add(redirect_url)
+                        redirects.append({
+                            'url': redirect_url,
+                            'type': 'meta_refresh_pattern',
+                            'delay': 0
+                        })
+                except:
+                    pass
         
         return redirects
     
@@ -201,27 +249,28 @@ class QRCodeAnalyzerService:
         redirects = []
         found_urls = set()
         
+        all_script_content = []
         scripts = soup.find_all('script')
         for script in scripts:
             script_content = script.string or ''
+            all_script_content.append(script_content)
             
             for pattern, redirect_type in self.js_redirect_patterns:
                 matches = re.finditer(pattern, script_content, re.IGNORECASE | re.DOTALL)
                 for match in matches:
-                    url = match.group(1)
-                    if url and url not in found_urls and not url.startswith('#'):
-                        if not url.startswith('http') and not url.startswith('//'):
-                            url = urljoin(base_url, url)
-                        elif url.startswith('//'):
-                            parsed_base = urlparse(base_url)
-                            url = f"{parsed_base.scheme}:{url}"
-                        
-                        found_urls.add(url)
-                        redirects.append({
-                            'url': url,
-                            'type': f'javascript_{redirect_type}',
-                            'method': redirect_type
-                        })
+                    try:
+                        raw_url = match.group(1)
+                        if raw_url and not raw_url.startswith('#'):
+                            url = self._normalize_url(raw_url, base_url)
+                            if url and url not in found_urls and self._is_valid_url(url):
+                                found_urls.add(url)
+                                redirects.append({
+                                    'url': url,
+                                    'type': f'javascript_{redirect_type}',
+                                    'method': redirect_type
+                                })
+                    except:
+                        pass
             
             for pattern, redirect_type in self.js_timeout_redirect_patterns:
                 matches = re.finditer(pattern, script_content, re.IGNORECASE | re.DOTALL)
@@ -229,38 +278,161 @@ class QRCodeAnalyzerService:
                     for js_pattern, js_type in self.js_redirect_patterns:
                         url_match = re.search(js_pattern, script_content, re.IGNORECASE)
                         if url_match:
-                            url = url_match.group(1)
-                            if url and url not in found_urls:
-                                if not url.startswith('http'):
-                                    url = urljoin(base_url, url)
+                            try:
+                                raw_url = url_match.group(1)
+                                if raw_url:
+                                    url = self._normalize_url(raw_url, base_url)
+                                    if url and url not in found_urls and self._is_valid_url(url):
+                                        found_urls.add(url)
+                                        redirects.append({
+                                            'url': url,
+                                            'type': f'javascript_{redirect_type}',
+                                            'method': redirect_type,
+                                            'delayed': True
+                                        })
+                            except:
+                                pass
+        
+        inline_scripts = re.findall(r'<script[^>]*>(.*?)</script>', html_content, re.IGNORECASE | re.DOTALL)
+        for script_content in inline_scripts:
+            all_script_content.append(script_content)
+            for pattern, redirect_type in self.js_redirect_patterns:
+                matches = re.finditer(pattern, script_content, re.IGNORECASE | re.DOTALL)
+                for match in matches:
+                    try:
+                        raw_url = match.group(1)
+                        if raw_url and not raw_url.startswith('#'):
+                            url = self._normalize_url(raw_url, base_url)
+                            if url and url not in found_urls and self._is_valid_url(url):
                                 found_urls.add(url)
                                 redirects.append({
                                     'url': url,
                                     'type': f'javascript_{redirect_type}',
-                                    'method': redirect_type,
-                                    'delayed': True
+                                    'method': redirect_type
                                 })
+                    except:
+                        pass
         
-        inline_scripts = re.findall(r'<script[^>]*>(.*?)</script>', html_content, re.IGNORECASE | re.DOTALL)
-        for script_content in inline_scripts:
-            for pattern, redirect_type in self.js_redirect_patterns:
-                matches = re.finditer(pattern, script_content, re.IGNORECASE | re.DOTALL)
-                for match in matches:
+        full_script_text = '\n'.join(all_script_content)
+        
+        var_redirect_patterns = [
+            r'(?:var|let|const)\s+\w+\s*=\s*["\']([^"\']+)["\'].*?(?:window\.location|location\.href|location\s*=)',
+            r'(?:redirect|next|url|goto|target|link)(?:Url|URL|_url)?\s*[=:]\s*["\']([^"\']+)["\']',
+            r'data-redirect\s*=\s*["\']([^"\']+)["\']',
+            r'data-url\s*=\s*["\']([^"\']+)["\']',
+            r'data-href\s*=\s*["\']([^"\']+)["\']',
+        ]
+        
+        for pattern in var_redirect_patterns:
+            matches = re.finditer(pattern, full_script_text, re.IGNORECASE | re.DOTALL)
+            for match in matches:
+                try:
                     url = match.group(1)
-                    if url and url not in found_urls and not url.startswith('#'):
-                        if not url.startswith('http') and not url.startswith('//'):
-                            url = urljoin(base_url, url)
-                        elif url.startswith('//'):
-                            parsed_base = urlparse(base_url)
-                            url = f"{parsed_base.scheme}:{url}"
-                        found_urls.add(url)
-                        redirects.append({
-                            'url': url,
-                            'type': f'javascript_{redirect_type}',
-                            'method': redirect_type
-                        })
+                    if url and url not in found_urls and url.startswith('http'):
+                        if self._is_valid_url(url):
+                            found_urls.add(url)
+                            redirects.append({
+                                'url': url,
+                                'type': 'javascript_variable',
+                                'method': 'variable_assignment'
+                            })
+                except:
+                    pass
+        
+        encoded_url_patterns = [
+            r'atob\s*\(\s*["\']([A-Za-z0-9+/=]+)["\']',
+            r'decodeURIComponent\s*\(\s*["\']([^"\']+)["\']',
+            r'unescape\s*\(\s*["\']([^"\']+)["\']',
+        ]
+        
+        for pattern in encoded_url_patterns:
+            matches = re.finditer(pattern, full_script_text, re.IGNORECASE)
+            for match in matches:
+                try:
+                    encoded = match.group(1)
+                    if 'atob' in pattern:
+                        import base64
+                        decoded = base64.b64decode(encoded).decode('utf-8')
+                    else:
+                        decoded = unquote(encoded)
+                    
+                    if decoded.startswith('http') and decoded not in found_urls:
+                        if self._is_valid_url(decoded):
+                            found_urls.add(decoded)
+                            redirects.append({
+                                'url': decoded,
+                                'type': 'javascript_encoded',
+                                'method': 'encoded_url'
+                            })
+                except:
+                    pass
         
         return redirects
+    
+    def _normalize_url(self, url, base_url):
+        """Normalize a URL - only return valid absolute HTTP/HTTPS URLs"""
+        if not url:
+            return None
+        
+        url = url.strip().strip('"\'')
+        
+        code_indicators = ['${', '`', '=>', '&&', '||', 'function', 'return ', 'var ', 'let ', 'const ']
+        if any(c in url for c in code_indicators):
+            return None
+        
+        if '(' in url and ')' in url:
+            return None
+        
+        if url.startswith('#') or url.startswith('javascript:') or url.startswith('data:') or url.startswith('mailto:') or url.startswith('tel:'):
+            return None
+        
+        if url.startswith('//'):
+            parsed_base = urlparse(base_url)
+            url = f"{parsed_base.scheme}:{url}"
+        elif url.startswith('http://') or url.startswith('https://'):
+            pass
+        elif url.startswith('/') or url.startswith('../') or url.startswith('./'):
+            url = urljoin(base_url, url)
+        elif re.match(r'^[\w\-./]+(?:\?[\w\-=&%]+)?$', url):
+            url = urljoin(base_url, url)
+        else:
+            return None
+        
+        if self._is_valid_url(url):
+            return url
+        return None
+    
+    def _is_valid_url(self, url):
+        """Check if URL is a valid absolute HTTP/HTTPS URL"""
+        if not url:
+            return False
+        
+        lower_url = url.lower()
+        
+        invalid_prefixes = ['javascript:', 'data:', 'vbscript:', 'about:', 'blob:', '#', 'mailto:', 'tel:']
+        for prefix in invalid_prefixes:
+            if lower_url.startswith(prefix):
+                return False
+        
+        if not (lower_url.startswith('http://') or lower_url.startswith('https://')):
+            return False
+        
+        invalid_substrings = ['.replace(', '.href.', 'function(', '=>', '${', '`']
+        for sub in invalid_substrings:
+            if sub in url:
+                return False
+        
+        try:
+            parsed = urlparse(url)
+            if parsed.scheme not in ['http', 'https']:
+                return False
+            if not parsed.netloc:
+                return False
+            if not '.' in parsed.netloc and parsed.netloc != 'localhost':
+                return False
+            return True
+        except:
+            return False
     
     def _parse_link_redirects(self, soup, base_url):
         redirects = []

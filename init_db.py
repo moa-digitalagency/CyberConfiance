@@ -7,10 +7,152 @@ Usage:
     python init_db.py           # Full initialization
     python init_db.py --reset   # Drop all tables and reinitialize (DANGER!)
     python init_db.py --check   # Verify all models are loaded
+    python init_db.py --verify-libs  # Verify all libraries are available
 """
 
 import os
 import sys
+import ctypes
+import ctypes.util
+
+
+def verify_critical_libraries():
+    """Verify all critical libraries are available for deployment"""
+    print("\n[LIBRARIES] Verifying critical libraries for deployment...")
+    
+    libraries_status = {}
+    all_ok = True
+    
+    # 1. Verify zbar library for QR code scanning
+    print("  Checking zbar/pyzbar...")
+    try:
+        # First, patch find_library to locate libzbar.so.0
+        original_find_library = ctypes.util.find_library
+        def patched_find_library(name):
+            if name == 'zbar':
+                zbar_paths = [
+                    '/nix/store/lcjf0hd46s7b16vr94q3bcas7yg05c3c-zbar-0.23.93-lib/lib/libzbar.so.0',
+                    '/usr/lib/libzbar.so.0',
+                    '/usr/lib/x86_64-linux-gnu/libzbar.so.0',
+                ]
+                for path in zbar_paths:
+                    if os.path.exists(path):
+                        return path
+            return original_find_library(name)
+        
+        ctypes.util.find_library = patched_find_library
+        
+        # Now try to load zbar and import pyzbar
+        zbar_lib = None
+        zbar_paths = [
+            '/nix/store/lcjf0hd46s7b16vr94q3bcas7yg05c3c-zbar-0.23.93-lib/lib/libzbar.so.0',
+        ]
+        for path in zbar_paths:
+            if os.path.exists(path):
+                zbar_lib = ctypes.CDLL(path)
+                break
+        
+        if zbar_lib:
+            from pyzbar import pyzbar
+            libraries_status['pyzbar'] = True
+            print("    ✓ pyzbar/zbar: OK")
+        else:
+            libraries_status['pyzbar'] = False
+            print("    ✗ pyzbar/zbar: Library not found")
+            all_ok = False
+    except Exception as e:
+        libraries_status['pyzbar'] = False
+        print(f"    ✗ pyzbar/zbar: {str(e)[:100]}")
+        all_ok = False
+    
+    # 2. Verify PIL/Pillow for image processing
+    print("  Checking PIL/Pillow...")
+    try:
+        from PIL import Image
+        libraries_status['pillow'] = True
+        print("    ✓ PIL/Pillow: OK")
+    except Exception as e:
+        libraries_status['pillow'] = False
+        print(f"    ✗ PIL/Pillow: {str(e)[:100]}")
+        all_ok = False
+    
+    # 3. Verify PyMuPDF (fitz) for PDF generation
+    print("  Checking PyMuPDF (fitz)...")
+    try:
+        import fitz
+        libraries_status['pymupdf'] = True
+        print("    ✓ PyMuPDF: OK")
+    except Exception as e:
+        libraries_status['pymupdf'] = False
+        print(f"    ✗ PyMuPDF: {str(e)[:100]}")
+        all_ok = False
+    
+    # 4. Verify OpenCV for image processing
+    print("  Checking OpenCV...")
+    try:
+        import cv2
+        libraries_status['opencv'] = True
+        print("    ✓ OpenCV: OK")
+    except Exception as e:
+        libraries_status['opencv'] = False
+        print(f"    ✗ OpenCV: {str(e)[:100]}")
+        all_ok = False
+    
+    # 5. Verify requests for HTTP operations
+    print("  Checking requests...")
+    try:
+        import requests
+        libraries_status['requests'] = True
+        print("    ✓ requests: OK")
+    except Exception as e:
+        libraries_status['requests'] = False
+        print(f"    ✗ requests: {str(e)[:100]}")
+        all_ok = False
+    
+    # 6. Verify BeautifulSoup for HTML parsing
+    print("  Checking BeautifulSoup...")
+    try:
+        from bs4 import BeautifulSoup
+        libraries_status['beautifulsoup'] = True
+        print("    ✓ BeautifulSoup: OK")
+    except Exception as e:
+        libraries_status['beautifulsoup'] = False
+        print(f"    ✗ BeautifulSoup: {str(e)[:100]}")
+        all_ok = False
+    
+    # 7. Verify qrcode for QR code generation
+    print("  Checking qrcode...")
+    try:
+        import qrcode
+        libraries_status['qrcode'] = True
+        print("    ✓ qrcode: OK")
+    except Exception as e:
+        libraries_status['qrcode'] = False
+        print(f"    ✗ qrcode: {str(e)[:100]}")
+        all_ok = False
+    
+    # 8. Verify magic for file type detection
+    print("  Checking python-magic...")
+    try:
+        import magic
+        libraries_status['magic'] = True
+        print("    ✓ python-magic: OK")
+    except Exception as e:
+        libraries_status['magic'] = False
+        print(f"    ✗ python-magic: {str(e)[:100]}")
+        all_ok = False
+    
+    # Summary
+    if all_ok:
+        print("\n✓ All critical libraries verified successfully!")
+    else:
+        print("\n⚠️  Some libraries are missing - deployment may have issues")
+        missing = [k for k, v in libraries_status.items() if not v]
+        print(f"   Missing: {', '.join(missing)}")
+    
+    return all_ok, libraries_status
+
+
 from __init__ import create_app, db
 from utils.seed_data import seed_all_data
 
@@ -101,15 +243,22 @@ def check_vps_compatibility():
         db.session.rollback()
         return False
 
-def init_database(reset=False):
+def init_database(reset=False, verify_libs=True):
     """Initialize database and seed data
     
     Args:
         reset: If True, drop all tables before recreating (DANGER!)
+        verify_libs: If True, verify critical libraries before init
     """
     print("=" * 80)
     print("DATABASE INITIALIZATION")
     print("=" * 80)
+    
+    # Verify libraries first
+    if verify_libs:
+        libs_ok, _ = verify_critical_libraries()
+        if not libs_ok:
+            print("\n⚠️  Some libraries are missing - continuing with database init...")
     
     app = create_app()
     
@@ -221,6 +370,22 @@ def init_database(reset=False):
             return False
 
 if __name__ == '__main__':
+    # Handle --verify-libs flag
+    if '--verify-libs' in sys.argv:
+        libs_ok, status = verify_critical_libraries()
+        print("\nLibrary Status Summary:")
+        for lib, ok in status.items():
+            print(f"  {lib}: {'✓' if ok else '✗'}")
+        sys.exit(0 if libs_ok else 1)
+    
+    # Handle --check flag
+    if '--check' in sys.argv:
+        libs_ok, _ = verify_critical_libraries()
+        app = create_app()
+        with app.app_context():
+            models_ok = verify_models_loaded()
+        sys.exit(0 if (libs_ok and models_ok) else 1)
+    
     reset_mode = '--reset' in sys.argv or '-r' in sys.argv
     success = init_database(reset=reset_mode)
     sys.exit(0 if success else 1)

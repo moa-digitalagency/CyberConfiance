@@ -75,12 +75,6 @@ class PDFReportService:
                 qr_rect = fitz.Rect(qr_x, qr_y, qr_x + qr_size, qr_y + qr_size)
                 
                 page.insert_image(qr_rect, stream=qr_bytes)
-                
-                qr_label = "Scannez pour acceder"
-                qr_label_width = fitz.get_text_length(qr_label, fontsize=7, fontname="helv")
-                label_x = qr_x + (qr_size - qr_label_width) / 2
-                page.insert_text((label_x, qr_y + qr_size + 10), qr_label, 
-                                fontsize=7, fontname="helv", color=(0.3, 0.3, 0.3))
             except Exception as e:
                 pass
         
@@ -636,19 +630,12 @@ class PDFReportService:
                         fontsize=10, color=(0.3, 0.3, 0.3))
         y_pos += 40
         
-        page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + 100), color=None, fill=(0.95, 0.95, 0.95))
+        page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + 70), color=None, fill=(0.95, 0.95, 0.95))
         y_pos += 15
         
         page.insert_text((40, y_pos), "INFORMATIONS DE L'ANALYSE", 
                         fontsize=12, fontname="helv")
         y_pos += 20
-        
-        page.insert_text((40, y_pos), f"Date de l'analyse: {analysis.created_at.strftime('%d/%m/%Y a %H:%M:%S')}", 
-                        fontsize=10)
-        y_pos += 15
-        
-        page.insert_text((40, y_pos), f"Code document: {analysis.document_code or 'N/A'}", fontsize=10)
-        y_pos += 15
         
         page.insert_text((40, y_pos), f"Nombre de redirections detectees: {analysis.redirect_count or 0}", 
                         fontsize=10, color=self.warning_color if (analysis.redirect_count or 0) > 0 else self.success_color)
@@ -814,19 +801,12 @@ class PDFReportService:
                         fontsize=10, color=(0.3, 0.3, 0.3))
         y_pos += 40
         
-        page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + 100), color=None, fill=(0.95, 0.95, 0.95))
+        page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + 70), color=None, fill=(0.95, 0.95, 0.95))
         y_pos += 15
         
         page.insert_text((40, y_pos), "INFORMATIONS DE L'ANALYSE", 
                         fontsize=12, fontname="helv")
         y_pos += 20
-        
-        page.insert_text((40, y_pos), f"Date de l'analyse: {analysis.created_at.strftime('%d/%m/%Y a %H:%M:%S')}", 
-                        fontsize=10)
-        y_pos += 15
-        
-        page.insert_text((40, y_pos), f"Code document: {analysis.document_code or 'N/A'}", fontsize=10)
-        y_pos += 15
         
         page.insert_text((40, y_pos), f"Longueur du prompt: {analysis.prompt_length or 0} caracteres", fontsize=10)
         y_pos += 15
