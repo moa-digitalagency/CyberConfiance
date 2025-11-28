@@ -1,0 +1,121 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Éditer SEO - {{ seo.page_path }} - Administration{% endblock %}
+
+{% block content %}
+<div class="admin-header">
+    <h1>Éditer les métadonnées SEO</h1>
+    <p>Modification des paramètres SEO pour <strong style="color: var(--accent-blue);">{{ seo.page_path }}</strong></p>
+</div>
+
+<div class="admin-toolbar">
+    <div class="toolbar-left">
+        <a href="{{ url_for('admin_panel.seo_settings') }}" class="btn btn-secondary">&larr; Retour à la liste</a>
+    </div>
+</div>
+
+<div class="admin-card">
+    <form method="POST" action="{{ url_for('admin_panel.seo_edit', seo_id=seo.id) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        <div style="display: grid; gap: 1.5rem;">
+            <div>
+                <label style="display: block; color: var(--text-primary); margin-bottom: 0.5rem; font-weight: 600;">
+                    Chemin de la page
+                </label>
+                <input type="text" name="page_path" value="{{ seo.page_path }}" required class="admin-filter-input" style="width: 100%;">
+                <small style="color: var(--text-secondary);">Exemple: /, /rules, /contact</small>
+            </div>
+            
+            <div>
+                <label style="display: block; color: var(--text-primary); margin-bottom: 0.5rem; font-weight: 600;">
+                    Titre SEO
+                </label>
+                <input type="text" name="title" value="{{ seo.title or '' }}" class="admin-filter-input" style="width: 100%;">
+                <small style="color: var(--text-secondary);">Le titre qui apparaîtra dans les résultats de recherche</small>
+            </div>
+            
+            <div>
+                <label style="display: block; color: var(--text-primary); margin-bottom: 0.5rem; font-weight: 600;">
+                    Description
+                </label>
+                <textarea name="description" class="admin-filter-input" rows="3" style="width: 100%;">{{ seo.description or '' }}</textarea>
+                <small style="color: var(--text-secondary);">Description qui apparaîtra dans les résultats de recherche (160 caractères max recommandés)</small>
+            </div>
+            
+            <div>
+                <label style="display: block; color: var(--text-primary); margin-bottom: 0.5rem; font-weight: 600;">
+                    Mots-clés
+                </label>
+                <textarea name="keywords" class="admin-filter-input" rows="2" style="width: 100%;">{{ seo.keywords or '' }}</textarea>
+                <small style="color: var(--text-secondary);">Mots-clés séparés par des virgules</small>
+            </div>
+            
+            <hr style="border-color: rgba(59, 130, 246, 0.2); margin: 1rem 0;">
+            <h4 style="color: var(--text-primary); margin: 0;">Open Graph (partage sur les réseaux sociaux)</h4>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div>
+                    <label style="display: block; color: var(--text-primary); margin-bottom: 0.5rem; font-weight: 600;">
+                        OG Title
+                    </label>
+                    <input type="text" name="og_title" value="{{ seo.og_title or '' }}" class="admin-filter-input" style="width: 100%;">
+                </div>
+                
+                <div>
+                    <label style="display: block; color: var(--text-primary); margin-bottom: 0.5rem; font-weight: 600;">
+                        OG Image URL
+                    </label>
+                    <input type="text" name="og_image" value="{{ seo.og_image or '' }}" class="admin-filter-input" style="width: 100%;">
+                </div>
+            </div>
+            
+            <div>
+                <label style="display: block; color: var(--text-primary); margin-bottom: 0.5rem; font-weight: 600;">
+                    OG Description
+                </label>
+                <textarea name="og_description" class="admin-filter-input" rows="2" style="width: 100%;">{{ seo.og_description or '' }}</textarea>
+            </div>
+            
+            <hr style="border-color: rgba(59, 130, 246, 0.2); margin: 1rem 0;">
+            <h4 style="color: var(--text-primary); margin: 0;">Paramètres avancés</h4>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div>
+                    <label style="display: block; color: var(--text-primary); margin-bottom: 0.5rem; font-weight: 600;">
+                        URL Canonique
+                    </label>
+                    <input type="text" name="canonical_url" value="{{ seo.canonical_url or '' }}" class="admin-filter-input" style="width: 100%;">
+                </div>
+                
+                <div>
+                    <label style="display: block; color: var(--text-primary); margin-bottom: 0.5rem; font-weight: 600;">
+                        Robots
+                    </label>
+                    <input type="text" name="robots" value="{{ seo.robots or 'index, follow' }}" class="admin-filter-input" style="width: 100%;">
+                </div>
+            </div>
+            
+            <div>
+                <label style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-primary); cursor: pointer;">
+                    <input type="checkbox" name="is_active" {% if seo.is_active %}checked{% endif %} style="width: 18px; height: 18px;">
+                    <span>Activer ces métadonnées SEO</span>
+                </label>
+            </div>
+            
+            <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(59, 130, 246, 0.2);">
+                <a href="{{ url_for('admin_panel.seo_settings') }}" class="btn btn-secondary">Annuler</a>
+                <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="admin-card" style="margin-top: 2rem; border-color: rgba(239, 68, 68, 0.3);">
+    <h4 style="color: #ef4444; margin-bottom: 1rem;">Zone de danger</h4>
+    <p style="color: var(--text-secondary); margin-bottom: 1rem;">Supprimer définitivement cette entrée SEO. Cette action est irréversible.</p>
+    <form method="POST" action="{{ url_for('admin_panel.seo_delete', seo_id=seo.id) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette entrée SEO pour {{ seo.page_path }} ?')">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        <button type="submit" class="btn btn-danger">Supprimer cette entrée SEO</button>
+    </form>
+</div>
+{% endblock %}

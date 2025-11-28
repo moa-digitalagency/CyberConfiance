@@ -489,6 +489,51 @@ def seo_settings():
     
     return render_template('admin/seo_settings.html', seo_pages=seo_pages)
 
+@bp.route('/settings/seo/edit/<int:seo_id>', methods=['GET', 'POST'])
+@admin_required
+def seo_edit(seo_id):
+    """Éditer une entrée SEO spécifique"""
+    seo = SEOMetadata.query.get_or_404(seo_id)
+    
+    if request.method == 'POST':
+        seo.page_path = request.form.get('page_path')
+        seo.title = request.form.get('title')
+        seo.description = request.form.get('description')
+        seo.keywords = request.form.get('keywords')
+        seo.og_title = request.form.get('og_title')
+        seo.og_description = request.form.get('og_description')
+        seo.og_image = request.form.get('og_image')
+        seo.canonical_url = request.form.get('canonical_url')
+        seo.robots = request.form.get('robots')
+        seo.is_active = request.form.get('is_active') == 'on'
+        seo.updated_by = current_user.id
+        
+        db.session.commit()
+        log_activity('ADMIN_SEO_UPDATE', f'Mise à jour SEO pour {seo.page_path}', success=True)
+        flash(f'Paramètres SEO pour {seo.page_path} mis à jour avec succès', 'success')
+        return redirect(url_for('admin_panel.seo_settings'))
+    
+    log_activity('ADMIN_SEO_EDIT_VIEW', f'Édition SEO #{seo_id}')
+    return render_template('admin/seo_edit.html', seo=seo)
+
+@bp.route('/settings/seo/delete/<int:seo_id>', methods=['POST'])
+@admin_required
+def seo_delete(seo_id):
+    """Supprimer une entrée SEO"""
+    seo = SEOMetadata.query.get_or_404(seo_id)
+    page_path = seo.page_path
+    
+    try:
+        db.session.delete(seo)
+        db.session.commit()
+        log_activity('ADMIN_SEO_DELETE', f'Suppression SEO pour {page_path}', success=True)
+        flash(f'Entrée SEO pour {page_path} supprimée', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Erreur lors de la suppression: {str(e)}', 'danger')
+    
+    return redirect(url_for('admin_panel.seo_settings'))
+
 
 @bp.route('/blog')
 @moderator_required

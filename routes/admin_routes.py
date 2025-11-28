@@ -2,13 +2,11 @@ from flask import Blueprint, render_template, redirect, url_for
 from flask_admin.contrib.sqla import ModelView
 from flask_login import current_user
 from markupsafe import Markup
-from wtforms import StringField, TextAreaField, BooleanField
-from flask_admin.form import BaseForm
 import __init__ as app_module
 db = app_module.db
 admin = app_module.admin
 from models import (User, BreachAnalysis, QuizResult, SecurityAnalysis, ActivityLog, 
-                    SecurityLog, SiteSettings, SEOMetadata, RequestSubmission)
+                    SecurityLog, SiteSettings, RequestSubmission)
 
 bp = Blueprint('admin_bp', __name__, url_prefix='/admin_bp')
 
@@ -248,43 +246,6 @@ class SiteSettingsView(SecureModelView):
     }
     form_excluded_columns = ['updated_by', 'updater']
 
-class SEOMetadataFormClass(BaseForm):
-    page_path = StringField('Chemin de page')
-    title = StringField('Titre')
-    description = TextAreaField('Description')
-    keywords = TextAreaField('Mots-clés')
-    og_title = StringField('Titre OG')
-    og_description = TextAreaField('Description OG')
-    og_image = StringField('Image OG')
-    canonical_url = StringField('URL canonique')
-    robots = StringField('Robots')
-    is_active = BooleanField('Actif')
-
-class SEOMetadataView(SecureModelView):
-    column_list = ['id', 'page_path', 'title', 'is_active', 'updated_at']
-    column_searchable_list = ['page_path', 'title', 'description']
-    column_filters = ['is_active']
-    column_sortable_list = ['id', 'page_path', 'title', 'is_active', 'updated_at']
-    column_default_sort = ('page_path', False)
-    can_create = True
-    can_edit = True
-    can_delete = True
-    form = SEOMetadataFormClass
-    column_labels = {
-        'id': 'ID',
-        'page_path': 'Chemin de page',
-        'title': 'Titre',
-        'description': 'Description',
-        'keywords': 'Mots-clés',
-        'og_title': 'Titre OG',
-        'og_description': 'Description OG',
-        'og_image': 'Image OG',
-        'canonical_url': 'URL canonique',
-        'robots': 'Robots',
-        'is_active': 'Actif',
-        'updated_at': 'Mis à jour le'
-    }
-
 admin.add_view(UserManagementView(User, db.session, name='Utilisateurs'))
 admin.add_view(RequestSubmissionView(RequestSubmission, db.session, name='Demandes - Fact-checking & Consultation'))
 admin.add_view(BreachAnalysisView(BreachAnalysis, db.session, name='Historique - Analyses de fuites'))
@@ -293,4 +254,3 @@ admin.add_view(SecurityAnalysisView(SecurityAnalysis, db.session, name='Historiq
 admin.add_view(ActivityLogView(ActivityLog, db.session, name='Historique - Logs d\'activité'))
 admin.add_view(SecurityLogView(SecurityLog, db.session, name='Historique - Logs de sécurité'))
 admin.add_view(SiteSettingsView(SiteSettings, db.session, name='Paramètres site'))
-admin.add_view(SEOMetadataView(SEOMetadata, db.session, name='SEO - Métadonnées'))
