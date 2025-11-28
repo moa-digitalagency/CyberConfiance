@@ -10,6 +10,7 @@ try:
     PYZBAR_AVAILABLE = True
 except ImportError:
     PYZBAR_AVAILABLE = False
+    pyzbar_decode = None
 
 class QRCodeAnalyzerService:
     
