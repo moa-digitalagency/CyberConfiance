@@ -5,7 +5,7 @@
 {% block content %}
 <div class="admin-header">
     <h1>Paramètres du Site</h1>
-    <p>Configuration générale du site et gestion des paramètres</p>
+    <p>Configuration technique et paramètres généraux</p>
 </div>
 
 <div class="admin-toolbar">
@@ -15,120 +15,154 @@
         </div>
     </div>
     <div class="toolbar-right">
-        <a href="/admin/sitesettings/new/" class="btn btn-primary">+ Nouveau paramètre</a>
-        <a href="/admin/sitesettings/" class="btn btn-secondary">Gérer via Flask-Admin</a>
+        <a href="{{ url_for('admin_panel.content_management') }}" class="btn btn-secondary">Modifier le contenu du site</a>
     </div>
 </div>
 
-<form method="POST" action="{{ url_for('admin_panel.site_settings') }}">
+<form method="POST" action="{{ url_for('admin_panel.site_settings') }}" enctype="multipart/form-data">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
     
-    {% set custom_head = None %}
+    {% set grouped_settings = {} %}
     {% for setting in settings %}
-        {% if setting.key == 'custom_head_code' %}
-            {% set custom_head = setting %}
+        {% set category = setting.category or 'other' %}
+        {% if category not in grouped_settings %}
+            {% set _ = grouped_settings.update({category: []}) %}
+        {% endif %}
+        {% set _ = grouped_settings[category].append(setting) %}
+    {% endfor %}
+    
+    {% set category_labels = {
+        'general': {'label': 'Paramètres généraux', 'icon': '⚙️', 'description': 'Nom du site et informations de contact'},
+        'appearance': {'label': 'Apparence', 'icon': '🎨', 'description': 'Logos et thèmes visuels'},
+        'system': {'label': 'Système', 'icon': '🔧', 'description': 'Mode maintenance et fonctionnalités'},
+        'seo': {'label': 'SEO', 'icon': '🔍', 'description': 'Référencement et partage social'},
+        'advanced': {'label': 'Avancé', 'icon': '🛠️', 'description': 'Code personnalisé et intégrations'}
+    } %}
+    
+    {% set image_fields = ['logo_light', 'logo_dark', 'default_og_image', 'favicon'] %}
+    
+    {% for category in ['general', 'appearance', 'system', 'seo', 'advanced'] %}
+        {% if category in grouped_settings %}
+        <div class="admin-card" style="margin-bottom: 1.5rem;">
+            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                <span style="font-size: 1.5rem;">{{ category_labels[category].icon }}</span>
+                <div>
+                    <h3 style="margin: 0; color: var(--text-primary);">{{ category_labels[category].label }}</h3>
+                    <p style="margin: 0.25rem 0 0 0; font-size: 0.85rem; color: var(--text-muted);">{{ category_labels[category].description }}</p>
+                </div>
+            </div>
+            
+            <div style="display: grid; gap: 1.25rem;">
+                {% for setting in grouped_settings[category] %}
+                <div class="form-group" data-searchable="{{ setting.key }} {{ setting.description }} {{ setting.value }}">
+                    <label for="setting_{{ setting.key }}" style="display: block; color: var(--text-primary); margin-bottom: 0.5rem; font-weight: 600;">
+                        {{ setting.key }}
+                        {% if setting.description %}
+                        <span style="font-weight: normal; color: var(--text-secondary); font-size: 0.85rem; display: block; margin-top: 0.25rem;">{{ setting.description }}</span>
+                        {% endif %}
+                    </label>
+                    
+                    {% if setting.key in image_fields %}
+                    <div style="display: flex; gap: 1rem; align-items: flex-start; flex-wrap: wrap;">
+                        {% if setting.value %}
+                        <div style="flex-shrink: 0;">
+                            <img src="{{ setting.value }}" alt="{{ setting.key }}" style="max-width: 150px; max-height: 80px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); padding: 0.5rem;">
+                        </div>
+                        {% endif %}
+                        <div style="flex-grow: 1;">
+                            <div class="file-upload-wrapper" style="position: relative; display: inline-block; width: 100%;">
+                                <input 
+                                    type="file" 
+                                    id="image_{{ setting.key }}" 
+                                    name="image_{{ setting.key }}" 
+                                    accept="image/*"
+                                    class="file-input"
+                                    style="position: absolute; opacity: 0; width: 100%; height: 100%; cursor: pointer;"
+                                    onchange="updateFileName(this, '{{ setting.key }}')"
+                                >
+                                <div class="file-upload-btn" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; background: rgba(59, 130, 246, 0.1); border: 2px dashed rgba(59, 130, 246, 0.3); border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+                                    <span style="font-size: 1.25rem;">📁</span>
+                                    <span id="filename_{{ setting.key }}" style="color: var(--text-secondary);">Cliquer pour téléverser une nouvelle image</span>
+                                </div>
+                            </div>
+                            <input type="hidden" name="setting_{{ setting.key }}" value="{{ setting.value or '' }}">
+                            <small style="color: var(--text-muted); margin-top: 0.5rem; display: block;">
+                                Formats acceptés: PNG, JPG, GIF, SVG, WebP, ICO
+                            </small>
+                        </div>
+                    </div>
+                    
+                    {% elif setting.value_type == 'boolean' %}
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <label class="toggle-switch" style="position: relative; display: inline-block; width: 52px; height: 28px;">
+                            <input type="hidden" name="setting_{{ setting.key }}" value="false">
+                            <input 
+                                type="checkbox" 
+                                name="setting_{{ setting.key }}" 
+                                value="true"
+                                {% if setting.value == 'true' or setting.value == True %}checked{% endif %}
+                                style="opacity: 0; width: 0; height: 0;"
+                            >
+                            <span class="slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255,255,255,0.1); transition: .3s; border-radius: 28px;"></span>
+                        </label>
+                        <span style="color: var(--text-secondary);">
+                            {% if setting.value == 'true' or setting.value == True %}Activé{% else %}Désactivé{% endif %}
+                        </span>
+                    </div>
+                    
+                    {% elif setting.value_type == 'textarea' or (setting.value and setting.value|length > 200) %}
+                    <textarea 
+                        id="setting_{{ setting.key }}" 
+                        name="setting_{{ setting.key }}" 
+                        rows="6" 
+                        class="admin-filter-input" 
+                        style="width: 100%; font-family: 'Monaco', 'Menlo', 'Consolas', monospace; font-size: 0.85rem; resize: vertical;"
+                    >{{ setting.value }}</textarea>
+                    
+                    {% else %}
+                    <input 
+                        type="text" 
+                        id="setting_{{ setting.key }}" 
+                        name="setting_{{ setting.key }}" 
+                        value="{{ setting.value }}" 
+                        class="admin-filter-input"
+                        style="width: 100%;"
+                    >
+                    {% endif %}
+                    
+                    {% if setting.updated_at %}
+                    <small style="color: var(--text-muted); margin-top: 0.5rem; display: block;">
+                        Dernière modification : {{ setting.updated_at.strftime('%d/%m/%Y à %H:%M') }}
+                    </small>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
         {% endif %}
     {% endfor %}
     
-    {% if custom_head %}
-    <div class="admin-card" style="border: 1px solid rgba(255, 193, 7, 0.3); background: rgba(255, 193, 7, 0.05); margin-bottom: 1.5rem;">
-        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
-            <span style="font-size: 1.5rem;">⚠️</span>
-            <h3 style="margin: 0; color: #ffc107;">Code Personnalisé (Head)</h3>
+    {% if not settings %}
+    <div class="admin-card">
+        <div style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+            <p style="margin-bottom: 1rem; font-size: 1.1rem;">Aucun paramètre technique configuré</p>
+            <p style="font-size: 0.9rem;">
+                Les paramètres techniques apparaîtront ici une fois configurés.
+            </p>
         </div>
-        <p style="color: var(--text-secondary); margin-bottom: 1rem; font-size: 0.9rem;">
-            Ajoutez du code HTML/JavaScript dans le &lt;head&gt; du site (analytics, pixels de tracking, balises meta personnalisées, etc.). 
-            <strong style="color: #ffc107;">Attention :</strong> Un code mal formaté peut casser le site.
-        </p>
-        
-        <div class="form-group" style="background: rgba(0,0,0,0.2); padding: 1.5rem; border-radius: 8px;">
-            <label for="setting_custom_head_code" style="display: block; color: var(--text-primary); margin-bottom: 0.5rem; font-weight: 600;">
-                Code à injecter dans &lt;head&gt;
-            </label>
-            <textarea 
-                id="setting_custom_head_code" 
-                name="setting_custom_head_code" 
-                rows="8" 
-                class="admin-filter-input" 
-                style="width: 100%; font-family: 'Monaco', 'Menlo', 'Consolas', monospace; font-size: 0.85rem; resize: vertical; background: rgba(0,0,0,0.3); border: 1px solid rgba(59, 130, 246, 0.3);"
-                placeholder="<!-- Exemple Google Analytics -->
-<script async src='https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID'></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'GA_MEASUREMENT_ID');
-</script>"
-            >{{ custom_head.value }}</textarea>
-            <div style="margin-top: 0.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">
-                <small style="color: var(--text-secondary);">
-                    <i class="bi bi-info-circle"></i> Utilisations courantes : Google Analytics, Facebook Pixel, Meta tags, Schema.org
-                </small>
-            </div>
-        </div>
+    </div>
+    {% else %}
+    <div style="position: sticky; bottom: 0; background: linear-gradient(transparent, var(--bg-primary) 20%); padding: 1.5rem 0; display: flex; gap: 1rem;">
+        <button type="submit" class="btn btn-primary" style="padding: 0.75rem 2rem;">Enregistrer les modifications</button>
+        <button type="button" onclick="window.location.reload()" class="btn btn-secondary">Annuler</button>
     </div>
     {% endif %}
-    
-    <div class="admin-card">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-            <h3 style="margin: 0;">Paramètres configurés ({{ settings|length }})</h3>
-        </div>
-        
-        {% if settings %}
-        <div style="display: grid; gap: 1.5rem;">
-            {% for setting in settings %}
-            {% if setting.key != 'custom_head_code' %}
-            <div class="form-group" data-searchable="{{ setting.key }} {{ setting.description }} {{ setting.value }}">
-                <label for="setting_{{ setting.key }}" style="display: block; color: var(--text-primary); margin-bottom: 0.5rem; font-weight: 600;">
-                    {{ setting.key }}
-                    {% if setting.description %}
-                    <span style="font-weight: normal; color: var(--text-secondary); font-size: 0.85rem;">({{ setting.description }})</span>
-                    {% endif %}
-                </label>
-                
-                {% if setting.value_type == 'textarea' or (setting.value and setting.value|length > 100) %}
-                <textarea id="setting_{{ setting.key }}" name="setting_{{ setting.key }}" rows="4" class="admin-filter-input" style="width: 100%; font-family: inherit; resize: vertical;">{{ setting.value }}</textarea>
-                {% else %}
-                <input 
-                    type="text" 
-                    id="setting_{{ setting.key }}" 
-                    name="setting_{{ setting.key }}" 
-                    value="{{ setting.value }}" 
-                    class="admin-filter-input"
-                    style="width: 100%;"
-                >
-                {% endif %}
-                
-                {% if setting.updated_at %}
-                <small style="color: var(--text-secondary); margin-top: 0.25rem; display: block;">
-                    Dernière modification : {{ setting.updated_at.strftime('%d/%m/%Y à %H:%M') }}
-                </small>
-                {% endif %}
-            </div>
-            {% endif %}
-            {% endfor %}
-        </div>
-        
-        <div style="margin-top: 2rem; display: flex; gap: 1rem;">
-            <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
-            <button type="button" onclick="window.location.reload()" class="btn btn-secondary">Annuler</button>
-        </div>
-        {% else %}
-        <div style="text-align: center; padding: 3rem; color: var(--text-secondary);">
-            <p style="margin-bottom: 1rem; font-size: 1.1rem;">Aucun paramètre configuré</p>
-            <p style="font-size: 0.9rem; margin-bottom: 2rem;">
-                Commencez par créer des paramètres personnalisés pour configurer votre site.
-            </p>
-            <a href="/admin/sitesettings/new/" class="btn btn-primary">Créer le premier paramètre</a>
-        </div>
-        {% endif %}
-    </div>
 </form>
 
 <style>
 .form-group {
     background: rgba(255, 255, 255, 0.02);
-    padding: 1.5rem;
+    padding: 1.25rem;
     border-radius: 8px;
     border: 1px solid rgba(59, 130, 246, 0.1);
     transition: all 0.2s;
@@ -138,10 +172,34 @@
     background: rgba(255, 255, 255, 0.03);
     border-color: rgba(59, 130, 246, 0.2);
 }
+
+.file-upload-wrapper:hover .file-upload-btn {
+    background: rgba(59, 130, 246, 0.15);
+    border-color: rgba(59, 130, 246, 0.5);
+}
+
+.toggle-switch input:checked + .slider {
+    background-color: #3b82f6;
+}
+
+.toggle-switch .slider:before {
+    content: "";
+    position: absolute;
+    height: 20px;
+    width: 20px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .3s;
+    border-radius: 50%;
+}
+
+.toggle-switch input:checked + .slider:before {
+    transform: translateX(24px);
+}
 </style>
 
 <script>
-// Search functionality
 document.getElementById('search-input').addEventListener('input', function(e) {
     const searchTerm = e.target.value.toLowerCase();
     const formGroups = document.querySelectorAll('.form-group');
@@ -151,5 +209,13 @@ document.getElementById('search-input').addEventListener('input', function(e) {
         group.style.display = searchableText.includes(searchTerm) ? 'block' : 'none';
     });
 });
+
+function updateFileName(input, key) {
+    const filenameSpan = document.getElementById('filename_' + key);
+    if (input.files && input.files[0]) {
+        filenameSpan.textContent = input.files[0].name;
+        filenameSpan.style.color = 'var(--accent-blue)';
+    }
+}
 </script>
 {% endblock %}

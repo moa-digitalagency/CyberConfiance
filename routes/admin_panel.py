@@ -399,28 +399,55 @@ def security_logs():
 @bp.route('/settings/site', methods=['GET', 'POST'])
 @admin_required
 def site_settings():
-    """Paramètres du site"""
+    """Paramètres du site (configuration technique uniquement)"""
+    technical_categories = ['general', 'appearance', 'system', 'advanced', 'seo']
+    
     if request.method == 'POST':
-        for key, value in request.form.items():
+        import os
+        from werkzeug.utils import secure_filename
+        
+        processed_keys = set()
+        for key in request.form:
             if key.startswith('setting_'):
                 setting_key = key.replace('setting_', '')
+                if setting_key in processed_keys:
+                    continue
+                processed_keys.add(setting_key)
+                
                 setting = SiteSettings.query.filter_by(key=setting_key).first()
-                if setting:
-                    setting.value = value
+                if setting and setting.category in technical_categories:
+                    if setting.value_type == 'boolean':
+                        values = request.form.getlist(key)
+                        setting.value = 'true' if 'true' in values else 'false'
+                    else:
+                        setting.value = request.form.get(key)
                     setting.updated_by = current_user.id
-                else:
-                    setting = SiteSettings()
-                    setting.key = setting_key
-                    setting.value = value
-                    setting.updated_by = current_user.id
-                    db.session.add(setting)
+        
+        for key in request.files:
+            if key.startswith('image_'):
+                setting_key = key.replace('image_', '')
+                file = request.files[key]
+                if file and file.filename:
+                    filename = secure_filename(file.filename)
+                    ext = filename.rsplit('.', 1)[-1].lower() if '.' in filename else ''
+                    if ext in ['png', 'jpg', 'jpeg', 'gif', 'svg', 'webp', 'ico']:
+                        new_filename = f"{setting_key}_{os.urandom(8).hex()}.{ext}"
+                        upload_path = os.path.join('static', 'img', 'uploads')
+                        os.makedirs(upload_path, exist_ok=True)
+                        file_path = os.path.join(upload_path, new_filename)
+                        file.save(file_path)
+                        
+                        setting = SiteSettings.query.filter_by(key=setting_key).first()
+                        if setting:
+                            setting.value = f"/static/img/uploads/{new_filename}"
+                            setting.updated_by = current_user.id
         
         db.session.commit()
         log_activity('ADMIN_SETTINGS_UPDATE', 'Mise à jour paramètres site', success=True)
         flash('Paramètres mis à jour avec succès', 'success')
         return redirect(url_for('admin_panel.site_settings'))
     
-    settings = SiteSettings.query.all()
+    settings = SiteSettings.query.filter(SiteSettings.category.in_(technical_categories)).all()
     log_activity('ADMIN_SETTINGS_VIEW', 'Consultation paramètres site')
     
     return render_template('admin/site_settings.html', settings=settings)

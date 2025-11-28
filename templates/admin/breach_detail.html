@@ -47,36 +47,97 @@
             <strong style="color: var(--text-secondary); display: block; margin-bottom: 0.5rem;">User Agent:</strong>
             <span style="color: var(--text-primary); font-size: 0.85rem; word-break: break-all;">{{ breach.user_agent }}</span>
         </div>
+        {% if breach.document_code %}
+        <div>
+            <strong style="color: var(--text-secondary); display: block; margin-bottom: 0.5rem;">Code document:</strong>
+            <span style="color: var(--accent-blue); font-family: monospace;">{{ breach.document_code }}</span>
+        </div>
+        {% endif %}
     </div>
 </div>
 
-{% if breach.breaches_found %}
+{% if breach.breaches_found or breach.breaches_data %}
 <div class="admin-card">
     <h3>Fuites de données détectées</h3>
-    <div style="background: rgba(239, 68, 68, 0.1); padding: 1rem; border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.3);">
-        <pre style="color: var(--text-primary); white-space: pre-wrap; word-break: break-word; font-size: 0.9rem;">{{ breach.breaches_found }}</pre>
-    </div>
     
-    <div style="margin-top: 1rem; padding: 1rem; background: rgba(59, 130, 246, 0.1); border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.3);">
-        <strong style="color: var(--accent-blue);">Recommandations:</strong>
-        <ul style="margin-top: 0.5rem; color: var(--text-secondary);">
+    {% if breach.breaches_data %}
+    <div class="breaches-grid" style="display: grid; gap: 1rem; margin-top: 1rem;">
+        {% for breach_item in breach.breaches_data %}
+        <div class="breach-item" style="background: rgba(239, 68, 68, 0.08); padding: 1.25rem; border-radius: 10px; border: 1px solid rgba(239, 68, 68, 0.2);">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
+                <h4 style="margin: 0; color: #ef4444; font-size: 1.1rem;">{{ breach_item.Name or breach_item.name or 'Fuite inconnue' }}</h4>
+                {% if breach_item.BreachDate or breach_item.breach_date %}
+                <span class="badge badge-secondary" style="font-size: 0.8rem;">{{ breach_item.BreachDate or breach_item.breach_date }}</span>
+                {% endif %}
+            </div>
+            
+            {% if breach_item.Domain or breach_item.domain %}
+            <p style="margin: 0.5rem 0; color: var(--text-secondary); font-size: 0.9rem;">
+                <strong>Domaine:</strong> {{ breach_item.Domain or breach_item.domain }}
+            </p>
+            {% endif %}
+            
+            {% if breach_item.DataClasses or breach_item.data_classes %}
+            <div style="margin-top: 0.75rem;">
+                <strong style="color: var(--text-secondary); font-size: 0.85rem;">Données compromises:</strong>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem;">
+                    {% for data_class in (breach_item.DataClasses or breach_item.data_classes or []) %}
+                    <span style="background: rgba(239, 68, 68, 0.15); color: #fca5a5; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem;">{{ data_class }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+            
+            {% if breach_item.Description or breach_item.description %}
+            <p style="margin-top: 0.75rem; color: var(--text-muted); font-size: 0.85rem; line-height: 1.5;">
+                {{ (breach_item.Description or breach_item.description)|striptags|truncate(200) }}
+            </p>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% elif breach.breaches_found %}
+    <div style="margin-top: 1rem;">
+        <div class="breaches-list" style="display: flex; flex-wrap: wrap; gap: 0.75rem;">
+            {% for breach_name in breach.breaches_found.split(',') %}
+            {% if breach_name.strip() %}
+            <div class="breach-tag" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); padding: 0.75rem 1.25rem; border-radius: 8px; display: flex; align-items: center; gap: 0.5rem;">
+                <span style="color: #ef4444; font-size: 1.1rem;">⚠️</span>
+                <span style="color: var(--text-primary); font-weight: 500;">{{ breach_name.strip() }}</span>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    
+    <div style="margin-top: 1.5rem; padding: 1.25rem; background: rgba(59, 130, 246, 0.1); border-radius: 10px; border: 1px solid rgba(59, 130, 246, 0.3);">
+        <strong style="color: var(--accent-blue); font-size: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+            <span>💡</span> Recommandations de sécurité
+        </strong>
+        <ul style="margin-top: 0.75rem; color: var(--text-secondary); padding-left: 1.5rem; line-height: 1.8;">
             <li>Changer immédiatement les mots de passe des comptes affectés</li>
             <li>Activer l'authentification à deux facteurs (2FA)</li>
             <li>Surveiller les activités suspectes sur les comptes</li>
             <li>Ne jamais réutiliser le même mot de passe</li>
+            <li>Utiliser un gestionnaire de mots de passe</li>
         </ul>
     </div>
 </div>
 {% else %}
 <div class="admin-card">
     <div style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+        <span style="font-size: 3rem; display: block; margin-bottom: 1rem;">✅</span>
         <span class="badge badge-success" style="font-size: 1.2rem; padding: 0.8rem 1.5rem;">Aucune fuite détectée</span>
         <p style="margin-top: 1rem;">Cet email n'apparaît dans aucune base de données de fuites connues.</p>
     </div>
 </div>
 {% endif %}
 
-<div style="margin-top: 2rem;">
-    <a href="{{ url_for('admin_panel.breach_history') }}" class="btn btn-secondary">Retour à l'historique</a>
+<div style="margin-top: 2rem; display: flex; gap: 1rem;">
+    <a href="{{ url_for('admin_panel.breach_history') }}" class="btn btn-secondary">← Retour à l'historique</a>
+    {% if breach.id %}
+    <a href="/generate-breach-pdf/{{ breach.id }}" class="btn btn-primary" target="_blank">📄 Télécharger le rapport PDF</a>
+    {% endif %}
 </div>
 {% endblock %}
