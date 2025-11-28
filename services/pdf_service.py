@@ -314,7 +314,7 @@ class PDFReportService:
                             fontsize=10)
             y_pos += 30
         
-        if results.get('found', True):
+        if results.get('found', True) and not results.get('error', False) and 'total' in results:
             stats = [
                 ("Malveillant", results.get('malicious', 0), self.danger_color),
                 ("Suspect", results.get('suspicious', 0), self.warning_color),
