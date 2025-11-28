@@ -127,115 +127,124 @@ class QRCodeAnalyzerService:
     
     def follow_redirects_safely(self, url):
         redirect_chain = []
-        current_url = url
-        visited = set()
         js_redirects = []
+        final_url = url
         
-        for i in range(self.max_redirects):
-            if current_url in visited:
-                redirect_chain.append({
-                    'url': current_url,
-                    'status': 'loop_detected',
-                    'error': 'Boucle de redirection détectée'
-                })
-                break
+        is_safe, error = self.is_safe_url(url)
+        if not is_safe:
+            redirect_chain.append({
+                'url': url,
+                'status': 'blocked',
+                'error': error
+            })
+            return {
+                'redirect_chain': redirect_chain,
+                'final_url': url,
+                'redirect_count': 0,
+                'js_redirects': []
+            }
+        
+        try:
+            response = requests.get(
+                url,
+                allow_redirects=True,
+                timeout=self.request_timeout,
+                headers={
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+                    'Accept-Language': 'fr-FR,fr;q=0.9,en;q=0.8'
+                },
+                verify=True,
+                stream=True
+            )
             
-            visited.add(current_url)
-            
-            is_safe, error = self.is_safe_url(current_url)
-            if not is_safe:
-                redirect_chain.append({
-                    'url': current_url,
-                    'status': 'blocked',
-                    'error': error
-                })
-                break
-            
-            try:
-                response = requests.get(
-                    current_url,
-                    allow_redirects=False,
-                    timeout=self.request_timeout,
-                    headers={
-                        'User-Agent': 'CyberConfiance-QRAnalyzer/1.0',
-                        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
-                    },
-                    verify=True,
-                    stream=True
-                )
-                
-                content_length = response.headers.get('Content-Length')
-                if content_length and int(content_length) > 5 * 1024 * 1024:
-                    redirect_chain.append({
-                        'url': current_url,
-                        'status': 'too_large',
-                        'error': 'Contenu trop volumineux (> 5 MB)'
-                    })
-                    response.close()
-                    break
-                
+            for i, resp in enumerate(response.history):
                 redirect_info = {
-                    'url': current_url,
-                    'status_code': response.status_code,
-                    'content_type': response.headers.get('Content-Type', 'unknown'),
+                    'url': resp.url,
+                    'status_code': resp.status_code,
+                    'content_type': resp.headers.get('Content-Type', 'unknown'),
+                    'redirect_type': 'http'
                 }
-                
-                if 300 <= response.status_code < 400:
-                    next_url = response.headers.get('Location')
-                    if next_url:
-                        if not next_url.startswith('http'):
-                            next_url = urljoin(current_url, next_url)
-                        redirect_info['redirect_to'] = next_url
-                        redirect_info['redirect_type'] = 'http'
-                        redirect_chain.append(redirect_info)
-                        current_url = next_url
-                        continue
-                
+                if resp.headers.get('Location'):
+                    redirect_info['redirect_to'] = resp.headers.get('Location')
+                redirect_chain.append(redirect_info)
+            
+            redirect_chain.append({
+                'url': response.url,
+                'status_code': response.status_code,
+                'content_type': response.headers.get('Content-Type', 'unknown'),
+            })
+            
+            final_url = response.url
+            
+            content_length = response.headers.get('Content-Length')
+            if content_length and int(content_length) > 5 * 1024 * 1024:
+                redirect_chain[-1]['warning'] = 'Contenu volumineux (> 5 MB)'
+            else:
                 if response.status_code == 200:
                     content_type = response.headers.get('Content-Type', '')
                     if 'text/html' in content_type:
-                        content = response.text[:50000]
-                        js_redirect = self.detect_js_redirects(content, current_url)
-                        if js_redirect:
-                            redirect_info['js_redirect_detected'] = True
-                            redirect_info['js_redirect_url'] = js_redirect
-                            js_redirects.append({
-                                'from': current_url,
-                                'to': js_redirect,
-                                'type': 'javascript'
-                            })
-                
-                redirect_chain.append(redirect_info)
-                break
-                
-            except requests.exceptions.Timeout:
-                redirect_chain.append({
-                    'url': current_url,
-                    'status': 'timeout',
-                    'error': 'Délai d\'attente dépassé'
-                })
-                break
-            except requests.exceptions.SSLError:
-                redirect_chain.append({
-                    'url': current_url,
-                    'status': 'ssl_error',
-                    'error': 'Erreur de certificat SSL'
-                })
-                break
-            except requests.exceptions.RequestException as e:
-                redirect_chain.append({
-                    'url': current_url,
-                    'status': 'error',
-                    'error': str(e)
-                })
-                break
-        
-        final_url = redirect_chain[-1]['url'] if redirect_chain else url
+                        try:
+                            content = response.text[:50000]
+                            js_redirect = self.detect_js_redirects(content, response.url)
+                            if js_redirect:
+                                redirect_chain[-1]['js_redirect_detected'] = True
+                                redirect_chain[-1]['js_redirect_url'] = js_redirect
+                                js_redirects.append({
+                                    'from': response.url,
+                                    'to': js_redirect,
+                                    'type': 'javascript'
+                                })
+                                
+                                js_safe, js_error = self.is_safe_url(js_redirect)
+                                if js_safe:
+                                    try:
+                                        js_response = requests.head(
+                                            js_redirect,
+                                            allow_redirects=True,
+                                            timeout=5,
+                                            headers={'User-Agent': 'Mozilla/5.0'}
+                                        )
+                                        final_url = js_response.url
+                                        redirect_chain.append({
+                                            'url': js_response.url,
+                                            'status_code': js_response.status_code,
+                                            'redirect_type': 'javascript_follow'
+                                        })
+                                    except:
+                                        pass
+                        except Exception as e:
+                            redirect_chain[-1]['content_error'] = str(e)
+                            
+        except requests.exceptions.Timeout:
+            redirect_chain.append({
+                'url': url,
+                'status': 'timeout',
+                'error': 'Délai d\'attente dépassé (10s)'
+            })
+        except requests.exceptions.SSLError as e:
+            redirect_chain.append({
+                'url': url,
+                'status': 'ssl_error',
+                'error': f'Erreur de certificat SSL: {str(e)[:100]}'
+            })
+        except requests.exceptions.ConnectionError as e:
+            redirect_chain.append({
+                'url': url,
+                'status': 'connection_error',
+                'error': 'Impossible de se connecter au serveur'
+            })
+        except requests.exceptions.RequestException as e:
+            redirect_chain.append({
+                'url': url,
+                'status': 'error',
+                'error': str(e)[:200]
+            })
         
         return {
             'redirect_chain': redirect_chain,
             'final_url': final_url,
-            'redirect_count': len(redirect_chain) - 1,
+            'redirect_count': len(redirect_chain) - 1 if redirect_chain else 0,
             'js_redirects': js_redirects
         }
     
@@ -329,34 +338,79 @@ class QRCodeAnalyzerService:
             return None, "API de vérification non configurée"
         
         try:
-            import vt
-            with vt.Client(self.api_key) as client:
-                url_id = vt.url_id(url)
-                try:
-                    url_object = client.get_object(f"/urls/{url_id}")
-                    stats = url_object.last_analysis_stats
-                    
+            import base64
+            url_id = base64.urlsafe_b64encode(url.encode()).decode().strip("=")
+            
+            headers = {
+                'x-apikey': self.api_key,
+                'Accept': 'application/json'
+            }
+            
+            vt_url = f'https://www.virustotal.com/api/v3/urls/{url_id}'
+            response = requests.get(vt_url, headers=headers, timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                stats = data.get('data', {}).get('attributes', {}).get('last_analysis_stats', {})
+                
+                malicious_count = stats.get('malicious', 0)
+                suspicious_count = stats.get('suspicious', 0)
+                harmless_count = stats.get('harmless', 0)
+                undetected_count = stats.get('undetected', 0)
+                
+                return {
+                    'checked': True,
+                    'malicious': malicious_count,
+                    'suspicious': suspicious_count,
+                    'harmless': harmless_count,
+                    'undetected': undetected_count,
+                    'total': malicious_count + suspicious_count + harmless_count + undetected_count,
+                    'is_blacklisted': malicious_count > 0,
+                    'scan_date': data.get('data', {}).get('attributes', {}).get('last_analysis_date'),
+                    'reputation': data.get('data', {}).get('attributes', {}).get('reputation', 0)
+                }, None
+                
+            elif response.status_code == 404:
+                scan_url = 'https://www.virustotal.com/api/v3/urls'
+                scan_response = requests.post(
+                    scan_url,
+                    headers=headers,
+                    data={'url': url},
+                    timeout=10
+                )
+                
+                if scan_response.status_code in [200, 201]:
                     return {
                         'checked': True,
-                        'malicious': stats.get('malicious', 0),
-                        'suspicious': stats.get('suspicious', 0),
-                        'harmless': stats.get('harmless', 0),
-                        'undetected': stats.get('undetected', 0),
-                        'total': sum(stats.values()),
-                        'is_blacklisted': stats.get('malicious', 0) > 0
+                        'malicious': 0,
+                        'suspicious': 0,
+                        'harmless': 0,
+                        'undetected': 0,
+                        'is_blacklisted': False,
+                        'message': 'URL soumise pour analyse - pas encore dans la base de données'
                     }, None
-                except vt.APIError as e:
-                    if 'NotFoundError' in str(e):
-                        return {
-                            'checked': True,
-                            'malicious': 0,
-                            'suspicious': 0,
-                            'is_blacklisted': False,
-                            'message': 'URL non répertoriée dans la base de données'
-                        }, None
-                    return None, str(e)
+                else:
+                    return {
+                        'checked': True,
+                        'malicious': 0,
+                        'suspicious': 0,
+                        'is_blacklisted': False,
+                        'message': 'URL non répertoriée dans la base de données'
+                    }, None
+                    
+            elif response.status_code == 401:
+                return None, "Clé API VirusTotal invalide"
+            elif response.status_code == 429:
+                return None, "Limite de requêtes API dépassée"
+            else:
+                return None, f"Erreur API VirusTotal: {response.status_code}"
+                
+        except requests.exceptions.Timeout:
+            return None, "Délai d'attente API VirusTotal dépassé"
+        except requests.exceptions.RequestException as e:
+            return None, f"Erreur de connexion à VirusTotal: {str(e)[:100]}"
         except Exception as e:
-            return None, str(e)
+            return None, f"Erreur inattendue: {str(e)[:100]}"
     
     def analyze_qr_image(self, image_data, filename=None):
         result = {

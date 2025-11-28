@@ -3,6 +3,8 @@
 {% block title %}Analyseur de QR Code (Anti-Quishing) - CyberConfiance{% endblock %}
 
 {% block content %}
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+
 <section class="page-header-modern">
     <div class="container">
         <div class="header-content-centered">
@@ -17,9 +19,9 @@
         <div class="analyzer-card">
             <h2>Analyse Anti-Quishing</h2>
             <p class="analyzer-description">
-                Utilisez votre camera ou uploadez une image contenant un QR code pour analyser son contenu en toute securite. 
-                Notre outil extrait l'URL, suit la chaine de redirections et verifie si les liens sont malveillants - 
-                <strong>sans jamais ouvrir ni executer le lien</strong>.
+                La camera s'active automatiquement pour scanner les QR codes. Placez le QR code devant la camera pour 
+                une detection automatique, ou capturez manuellement. L'URL est extraite, les redirections sont suivies 
+                et la securite est verifiee - <strong>sans jamais ouvrir ni executer le lien</strong>.
             </p>
 
             <div class="input-method-tabs">
@@ -46,35 +48,32 @@
                 
                 <div class="tab-content active" id="camera-tab">
                     <div class="camera-container">
+                        <div id="scanStatus" class="scan-status">
+                            <div class="scan-indicator scanning">
+                                <span class="pulse"></span>
+                                <span>Recherche de QR code en cours...</span>
+                            </div>
+                        </div>
                         <div class="camera-view-wrapper">
                             <video id="cameraVideo" autoplay playsinline></video>
                             <canvas id="cameraCanvas" style="display: none;"></canvas>
+                            <canvas id="scanCanvas" style="display: none;"></canvas>
                             <div class="camera-overlay">
-                                <div class="scan-frame"></div>
+                                <div class="scan-frame" id="scanFrame"></div>
                             </div>
                             <div id="cameraPlaceholder" class="camera-placeholder">
-                                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-                                    <circle cx="12" cy="13" r="4"/>
-                                </svg>
-                                <p>Cliquez pour activer la camera</p>
+                                <div class="loading-spinner"></div>
+                                <p>Activation de la camera...</p>
                                 <p class="camera-hint">Autorisez l'acces a la camera dans votre navigateur</p>
                             </div>
                         </div>
                         <div class="camera-controls">
-                            <button type="button" id="startCameraBtn" class="btn-secondary">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-                                    <circle cx="12" cy="13" r="4"/>
-                                </svg>
-                                Activer la Camera
-                            </button>
                             <button type="button" id="captureBtn" class="btn-primary" style="display: none;">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <circle cx="12" cy="12" r="10"/>
                                     <circle cx="12" cy="12" r="3"/>
                                 </svg>
-                                Capturer le QR Code
+                                Capturer Manuellement
                             </button>
                             <button type="button" id="switchCameraBtn" class="btn-secondary" style="display: none;">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -83,6 +82,13 @@
                                     <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
                                 </svg>
                             </button>
+                        </div>
+                        <div id="qrDetected" class="qr-detected-banner" style="display: none;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                <polyline points="22 4 12 14.01 9 11.01"/>
+                            </svg>
+                            <span>QR Code detecte ! Analyse en cours...</span>
                         </div>
                         <div id="capturePreview" class="capture-preview" style="display: none;">
                             <img id="capturedImage" alt="Captured QR Code">
@@ -315,17 +321,23 @@ document.addEventListener('DOMContentLoaded', function() {
     
     const video = document.getElementById('cameraVideo');
     const canvas = document.getElementById('cameraCanvas');
+    const scanCanvas = document.getElementById('scanCanvas');
     const cameraPlaceholder = document.getElementById('cameraPlaceholder');
-    const startCameraBtn = document.getElementById('startCameraBtn');
     const captureBtn = document.getElementById('captureBtn');
     const switchCameraBtn = document.getElementById('switchCameraBtn');
     const capturePreview = document.getElementById('capturePreview');
     const capturedImage = document.getElementById('capturedImage');
     const retakeBtn = document.getElementById('retakeBtn');
+    const scanStatus = document.getElementById('scanStatus');
+    const scanFrame = document.getElementById('scanFrame');
+    const qrDetected = document.getElementById('qrDetected');
     
     let stream = null;
     let facingMode = 'environment';
     let activeTab = 'camera';
+    let scanInterval = null;
+    let isScanning = false;
+    let qrDetectedRecently = false;
 
     tabBtns.forEach(btn => {
         btn.addEventListener('click', function() {
@@ -345,8 +357,10 @@ document.addEventListener('DOMContentLoaded', function() {
             if (tab === 'upload') {
                 fileInput.required = true;
                 stopCamera();
+                stopScanning();
             } else {
                 fileInput.required = false;
+                startCamera();
             }
         });
     });
@@ -357,6 +371,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 stopCamera();
             }
             
+            cameraPlaceholder.style.display = 'flex';
+            scanStatus.style.display = 'none';
+            
             stream = await navigator.mediaDevices.getUserMedia({
                 video: {
                     facingMode: facingMode,
@@ -366,10 +383,12 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             
             video.srcObject = stream;
+            await video.play();
+            
             video.style.display = 'block';
             cameraPlaceholder.style.display = 'none';
-            startCameraBtn.style.display = 'none';
             captureBtn.style.display = 'inline-flex';
+            scanStatus.style.display = 'block';
             
             const devices = await navigator.mediaDevices.enumerateDevices();
             const videoDevices = devices.filter(d => d.kind === 'videoinput');
@@ -377,13 +396,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 switchCameraBtn.style.display = 'inline-flex';
             }
             
+            startScanning();
+            
         } catch (err) {
             console.error('Camera error:', err);
-            alert('Impossible d\'acceder a la camera. Verifiez les permissions de votre navigateur ou utilisez l\'option d\'upload d\'image.');
+            cameraPlaceholder.innerHTML = `
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="1.5">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="15" y1="9" x2="9" y2="15"/>
+                    <line x1="9" y1="9" x2="15" y2="15"/>
+                </svg>
+                <p style="color: #ef4444;">Camera non accessible</p>
+                <p class="camera-hint">Verifiez les permissions ou utilisez l'upload d'image</p>
+            `;
         }
     }
 
     function stopCamera() {
+        stopScanning();
         if (stream) {
             stream.getTracks().forEach(track => track.stop());
             stream = null;
@@ -392,7 +422,67 @@ document.addEventListener('DOMContentLoaded', function() {
         video.style.display = 'none';
     }
 
+    function startScanning() {
+        if (isScanning || !stream) return;
+        isScanning = true;
+        
+        scanCanvas.width = video.videoWidth || 640;
+        scanCanvas.height = video.videoHeight || 480;
+        
+        scanInterval = setInterval(() => {
+            if (!stream || !video.videoWidth) return;
+            
+            scanCanvas.width = video.videoWidth;
+            scanCanvas.height = video.videoHeight;
+            const ctx = scanCanvas.getContext('2d');
+            ctx.drawImage(video, 0, 0);
+            
+            const imageData = ctx.getImageData(0, 0, scanCanvas.width, scanCanvas.height);
+            
+            if (typeof jsQR !== 'undefined') {
+                const code = jsQR(imageData.data, imageData.width, imageData.height, {
+                    inversionAttempts: 'dontInvert'
+                });
+                
+                if (code && code.data && !qrDetectedRecently) {
+                    qrDetectedRecently = true;
+                    onQRCodeDetected(code);
+                }
+            }
+        }, 150);
+    }
+
+    function stopScanning() {
+        isScanning = false;
+        if (scanInterval) {
+            clearInterval(scanInterval);
+            scanInterval = null;
+        }
+    }
+
+    function onQRCodeDetected(code) {
+        stopScanning();
+        
+        scanFrame.classList.add('detected');
+        qrDetected.style.display = 'flex';
+        scanStatus.style.display = 'none';
+        
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0);
+        
+        const imageData = canvas.toDataURL('image/jpeg', 0.9);
+        cameraCaptureData.value = imageData;
+        
+        setTimeout(() => {
+            analyzerForm.submit();
+        }, 800);
+    }
+
     function captureImage() {
+        stopScanning();
+        
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
         const ctx = canvas.getContext('2d');
@@ -406,6 +496,7 @@ document.addEventListener('DOMContentLoaded', function() {
         video.style.display = 'none';
         captureBtn.style.display = 'none';
         switchCameraBtn.style.display = 'none';
+        scanStatus.style.display = 'none';
     }
 
     function retakePhoto() {
@@ -413,22 +504,27 @@ document.addEventListener('DOMContentLoaded', function() {
         cameraCaptureData.value = '';
         video.style.display = 'block';
         captureBtn.style.display = 'inline-flex';
+        scanStatus.style.display = 'block';
+        qrDetectedRecently = false;
+        scanFrame.classList.remove('detected');
+        qrDetected.style.display = 'none';
         
-        const devices = navigator.mediaDevices.enumerateDevices().then(devices => {
+        navigator.mediaDevices.enumerateDevices().then(devices => {
             const videoDevices = devices.filter(d => d.kind === 'videoinput');
             if (videoDevices.length > 1) {
                 switchCameraBtn.style.display = 'inline-flex';
             }
         });
+        
+        startScanning();
     }
 
     async function switchCamera() {
         facingMode = facingMode === 'environment' ? 'user' : 'environment';
+        qrDetectedRecently = false;
         await startCamera();
     }
 
-    startCameraBtn.addEventListener('click', startCamera);
-    cameraPlaceholder.addEventListener('click', startCamera);
     captureBtn.addEventListener('click', captureImage);
     retakeBtn.addEventListener('click', retakePhoto);
     switchCameraBtn.addEventListener('click', switchCamera);
@@ -490,6 +586,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
+
+    if (activeTab === 'camera') {
+        setTimeout(() => {
+            startCamera();
+        }, 500);
+    }
 });
 </script>
 
@@ -565,6 +667,86 @@ document.addEventListener('DOMContentLoaded', function() {
 
 .camera-container {
     margin-bottom: 1.5rem;
+}
+
+.scan-status {
+    text-align: center;
+    margin-bottom: 1rem;
+    display: none;
+}
+
+.scan-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1.25rem;
+    background: rgba(59, 130, 246, 0.15);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 50px;
+    color: #60a5fa;
+    font-size: 0.9rem;
+}
+
+.pulse {
+    width: 10px;
+    height: 10px;
+    background: #3b82f6;
+    border-radius: 50%;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.2); }
+}
+
+.loading-spinner {
+    width: 48px;
+    height: 48px;
+    border: 3px solid rgba(59, 130, 246, 0.2);
+    border-top-color: #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.qr-detected-banner {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.2) 0%, rgba(34, 197, 94, 0.1) 100%);
+    border: 1px solid rgba(34, 197, 94, 0.4);
+    border-radius: 12px;
+    color: #22c55e;
+    font-weight: 600;
+    margin-top: 1rem;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.scan-frame.detected {
+    border-color: #22c55e !important;
+    animation: detected 0.5s ease-out;
+}
+
+.scan-frame.detected::before,
+.scan-frame.detected::after {
+    border-color: #22c55e !important;
+}
+
+@keyframes detected {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); }
+    50% { transform: translate(-50%, -50%) scale(1.05); }
 }
 
 .camera-view-wrapper {
