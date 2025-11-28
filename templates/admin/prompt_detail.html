@@ -1,0 +1,194 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Details Analyse Prompt #{{ analysis.id }} - Administration{% endblock %}
+
+{% block content %}
+<div class="admin-header">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <h1>Details de l'Analyse de Prompt</h1>
+            <p>Analyse #{{ analysis.id }} - {{ analysis.created_at.strftime('%d/%m/%Y a %H:%M:%S') }}</p>
+        </div>
+        <div style="display: flex; gap: 1rem;">
+            <a href="{{ url_for('admin_panel.prompt_history') }}" class="btn btn-secondary">Retour a l'historique</a>
+            <a href="{{ url_for('main.generate_prompt_pdf', analysis_id=analysis.id) }}" class="btn btn-primary">Generer/Telecharger PDF</a>
+        </div>
+    </div>
+</div>
+
+<div class="admin-grid">
+    <div class="admin-card">
+        <h3>Informations Generales</h3>
+        <div class="detail-grid">
+            <div class="detail-item">
+                <span class="detail-label">Code Document</span>
+                <span class="detail-value" style="font-family: monospace;">{{ analysis.document_code or 'N/A' }}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Longueur du Prompt</span>
+                <span class="detail-value">{{ analysis.prompt_length or 0 }} caracteres</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Date d'Analyse</span>
+                <span class="detail-value">{{ analysis.created_at.strftime('%d/%m/%Y %H:%M:%S') }}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Adresse IP</span>
+                <span class="detail-value" style="font-family: monospace;">{{ analysis.ip_address or 'N/A' }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="admin-card">
+        <h3>Evaluation de la Menace</h3>
+        <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
+            <div style="text-align: center;">
+                <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Menace Detectee</div>
+                {% if analysis.threat_detected %}
+                <span class="badge badge-danger" style="font-size: 1rem; padding: 0.5rem 1rem;">OUI</span>
+                {% else %}
+                <span class="badge badge-success" style="font-size: 1rem; padding: 0.5rem 1rem;">NON</span>
+                {% endif %}
+            </div>
+            <div style="text-align: center;">
+                <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Injection</div>
+                {% if analysis.injection_detected %}
+                <span class="badge badge-warning" style="font-size: 1rem; padding: 0.5rem 1rem;">OUI</span>
+                {% else %}
+                <span class="badge badge-success" style="font-size: 1rem; padding: 0.5rem 1rem;">NON</span>
+                {% endif %}
+            </div>
+            <div style="text-align: center;">
+                <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Code Detecte</div>
+                {% if analysis.code_detected %}
+                <span class="badge badge-warning" style="font-size: 1rem; padding: 0.5rem 1rem;">OUI</span>
+                {% else %}
+                <span class="badge badge-success" style="font-size: 1rem; padding: 0.5rem 1rem;">NON</span>
+                {% endif %}
+            </div>
+            <div style="text-align: center;">
+                <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Obfuscation</div>
+                {% if analysis.obfuscation_detected %}
+                <span class="badge badge-warning" style="font-size: 1rem; padding: 0.5rem 1rem;">OUI</span>
+                {% else %}
+                <span class="badge badge-success" style="font-size: 1rem; padding: 0.5rem 1rem;">NON</span>
+                {% endif %}
+            </div>
+            <div style="text-align: center;">
+                <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Niveau</div>
+                {% if analysis.threat_level == 'critical' %}
+                <span class="badge badge-danger" style="font-size: 1rem; padding: 0.5rem 1rem;">CRITIQUE</span>
+                {% elif analysis.threat_level == 'high' %}
+                <span class="badge badge-danger" style="font-size: 1rem; padding: 0.5rem 1rem;">ELEVE</span>
+                {% elif analysis.threat_level == 'medium' %}
+                <span class="badge badge-warning" style="font-size: 1rem; padding: 0.5rem 1rem;">MOYEN</span>
+                {% elif analysis.threat_level == 'low' %}
+                <span class="badge badge-info" style="font-size: 1rem; padding: 0.5rem 1rem;">FAIBLE</span>
+                {% else %}
+                <span class="badge badge-success" style="font-size: 1rem; padding: 0.5rem 1rem;">SUR</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="admin-card">
+    <h3>Prompt Analyse</h3>
+    <div style="padding: 1rem; background: rgba(0,0,0,0.2); border-radius: 8px; max-height: 400px; overflow-y: auto;">
+        <pre style="white-space: pre-wrap; word-break: break-word; margin: 0; color: var(--text-primary); font-size: 0.9rem;">{{ analysis.prompt_text }}</pre>
+    </div>
+</div>
+
+{% if analysis.cleaned_text %}
+<div class="admin-card">
+    <h3>Texte Nettoye</h3>
+    <div style="padding: 1rem; background: rgba(34, 197, 94, 0.1); border-radius: 8px; max-height: 300px; overflow-y: auto;">
+        <pre style="white-space: pre-wrap; word-break: break-word; margin: 0; color: var(--text-primary); font-size: 0.9rem;">{{ analysis.cleaned_text }}</pre>
+    </div>
+</div>
+{% endif %}
+
+{% if analysis.dangerous_patterns %}
+<div class="admin-card">
+    <h3>Patterns Dangereux Detectes</h3>
+    <div class="issues-list">
+        {% for pattern in analysis.dangerous_patterns %}
+        <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: rgba(239, 68, 68, 0.1); border-left: 3px solid #ef4444; border-radius: 0 8px 8px 0; margin-bottom: 0.5rem;">
+            {% if pattern.severity %}
+            <span class="badge badge-danger">{{ pattern.severity|upper }}</span>
+            {% endif %}
+            <span>{{ pattern.message if pattern.message else pattern }}</span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+{% if analysis.detected_issues %}
+<div class="admin-card">
+    <h3>Problemes Detectes</h3>
+    <div class="issues-list">
+        {% for issue in analysis.detected_issues %}
+        <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: rgba(245, 158, 11, 0.1); border-left: 3px solid #f59e0b; border-radius: 0 8px 8px 0; margin-bottom: 0.5rem;">
+            {% if issue.severity %}
+            <span class="badge badge-warning">{{ issue.severity|upper }}</span>
+            {% endif %}
+            <span>{{ issue.message if issue.message else issue }}</span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<div class="admin-card">
+    <h3>Informations Techniques</h3>
+    <div class="detail-grid">
+        <div class="detail-item" style="grid-column: 1 / -1;">
+            <span class="detail-label">User Agent</span>
+            <code style="display: block; padding: 0.5rem; background: rgba(0,0,0,0.2); border-radius: 4px; font-size: 0.8rem; word-break: break-all;">
+                {{ analysis.user_agent or 'N/A' }}
+            </code>
+        </div>
+    </div>
+</div>
+
+<div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+    <a href="{{ url_for('admin_panel.prompt_history') }}" class="btn btn-secondary">Retour a l'historique</a>
+    <form method="POST" action="{{ url_for('admin_panel.delete_prompt_result', analysis_id=analysis.id) }}" onsubmit="return confirm('Etes-vous sur de vouloir supprimer cette analyse ?')">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        <button type="submit" class="btn btn-danger">Supprimer cette analyse</button>
+    </form>
+</div>
+
+<style>
+.admin-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.detail-label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.detail-value {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+</style>
+{% endblock %}

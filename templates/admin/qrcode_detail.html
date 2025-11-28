@@ -1,0 +1,204 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Details Analyse QR Code #{{ analysis.id }} - Administration{% endblock %}
+
+{% block content %}
+<div class="admin-header">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <h1>Details de l'Analyse QR Code</h1>
+            <p>Analyse #{{ analysis.id }} - {{ analysis.created_at.strftime('%d/%m/%Y a %H:%M:%S') }}</p>
+        </div>
+        <div style="display: flex; gap: 1rem;">
+            <a href="{{ url_for('admin_panel.qrcode_history') }}" class="btn btn-secondary">Retour a l'historique</a>
+            <a href="{{ url_for('main.generate_qrcode_pdf', analysis_id=analysis.id) }}" class="btn btn-primary">Generer/Telecharger PDF</a>
+        </div>
+    </div>
+</div>
+
+<div class="admin-grid">
+    <div class="admin-card">
+        <h3>Informations Generales</h3>
+        <div class="detail-grid">
+            <div class="detail-item">
+                <span class="detail-label">Code Document</span>
+                <span class="detail-value" style="font-family: monospace;">{{ analysis.document_code or 'N/A' }}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Fichier Original</span>
+                <span class="detail-value">{{ analysis.original_filename or 'camera_capture' }}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Date d'Analyse</span>
+                <span class="detail-value">{{ analysis.created_at.strftime('%d/%m/%Y %H:%M:%S') }}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Adresse IP</span>
+                <span class="detail-value" style="font-family: monospace;">{{ analysis.ip_address or 'N/A' }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="admin-card">
+        <h3>Evaluation de la Menace</h3>
+        <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
+            <div style="text-align: center;">
+                <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Menace Detectee</div>
+                {% if analysis.threat_detected %}
+                <span class="badge badge-danger" style="font-size: 1rem; padding: 0.5rem 1rem;">OUI</span>
+                {% else %}
+                <span class="badge badge-success" style="font-size: 1rem; padding: 0.5rem 1rem;">NON</span>
+                {% endif %}
+            </div>
+            <div style="text-align: center;">
+                <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Niveau</div>
+                {% if analysis.threat_level == 'critical' %}
+                <span class="badge badge-danger" style="font-size: 1rem; padding: 0.5rem 1rem;">CRITIQUE</span>
+                {% elif analysis.threat_level == 'high' %}
+                <span class="badge badge-danger" style="font-size: 1rem; padding: 0.5rem 1rem;">ELEVE</span>
+                {% elif analysis.threat_level == 'medium' %}
+                <span class="badge badge-warning" style="font-size: 1rem; padding: 0.5rem 1rem;">MOYEN</span>
+                {% elif analysis.threat_level == 'low' %}
+                <span class="badge badge-info" style="font-size: 1rem; padding: 0.5rem 1rem;">FAIBLE</span>
+                {% else %}
+                <span class="badge badge-success" style="font-size: 1rem; padding: 0.5rem 1rem;">SUR</span>
+                {% endif %}
+            </div>
+            <div style="text-align: center;">
+                <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Redirections JS</div>
+                {% if analysis.js_redirects_detected %}
+                <span class="badge badge-warning" style="font-size: 1rem; padding: 0.5rem 1rem;">OUI</span>
+                {% else %}
+                <span class="badge badge-success" style="font-size: 1rem; padding: 0.5rem 1rem;">NON</span>
+                {% endif %}
+            </div>
+            <div style="text-align: center;">
+                <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Redirections</div>
+                <span class="badge badge-info" style="font-size: 1rem; padding: 0.5rem 1rem;">{{ analysis.redirect_count or 0 }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="admin-card">
+    <h3>URLs Analysees</h3>
+    <div class="detail-grid" style="grid-template-columns: 1fr;">
+        <div class="detail-item">
+            <span class="detail-label">URL Extraite du QR Code</span>
+            <code style="display: block; padding: 1rem; background: rgba(0,0,0,0.2); border-radius: 8px; word-break: break-all; color: #3b82f6;">
+                {{ analysis.extracted_url or 'Aucune URL extraite' }}
+            </code>
+        </div>
+        {% if analysis.final_url and analysis.final_url != analysis.extracted_url %}
+        <div class="detail-item">
+            <span class="detail-label">URL Finale (apres redirections)</span>
+            <code style="display: block; padding: 1rem; background: rgba(0,0,0,0.2); border-radius: 8px; word-break: break-all; color: #f59e0b;">
+                {{ analysis.final_url }}
+            </code>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if analysis.redirect_chain %}
+<div class="admin-card">
+    <h3>Chaine de Redirections</h3>
+    <div class="redirect-chain-list">
+        {% for redirect in analysis.redirect_chain %}
+        <div style="display: flex; align-items: flex-start; gap: 1rem; padding: 1rem; background: rgba(0,0,0,0.2); border-radius: 8px; margin-bottom: 0.5rem;">
+            <span class="badge badge-info">{{ loop.index }}</span>
+            <div style="flex: 1; word-break: break-all;">
+                <code style="color: var(--text-primary);">{{ redirect.url if redirect.url else redirect }}</code>
+                {% if redirect.status_code %}
+                <span class="badge {% if redirect.status_code == 200 %}badge-success{% elif redirect.status_code in [301, 302] %}badge-info{% else %}badge-warning{% endif %}" style="margin-left: 0.5rem;">
+                    {{ redirect.status_code }}
+                </span>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+{% if analysis.threat_details %}
+<div class="admin-card">
+    <h3>Details des Menaces</h3>
+    <div class="issues-list">
+        {% for issue in analysis.threat_details %}
+        <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: rgba(239, 68, 68, 0.1); border-left: 3px solid #ef4444; border-radius: 0 8px 8px 0; margin-bottom: 0.5rem;">
+            {% if issue.severity %}
+            <span class="badge badge-danger">{{ issue.severity|upper }}</span>
+            {% endif %}
+            <span>{{ issue.message if issue.message else issue }}</span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+{% if analysis.blacklist_matches %}
+<div class="admin-card">
+    <h3>Resultats Blacklist</h3>
+    <div style="padding: 1rem; background: {% if analysis.blacklist_matches.is_blacklisted %}rgba(239, 68, 68, 0.1){% else %}rgba(34, 197, 94, 0.1){% endif %}; border-radius: 8px;">
+        {% if analysis.blacklist_matches.is_blacklisted %}
+        <p style="color: #ef4444; font-weight: 600;">URL detectee comme malveillante par {{ analysis.blacklist_matches.malicious }} source(s)</p>
+        {% else %}
+        <p style="color: #22c55e; font-weight: 600;">URL non repertoriee dans les listes noires connues</p>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+<div class="admin-card">
+    <h3>Informations Techniques</h3>
+    <div class="detail-grid">
+        <div class="detail-item" style="grid-column: 1 / -1;">
+            <span class="detail-label">User Agent</span>
+            <code style="display: block; padding: 0.5rem; background: rgba(0,0,0,0.2); border-radius: 4px; font-size: 0.8rem; word-break: break-all;">
+                {{ analysis.user_agent or 'N/A' }}
+            </code>
+        </div>
+    </div>
+</div>
+
+<div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+    <a href="{{ url_for('admin_panel.qrcode_history') }}" class="btn btn-secondary">Retour a l'historique</a>
+    <form method="POST" action="{{ url_for('admin_panel.delete_qrcode_result', analysis_id=analysis.id) }}" onsubmit="return confirm('Etes-vous sur de vouloir supprimer cette analyse ?')">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        <button type="submit" class="btn btn-danger">Supprimer cette analyse</button>
+    </form>
+</div>
+
+<style>
+.admin-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.detail-label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.detail-value {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+</style>
+{% endblock %}

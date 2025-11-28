@@ -3,7 +3,7 @@ from flask_login import login_required, current_user
 from functools import wraps
 from models import (db, User, ActivityLog, SecurityLog, QuizResult, SecurityAnalysis, 
                     BreachAnalysis, Rule, Scenario, Tool, GlossaryTerm, SiteSettings, SEOMetadata,
-                    News, Newsletter, Contact, AttackType)
+                    News, Newsletter, Contact, AttackType, QRCodeAnalysis, PromptAnalysis)
 from utils.logging_utils import log_activity
 from datetime import datetime, timedelta
 from sqlalchemy import func, desc
@@ -339,6 +339,142 @@ def breach_detail(breach_id):
     breach = BreachAnalysis.query.get_or_404(breach_id)
     log_activity('ADMIN_BREACH_DETAIL_VIEW', f'Consultation détails analyse fuite #{breach_id}')
     return render_template('admin/breach_detail.html', breach=breach)
+
+
+@bp.route('/history/qrcode')
+@admin_required
+def qrcode_history():
+    """Historique des analyses QR Code"""
+    log_activity('ADMIN_QRCODE_HISTORY_VIEW', 'Consultation historique analyses QR Code')
+    
+    page = request.args.get('page', 1, type=int)
+    per_page = 50
+    
+    search = request.args.get('search', '')
+    threat_level = request.args.get('threat_level', '')
+    threat_only = request.args.get('threat_only', '')
+    
+    query = QRCodeAnalysis.query
+    
+    if search:
+        query = query.filter(
+            (QRCodeAnalysis.extracted_url.contains(search)) |
+            (QRCodeAnalysis.original_filename.contains(search))
+        )
+    
+    if threat_level:
+        query = query.filter(QRCodeAnalysis.threat_level == threat_level)
+    
+    if threat_only == 'true':
+        query = query.filter(QRCodeAnalysis.threat_detected == True)
+    
+    results = query.order_by(desc(QRCodeAnalysis.created_at)).paginate(page=page, per_page=per_page, error_out=False)
+    
+    threat_count = QRCodeAnalysis.query.filter(QRCodeAnalysis.threat_detected == True).count()
+    total_count = QRCodeAnalysis.query.count()
+    
+    return render_template('admin/qrcode_history.html', 
+                         results=results, 
+                         search=search, 
+                         threat_level=threat_level, 
+                         threat_only=threat_only, 
+                         threat_count=threat_count,
+                         total_count=total_count)
+
+
+@bp.route('/history/qrcode/<int:analysis_id>')
+@admin_required
+def qrcode_detail(analysis_id):
+    """Details d'une analyse QR Code"""
+    analysis = QRCodeAnalysis.query.get_or_404(analysis_id)
+    log_activity('ADMIN_QRCODE_DETAIL_VIEW', f'Consultation details analyse QR Code #{analysis_id}')
+    return render_template('admin/qrcode_detail.html', analysis=analysis)
+
+
+@bp.route('/history/qrcode/<int:analysis_id>/delete', methods=['POST'])
+@admin_required
+def delete_qrcode_result(analysis_id):
+    """Supprimer un resultat d'analyse QR Code"""
+    analysis = QRCodeAnalysis.query.get_or_404(analysis_id)
+    try:
+        db.session.delete(analysis)
+        db.session.commit()
+        log_activity('ADMIN_QRCODE_DELETE', f'Suppression analyse QR Code #{analysis_id}')
+        flash('Resultat d\'analyse QR Code supprime avec succes.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        log_activity('ADMIN_QRCODE_DELETE_ERROR', f'Erreur suppression analyse QR Code #{analysis_id}: {str(e)}')
+        flash(f'Erreur lors de la suppression: {str(e)}', 'danger')
+    
+    return redirect(url_for('admin_panel.qrcode_history'))
+
+
+@bp.route('/history/prompt')
+@admin_required
+def prompt_history():
+    """Historique des analyses de Prompt"""
+    log_activity('ADMIN_PROMPT_HISTORY_VIEW', 'Consultation historique analyses Prompt')
+    
+    page = request.args.get('page', 1, type=int)
+    per_page = 50
+    
+    search = request.args.get('search', '')
+    threat_level = request.args.get('threat_level', '')
+    threat_only = request.args.get('threat_only', '')
+    
+    query = PromptAnalysis.query
+    
+    if search:
+        query = query.filter(PromptAnalysis.prompt_text.contains(search))
+    
+    if threat_level:
+        query = query.filter(PromptAnalysis.threat_level == threat_level)
+    
+    if threat_only == 'true':
+        query = query.filter(PromptAnalysis.threat_detected == True)
+    
+    results = query.order_by(desc(PromptAnalysis.created_at)).paginate(page=page, per_page=per_page, error_out=False)
+    
+    threat_count = PromptAnalysis.query.filter(PromptAnalysis.threat_detected == True).count()
+    injection_count = PromptAnalysis.query.filter(PromptAnalysis.injection_detected == True).count()
+    total_count = PromptAnalysis.query.count()
+    
+    return render_template('admin/prompt_history.html', 
+                         results=results, 
+                         search=search, 
+                         threat_level=threat_level, 
+                         threat_only=threat_only, 
+                         threat_count=threat_count,
+                         injection_count=injection_count,
+                         total_count=total_count)
+
+
+@bp.route('/history/prompt/<int:analysis_id>')
+@admin_required
+def prompt_detail(analysis_id):
+    """Details d'une analyse de Prompt"""
+    analysis = PromptAnalysis.query.get_or_404(analysis_id)
+    log_activity('ADMIN_PROMPT_DETAIL_VIEW', f'Consultation details analyse Prompt #{analysis_id}')
+    return render_template('admin/prompt_detail.html', analysis=analysis)
+
+
+@bp.route('/history/prompt/<int:analysis_id>/delete', methods=['POST'])
+@admin_required
+def delete_prompt_result(analysis_id):
+    """Supprimer un resultat d'analyse de Prompt"""
+    analysis = PromptAnalysis.query.get_or_404(analysis_id)
+    try:
+        db.session.delete(analysis)
+        db.session.commit()
+        log_activity('ADMIN_PROMPT_DELETE', f'Suppression analyse Prompt #{analysis_id}')
+        flash('Resultat d\'analyse de Prompt supprime avec succes.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        log_activity('ADMIN_PROMPT_DELETE_ERROR', f'Erreur suppression analyse Prompt #{analysis_id}: {str(e)}')
+        flash(f'Erreur lors de la suppression: {str(e)}', 'danger')
+    
+    return redirect(url_for('admin_panel.prompt_history'))
+
 
 @bp.route('/logs/activity')
 @admin_required

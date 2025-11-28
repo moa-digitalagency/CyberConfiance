@@ -17,36 +17,106 @@
         <div class="analyzer-card">
             <h2>Analyse Anti-Quishing</h2>
             <p class="analyzer-description">
-                Uploadez une image contenant un QR code pour analyser son contenu en toute sécurité. 
-                Notre outil extrait l'URL, suit la chaîne de redirections et vérifie si les liens sont malveillants - 
-                <strong>sans jamais ouvrir ni exécuter le lien</strong>.
+                Utilisez votre camera ou uploadez une image contenant un QR code pour analyser son contenu en toute securite. 
+                Notre outil extrait l'URL, suit la chaine de redirections et verifie si les liens sont malveillants - 
+                <strong>sans jamais ouvrir ni executer le lien</strong>.
             </p>
 
-            <form method="POST" action="{{ url_for('main.qrcode_analyzer') }}" class="analyzer-form" enctype="multipart/form-data">
+            <div class="input-method-tabs">
+                <button type="button" class="tab-btn active" data-tab="camera">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                        <circle cx="12" cy="13" r="4"/>
+                    </svg>
+                    Scanner avec Camera
+                </button>
+                <button type="button" class="tab-btn" data-tab="upload">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="17 8 12 3 7 8"/>
+                        <line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                    Uploader une Image
+                </button>
+            </div>
+
+            <form method="POST" action="{{ url_for('main.qrcode_analyzer') }}" class="analyzer-form" enctype="multipart/form-data" id="analyzerForm">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <input type="hidden" name="camera_capture" id="cameraCaptureData" value="">
                 
-                <div class="upload-zone" id="uploadZone">
-                    <div class="upload-icon">
-                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                            <rect x="3" y="3" width="7" height="7" rx="1"/>
-                            <rect x="14" y="3" width="7" height="7" rx="1"/>
-                            <rect x="3" y="14" width="7" height="7" rx="1"/>
-                            <rect x="14" y="14" width="7" height="7" rx="1"/>
-                            <rect x="5" y="5" width="3" height="3"/>
-                            <rect x="16" y="5" width="3" height="3"/>
-                            <rect x="5" y="16" width="3" height="3"/>
-                        </svg>
+                <div class="tab-content active" id="camera-tab">
+                    <div class="camera-container">
+                        <div class="camera-view-wrapper">
+                            <video id="cameraVideo" autoplay playsinline></video>
+                            <canvas id="cameraCanvas" style="display: none;"></canvas>
+                            <div class="camera-overlay">
+                                <div class="scan-frame"></div>
+                            </div>
+                            <div id="cameraPlaceholder" class="camera-placeholder">
+                                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                                    <circle cx="12" cy="13" r="4"/>
+                                </svg>
+                                <p>Cliquez pour activer la camera</p>
+                                <p class="camera-hint">Autorisez l'acces a la camera dans votre navigateur</p>
+                            </div>
+                        </div>
+                        <div class="camera-controls">
+                            <button type="button" id="startCameraBtn" class="btn-secondary">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                                    <circle cx="12" cy="13" r="4"/>
+                                </svg>
+                                Activer la Camera
+                            </button>
+                            <button type="button" id="captureBtn" class="btn-primary" style="display: none;">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                </svg>
+                                Capturer le QR Code
+                            </button>
+                            <button type="button" id="switchCameraBtn" class="btn-secondary" style="display: none;">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="23 4 23 10 17 10"/>
+                                    <polyline points="1 20 1 14 7 14"/>
+                                    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div id="capturePreview" class="capture-preview" style="display: none;">
+                            <img id="capturedImage" alt="Captured QR Code">
+                            <button type="button" id="retakeBtn" class="btn-secondary">
+                                Reprendre
+                            </button>
+                        </div>
                     </div>
-                    <p class="upload-text">Glissez-déposez une image ici ou cliquez pour sélectionner</p>
-                    <p class="upload-hint">Formats supportés: PNG, JPG, GIF, BMP, WebP (max 10 MB)</p>
-                    <input type="file" name="qrcode_image" id="qrcodeImage" accept="image/*" required class="file-input-hidden">
-                    <div id="filePreview" class="file-preview" style="display: none;">
-                        <span class="file-name"></span>
-                        <button type="button" class="remove-file" onclick="removeFile()">×</button>
+                </div>
+
+                <div class="tab-content" id="upload-tab">
+                    <div class="upload-zone" id="uploadZone">
+                        <div class="upload-icon">
+                            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <rect x="3" y="3" width="7" height="7" rx="1"/>
+                                <rect x="14" y="3" width="7" height="7" rx="1"/>
+                                <rect x="3" y="14" width="7" height="7" rx="1"/>
+                                <rect x="14" y="14" width="7" height="7" rx="1"/>
+                                <rect x="5" y="5" width="3" height="3"/>
+                                <rect x="16" y="5" width="3" height="3"/>
+                                <rect x="5" y="16" width="3" height="3"/>
+                            </svg>
+                        </div>
+                        <p class="upload-text">Glissez-deposez une image ici ou cliquez pour selectionner</p>
+                        <p class="upload-hint">Formats supportes: PNG, JPG, GIF, BMP, WebP (max 10 MB)</p>
+                        <input type="file" name="qrcode_image" id="qrcodeImage" accept="image/*" class="file-input-hidden">
+                        <div id="filePreview" class="file-preview" style="display: none;">
+                            <span class="file-name"></span>
+                            <button type="button" class="remove-file" onclick="removeFile()">x</button>
+                        </div>
                     </div>
                 </div>
                 
-                <button type="submit" class="btn-primary btn-full">
+                <button type="submit" class="btn-primary btn-full" id="submitBtn">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="11" cy="11" r="8"/>
                         <path d="m21 21-4.35-4.35"/>
@@ -65,8 +135,8 @@
                     <h4 style="color: #ef4444; font-size: 0.95rem; font-weight: 700; margin: 0;">Qu'est-ce que le Quishing ?</h4>
                 </div>
                 <p style="margin: 0; color: #94a3b8; font-size: 0.875rem; line-height: 1.5;">
-                    Le Quishing (QR + Phishing) est une attaque où des QR codes malveillants redirigent vers des sites de phishing. 
-                    Ne scannez jamais un QR code sans vérification préalable.
+                    Le Quishing (QR + Phishing) est une attaque ou des QR codes malveillants redirigent vers des sites de phishing. 
+                    Ne scannez jamais un QR code sans verification prealable.
                 </p>
             </div>
         </div>
@@ -80,14 +150,14 @@
             </div>
             {% elif results.data_type == 'text' %}
             <div class="alert alert-info">
-                <h3>Contenu Texte Détecté</h3>
+                <h3>Contenu Texte Detecte</h3>
                 <p>{{ results.message }}</p>
-                <p><strong>Données extraites:</strong> {{ results.extracted_data[:200] }}{% if results.extracted_data|length > 200 %}...{% endif %}</p>
+                <p><strong>Donnees extraites:</strong> {{ results.extracted_data[:200] }}{% if results.extracted_data|length > 200 %}...{% endif %}</p>
             </div>
             {% else %}
             <div class="analysis-summary">
                 <div class="summary-header">
-                    <h3>Résultats de l'Analyse QR Code</h3>
+                    <h3>Resultats de l'Analyse QR Code</h3>
                     <span class="threat-badge threat-{{ results.threat_level }}">
                         Niveau: {{ results.threat_level|capitalize }}
                     </span>
@@ -108,7 +178,7 @@
 
                 {% if results.redirect_count > 0 %}
                 <div class="redirect-chain">
-                    <h4>Chaîne de Redirections ({{ results.redirect_count }})</h4>
+                    <h4>Chaine de Redirections ({{ results.redirect_count }})</h4>
                     <div class="redirect-timeline">
                         {% for redirect in results.redirect_chain %}
                         <div class="redirect-step">
@@ -133,14 +203,14 @@
 
                 {% if results.js_redirects %}
                 <div class="alert alert-warning">
-                    <h4>Redirections JavaScript Détectées</h4>
-                    <p>Des redirections côté client ont été détectées. Ces redirections peuvent être utilisées pour masquer la destination finale.</p>
+                    <h4>Redirections JavaScript Detectees</h4>
+                    <p>Des redirections cote client ont ete detectees. Ces redirections peuvent etre utilisees pour masquer la destination finale.</p>
                 </div>
                 {% endif %}
 
                 {% if results.issues %}
                 <div class="issues-section">
-                    <h4>Problèmes Détectés ({{ results.issues|length }})</h4>
+                    <h4>Problemes Detectes ({{ results.issues|length }})</h4>
                     <div class="issues-list">
                         {% for issue in results.issues %}
                         <div class="issue-item severity-{{ issue.severity }}">
@@ -154,14 +224,14 @@
 
                 {% if results.blacklist_result %}
                 <div class="blacklist-result">
-                    <h4>Vérification Liste Noire</h4>
+                    <h4>Verification Liste Noire</h4>
                     {% if results.blacklist_result.is_blacklisted %}
                     <div class="alert alert-danger">
-                        <p><strong>URL détectée comme malveillante</strong> par {{ results.blacklist_result.malicious }} source(s) de sécurité.</p>
+                        <p><strong>URL detectee comme malveillante</strong> par {{ results.blacklist_result.malicious }} source(s) de securite.</p>
                     </div>
                     {% else %}
                     <div class="alert alert-success">
-                        <p>URL non répertoriée dans les listes noires connues.</p>
+                        <p>URL non repertoriee dans les listes noires connues.</p>
                     </div>
                     {% endif %}
                 </div>
@@ -169,18 +239,18 @@
 
                 {% if results.threat_detected %}
                 <div class="alert alert-danger">
-                    <h4>Menace Potentielle Détectée</h4>
-                    <p>Ce QR code présente des caractéristiques suspectes. <strong>Ne scannez pas ce QR code</strong> avec votre téléphone.</p>
+                    <h4>Menace Potentielle Detectee</h4>
+                    <p>Ce QR code presente des caracteristiques suspectes. <strong>Ne scannez pas ce QR code</strong> avec votre telephone.</p>
                     <ul class="safety-recommendations">
                         <li>N'ouvrez pas cette URL directement</li>
                         <li>Ne saisissez aucune information personnelle</li>
-                        <li>Signalez ce QR code si vous l'avez trouvé dans un lieu public</li>
+                        <li>Signalez ce QR code si vous l'avez trouve dans un lieu public</li>
                     </ul>
                 </div>
                 {% else %}
                 <div class="alert alert-success">
-                    <h4>Aucune Menace Majeure Détectée</h4>
-                    <p>Ce QR code semble sûr, mais restez vigilant lors de la navigation.</p>
+                    <h4>Aucune Menace Majeure Detectee</h4>
+                    <p>Ce QR code semble sur, mais restez vigilant lors de la navigation.</p>
                 </div>
                 {% endif %}
 
@@ -197,17 +267,17 @@
         {% endif %}
 
         <div class="info-card">
-            <h3>À Propos de Cet Outil</h3>
+            <h3>A Propos de Cet Outil</h3>
             
             <div class="info-section">
                 <h4>Comment fonctionne l'analyseur ?</h4>
-                <p>Notre outil analyse les QR codes de manière sécurisée en plusieurs étapes :</p>
+                <p>Notre outil analyse les QR codes de maniere securisee en plusieurs etapes :</p>
                 <ol style="color: var(--text-secondary); line-height: 1.8; padding-left: 1.5rem;">
-                    <li><strong>Extraction</strong> : Le QR code est décodé pour extraire son contenu (URL, texte, etc.)</li>
-                    <li><strong>Analyse des redirections</strong> : L'outil suit la chaîne de redirections HTTP sans ouvrir les pages</li>
-                    <li><strong>Détection JavaScript</strong> : Les redirections côté client sont identifiées dans le code source</li>
-                    <li><strong>Vérification blacklist</strong> : Les URLs sont vérifiées contre les bases de données de menaces</li>
-                    <li><strong>Analyse de patterns</strong> : Détection de mots-clés suspects et de techniques de phishing</li>
+                    <li><strong>Extraction</strong> : Le QR code est decode pour extraire son contenu (URL, texte, etc.)</li>
+                    <li><strong>Analyse des redirections</strong> : L'outil suit la chaine de redirections HTTP sans ouvrir les pages</li>
+                    <li><strong>Detection JavaScript</strong> : Les redirections cote client sont identifiees dans le code source</li>
+                    <li><strong>Verification blacklist</strong> : Les URLs sont verifiees contre les bases de donnees de menaces</li>
+                    <li><strong>Analyse de patterns</strong> : Detection de mots-cles suspects et de techniques de phishing</li>
                 </ol>
             </div>
             
@@ -216,15 +286,15 @@
                 <div class="analysis-types">
                     <div class="analysis-type">
                         <strong>Protection Quishing</strong>
-                        <p>Évitez les attaques par QR codes malveillants dans les espaces publics, emails ou documents.</p>
+                        <p>Evitez les attaques par QR codes malveillants dans les espaces publics, emails ou documents.</p>
                     </div>
                     <div class="analysis-type">
                         <strong>Analyse Sans Risque</strong>
-                        <p>L'URL n'est jamais ouverte ni exécutée, évitant tout risque d'infection ou de tracking.</p>
+                        <p>L'URL n'est jamais ouverte ni executee, evitant tout risque d'infection ou de tracking.</p>
                     </div>
                     <div class="analysis-type">
-                        <strong>Transparence Complète</strong>
-                        <p>Visualisez toute la chaîne de redirections et découvrez la vraie destination du lien.</p>
+                        <strong>Transparence Complete</strong>
+                        <p>Visualisez toute la chaine de redirections et decouvrez la vraie destination du lien.</p>
                     </div>
                 </div>
             </div>
@@ -234,10 +304,134 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
     const uploadZone = document.getElementById('uploadZone');
     const fileInput = document.getElementById('qrcodeImage');
     const filePreview = document.getElementById('filePreview');
     const fileName = filePreview.querySelector('.file-name');
+    const analyzerForm = document.getElementById('analyzerForm');
+    const cameraCaptureData = document.getElementById('cameraCaptureData');
+    
+    const video = document.getElementById('cameraVideo');
+    const canvas = document.getElementById('cameraCanvas');
+    const cameraPlaceholder = document.getElementById('cameraPlaceholder');
+    const startCameraBtn = document.getElementById('startCameraBtn');
+    const captureBtn = document.getElementById('captureBtn');
+    const switchCameraBtn = document.getElementById('switchCameraBtn');
+    const capturePreview = document.getElementById('capturePreview');
+    const capturedImage = document.getElementById('capturedImage');
+    const retakeBtn = document.getElementById('retakeBtn');
+    
+    let stream = null;
+    let facingMode = 'environment';
+    let activeTab = 'camera';
+
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const tab = this.dataset.tab;
+            activeTab = tab;
+            
+            tabBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+                if (content.id === tab + '-tab') {
+                    content.classList.add('active');
+                }
+            });
+            
+            if (tab === 'upload') {
+                fileInput.required = true;
+                stopCamera();
+            } else {
+                fileInput.required = false;
+            }
+        });
+    });
+
+    async function startCamera() {
+        try {
+            if (stream) {
+                stopCamera();
+            }
+            
+            stream = await navigator.mediaDevices.getUserMedia({
+                video: {
+                    facingMode: facingMode,
+                    width: { ideal: 1280 },
+                    height: { ideal: 720 }
+                }
+            });
+            
+            video.srcObject = stream;
+            video.style.display = 'block';
+            cameraPlaceholder.style.display = 'none';
+            startCameraBtn.style.display = 'none';
+            captureBtn.style.display = 'inline-flex';
+            
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            const videoDevices = devices.filter(d => d.kind === 'videoinput');
+            if (videoDevices.length > 1) {
+                switchCameraBtn.style.display = 'inline-flex';
+            }
+            
+        } catch (err) {
+            console.error('Camera error:', err);
+            alert('Impossible d\'acceder a la camera. Verifiez les permissions de votre navigateur ou utilisez l\'option d\'upload d\'image.');
+        }
+    }
+
+    function stopCamera() {
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+            stream = null;
+        }
+        video.srcObject = null;
+        video.style.display = 'none';
+    }
+
+    function captureImage() {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0);
+        
+        const imageData = canvas.toDataURL('image/jpeg', 0.9);
+        cameraCaptureData.value = imageData;
+        
+        capturedImage.src = imageData;
+        capturePreview.style.display = 'block';
+        video.style.display = 'none';
+        captureBtn.style.display = 'none';
+        switchCameraBtn.style.display = 'none';
+    }
+
+    function retakePhoto() {
+        capturePreview.style.display = 'none';
+        cameraCaptureData.value = '';
+        video.style.display = 'block';
+        captureBtn.style.display = 'inline-flex';
+        
+        const devices = navigator.mediaDevices.enumerateDevices().then(devices => {
+            const videoDevices = devices.filter(d => d.kind === 'videoinput');
+            if (videoDevices.length > 1) {
+                switchCameraBtn.style.display = 'inline-flex';
+            }
+        });
+    }
+
+    async function switchCamera() {
+        facingMode = facingMode === 'environment' ? 'user' : 'environment';
+        await startCamera();
+    }
+
+    startCameraBtn.addEventListener('click', startCamera);
+    cameraPlaceholder.addEventListener('click', startCamera);
+    captureBtn.addEventListener('click', captureImage);
+    retakeBtn.addEventListener('click', retakePhoto);
+    switchCameraBtn.addEventListener('click', switchCamera);
 
     uploadZone.addEventListener('click', function(e) {
         if (e.target.closest('.remove-file')) return;
@@ -279,6 +473,23 @@ document.addEventListener('DOMContentLoaded', function() {
         filePreview.style.display = 'none';
         uploadZone.classList.remove('has-file');
     };
+
+    analyzerForm.addEventListener('submit', function(e) {
+        if (activeTab === 'camera') {
+            if (!cameraCaptureData.value) {
+                e.preventDefault();
+                alert('Veuillez capturer un QR code avec la camera ou basculez vers l\'upload d\'image.');
+                return false;
+            }
+            fileInput.required = false;
+        } else {
+            if (!fileInput.files.length) {
+                e.preventDefault();
+                alert('Veuillez selectionner une image contenant un QR code.');
+                return false;
+            }
+        }
+    });
 });
 </script>
 
@@ -307,6 +518,170 @@ document.addEventListener('DOMContentLoaded', function() {
     color: var(--text-secondary);
     margin-bottom: 2rem;
     font-size: 1rem;
+}
+
+.input-method-tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding: 0.5rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+}
+
+.tab-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.tab-btn:hover {
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--text-primary);
+}
+
+.tab-btn.active {
+    background: rgba(59, 130, 246, 0.2);
+    color: var(--accent-blue);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.camera-container {
+    margin-bottom: 1.5rem;
+}
+
+.camera-view-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto 1rem;
+    aspect-ratio: 4/3;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+#cameraVideo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: none;
+}
+
+.camera-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+}
+
+.scan-frame {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 200px;
+    height: 200px;
+    border: 3px solid rgba(59, 130, 246, 0.8);
+    border-radius: 12px;
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.3);
+}
+
+.scan-frame::before,
+.scan-frame::after {
+    content: '';
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    border-color: var(--accent-blue);
+    border-style: solid;
+}
+
+.scan-frame::before {
+    top: -3px;
+    left: -3px;
+    border-width: 4px 0 0 4px;
+    border-radius: 8px 0 0 0;
+}
+
+.scan-frame::after {
+    bottom: -3px;
+    right: -3px;
+    border-width: 0 4px 4px 0;
+    border-radius: 0 0 8px 0;
+}
+
+.camera-placeholder {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.camera-placeholder:hover {
+    color: var(--accent-blue);
+}
+
+.camera-placeholder svg {
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.camera-placeholder p {
+    margin: 0.25rem 0;
+}
+
+.camera-hint {
+    font-size: 0.85rem;
+    opacity: 0.7;
+}
+
+.camera-controls {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.capture-preview {
+    text-align: center;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.capture-preview img {
+    width: 100%;
+    max-width: 400px;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    border: 2px solid rgba(34, 197, 94, 0.5);
 }
 
 .upload-zone {
@@ -386,6 +761,24 @@ document.addEventListener('DOMContentLoaded', function() {
     gap: 0.5rem;
     padding: 1rem;
     font-size: 1.1rem;
+}
+
+.btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: rgba(59, 130, 246, 0.15);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 8px;
+    color: var(--accent-blue);
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background: rgba(59, 130, 246, 0.25);
 }
 
 .url-display {
@@ -644,6 +1037,17 @@ document.addEventListener('DOMContentLoaded', function() {
 .analysis-type p {
     font-size: 0.9rem;
     margin: 0;
+}
+
+@media (max-width: 768px) {
+    .input-method-tabs {
+        flex-direction: column;
+    }
+    
+    .camera-controls {
+        flex-direction: column;
+        align-items: center;
+    }
 }
 </style>
 {% endblock %}

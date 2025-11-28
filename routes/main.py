@@ -971,33 +971,59 @@ def sitemap():
 
 @bp.route('/outils/analyseur-qrcode', methods=['GET', 'POST'])
 def qrcode_analyzer():
+    import base64
+    
     results = None
     analysis_id = None
     
     if request.method == 'POST':
         try:
-            uploaded_file = request.files.get('qrcode_image')
+            image_data = None
+            filename = 'camera_capture.jpg'
             
-            if not uploaded_file or not uploaded_file.filename:
-                flash('Veuillez sélectionner une image contenant un QR code.', 'error')
-                return redirect(url_for('main.qrcode_analyzer'))
-            
-            allowed_extensions = {'png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp'}
-            file_ext = uploaded_file.filename.rsplit('.', 1)[-1].lower() if '.' in uploaded_file.filename else ''
-            
-            if file_ext not in allowed_extensions:
-                flash('Format d\'image non supporté. Utilisez PNG, JPG, GIF, BMP ou WebP.', 'error')
-                return redirect(url_for('main.qrcode_analyzer'))
-            
-            image_data = uploaded_file.read()
-            
-            if len(image_data) > 10 * 1024 * 1024:
-                flash('L\'image est trop volumineuse. Taille maximale: 10 MB.', 'error')
-                return redirect(url_for('main.qrcode_analyzer'))
+            camera_capture = request.form.get('camera_capture', '').strip()
+            if camera_capture and camera_capture.startswith('data:image'):
+                try:
+                    header, encoded = camera_capture.split(',', 1)
+                    image_data = base64.b64decode(encoded)
+                    
+                    if 'png' in header:
+                        filename = 'camera_capture.png'
+                    elif 'jpeg' in header or 'jpg' in header:
+                        filename = 'camera_capture.jpg'
+                    elif 'webp' in header:
+                        filename = 'camera_capture.webp'
+                    
+                    if len(image_data) > 10 * 1024 * 1024:
+                        flash('L\'image capturee est trop volumineuse. Taille maximale: 10 MB.', 'error')
+                        return redirect(url_for('main.qrcode_analyzer'))
+                except Exception as e:
+                    flash(f'Erreur lors du traitement de l\'image capturee: {str(e)}', 'error')
+                    return redirect(url_for('main.qrcode_analyzer'))
+            else:
+                uploaded_file = request.files.get('qrcode_image')
+                
+                if not uploaded_file or not uploaded_file.filename:
+                    flash('Veuillez capturer ou selectionner une image contenant un QR code.', 'error')
+                    return redirect(url_for('main.qrcode_analyzer'))
+                
+                allowed_extensions = {'png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp'}
+                file_ext = uploaded_file.filename.rsplit('.', 1)[-1].lower() if '.' in uploaded_file.filename else ''
+                
+                if file_ext not in allowed_extensions:
+                    flash('Format d\'image non supporte. Utilisez PNG, JPG, GIF, BMP ou WebP.', 'error')
+                    return redirect(url_for('main.qrcode_analyzer'))
+                
+                image_data = uploaded_file.read()
+                filename = uploaded_file.filename
+                
+                if len(image_data) > 10 * 1024 * 1024:
+                    flash('L\'image est trop volumineuse. Taille maximale: 10 MB.', 'error')
+                    return redirect(url_for('main.qrcode_analyzer'))
             
             analyzer = QRCodeAnalyzerService()
             try:
-                results = analyzer.analyze_qr_image(image_data, uploaded_file.filename)
+                results = analyzer.analyze_qr_image(image_data, filename)
             except Exception as e:
                 results = {
                     'success': False,
@@ -1009,7 +1035,7 @@ def qrcode_analyzer():
                     threat_level = results.get('threat_level', 'safe')
                     
                     qr_analysis = QRCodeAnalysis(
-                        original_filename=uploaded_file.filename,
+                        original_filename=filename,
                         extracted_url=results.get('extracted_url'),
                         final_url=results.get('final_url'),
                         redirect_chain=results.get('redirect_chain', []),
