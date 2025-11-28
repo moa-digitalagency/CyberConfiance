@@ -119,6 +119,27 @@
                         style="width: 100%; font-family: 'Monaco', 'Menlo', 'Consolas', monospace; font-size: 0.85rem; resize: vertical;"
                     >{{ setting.value }}</textarea>
                     
+                    {% elif setting.value_type == 'password' %}
+                    <div style="position: relative;">
+                        <input 
+                            type="password" 
+                            id="setting_{{ setting.key }}" 
+                            name="setting_{{ setting.key }}" 
+                            value="{{ setting.value }}" 
+                            class="admin-filter-input"
+                            style="width: 100%; padding-right: 3rem;"
+                            autocomplete="new-password"
+                        >
+                        <button type="button" 
+                            onclick="togglePasswordVisibility('setting_{{ setting.key }}')" 
+                            style="position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; padding: 0.5rem; color: var(--text-secondary);">
+                            👁️
+                        </button>
+                    </div>
+                    <small style="color: var(--accent-red); display: block; margin-top: 0.5rem;">
+                        ⚠️ Cette valeur est sensible et ne doit jamais être partagée
+                    </small>
+                    
                     {% else %}
                     <input 
                         type="text" 
@@ -215,6 +236,15 @@ function updateFileName(input, key) {
     if (input.files && input.files[0]) {
         filenameSpan.textContent = input.files[0].name;
         filenameSpan.style.color = 'var(--accent-blue)';
+    }
+}
+
+function togglePasswordVisibility(inputId) {
+    const input = document.getElementById(inputId);
+    if (input.type === 'password') {
+        input.type = 'text';
+    } else {
+        input.type = 'password';
     }
 }
 </script>

@@ -240,14 +240,42 @@ def seed_site_settings(db):
     from models import SiteSettings
     
     default_settings = [
-        {'key': 'site_name', 'value': 'CyberConfiance', 'description': 'Nom du site', 'category': 'general', 'is_public': True},
-        {'key': 'contact_email', 'value': 'contact@cyberconfiance.fr', 'description': 'Email de contact principal', 'category': 'general', 'is_public': True},
-        {'key': 'logo_light', 'value': '/static/img/logo.png', 'description': 'Logo for light theme', 'category': 'appearance', 'is_public': True},
-        {'key': 'logo_dark', 'value': '/static/img/logo.png', 'description': 'Logo for dark theme', 'category': 'appearance', 'is_public': True},
-        {'key': 'maintenance_mode', 'value': 'false', 'value_type': 'boolean', 'description': 'Mode maintenance activé', 'category': 'system', 'is_public': False},
-        {'key': 'analytics_enabled', 'value': 'true', 'value_type': 'boolean', 'description': 'Activer les statistiques', 'category': 'system', 'is_public': False},
-        {'key': 'custom_head_code', 'value': '', 'value_type': 'textarea', 'description': 'Code personnalisé à injecter dans le <head> (analytics, pixels, etc.) - HTML/JS autorisé', 'category': 'advanced', 'is_public': False},
-        {'key': 'default_og_image', 'value': '/static/img/og-default.png', 'description': 'Image Open Graph par défaut pour le partage social', 'category': 'seo', 'is_public': True},
+        {'key': 'site_name', 'value': 'CyberConfiance', 'description': 'Nom du site affiché dans le navigateur et les emails', 'category': 'general', 'is_public': True},
+        {'key': 'site_tagline', 'value': 'Votre bouclier numérique en Afrique', 'description': 'Slogan du site affiché dans le header', 'category': 'general', 'is_public': True},
+        {'key': 'contact_email', 'value': 'contact@cyberconfiance.fr', 'description': 'Email de contact principal affiché sur le site', 'category': 'general', 'is_public': True},
+        {'key': 'support_email', 'value': 'support@cyberconfiance.fr', 'description': 'Email pour le support technique', 'category': 'general', 'is_public': True},
+        {'key': 'phone_number', 'value': '+225 XX XX XX XX', 'description': 'Numéro de téléphone de contact', 'category': 'general', 'is_public': True},
+        {'key': 'address', 'value': 'Abidjan, Côte d\'Ivoire', 'description': 'Adresse physique affichée sur le site', 'category': 'general', 'is_public': True},
+        
+        {'key': 'logo_light', 'value': '/static/img/logo.png', 'description': 'Logo pour le thème clair (format PNG recommandé)', 'category': 'appearance', 'is_public': True},
+        {'key': 'logo_dark', 'value': '/static/img/logo.png', 'description': 'Logo pour le thème sombre (format PNG recommandé)', 'category': 'appearance', 'is_public': True},
+        {'key': 'favicon', 'value': '/static/img/favicon.ico', 'description': 'Icône du site affichée dans l\'onglet du navigateur', 'category': 'appearance', 'is_public': True},
+        {'key': 'primary_color', 'value': '#3b82f6', 'description': 'Couleur principale du site (format hexadécimal)', 'category': 'appearance', 'is_public': True},
+        {'key': 'secondary_color', 'value': '#10b981', 'description': 'Couleur secondaire du site (format hexadécimal)', 'category': 'appearance', 'is_public': True},
+        
+        {'key': 'maintenance_mode', 'value': 'false', 'value_type': 'boolean', 'description': 'Activer le mode maintenance (site inaccessible aux visiteurs)', 'category': 'system', 'is_public': False},
+        {'key': 'analytics_enabled', 'value': 'true', 'value_type': 'boolean', 'description': 'Activer le tracking des visites et statistiques', 'category': 'system', 'is_public': False},
+        {'key': 'contact_form_enabled', 'value': 'true', 'value_type': 'boolean', 'description': 'Activer le formulaire de contact', 'category': 'system', 'is_public': False},
+        {'key': 'newsletter_enabled', 'value': 'true', 'value_type': 'boolean', 'description': 'Activer l\'inscription à la newsletter', 'category': 'system', 'is_public': False},
+        {'key': 'quiz_enabled', 'value': 'true', 'value_type': 'boolean', 'description': 'Activer le quiz de sensibilisation', 'category': 'system', 'is_public': False},
+        {'key': 'security_analyzer_enabled', 'value': 'true', 'value_type': 'boolean', 'description': 'Activer l\'analyseur de sécurité', 'category': 'system', 'is_public': False},
+        {'key': 'breach_checker_enabled', 'value': 'true', 'value_type': 'boolean', 'description': 'Activer la vérification des fuites de données', 'category': 'system', 'is_public': False},
+        {'key': 'max_file_upload_size', 'value': '32', 'description': 'Taille maximale des fichiers uploadés en Mo', 'category': 'system', 'is_public': False},
+        {'key': 'session_timeout', 'value': '30', 'description': 'Durée de session admin en minutes', 'category': 'system', 'is_public': False},
+        
+        {'key': 'custom_head_code', 'value': '', 'value_type': 'textarea', 'description': 'Code HTML/JS à injecter dans le <head> (analytics, pixels, etc.)', 'category': 'advanced', 'is_public': False},
+        {'key': 'custom_footer_code', 'value': '', 'value_type': 'textarea', 'description': 'Code HTML/JS à injecter avant </body> (widgets, chat, etc.)', 'category': 'advanced', 'is_public': False},
+        {'key': 'google_analytics_id', 'value': '', 'description': 'ID Google Analytics (ex: G-XXXXXXXXXX)', 'category': 'advanced', 'is_public': False},
+        {'key': 'facebook_pixel_id', 'value': '', 'description': 'ID du pixel Facebook pour le tracking', 'category': 'advanced', 'is_public': False},
+        {'key': 'recaptcha_site_key', 'value': '', 'description': 'Clé publique reCAPTCHA pour les formulaires (visible côté client)', 'category': 'advanced', 'is_public': True},
+        {'key': 'recaptcha_secret_key', 'value': '', 'value_type': 'password', 'description': 'Clé secrète reCAPTCHA - NE JAMAIS PARTAGER', 'category': 'advanced', 'is_public': False},
+        
+        {'key': 'default_og_image', 'value': '/static/img/og-default.png', 'description': 'Image par défaut pour le partage sur les réseaux sociaux', 'category': 'seo', 'is_public': True},
+        {'key': 'twitter_handle', 'value': '@cyberconfiance', 'description': 'Compte Twitter/X pour les cartes Twitter', 'category': 'seo', 'is_public': True},
+        {'key': 'facebook_page', 'value': '', 'description': 'URL de la page Facebook', 'category': 'seo', 'is_public': True},
+        {'key': 'linkedin_page', 'value': '', 'description': 'URL de la page LinkedIn', 'category': 'seo', 'is_public': True},
+        {'key': 'google_site_verification', 'value': '', 'description': 'Code de vérification Google Search Console', 'category': 'seo', 'is_public': False},
+        {'key': 'bing_site_verification', 'value': '', 'description': 'Code de vérification Bing Webmaster', 'category': 'seo', 'is_public': False},
     ]
     
     created_count = 0

@@ -57,7 +57,171 @@
 {% if analysis.analysis_results %}
 <div class="admin-card">
     <h3>Résultats détaillés de l'analyse</h3>
-    <pre style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; overflow-x: auto; color: var(--text-primary); font-size: 0.9rem;">{{ analysis.analysis_results|tojson(indent=2) }}</pre>
+    
+    {% set results = analysis.analysis_results %}
+    
+    {% if results is mapping %}
+        {% set scan_data = results.get('scans') or results.get('engines') or results.get('results') or results.get('engine_results') %}
+        {% if scan_data %}
+        <div style="margin-top: 1rem;">
+            <h4 style="color: var(--accent-blue); margin-bottom: 1rem;">Résultats des moteurs de détection</h4>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem;">
+                {% if scan_data is mapping %}
+                    {% for engine_name, engine_result in scan_data.items() %}
+                    {% if engine_result is mapping %}
+                    <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px; border-left: 3px solid {% if engine_result.get('detected') or engine_result.get('category') == 'malicious' %}var(--accent-red){% elif engine_result.get('category') == 'suspicious' %}var(--accent-yellow){% else %}var(--accent-green){% endif %};">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                            <strong style="color: var(--text-primary);">{{ engine_name }}</strong>
+                            {% if engine_result.get('detected') or engine_result.get('category') == 'malicious' %}
+                            <span class="badge badge-danger">Détecté</span>
+                            {% elif engine_result.get('category') == 'suspicious' %}
+                            <span class="badge badge-warning">Suspect</span>
+                            {% else %}
+                            <span class="badge badge-success">Sain</span>
+                            {% endif %}
+                        </div>
+                        {% if engine_result.get('result') %}
+                        <div style="font-size: 0.85rem; color: var(--text-secondary);">
+                            Résultat: <span style="color: var(--accent-red);">{{ engine_result.result }}</span>
+                        </div>
+                        {% endif %}
+                        {% if engine_result.get('engine_version') %}
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">
+                            Version: {{ engine_result.engine_version }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                {% elif scan_data is iterable and scan_data is not string %}
+                    {% for engine_result in scan_data %}
+                    {% if engine_result is mapping %}
+                    <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px; border-left: 3px solid {% if engine_result.get('detected') or engine_result.get('category') == 'malicious' %}var(--accent-red){% elif engine_result.get('category') == 'suspicious' %}var(--accent-yellow){% else %}var(--accent-green){% endif %};">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                            <strong style="color: var(--text-primary);">{{ engine_result.get('engine_name') or engine_result.get('name') or 'Moteur' }}</strong>
+                            {% if engine_result.get('detected') or engine_result.get('category') == 'malicious' %}
+                            <span class="badge badge-danger">Détecté</span>
+                            {% elif engine_result.get('category') == 'suspicious' %}
+                            <span class="badge badge-warning">Suspect</span>
+                            {% else %}
+                            <span class="badge badge-success">Sain</span>
+                            {% endif %}
+                        </div>
+                        {% if engine_result.get('result') %}
+                        <div style="font-size: 0.85rem; color: var(--text-secondary);">
+                            Résultat: <span style="color: var(--accent-red);">{{ engine_result.result }}</span>
+                        </div>
+                        {% endif %}
+                        {% if engine_result.get('engine_version') %}
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">
+                            Version: {{ engine_result.engine_version }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% elif engine_result is string %}
+                    <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px; border-left: 3px solid var(--accent-green);">
+                        <strong style="color: var(--text-primary);">{{ engine_result }}</strong>
+                        <span class="badge badge-success" style="margin-left: 0.5rem;">Sain</span>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if results.get('stats') or results.get('statistics') %}
+        <div style="margin-top: 1.5rem;">
+            <h4 style="color: var(--accent-blue); margin-bottom: 1rem;">Statistiques</h4>
+            {% set stats = results.get('stats') or results.get('statistics') %}
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+                {% if stats.malicious is defined %}
+                <div style="background: rgba(239, 68, 68, 0.1); padding: 1rem; border-radius: 8px; text-align: center;">
+                    <div style="font-size: 1.5rem; font-weight: bold; color: var(--accent-red);">{{ stats.malicious }}</div>
+                    <div style="font-size: 0.85rem; color: var(--text-secondary);">Malveillant</div>
+                </div>
+                {% endif %}
+                {% if stats.suspicious is defined %}
+                <div style="background: rgba(245, 158, 11, 0.1); padding: 1rem; border-radius: 8px; text-align: center;">
+                    <div style="font-size: 1.5rem; font-weight: bold; color: var(--accent-yellow);">{{ stats.suspicious }}</div>
+                    <div style="font-size: 0.85rem; color: var(--text-secondary);">Suspect</div>
+                </div>
+                {% endif %}
+                {% if stats.harmless is defined or stats.clean is defined %}
+                <div style="background: rgba(34, 197, 94, 0.1); padding: 1rem; border-radius: 8px; text-align: center;">
+                    <div style="font-size: 1.5rem; font-weight: bold; color: var(--accent-green);">{{ stats.harmless or stats.clean }}</div>
+                    <div style="font-size: 0.85rem; color: var(--text-secondary);">Sain</div>
+                </div>
+                {% endif %}
+                {% if stats.undetected is defined %}
+                <div style="background: rgba(156, 163, 175, 0.1); padding: 1rem; border-radius: 8px; text-align: center;">
+                    <div style="font-size: 1.5rem; font-weight: bold; color: var(--text-secondary);">{{ stats.undetected }}</div>
+                    <div style="font-size: 0.85rem; color: var(--text-secondary);">Non détecté</div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if results.get('permalink') or results.get('scan_id') or results.get('resource') %}
+        <div style="margin-top: 1.5rem;">
+            <h4 style="color: var(--accent-blue); margin-bottom: 1rem;">Informations de l'analyse</h4>
+            <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px;">
+                {% if results.get('scan_id') %}
+                <div style="margin-bottom: 0.5rem;">
+                    <strong style="color: var(--text-secondary);">ID d'analyse:</strong>
+                    <span style="color: var(--text-primary); font-family: monospace;">{{ results.scan_id }}</span>
+                </div>
+                {% endif %}
+                {% if results.get('resource') %}
+                <div style="margin-bottom: 0.5rem;">
+                    <strong style="color: var(--text-secondary);">Ressource:</strong>
+                    <span style="color: var(--text-primary); word-break: break-all;">{{ results.resource }}</span>
+                </div>
+                {% endif %}
+                {% if results.get('permalink') %}
+                <div>
+                    <strong style="color: var(--text-secondary);">Lien VirusTotal:</strong>
+                    <a href="{{ results.permalink }}" target="_blank" style="color: var(--accent-blue);">Voir sur VirusTotal</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if not (results.get('scans') or results.get('engines') or results.get('results') or results.get('engine_results') or results.get('stats')) %}
+        <div style="margin-top: 1rem;">
+            {% for key, value in results.items() %}
+            {% if key not in ['scans', 'engines', 'results', 'engine_results', 'stats', 'statistics', 'permalink', 'scan_id', 'resource'] %}
+            <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px; margin-bottom: 0.5rem;">
+                <strong style="color: var(--accent-blue);">{{ key|replace('_', ' ')|title }}:</strong>
+                {% if value is mapping %}
+                <pre style="background: rgba(0,0,0,0.3); padding: 0.5rem; border-radius: 4px; margin-top: 0.5rem; font-size: 0.85rem; overflow-x: auto; color: var(--text-primary);">{{ value|tojson(indent=2) }}</pre>
+                {% elif value is iterable and value is not string %}
+                <div style="margin-top: 0.5rem;">
+                    {% for item in value %}
+                    {% if item is mapping %}
+                    <pre style="background: rgba(0,0,0,0.3); padding: 0.5rem; border-radius: 4px; margin-top: 0.5rem; font-size: 0.85rem; overflow-x: auto; color: var(--text-primary);">{{ item|tojson(indent=2) }}</pre>
+                    {% else %}
+                    <span class="badge badge-info" style="margin: 0.2rem;">{{ item }}</span>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+                {% elif value is sameas true %}
+                <span class="badge badge-success" style="margin-left: 0.5rem;">Oui</span>
+                {% elif value is sameas false %}
+                <span class="badge badge-secondary" style="margin-left: 0.5rem;">Non</span>
+                {% else %}
+                <span style="color: var(--text-primary); margin-left: 0.5rem;">{{ value }}</span>
+                {% endif %}
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% else %}
+        <pre style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; overflow-x: auto; color: var(--text-primary); font-size: 0.9rem;">{{ analysis.analysis_results|tojson(indent=2) }}</pre>
+    {% endif %}
 </div>
 {% endif %}
 
