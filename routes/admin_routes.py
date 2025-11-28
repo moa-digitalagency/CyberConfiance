@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for
 from flask_admin.contrib.sqla import ModelView
 from flask_login import current_user
 from markupsafe import Markup
+from wtforms import Form, StringField, TextAreaField, BooleanField
 import __init__ as app_module
 db = app_module.db
 admin = app_module.admin
@@ -246,6 +247,18 @@ class SiteSettingsView(SecureModelView):
     }
     form_excluded_columns = ['updated_by', 'updater']
 
+class SEOMetadataForm(Form):
+    page_path = StringField('Chemin de page')
+    title = StringField('Titre')
+    description = TextAreaField('Description')
+    keywords = TextAreaField('Mots-clés')
+    og_title = StringField('Titre OG')
+    og_description = TextAreaField('Description OG')
+    og_image = StringField('Image OG')
+    canonical_url = StringField('URL canonique')
+    robots = StringField('Robots')
+    is_active = BooleanField('Actif')
+
 class SEOMetadataView(SecureModelView):
     column_list = ['id', 'page_path', 'title', 'is_active', 'updated_at']
     column_searchable_list = ['page_path', 'title', 'description']
@@ -255,7 +268,7 @@ class SEOMetadataView(SecureModelView):
     can_create = True
     can_edit = True
     can_delete = True
-    form_columns = ['page_path', 'title', 'description', 'keywords', 'og_title', 'og_description', 'og_image', 'canonical_url', 'robots', 'is_active']
+    form = SEOMetadataForm
     column_labels = {
         'id': 'ID',
         'page_path': 'Chemin de page',
@@ -270,7 +283,6 @@ class SEOMetadataView(SecureModelView):
         'is_active': 'Actif',
         'updated_at': 'Mis à jour le'
     }
-    form_excluded_columns = ['updated_by', 'updater']
 
 admin.add_view(UserManagementView(User, db.session, name='Utilisateurs'))
 admin.add_view(RequestSubmissionView(RequestSubmission, db.session, name='Demandes - Fact-checking & Consultation'))
