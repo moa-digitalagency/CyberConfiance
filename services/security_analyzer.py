@@ -202,22 +202,24 @@ class SecurityAnalyzerService:
             raise e
     
     def _calculate_threat_level(self, malicious, suspicious, total):
-        """Calculate threat level based on detection ratios"""
+        """Calculate threat level based on detection ratios
+        
+        Business rule: ANY detection (malicious or suspicious > 0) must be at least 'modéré'
+        """
         if total == 0:
             return 'inconnu'
         
-        malicious_ratio = malicious / total
-        suspicious_ratio = suspicious / total
-        combined_ratio = malicious_ratio + (suspicious_ratio * 0.5)
-        
-        if combined_ratio >= 0.5:
-            return 'critique'
-        elif combined_ratio >= 0.25:
-            return 'élevé'
-        elif combined_ratio >= 0.1:
-            return 'modéré'
-        elif combined_ratio > 0:
-            return 'faible'
+        if malicious > 0 or suspicious > 0:
+            malicious_ratio = malicious / total
+            suspicious_ratio = suspicious / total
+            combined_ratio = malicious_ratio + (suspicious_ratio * 0.5)
+            
+            if combined_ratio >= 0.5:
+                return 'critique'
+            elif combined_ratio >= 0.25:
+                return 'élevé'
+            else:
+                return 'modéré'
         else:
             return 'sûr'
     

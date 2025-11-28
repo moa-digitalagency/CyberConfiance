@@ -207,6 +207,14 @@
                 <p>{{ results.message }}</p>
                 <p class="result-note">Cet élément n'est pas connu dans notre base de données de menaces, ce qui est généralement un bon signe.</p>
             </div>
+            
+            {% if analysis_id %}
+            <div style="margin-top: 2rem; text-align: center;">
+                <a href="{{ url_for('main.generate_security_pdf', analysis_id=analysis_id) }}" class="btn-primary" style="display: inline-block; padding: 12px 24px; text-decoration: none;">
+                    <span>📄 Télécharger le Rapport PDF</span>
+                </a>
+            </div>
+            {% endif %}
             {% else %}
             <div class="analysis-summary">
                 <div class="summary-header">

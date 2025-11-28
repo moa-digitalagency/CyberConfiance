@@ -264,17 +264,68 @@ class PDFReportService:
         
         results = security_analysis.analysis_results or {}
         
-        stats = [
-            ("Malveillant", results.get('malicious', 0), self.danger_color),
-            ("Suspect", results.get('suspicious', 0), self.warning_color),
-            ("Sûr", results.get('clean', 0), self.success_color),
-            ("Total des moteurs", results.get('total', 0), self.base_color)
-        ]
+        if results.get('found') == False:
+            page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + 80), 
+                          color=self.success_color, fill=self.success_color, fill_opacity=0.1)
+            y_pos += 20
+            page.insert_text((40, y_pos), "✓ Élément non répertorié", 
+                            fontsize=12, fontname="helv", color=self.success_color)
+            y_pos += 20
+            message = results.get('message', 'Aucune menace connue détectée dans notre base de données.')
+            page.insert_text((40, y_pos), message, fontsize=10)
+            y_pos += 18
+            page.insert_text((40, y_pos), 
+                            "Cet élément n'est pas connu dans notre base de données de menaces,", 
+                            fontsize=9, color=(0.3, 0.3, 0.3))
+            y_pos += 14
+            page.insert_text((40, y_pos), 
+                            "ce qui est généralement un bon signe.", 
+                            fontsize=9, color=(0.3, 0.3, 0.3))
+            y_pos += 30
+        elif security_analysis.threat_detected:
+            page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + 100), 
+                          color=self.danger_color, fill=self.danger_color, fill_opacity=0.1)
+            y_pos += 20
+            page.insert_text((40, y_pos), "⚠ Menace Détectée", 
+                            fontsize=12, fontname="helv", color=self.danger_color)
+            y_pos += 20
+            page.insert_text((40, y_pos), 
+                            "Cet élément a été signalé comme potentiellement dangereux par plusieurs sources.", 
+                            fontsize=10, color=self.danger_color)
+            y_pos += 20
+            page.insert_text((40, y_pos), "• Ne téléchargez pas ou n'exécutez pas ce fichier", 
+                            fontsize=9, color=(0.3, 0.3, 0.3))
+            y_pos += 14
+            page.insert_text((40, y_pos), "• Ne visitez pas ce site ou cette URL", 
+                            fontsize=9, color=(0.3, 0.3, 0.3))
+            y_pos += 14
+            page.insert_text((40, y_pos), "• Vérifiez avec votre équipe de sécurité IT", 
+                            fontsize=9, color=(0.3, 0.3, 0.3))
+            y_pos += 30
+        else:
+            page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + 60), 
+                          color=self.success_color, fill=self.success_color, fill_opacity=0.1)
+            y_pos += 20
+            page.insert_text((40, y_pos), "✓ Aucune Menace Majeure Détectée", 
+                            fontsize=12, fontname="helv", color=self.success_color)
+            y_pos += 20
+            page.insert_text((40, y_pos), 
+                            "Cet élément semble sûr selon les analyses de sécurité disponibles.", 
+                            fontsize=10)
+            y_pos += 30
         
-        for label, value, color in stats:
-            page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + 30), color=color, fill=color, fill_opacity=0.05)
-            page.insert_text((40, y_pos + 15), f"{label}: {value}", fontsize=10, fontname="helv")
-            y_pos += 35
+        if results.get('found', True):
+            stats = [
+                ("Malveillant", results.get('malicious', 0), self.danger_color),
+                ("Suspect", results.get('suspicious', 0), self.warning_color),
+                ("Sûr", results.get('clean', 0), self.success_color),
+                ("Total des moteurs", results.get('total', 0), self.base_color)
+            ]
+            
+            for label, value, color in stats:
+                page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + 30), color=color, fill=color, fill_opacity=0.05)
+                page.insert_text((40, y_pos + 15), f"{label}: {value}", fontsize=10, fontname="helv")
+                y_pos += 35
         
         if breach_analysis:
             if y_pos > self.max_y:
