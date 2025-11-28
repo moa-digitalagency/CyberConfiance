@@ -67,8 +67,29 @@ Performs:
 
 ## Recent Changes (Nov 28, 2025)
 
-### New Security Analysis Tools Added
-Two new security analysis tools have been implemented:
+### Camera Capture Feature for QR Code Analyzer
+Added real-time camera scanning capability to the QR Code Analyzer:
+- **Dual-mode UI**: Tab-based interface with "Scanner avec Camera" and "Uploader une Image" options
+- **Camera access**: Uses MediaDevices API with front/back camera switching
+- **Base64 capture**: Captures images as base64-encoded data for seamless form submission
+- **Responsive design**: Works on desktop and mobile devices
+- **Fallback**: Graceful error handling with user-friendly messages
+
+### Admin History Pages for QR Code and Prompt Analysis
+Added comprehensive admin history management:
+
+#### QR Code Analysis History
+- **Route**: `/admin-panel/qrcode-history`
+- **Features**: Pagination, threat level filtering, search, delete functionality
+- **Detail view**: `/admin-panel/qrcode-detail/<id>` with full analysis results
+
+#### Prompt Analysis History
+- **Route**: `/admin-panel/prompt-history`
+- **Features**: Pagination, threat level filtering, search, delete functionality
+- **Detail view**: `/admin-panel/prompt-detail/<id>` with full analysis results
+
+### New Security Analysis Tools
+Two security analysis tools available:
 
 #### 1. QR Code Analyzer (Anti-Quishing)
 - **Route**: `/outils/analyseur-qrcode`
