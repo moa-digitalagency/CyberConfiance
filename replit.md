@@ -61,7 +61,30 @@ Performs:
 3. Database initialization
 4. Feature verification
 
-## Recent Changes (Nov 21, 2025)
+## Recent Changes (Nov 28, 2025)
+
+### SEO & Open Graph Implementation
+- **Complete SEO tags** in base.html: title, description, keywords, robots, canonical URL
+- **Open Graph support**: og:type, og:site_name, og:title, og:description, og:image, og:url, og:locale
+- **Twitter Cards**: twitter:card (summary_large_image), twitter:title, twitter:description, twitter:image
+- **Dynamic per-page metadata**: Context processor loads SEO data from database per route
+- **16 pages pre-configured** with complete SEO metadata (home, about, services, tools, quiz, rules, scenarios, glossary, contact, etc.)
+- **og_image URLs converted to absolute** in context processor for social media compatibility
+- **Default og-default.png** created as fallback Open Graph image
+
+### Custom Head Code Feature
+- **custom_head_code field** in SiteSettings for analytics/tracking code injection
+- **Admin interface** with security warnings for script injection
+- **Safe injection** via |safe filter (admin-only access)
+
+### Key Implementation Files
+- `templates/base.html`: SEO meta tags with dynamic values
+- `__init__.py`: inject_site_settings context processor with og_image URL normalization
+- `utils/seed_data.py`: Pre-filled SEO metadata for all important pages
+- `templates/admin/site_settings.html`: Custom head code management UI
+- `static/img/og-default.png`: Default Open Graph image
+
+## Previous Changes (Nov 21, 2025)
 
 ### Code Updates
 - Fixed all direct `request.remote_addr` calls (9 locations) → standardized to `get_client_ip(request)`
