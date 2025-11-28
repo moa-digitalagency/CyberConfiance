@@ -63,6 +63,14 @@ Performs:
 
 ## Recent Changes (Nov 28, 2025)
 
+### Admin Routing & Flask-Admin Fixes
+- **/admin redirect fixed**: Now redirects authenticated admins to `/my4dm1n/dashboard` (custom admin panel) instead of Flask-Admin
+- **SEO Metadata edit page fixed**: Resolved 500 error by reorganizing Flask-Admin view class definitions
+  - All ModelView class definitions now precede add_view() registrations
+  - Added form_excluded_columns for updated_by and updater relationships
+- **Security History stats**: Added threat_count display to security history page
+- **Flask-Admin views properly configured**: ActivityLog, SecurityLog, SiteSettings, SEOMetadata views with proper column labels and permissions
+
 ### Admin Panel Improvements
 - **Security Analysis Detail Page**: Formatted display replacing raw JSON output
   - Visual cards for each detection engine with status badges
