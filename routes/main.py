@@ -16,6 +16,16 @@ db = app_module.db
 
 bp = Blueprint('main', __name__)
 
+@bp.route('/admin')
+@bp.route('/admin/')
+@login_required
+def admin_redirect():
+    """Redirect /admin to the custom admin panel"""
+    from flask_login import current_user
+    if current_user.role == 'admin':
+        return redirect(url_for('admin_panel.dashboard'))
+    return redirect(url_for('main.index'))
+
 @bp.route('/')
 def index():
     latest_news = ContentService.get_latest_news(limit=2)

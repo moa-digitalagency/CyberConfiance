@@ -235,7 +235,9 @@ def security_history():
     
     results = query.order_by(desc(SecurityAnalysis.created_at)).paginate(page=page, per_page=per_page, error_out=False)
     
-    return render_template('admin/security_history.html', results=results, search=search, input_type=input_type, threat_only=threat_only)
+    threat_count = SecurityAnalysis.query.filter(SecurityAnalysis.threat_detected == True).count()
+    
+    return render_template('admin/security_history.html', results=results, search=search, input_type=input_type, threat_only=threat_only, threat_count=threat_count)
 
 @bp.route('/history/breach')
 @admin_required

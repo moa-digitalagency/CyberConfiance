@@ -187,12 +187,97 @@ class UserManagementView(SecureModelView):
         else:
             model.is_admin = False
 
+class ActivityLogView(SecureModelView):
+    column_list = ['id', 'action_type', 'action_detail', 'ip_address', 'success', 'created_at']
+    column_searchable_list = ['action_type', 'action_detail', 'ip_address']
+    column_filters = ['action_type', 'success', 'created_at']
+    column_sortable_list = ['id', 'action_type', 'success', 'created_at']
+    column_default_sort = ('created_at', True)
+    can_create = False
+    can_edit = False
+    column_labels = {
+        'id': 'ID',
+        'action_type': 'Type d\'action',
+        'action_detail': 'Détail',
+        'ip_address': 'Adresse IP',
+        'user_agent': 'Navigateur',
+        'success': 'Succès',
+        'error_message': 'Message d\'erreur',
+        'created_at': 'Date'
+    }
+
+class SecurityLogView(SecureModelView):
+    column_list = ['id', 'event_type', 'severity', 'description', 'ip_address', 'blocked', 'created_at']
+    column_searchable_list = ['event_type', 'description', 'ip_address']
+    column_filters = ['event_type', 'severity', 'blocked', 'created_at']
+    column_sortable_list = ['id', 'event_type', 'severity', 'blocked', 'created_at']
+    column_default_sort = ('created_at', True)
+    can_create = False
+    can_edit = False
+    column_labels = {
+        'id': 'ID',
+        'event_type': 'Type d\'événement',
+        'severity': 'Sévérité',
+        'description': 'Description',
+        'ip_address': 'Adresse IP',
+        'user_agent': 'Navigateur',
+        'blocked': 'Bloqué',
+        'created_at': 'Date'
+    }
+
+class SiteSettingsView(SecureModelView):
+    column_list = ['id', 'key', 'value', 'category', 'updated_at']
+    column_searchable_list = ['key', 'value', 'category']
+    column_filters = ['category', 'is_public']
+    column_sortable_list = ['id', 'key', 'category', 'updated_at']
+    column_default_sort = ('category', False)
+    can_create = True
+    can_edit = True
+    can_delete = True
+    column_labels = {
+        'id': 'ID',
+        'key': 'Clé',
+        'value': 'Valeur',
+        'value_type': 'Type',
+        'description': 'Description',
+        'category': 'Catégorie',
+        'is_public': 'Public',
+        'updated_at': 'Mis à jour le'
+    }
+    form_excluded_columns = ['updated_by', 'updater']
+
+class SEOMetadataView(SecureModelView):
+    column_list = ['id', 'page_path', 'title', 'is_active', 'updated_at']
+    column_searchable_list = ['page_path', 'title', 'description']
+    column_filters = ['is_active']
+    column_sortable_list = ['id', 'page_path', 'title', 'is_active', 'updated_at']
+    column_default_sort = ('page_path', False)
+    can_create = True
+    can_edit = True
+    can_delete = True
+    form_columns = ['page_path', 'title', 'description', 'keywords', 'og_title', 'og_description', 'og_image', 'canonical_url', 'robots', 'is_active']
+    column_labels = {
+        'id': 'ID',
+        'page_path': 'Chemin de page',
+        'title': 'Titre',
+        'description': 'Description',
+        'keywords': 'Mots-clés',
+        'og_title': 'Titre OG',
+        'og_description': 'Description OG',
+        'og_image': 'Image OG',
+        'canonical_url': 'URL canonique',
+        'robots': 'Robots',
+        'is_active': 'Actif',
+        'updated_at': 'Mis à jour le'
+    }
+    form_excluded_columns = ['updated_by', 'updater']
+
 admin.add_view(UserManagementView(User, db.session, name='Utilisateurs'))
 admin.add_view(RequestSubmissionView(RequestSubmission, db.session, name='Demandes - Fact-checking & Consultation'))
 admin.add_view(BreachAnalysisView(BreachAnalysis, db.session, name='Historique - Analyses de fuites'))
 admin.add_view(QuizResultView(QuizResult, db.session, name='Historique - Résultats de quiz'))
 admin.add_view(SecurityAnalysisView(SecurityAnalysis, db.session, name='Historique - Analyses de sécurité'))
-admin.add_view(SecureModelView(ActivityLog, db.session, name='Historique - Logs d\'activité'))
-admin.add_view(SecureModelView(SecurityLog, db.session, name='Historique - Logs de sécurité'))
-admin.add_view(SecureModelView(SiteSettings, db.session, name='Paramètres site'))
-admin.add_view(SecureModelView(SEOMetadata, db.session, name='SEO - Métadonnées'))
+admin.add_view(ActivityLogView(ActivityLog, db.session, name='Historique - Logs d\'activité'))
+admin.add_view(SecurityLogView(SecurityLog, db.session, name='Historique - Logs de sécurité'))
+admin.add_view(SiteSettingsView(SiteSettings, db.session, name='Paramètres site'))
+admin.add_view(SEOMetadataView(SEOMetadata, db.session, name='SEO - Métadonnées'))
