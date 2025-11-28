@@ -182,9 +182,9 @@
                     {% endif %}
                 </div>
 
-                {% if results.redirect_count > 0 %}
+                {% if results.redirect_chain %}
                 <div class="redirect-chain">
-                    <h4>Chaine de Redirections ({{ results.redirect_count }})</h4>
+                    <h4>Parcours de l'URL {% if results.redirect_count > 0 %}({{ results.redirect_count }} redirection{{ 's' if results.redirect_count > 1 else '' }}){% else %}(acces direct){% endif %}</h4>
                     <div class="redirect-timeline">
                         {% for redirect in results.redirect_chain %}
                         <div class="redirect-step">
@@ -199,6 +199,9 @@
                                 {% endif %}
                                 {% if redirect.js_redirect_detected %}
                                 <span class="js-redirect-badge">JS Redirect</span>
+                                {% endif %}
+                                {% if redirect.error %}
+                                <span class="redirect-error" style="color: #ef4444; font-size: 0.85em;">{{ redirect.error }}</span>
                                 {% endif %}
                             </div>
                         </div>

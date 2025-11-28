@@ -13,11 +13,45 @@ class PDFReportService:
     def __init__(self):
         self.logo_path = 'static/img/logo_dark.png'
         self.base_color = (59/255, 130/255, 246/255)
+        self.primary_color = (59/255, 130/255, 246/255)
         self.danger_color = (239/255, 68/255, 68/255)
         self.warning_color = (217/255, 119/255, 6/255)
         self.success_color = (16/255, 185/255, 129/255)
+        self.text_color = (0.3, 0.3, 0.3)
         self.footer_height = 60
         self.max_y = 780
+    
+    def _add_cover_page(self, page, title, subtitle):
+        """Ajoute une page de couverture au rapport"""
+        width, height = page.rect.width, page.rect.height
+        
+        page.draw_rect(fitz.Rect(0, 0, width, height), color=None, fill=(0.05, 0.05, 0.1))
+        
+        page.draw_rect(fitz.Rect(0, height/2 - 100, width, height/2 + 100), 
+                      color=None, fill=self.primary_color, fill_opacity=0.1)
+        
+        if os.path.exists(self.logo_path):
+            try:
+                logo_rect = fitz.Rect(width/2 - 100, 120, width/2 + 100, 200)
+                page.insert_image(logo_rect, filename=self.logo_path)
+            except:
+                pass
+        
+        title_width = page.get_textlength(title, fontsize=28, fontname="hebo")
+        page.insert_text(((width - title_width) / 2, height/2 - 20), title, 
+                        fontsize=28, fontname="hebo", color=(1, 1, 1))
+        
+        subtitle_width = page.get_textlength(subtitle, fontsize=14)
+        page.insert_text(((width - subtitle_width) / 2, height/2 + 20), subtitle, 
+                        fontsize=14, color=(0.7, 0.7, 0.7))
+        
+        timestamp = datetime.now().strftime("%d/%m/%Y")
+        ts_width = page.get_textlength(f"Genere le {timestamp}", fontsize=10)
+        page.insert_text(((width - ts_width) / 2, height - 80), f"Genere le {timestamp}", 
+                        fontsize=10, color=(0.5, 0.5, 0.5))
+        
+        page.insert_text((30, height - 40), "cyberconfiance.com", 
+                        fontsize=10, color=self.primary_color)
         
     def _add_header_footer(self, page, page_num, total_pages, ip_address, site_url="https://cyberconfiance.com", document_code=None, qr_url=None):
         """Ajoute en-tête et pied de page à une page"""
