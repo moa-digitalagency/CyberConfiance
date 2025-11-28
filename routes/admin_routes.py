@@ -2,6 +2,8 @@ from flask import Blueprint, render_template, redirect, url_for
 from flask_admin.contrib.sqla import ModelView
 from flask_login import current_user
 from markupsafe import Markup
+from wtforms import StringField, TextAreaField, BooleanField
+from flask_admin.form import BaseForm
 import __init__ as app_module
 db = app_module.db
 admin = app_module.admin
@@ -246,6 +248,18 @@ class SiteSettingsView(SecureModelView):
     }
     form_excluded_columns = ['updated_by', 'updater']
 
+class SEOMetadataFormClass(BaseForm):
+    page_path = StringField('Chemin de page')
+    title = StringField('Titre')
+    description = TextAreaField('Description')
+    keywords = TextAreaField('Mots-clés')
+    og_title = StringField('Titre OG')
+    og_description = TextAreaField('Description OG')
+    og_image = StringField('Image OG')
+    canonical_url = StringField('URL canonique')
+    robots = StringField('Robots')
+    is_active = BooleanField('Actif')
+
 class SEOMetadataView(SecureModelView):
     column_list = ['id', 'page_path', 'title', 'is_active', 'updated_at']
     column_searchable_list = ['page_path', 'title', 'description']
@@ -255,7 +269,7 @@ class SEOMetadataView(SecureModelView):
     can_create = True
     can_edit = True
     can_delete = True
-    form_excluded_columns = ['updated_by', 'updater', 'updated_at']
+    form = SEOMetadataFormClass
     column_labels = {
         'id': 'ID',
         'page_path': 'Chemin de page',
