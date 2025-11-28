@@ -63,6 +63,32 @@ Performs:
 
 ## Recent Changes (Nov 28, 2025)
 
+### Admin Panel Improvements
+- **Security Analysis Detail Page**: Formatted display replacing raw JSON output
+  - Visual cards for each detection engine with status badges
+  - Statistics display (malicious, suspect, clean, undetected)
+  - Handles both dict and list data structures safely
+  - VirusTotal link and scan ID display
+  
+- **SEO Settings Links Fixed**: All Flask-Admin links now use `/my4dm1n/admin/` prefix
+  - Edit links corrected from `/admin/seometadata/` to `/my4dm1n/admin/seometadata/`
+  
+- **Breach Detail Page**: Formatted breach data display with visual cards for each breach
+
+- **Site Settings Enhanced**: 24 new configurable parameters added
+  - General: site_tagline, support_email, phone_number, address
+  - Appearance: favicon, primary_color, secondary_color
+  - System: contact_form_enabled, newsletter_enabled, quiz_enabled, security_analyzer_enabled, breach_checker_enabled, max_file_upload_size, session_timeout
+  - Advanced: custom_footer_code, google_analytics_id, facebook_pixel_id, recaptcha keys
+  - SEO: twitter_handle, facebook_page, linkedin_page, site verifications
+
+- **Password Field Support**: Sensitive settings (recaptcha_secret_key) now masked with toggle visibility
+
+### Image Upload Feature
+- Logo fields support direct image upload (PNG, JPG, GIF, SVG, WebP, ICO)
+- Preview thumbnails for current images
+- Files saved to `/static/img/uploads/`
+
 ### SEO & Open Graph Implementation
 - **Complete SEO tags** in base.html: title, description, keywords, robots, canonical URL
 - **Open Graph support**: og:type, og:site_name, og:title, og:description, og:image, og:url, og:locale
