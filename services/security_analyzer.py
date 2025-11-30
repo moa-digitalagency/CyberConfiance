@@ -6,6 +6,7 @@ from datetime import datetime
 from urllib.parse import urlparse
 from services.google_safe_browsing_service import GoogleSafeBrowsingService
 from services.urlhaus_service import URLhausService
+from services.url_shortener_service import URLShortenerService
 
 class SecurityAnalyzerService:
     """Service for analyzing security threats using multiple sources"""
@@ -14,6 +15,7 @@ class SecurityAnalyzerService:
         self.api_key = os.environ.get('SECURITY_ANALYSIS_API_KEY') or os.environ.get('VT_API_KEY')
         self.google_safe_browsing = GoogleSafeBrowsingService()
         self.urlhaus = URLhausService()
+        self.url_shortener = URLShortenerService()
         
         self.malicious_patterns = [
             r'<script[^>]*>.*?</script>',
@@ -181,6 +183,35 @@ class SecurityAnalyzerService:
         import time
         from concurrent.futures import ThreadPoolExecutor, as_completed
         
+        shortener_info = {
+            'is_shortened': False,
+            'shortener_service': None,
+            'original_url': url,
+            'final_url': url,
+            'redirect_chain': [],
+            'redirect_count': 0,
+            'all_urls_analyzed': []
+        }
+        
+        is_shortened, shortener_service = self.url_shortener.is_shortened_url(url)
+        if is_shortened:
+            print(f"[INFO] URL raccourcie detectee: {url} (service: {shortener_service})")
+            expansion = self.url_shortener.expand_url(url)
+            shortener_info['is_shortened'] = True
+            shortener_info['shortener_service'] = shortener_service
+            shortener_info['shortener_details'] = self.url_shortener.get_shortener_info(shortener_service)
+            shortener_info['final_url'] = expansion.get('final_url', url)
+            shortener_info['redirect_chain'] = expansion.get('redirect_chain', [])
+            shortener_info['redirect_count'] = expansion.get('redirect_count', 0)
+            shortener_info['all_urls'] = expansion.get('all_urls', [url])
+            shortener_info['multiple_shorteners'] = expansion.get('multiple_shorteners', False)
+            shortener_info['expansion_error'] = expansion.get('expansion_error')
+            
+            if shortener_info['final_url'] != url:
+                print(f"[INFO] URL finale apres expansion: {shortener_info['final_url']}")
+        
+        url_to_analyze = shortener_info['final_url'] if is_shortened else url
+        
         multi_source_results = {
             'virustotal': None,
             'google_safe_browsing': None,
@@ -189,14 +220,14 @@ class SecurityAnalyzerService:
         
         def check_google_safe_browsing():
             try:
-                return self.google_safe_browsing.check_url(url)
+                return self.google_safe_browsing.check_url(url_to_analyze)
             except Exception as e:
                 print(f"[ERROR] Google Safe Browsing check failed: {e}")
                 return {'error': True, 'source': 'google_safe_browsing', 'message': str(e)}
         
         def check_urlhaus():
             try:
-                return self.urlhaus.check_url(url)
+                return self.urlhaus.check_url(url_to_analyze)
             except Exception as e:
                 print(f"[ERROR] URLhaus check failed: {e}")
                 return {'error': True, 'source': 'urlhaus', 'message': str(e)}
@@ -216,19 +247,19 @@ class SecurityAnalyzerService:
                     multi_source_results[source] = {'error': True, 'source': source, 'message': str(e)}
         
         try:
-            url_id = vt.url_id(url)
+            url_id = vt.url_id(url_to_analyze)
             url_obj = None
             stats = None
             
             try:
                 url_obj = client.get_object(f"/urls/{url_id}")
                 stats = url_obj.last_analysis_stats
-                print(f"[INFO] URL found in VirusTotal database: {url}")
+                print(f"[INFO] URL found in VirusTotal database: {url_to_analyze}")
             except vt.APIError as e:
                 if 'NotFoundError' in str(e):
-                    print(f"[INFO] URL not in VirusTotal database, submitting for scan: {url}")
+                    print(f"[INFO] URL not in VirusTotal database, submitting for scan: {url_to_analyze}")
                     try:
-                        analysis = client.scan_url(url)
+                        analysis = client.scan_url(url_to_analyze)
                         analysis_id = analysis.id
                         print(f"[INFO] URL scan submitted, analysis ID: {analysis_id}")
                         
@@ -289,10 +320,10 @@ class SecurityAnalyzerService:
                 'message': str(e)
             }
         
-        combined_result = self._combine_url_results(url, multi_source_results)
+        combined_result = self._combine_url_results(url, multi_source_results, shortener_info)
         return combined_result
     
-    def _combine_url_results(self, url, multi_source_results):
+    def _combine_url_results(self, url, multi_source_results, shortener_info=None):
         """Combine results from all security analysis sources"""
         
         sources_checked = 0
@@ -300,6 +331,9 @@ class SecurityAnalyzerService:
         all_threats = []
         highest_threat_level = 'sûr'
         threat_levels_priority = {'sûr': 0, 'inconnu': 1, 'modéré': 2, 'élevé': 3, 'critique': 4}
+        
+        if shortener_info is None:
+            shortener_info = {'is_shortened': False}
         
         vt_result = multi_source_results.get('virustotal', {})
         vt_malicious = 0
@@ -379,7 +413,7 @@ class SecurityAnalyzerService:
             else:
                 confidence_score = min(100, (sources_with_threat / sources_checked) * 100)
         
-        return {
+        result = {
             'error': False,
             'found': True,
             'type': 'url',
@@ -418,6 +452,29 @@ class SecurityAnalyzerService:
                 }
             }
         }
+        
+        if shortener_info.get('is_shortened'):
+            result['url_shortener'] = {
+                'detected': True,
+                'service': shortener_info.get('shortener_service'),
+                'service_details': shortener_info.get('shortener_details', {}),
+                'original_url': shortener_info.get('original_url'),
+                'final_url': shortener_info.get('final_url'),
+                'redirect_chain': shortener_info.get('redirect_chain', []),
+                'redirect_count': shortener_info.get('redirect_count', 0),
+                'multiple_shorteners': shortener_info.get('multiple_shorteners', False),
+                'expansion_error': shortener_info.get('expansion_error')
+            }
+            if shortener_info.get('multiple_shorteners'):
+                all_threats.append({
+                    'source': 'URL Shortener Detection',
+                    'type': 'Raccourcisseurs multiples',
+                    'details': 'Plusieurs services de raccourcissement detectes dans la chaine de redirection'
+                })
+        else:
+            result['url_shortener'] = {'detected': False}
+        
+        return result
     
     def _calculate_threat_level(self, malicious, suspicious, total):
         """Calculate threat level based on detection ratios
