@@ -907,9 +907,6 @@ class PDFReportService:
                 else:
                     step_color = self.base_color
                 
-                page.draw_rect(fitz.Rect(40, y_pos, 565, y_pos + 4), color=step_color, fill=step_color)
-                y_pos += 12
-                
                 step_info = f"Etape {idx}"
                 if status_code:
                     step_info += f" | HTTP {status_code}"
@@ -952,12 +949,9 @@ class PDFReportService:
                 severity = issue.get('severity', 'low')
                 severity_color = self._get_risk_color(severity)
                 
-                page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + 5), color=severity_color, fill=severity_color)
-                y_pos += 18
-                
                 page.insert_text((40, y_pos), f"{idx}. [{severity.upper()}] {issue.get('message', '')[:70]}", 
-                                fontsize=10, fontname="helv")
-                y_pos += 20
+                                fontsize=10, fontname="helv", color=severity_color)
+                y_pos += 18
         else:
             page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + 60), 
                           color=self.success_color, fill=self.success_color, fill_opacity=0.1)
