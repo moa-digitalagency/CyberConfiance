@@ -192,18 +192,40 @@
         {% if not (results.get('scans') or results.get('engines') or results.get('results') or results.get('engine_results') or results.get('stats')) %}
         <div style="margin-top: 1rem;">
             {% for key, value in results.items() %}
-            {% if key not in ['scans', 'engines', 'results', 'engine_results', 'stats', 'statistics', 'permalink', 'scan_id', 'resource'] %}
+            {% if key not in ['scans', 'engines', 'results', 'engine_results', 'stats', 'statistics', 'permalink', 'scan_id', 'resource', 'error', 'success'] %}
             <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px; margin-bottom: 0.5rem;">
                 <strong style="color: var(--accent-blue);">{{ key|replace('_', ' ')|title }}:</strong>
                 {% if value is mapping %}
-                <pre style="background: rgba(0,0,0,0.3); padding: 0.5rem; border-radius: 4px; margin-top: 0.5rem; font-size: 0.85rem; overflow-x: auto; color: var(--text-primary);">{{ value|tojson(indent=2) }}</pre>
+                <div style="margin-top: 0.5rem; padding-left: 1rem;">
+                    {% for sub_key, sub_value in value.items() %}
+                    <div style="margin-bottom: 0.5rem;">
+                        <span style="color: var(--text-secondary);">{{ sub_key|replace('_', ' ')|title }}:</span>
+                        {% if sub_value is sameas true %}
+                        <span class="badge badge-success" style="margin-left: 0.5rem;">Oui</span>
+                        {% elif sub_value is sameas false %}
+                        <span class="badge badge-secondary" style="margin-left: 0.5rem;">Non</span>
+                        {% elif sub_value is number %}
+                        <span style="color: var(--accent-blue); margin-left: 0.5rem; font-weight: 600;">{{ sub_value }}</span>
+                        {% else %}
+                        <span style="color: var(--text-primary); margin-left: 0.5rem;">{{ sub_value }}</span>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
                 {% elif value is iterable and value is not string %}
-                <div style="margin-top: 0.5rem;">
+                <div style="margin-top: 0.5rem; display: flex; flex-wrap: wrap; gap: 0.5rem;">
                     {% for item in value %}
                     {% if item is mapping %}
-                    <pre style="background: rgba(0,0,0,0.3); padding: 0.5rem; border-radius: 4px; margin-top: 0.5rem; font-size: 0.85rem; overflow-x: auto; color: var(--text-primary);">{{ item|tojson(indent=2) }}</pre>
+                    <div style="background: rgba(0,0,0,0.3); padding: 0.75rem; border-radius: 6px; min-width: 200px;">
+                        {% for item_key, item_value in item.items() %}
+                        <div style="margin-bottom: 0.25rem;">
+                            <span style="color: var(--text-secondary); font-size: 0.8rem;">{{ item_key|replace('_', ' ')|title }}:</span>
+                            <span style="color: var(--text-primary); font-size: 0.85rem; margin-left: 0.25rem;">{{ item_value }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
                     {% else %}
-                    <span class="badge badge-info" style="margin: 0.2rem;">{{ item }}</span>
+                    <span class="badge badge-info">{{ item }}</span>
                     {% endif %}
                     {% endfor %}
                 </div>
@@ -211,6 +233,8 @@
                 <span class="badge badge-success" style="margin-left: 0.5rem;">Oui</span>
                 {% elif value is sameas false %}
                 <span class="badge badge-secondary" style="margin-left: 0.5rem;">Non</span>
+                {% elif value is number %}
+                <span style="color: var(--accent-blue); margin-left: 0.5rem; font-weight: 600;">{{ value }}</span>
                 {% else %}
                 <span style="color: var(--text-primary); margin-left: 0.5rem;">{{ value }}</span>
                 {% endif %}
@@ -220,7 +244,75 @@
         </div>
         {% endif %}
     {% else %}
-        <pre style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; overflow-x: auto; color: var(--text-primary); font-size: 0.9rem;">{{ analysis.analysis_results|tojson(indent=2) }}</pre>
+    <div style="margin-top: 1rem;">
+        <div class="results-summary" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+            {% if analysis.analysis_results.malicious is defined %}
+            <div style="background: rgba(239, 68, 68, 0.1); padding: 1rem; border-radius: 8px; text-align: center;">
+                <div style="font-size: 1.5rem; font-weight: bold; color: var(--accent-red);">{{ analysis.analysis_results.malicious }}</div>
+                <div style="font-size: 0.85rem; color: var(--text-secondary);">Malveillant</div>
+            </div>
+            {% endif %}
+            {% if analysis.analysis_results.suspicious is defined %}
+            <div style="background: rgba(245, 158, 11, 0.1); padding: 1rem; border-radius: 8px; text-align: center;">
+                <div style="font-size: 1.5rem; font-weight: bold; color: var(--accent-yellow);">{{ analysis.analysis_results.suspicious }}</div>
+                <div style="font-size: 0.85rem; color: var(--text-secondary);">Suspect</div>
+            </div>
+            {% endif %}
+            {% if analysis.analysis_results.clean is defined or analysis.analysis_results.harmless is defined %}
+            <div style="background: rgba(34, 197, 94, 0.1); padding: 1rem; border-radius: 8px; text-align: center;">
+                <div style="font-size: 1.5rem; font-weight: bold; color: var(--accent-green);">{{ analysis.analysis_results.clean or analysis.analysis_results.harmless or 0 }}</div>
+                <div style="font-size: 0.85rem; color: var(--text-secondary);">Sain</div>
+            </div>
+            {% endif %}
+            {% if analysis.analysis_results.total is defined %}
+            <div style="background: rgba(59, 130, 246, 0.1); padding: 1rem; border-radius: 8px; text-align: center;">
+                <div style="font-size: 1.5rem; font-weight: bold; color: var(--accent-blue);">{{ analysis.analysis_results.total }}</div>
+                <div style="font-size: 0.85rem; color: var(--text-secondary);">Total Moteurs</div>
+            </div>
+            {% endif %}
+        </div>
+        
+        {% if analysis.analysis_results.threat_detected is defined %}
+        <div style="background: {% if analysis.analysis_results.threat_detected %}rgba(239, 68, 68, 0.1){% else %}rgba(34, 197, 94, 0.1){% endif %}; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+            <strong style="color: {% if analysis.analysis_results.threat_detected %}var(--accent-red){% else %}var(--accent-green){% endif %};">
+                {% if analysis.analysis_results.threat_detected %}Menace Detectee{% else %}Aucune Menace Detectee{% endif %}
+            </strong>
+            {% if analysis.analysis_results.message %}
+            <p style="margin: 0.5rem 0 0 0; color: var(--text-secondary);">{{ analysis.analysis_results.message }}</p>
+            {% endif %}
+        </div>
+        {% endif %}
+        
+        {% if analysis.analysis_results.found is sameas false %}
+        <div style="background: rgba(59, 130, 246, 0.1); padding: 1rem; border-radius: 8px; border-left: 3px solid var(--accent-blue);">
+            <strong style="color: var(--accent-blue);">Element non repertorie</strong>
+            <p style="margin: 0.5rem 0 0 0; color: var(--text-secondary);">{{ analysis.analysis_results.message or 'Cet element n est pas connu dans notre base de donnees.' }}</p>
+        </div>
+        {% endif %}
+        
+        {% for key, value in analysis.analysis_results.items() %}
+        {% if key not in ['malicious', 'suspicious', 'clean', 'harmless', 'total', 'threat_detected', 'threat_level', 'message', 'found', 'error', 'success', 'type'] %}
+        <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px; margin-bottom: 0.5rem;">
+            <strong style="color: var(--accent-blue);">{{ key|replace('_', ' ')|title }}:</strong>
+            {% if value is sameas true %}
+            <span class="badge badge-success" style="margin-left: 0.5rem;">Oui</span>
+            {% elif value is sameas false %}
+            <span class="badge badge-secondary" style="margin-left: 0.5rem;">Non</span>
+            {% elif value is number %}
+            <span style="color: var(--accent-blue); margin-left: 0.5rem; font-weight: 600;">{{ value }}</span>
+            {% elif value is string %}
+            <span style="color: var(--text-primary); margin-left: 0.5rem;">{{ value }}</span>
+            {% elif value is iterable %}
+            <div style="margin-top: 0.5rem; display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                {% for item in value %}
+                <span class="badge badge-info">{{ item }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
     {% endif %}
 </div>
 {% endif %}
