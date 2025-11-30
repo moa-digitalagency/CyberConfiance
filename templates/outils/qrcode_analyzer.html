@@ -91,6 +91,51 @@
                             </svg>
                             <span>QR Code detecte ! Analyse en cours...</span>
                         </div>
+                        
+                        <div id="analysisProgress" class="analysis-progress-container" style="display: none;">
+                            <div class="progress-content">
+                                <div class="progress-icon">
+                                    <svg class="progress-spinner" viewBox="0 0 50 50">
+                                        <circle class="progress-circle-bg" cx="25" cy="25" r="20" fill="none" stroke-width="4"/>
+                                        <circle class="progress-circle" cx="25" cy="25" r="20" fill="none" stroke-width="4" stroke-linecap="round"/>
+                                    </svg>
+                                    <div class="progress-icon-inner">
+                                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <rect x="3" y="3" width="7" height="7" rx="1"/>
+                                            <rect x="14" y="3" width="7" height="7" rx="1"/>
+                                            <rect x="3" y="14" width="7" height="7" rx="1"/>
+                                            <rect x="14" y="14" width="7" height="7" rx="1"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <h3 class="progress-title">Analyse du QR Code en cours</h3>
+                                <p class="progress-subtitle">Verification de securite multi-moteurs...</p>
+                                
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar" id="progressBar"></div>
+                                </div>
+                                <span class="progress-percent" id="progressPercent">0%</span>
+                                
+                                <div class="progress-steps">
+                                    <div class="progress-step active" id="step1">
+                                        <span class="step-dot"></span>
+                                        <span class="step-text">Decodage QR</span>
+                                    </div>
+                                    <div class="progress-step" id="step2">
+                                        <span class="step-dot"></span>
+                                        <span class="step-text">Extraction URL</span>
+                                    </div>
+                                    <div class="progress-step" id="step3">
+                                        <span class="step-dot"></span>
+                                        <span class="step-text">Suivi redirections</span>
+                                    </div>
+                                    <div class="progress-step" id="step4">
+                                        <span class="step-dot"></span>
+                                        <span class="step-text">Analyse securite</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div id="capturePreview" class="capture-preview" style="display: none;">
                             <img id="capturedImage" alt="Captured QR Code">
                             <button type="button" id="retakeBtn" class="btn-secondary">
@@ -631,8 +676,57 @@ document.addEventListener('DOMContentLoaded', function() {
         cameraCaptureData.value = imageData;
         
         setTimeout(() => {
-            analyzerForm.submit();
-        }, 800);
+            showAnalysisProgress();
+        }, 600);
+    }
+    
+    function showAnalysisProgress() {
+        const cameraWrapper = document.querySelector('.camera-view-wrapper');
+        const cameraControls = document.querySelector('.camera-controls');
+        const analysisProgress = document.getElementById('analysisProgress');
+        const progressBar = document.getElementById('progressBar');
+        const progressPercent = document.getElementById('progressPercent');
+        const submitBtn = document.getElementById('submitBtn');
+        
+        if (cameraWrapper) cameraWrapper.style.display = 'none';
+        if (cameraControls) cameraControls.style.display = 'none';
+        qrDetected.style.display = 'none';
+        if (submitBtn) submitBtn.style.display = 'none';
+        analysisProgress.style.display = 'block';
+        
+        let progress = 0;
+        const steps = ['step1', 'step2', 'step3', 'step4'];
+        let currentStep = 0;
+        
+        const progressInterval = setInterval(() => {
+            progress += Math.random() * 8 + 2;
+            if (progress > 95) progress = 95;
+            
+            progressBar.style.width = progress + '%';
+            progressPercent.textContent = Math.round(progress) + '%';
+            
+            const stepThresholds = [25, 50, 75, 90];
+            for (let i = 0; i < stepThresholds.length; i++) {
+                if (progress >= stepThresholds[i] && i > currentStep - 1) {
+                    const stepEl = document.getElementById(steps[i]);
+                    if (stepEl && !stepEl.classList.contains('active')) {
+                        stepEl.classList.add('active');
+                        currentStep = i + 1;
+                    }
+                }
+            }
+            
+            if (progress >= 95) {
+                clearInterval(progressInterval);
+                progressBar.style.width = '100%';
+                progressPercent.textContent = '100%';
+                steps.forEach(s => document.getElementById(s).classList.add('active'));
+                
+                setTimeout(() => {
+                    analyzerForm.submit();
+                }, 300);
+            }
+        }, 150);
     }
 
     function captureImage() {
@@ -882,6 +976,168 @@ document.addEventListener('DOMContentLoaded', function() {
     font-weight: 600;
     margin-top: 1rem;
     animation: slideIn 0.3s ease-out;
+}
+
+.analysis-progress-container {
+    display: none;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 16px;
+    padding: 3rem 2rem;
+    text-align: center;
+    animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.progress-content {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.progress-icon {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 1.5rem;
+}
+
+.progress-spinner {
+    width: 100px;
+    height: 100px;
+    animation: rotate 2s linear infinite;
+}
+
+@keyframes rotate {
+    to { transform: rotate(360deg); }
+}
+
+.progress-circle-bg {
+    stroke: rgba(59, 130, 246, 0.2);
+}
+
+.progress-circle {
+    stroke: #3b82f6;
+    stroke-dasharray: 125.6;
+    stroke-dashoffset: 31.4;
+    animation: dash 1.5s ease-in-out infinite;
+}
+
+@keyframes dash {
+    0% { stroke-dashoffset: 125.6; }
+    50% { stroke-dashoffset: 31.4; }
+    100% { stroke-dashoffset: 125.6; }
+}
+
+.progress-icon-inner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #60a5fa;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.progress-title {
+    color: var(--text-primary);
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.progress-subtitle {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-bottom: 2rem;
+}
+
+.progress-bar-container {
+    height: 8px;
+    background: rgba(59, 130, 246, 0.2);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 0.75rem;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 50%, #3b82f6 100%);
+    background-size: 200% 100%;
+    border-radius: 10px;
+    transition: width 0.15s ease-out;
+    animation: shimmer 2s infinite linear;
+}
+
+@keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.progress-percent {
+    display: block;
+    color: #60a5fa;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+}
+
+.progress-steps {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.progress-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+    opacity: 0.4;
+    transition: all 0.3s ease;
+}
+
+.progress-step.active {
+    opacity: 1;
+}
+
+.step-dot {
+    width: 12px;
+    height: 12px;
+    background: rgba(59, 130, 246, 0.3);
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.progress-step.active .step-dot {
+    background: #3b82f6;
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+    animation: stepPulse 1s ease-in-out infinite;
+}
+
+@keyframes stepPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+.step-text {
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    white-space: nowrap;
+}
+
+.progress-step.active .step-text {
+    color: #60a5fa;
 }
 
 @keyframes slideIn {
