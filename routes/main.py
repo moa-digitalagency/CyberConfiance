@@ -496,81 +496,14 @@ def newsletter():
     
     return redirect(url_for('main.index'))
 
-@bp.route('/analyze-breach', methods=['POST'])
+@bp.route('/analyze-breach', methods=['GET', 'POST'])
 def analyze_breach():
-    try:
-        email = request.form.get('email')
-        
-        if not email:
-            flash('Veuillez fournir une adresse email.', 'error')
-            return redirect(url_for('main.index'))
-        
-        result = HaveIBeenPwnedService.check_email_breach(email)
-        
-        if result.get('error'):
-            print(f"[!] Analyse de fuite échouée pour {email}: {result['error']}")
-            
-            recommendations = {
-                'level': 'error',
-                'title': 'Service temporairement indisponible',
-                'message': result['error'],
-                'recommendations': [
-                    'Le service d\'analyse de fuites de données est actuellement indisponible.',
-                    'Veuillez contacter l\'administrateur du site si le problème persiste.',
-                    'En attendant, nous vous recommandons d\'utiliser des mots de passe forts et uniques pour chaque service.',
-                    'Activez l\'authentification à deux facteurs (2FA) sur tous vos comptes importants.'
-                ]
-            }
-            data_scenarios = HaveIBeenPwnedService.get_data_breach_scenarios()
-            return render_template('breach_analysis.html', 
-                                 email=email,
-                                 result={'breaches': [], 'count': 0, 'error': result['error']}, 
-                                 recommendations=recommendations,
-                                 data_scenarios=data_scenarios,
-                                 analysis_id=None)
-        
-        recommendations = HaveIBeenPwnedService.get_breach_recommendations(result['count'])
-        data_scenarios = HaveIBeenPwnedService.get_data_breach_scenarios()
-        
-        analysis_id = None
-        try:
-            breach_names = [breach.get('Name', 'Inconnu') for breach in result.get('breaches', [])]
-            
-            breaches_data_sanitized = {
-                'breaches': result.get('breaches', []),
-                'count': result.get('count', 0),
-                'email': email
-            }
-            
-            analysis = BreachAnalysis(
-                email=email,
-                breach_count=result.get('count', 0),
-                risk_level=recommendations.get('level', 'unknown'),
-                breaches_found=','.join(breach_names),
-                breaches_data=breaches_data_sanitized,
-                document_code=ensure_unique_code(BreachAnalysis),
-                ip_address=get_client_ip(request),
-                user_agent=request.headers.get('User-Agent', '')[:500]
-            )
-            db.session.add(analysis)
-            db.session.commit()
-            analysis_id = analysis.id
-            print(f"[OK] Analyse enregistrée: {email} - {result.get('count', 0)} breach(es) - ID: {analysis_id}")
-        except Exception as e:
-            print(f"[!] Erreur lors de l'enregistrement de l'analyse: {str(e)}")
-            db.session.rollback()
-        
-        return render_template('breach_analysis.html', 
-                             email=email,
-                             result=result, 
-                             recommendations=recommendations,
-                             data_scenarios=data_scenarios,
-                             analysis_id=analysis_id)
-    except Exception as e:
-        print(f"[ERROR] Critical error in analyze_breach: {str(e)}")
-        db.session.rollback()
-        flash('Erreur critique lors de l\'analyse. Veuillez réessayer.', 'error')
-        return redirect(url_for('main.index'))
+    """Legacy route - redirects to the new breach analyzer page"""
+    if request.method == 'POST':
+        email = request.form.get('email', '')
+        if email:
+            return redirect(url_for('main.breach_analyzer'), code=307)
+    return redirect(url_for('main.breach_analyzer'))
 
 @bp.route('/set-language', methods=['POST'])
 @bp.route('/set-language/<lang>')
