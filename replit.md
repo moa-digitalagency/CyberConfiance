@@ -28,6 +28,11 @@ I prefer that the agent adheres to existing architectural patterns and design de
 - **Email Breach Analysis**: Integrates with Have I Been Pwned for email compromise checks.
 - **Security Analysis (Multi-Source)**: 
     - Provides analysis for URLs, files, domains, IPs, and hashes.
+    - **URL Shortener Detection (100+ services)**:
+        - Detects URLs from popular shortening services (bit.ly, tinyurl, t.co, goo.gl, etc.)
+        - Automatically expands shortened URLs to reveal the final destination
+        - Detects multiple shorteners in redirect chains (potential obfuscation technique)
+        - Analyzes all URLs in the redirect chain with security APIs
     - **URL Analysis uses 3 security sources in parallel**:
         - VirusTotal: 90+ antivirus engines for malware/phishing detection
         - Google Safe Browsing: Real-time phishing/malware database from Google
@@ -36,6 +41,11 @@ I prefer that the agent adheres to existing architectural patterns and design de
     - UI displays individual source results with visual indicators
 - **QR Code Analyzer (Anti-Quishing)**:
     - Decodes QR codes from images or real-time camera feeds.
+    - **URL Shortener Detection in QR Codes**:
+        - Detects shortened URLs from 100+ shortening services
+        - Follows all redirects to reveal the final destination URL
+        - Alerts on multiple shorteners in chain (obfuscation technique)
+        - Full multi-API security analysis of final and intermediate URLs
     - **Comprehensive Multi-Protocol Redirect Detection**:
         - HTTP redirects (301, 302, 303, 307, 308 status codes)
         - Meta refresh tags parsed with BeautifulSoup
@@ -43,8 +53,11 @@ I prefer that the agent adheres to existing architectural patterns and design de
         - HTTP header redirects (Refresh, Content-Location, Link rel=canonical)
         - URL parameter redirects (common params: url, redirect, next, return_url, etc.)
         - Frame/iframe full-page embed detection
+    - **Multi-API Security Analysis**:
+        - VirusTotal, Google Safe Browsing, and URLhaus analysis
+        - Analyzes both original and final URLs after redirect resolution
+        - Threat detection with combined severity scoring
     - Session-backed HTTP client with realistic browser headers
-    - Checks URLs against blacklists (e.g., VirusTotal).
     - Hardened with SSRF protection, DNS rebinding prevention, content-length limits, and cloud metadata endpoint protection.
 - **Prompt Analyzer (Anti-Injection)**:
     - Detects prompt injection patterns, dangerous code (eval, exec), obfuscation, and jailbreak attempts using pattern matching and AST analysis.
