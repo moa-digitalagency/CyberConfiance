@@ -99,6 +99,40 @@ def contact():
         message = request.form.get('message')
         
         if name and email and subject and message:
+            from services.prompt_analyzer_service import PromptAnalyzerService
+            from utils.metadata_collector import collect_request_metadata, generate_incident_id
+            from flask import session
+            
+            prompt_analyzer = PromptAnalyzerService()
+            combined_text = f"{name}\n{subject}\n{message}"
+            analysis = prompt_analyzer.analyze_prompt(combined_text, analyze_urls=True)
+            
+            if analysis.get('threat_detected'):
+                threat_level = analysis.get('threat_level', 'unknown')
+                metadata = collect_request_metadata()
+                incident_id = generate_incident_id()
+                
+                from models import ThreatLog
+                threat_log = ThreatLog(
+                    incident_id=incident_id,
+                    threat_type=f"contact_form_{threat_level}",
+                    threat_details=f"Injection/menace detectee dans le formulaire de contact. "
+                                  f"Injection: {analysis.get('injection_detected')}, "
+                                  f"Code: {analysis.get('code_detected')}, "
+                                  f"Obfuscation: {analysis.get('obfuscation_detected')}",
+                    ip_address=metadata['ip_address'],
+                    user_agent=metadata['user_agent'],
+                    platform=metadata['platform'],
+                    device_type=metadata['device_type'],
+                    vpn_detected=metadata['vpn_detected'],
+                    metadata_json=metadata
+                )
+                db.session.add(threat_log)
+                db.session.commit()
+                
+                session['threat_incident_id'] = incident_id
+                return redirect(url_for('request_forms.security_threat', incident_id=incident_id))
+            
             ContentService.save_contact(name, email, subject, message)
             flash('Votre message a été envoyé avec succès!', 'success')
             return redirect(url_for('main.contact'))
