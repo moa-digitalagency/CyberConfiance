@@ -103,6 +103,7 @@ Comprehensive documentation is available in the `docs/` folder:
 - **SECURITY_TOOLS.md**: Complete documentation of all security analysis tools and services
 - **ARCHITECTURE.md**: Technical architecture and system design documentation
 - **API_INTEGRATIONS.md**: API integration details and configuration guides
+- **OUTILS_REFERENCE.md**: Detailed reference for all services (TrackerDetector, URLScan, QRCodeAnalyzer, etc.)
 
 ## API Keys Configuration
 - `SECURITY_ANALYSIS_API_KEY`: VirusTotal API key
