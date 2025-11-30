@@ -1641,6 +1641,131 @@ document.addEventListener('DOMContentLoaded', function() {
         flex-direction: column;
         align-items: center;
     }
+    
+    .progress-steps {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+    }
+    
+    .progress-step {
+        flex: 0 0 auto;
+        min-width: 70px;
+    }
+    
+    .step-text {
+        white-space: normal;
+        text-align: center;
+        font-size: 0.7rem;
+    }
+    
+    .progress-content {
+        padding: 0 0.5rem;
+    }
+    
+    .progress-title {
+        font-size: 1.1rem;
+    }
+    
+    .progress-subtitle {
+        font-size: 0.85rem;
+    }
+    
+    .analysis-progress-container {
+        padding: 2rem 1rem;
+    }
+    
+    .analyzer-card h2 {
+        font-size: 1.3rem;
+    }
+    
+    .analyzer-description {
+        font-size: 0.9rem;
+    }
+    
+    .upload-zone {
+        padding: 2rem 1rem;
+    }
+    
+    .upload-text {
+        font-size: 0.95rem;
+    }
+    
+    .upload-hint {
+        font-size: 0.8rem;
+    }
+    
+    .scan-frame {
+        width: 150px;
+        height: 150px;
+    }
+    
+    .summary-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .url-display {
+        padding: 1rem;
+    }
+    
+    .url-value {
+        font-size: 0.8rem;
+    }
+    
+    .redirect-chain {
+        padding: 1rem !important;
+    }
+    
+    .findings-grid {
+        gap: 0.5rem !important;
+    }
+    
+    .finding-card {
+        padding: 0.75rem !important;
+    }
+    
+    .analysis-types {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .progress-steps {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    .progress-step {
+        flex-direction: row;
+        width: 100%;
+        max-width: 200px;
+        justify-content: flex-start;
+        gap: 0.75rem;
+    }
+    
+    .step-text {
+        font-size: 0.8rem;
+    }
+    
+    .page-title-modern {
+        font-size: 1.5rem;
+    }
+    
+    .page-subtitle-modern {
+        font-size: 0.9rem;
+    }
+    
+    .tab-btn {
+        padding: 0.75rem 1rem;
+        font-size: 0.85rem;
+    }
+    
+    .btn-full {
+        padding: 0.875rem;
+        font-size: 1rem;
+    }
 }
 </style>
 {% endblock %}
