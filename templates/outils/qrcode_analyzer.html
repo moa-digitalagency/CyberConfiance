@@ -290,6 +290,82 @@
                 </div>
                 {% endif %}
 
+                {% if results.tracker_analysis %}
+                <div class="tracker-analysis-section" style="margin-top: 1.5rem;">
+                    <h4 style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                        Analyse Trackers & IP Loggers
+                    </h4>
+                    
+                    {% if results.tracker_analysis.is_ip_logger %}
+                    <div class="alert alert-danger" style="margin-bottom: 1rem;">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2">
+                                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                                <line x1="12" y1="9" x2="12" y2="13"/>
+                                <line x1="12" y1="17" x2="12.01" y2="17"/>
+                            </svg>
+                            <strong style="color: #ef4444;">IP LOGGER DETECTE</strong>
+                        </div>
+                        <p>Ce lien est concu pour capturer votre adresse IP et potentiellement votre localisation geographique. <strong>Ne cliquez jamais sur ce lien.</strong></p>
+                        {% if results.tracker_analysis.ip_logger_service %}
+                        <p><strong>Service detecte:</strong> {{ results.tracker_analysis.ip_logger_service }}</p>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    
+                    {% if results.tracker_analysis.has_fingerprinting %}
+                    <div class="alert alert-warning" style="margin-bottom: 1rem;">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
+                                <path d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"/>
+                            </svg>
+                            <strong style="color: #f59e0b;">Fingerprinting Detecte</strong>
+                        </div>
+                        <p>Ce site utilise des techniques de fingerprinting pour identifier votre appareil de maniere unique, meme sans cookies.</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if results.tracker_analysis.is_tracker and not results.tracker_analysis.is_ip_logger %}
+                    <div class="alert alert-info" style="margin-bottom: 1rem;">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                            <strong style="color: #3b82f6;">Trackers Detectes</strong>
+                        </div>
+                        <p>{{ results.tracker_analysis.detections|length if results.tracker_analysis.detections else 0 }} element(s) de tracking ont ete detectes.</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if results.tracker_analysis.detections %}
+                    <div style="background: rgba(30, 41, 59, 0.5); border-radius: 8px; padding: 1rem;">
+                        <h5 style="color: #94a3b8; margin: 0 0 0.75rem 0; font-size: 0.85rem;">Details des elements detectes:</h5>
+                        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                            {% for detection in results.tracker_analysis.detections[:10] %}
+                            <span style="background: {% if detection.type == 'ip_logger' %}rgba(239, 68, 68, 0.2); color: #f87171;{% elif detection.type == 'fingerprinting' %}rgba(217, 119, 6, 0.2); color: #fbbf24;{% else %}rgba(59, 130, 246, 0.2); color: #60a5fa;{% endif %} padding: 4px 10px; border-radius: 4px; font-size: 0.8rem;">
+                                {{ detection.category|default(detection.type, true) }}
+                            </span>
+                            {% endfor %}
+                            {% if results.tracker_analysis.detections|length > 10 %}
+                            <span style="color: #64748b; font-size: 0.8rem; padding: 4px;">+{{ results.tracker_analysis.detections|length - 10 }} autres</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if not results.tracker_analysis.is_ip_logger and not results.tracker_analysis.is_tracker and not results.tracker_analysis.has_fingerprinting %}
+                    <div class="alert alert-success">
+                        <p>Aucun tracker ni IP logger detecte sur cette URL.</p>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+
                 {% if results.threat_detected %}
                 <div class="alert alert-danger">
                     <h4>Menace Potentielle Detectee</h4>
