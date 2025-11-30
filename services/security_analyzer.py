@@ -173,11 +173,88 @@ class SecurityAnalyzerService:
             raise e
     
     def _analyze_url(self, client, url):
-        """Analyze a URL"""
+        """Analyze a URL - submits for scanning if not found"""
+        import time
+        
         try:
             url_id = vt.url_id(url)
-            url_obj = client.get_object(f"/urls/{url_id}")
-            stats = url_obj.last_analysis_stats
+            url_obj = None
+            stats = None
+            
+            try:
+                url_obj = client.get_object(f"/urls/{url_id}")
+                stats = url_obj.last_analysis_stats
+                print(f"[INFO] URL found in database: {url}")
+            except vt.APIError as e:
+                if 'NotFoundError' in str(e):
+                    print(f"[INFO] URL not in database, submitting for scan: {url}")
+                    try:
+                        analysis = client.scan_url(url)
+                        analysis_id = analysis.id
+                        print(f"[INFO] URL scan submitted, analysis ID: {analysis_id}")
+                        
+                        max_attempts = 12
+                        for attempt in range(max_attempts):
+                            time.sleep(5)
+                            try:
+                                analysis_obj = client.get_object(f"/analyses/{analysis_id}")
+                                status = analysis_obj.status
+                                print(f"[INFO] Analysis status (attempt {attempt+1}): {status}")
+                                
+                                if status == "completed":
+                                    url_obj = client.get_object(f"/urls/{url_id}")
+                                    stats = url_obj.last_analysis_stats
+                                    break
+                            except Exception as poll_error:
+                                print(f"[WARN] Polling error: {str(poll_error)}")
+                                continue
+                        
+                        if stats is None:
+                            return {
+                                'error': False,
+                                'found': False,
+                                'type': 'url',
+                                'url': url,
+                                'message': 'Analyse en cours. Veuillez réessayer dans quelques instants.',
+                                'malicious': 0,
+                                'suspicious': 0,
+                                'total': 0,
+                                'clean': 0,
+                                'threat_detected': False,
+                                'threat_level': 'inconnu'
+                            }
+                    except Exception as scan_error:
+                        print(f"[ERROR] URL scan failed: {str(scan_error)}")
+                        return {
+                            'error': False,
+                            'found': False,
+                            'type': 'url',
+                            'url': url,
+                            'message': 'Impossible de soumettre l\'URL pour analyse. Veuillez réessayer.',
+                            'malicious': 0,
+                            'suspicious': 0,
+                            'total': 0,
+                            'clean': 0,
+                            'threat_detected': False,
+                            'threat_level': 'inconnu'
+                        }
+                else:
+                    raise e
+            
+            if stats is None:
+                return {
+                    'error': False,
+                    'found': False,
+                    'type': 'url',
+                    'url': url,
+                    'message': 'Aucune donnée disponible pour cette URL.',
+                    'malicious': 0,
+                    'suspicious': 0,
+                    'total': 0,
+                    'clean': 0,
+                    'threat_detected': False,
+                    'threat_level': 'inconnu'
+                }
             
             malicious = stats.get('malicious', 0)
             suspicious = stats.get('suspicious', 0)
@@ -193,8 +270,8 @@ class SecurityAnalyzerService:
                 'total': total,
                 'clean': stats.get('harmless', 0) + stats.get('undetected', 0),
                 'stats': stats,
-                'categories': url_obj.get('categories', {}),
-                'times_submitted': url_obj.get('times_submitted', 0),
+                'categories': url_obj.get('categories', {}) if url_obj else {},
+                'times_submitted': url_obj.get('times_submitted', 0) if url_obj else 0,
                 'threat_detected': malicious > 0 or suspicious > 0,
                 'threat_level': self._calculate_threat_level(malicious, suspicious, total)
             }
