@@ -4,8 +4,9 @@
 
 {% block content %}
 <!-- VERSION: 2024-11-18-FULL-DETAILS-VISIBLE -->
+<div class="breach-analysis-page">
 <section class="page-header-modern">
-    <div class="container">
+    <div class="breach-content-container container">
         <div class="header-content-centered">
             <h1 class="page-title-modern">Analyse de sécurité</h1>
             <p class="page-subtitle-modern">Résultats pour {{ email }}</p>
@@ -14,7 +15,7 @@
 </section>
 
 <section class="section" style="padding-bottom: 4rem;">
-    <div class="container">
+    <div class="breach-content-container container">
         {% if recommendations.level == 'safe' %}
         <div class="breach-result-card safe-card">
             <div class="breach-icon-wrapper safe-icon">
@@ -158,17 +159,14 @@
         </div>
     </div>
 </section>
+</div>
 
 <style>
 * {
     box-sizing: border-box;
 }
 
-body {
-    overflow-x: hidden;
-}
-
-.container {
+.breach-analysis-page .breach-content-container {
     max-width: 100%;
     overflow-x: hidden;
 }
