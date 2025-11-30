@@ -72,6 +72,11 @@ I prefer that the agent adheres to existing architectural patterns and design de
     - Hardened with SSRF protection, DNS rebinding prevention, content-length limits, and cloud metadata endpoint protection.
 - **Prompt Analyzer (Anti-Injection)**:
     - Detects prompt injection patterns, dangerous code (eval, exec), obfuscation, and jailbreak attempts using pattern matching and AST analysis.
+    - **URL/IP/Domain Detection in Prompts**:
+        - Extracts URLs from text and routes them through full multi-API security analysis (VirusTotal, Google Safe Browsing, URLhaus, URLScan.io)
+        - Detects public IPv4 and IPv6 addresses (filters out private/local ranges)
+        - Identifies standalone domain names
+        - Reports security threats found in embedded URLs
     - Hardened with input size limits and robust error handling.
 - **Admin Panel Enhancements**:
     - Detailed history views for all analyses (QR code, prompt, breach, security) with filtering and search.
@@ -108,8 +113,11 @@ Comprehensive documentation is available in the `docs/` folder:
 - **OUTILS_REFERENCE.md**: Detailed reference for all services (TrackerDetector, URLScan, QRCodeAnalyzer, etc.)
 
 ## Recent Changes (November 2025)
-- **Consolidated Summary System**: QR code analyzer now produces a unified, consistent verdict by aggregating all detection sources (tracker_analysis, chain_tracker_analysis, multi_api_analysis) into a single authoritative summary
-- **Coherent PDF Reports**: PDF service now uses consolidated summary for consistent, non-redundant reports with proper section ordering
+- **Unified Security Analysis Pipeline**: All analyzers now use the same SecurityAnalyzerService for consistent multi-API security checks
+- **Prompt Analyzer URL/IP Detection**: Prompt analyzer now detects and analyzes URLs, IP addresses, and domains embedded in prompts, routing URLs through the full security analysis pipeline
+- **Harmonized PDF Reports**: QR code PDF reports now display per-source security results (VirusTotal, Google Safe Browsing, URLhaus, URLScan.io) matching the security analysis report format
+- **Consolidated Summary System**: QR code analyzer produces a unified, consistent verdict by aggregating all detection sources (tracker_analysis, chain_tracker_analysis, multi_api_analysis) into a single authoritative summary
+- **Coherent PDF Reports**: PDF service uses consolidated summary for consistent, non-redundant reports with proper section ordering
 - **Legacy Data Support**: Template and service handle historical records without consolidated_summary via fallback rendering
 - **Environment Check**: check_env.py now verifies all 5 security APIs with detailed descriptions at startup
 
