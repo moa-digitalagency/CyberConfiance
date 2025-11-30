@@ -262,7 +262,8 @@
                 {% endif %}
 
                 {% set summary = results.consolidated_summary %}
-                {% if summary and summary.key_findings %}
+                {% if summary %}
+                {% if summary.key_findings %}
                 <div class="findings-section" style="margin-top: 1.5rem;">
                     <h4 style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; color: #e2e8f0;">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -318,7 +319,7 @@
                 </div>
                 {% endif %}
                 
-                {% if summary and summary.recommendations %}
+                {% if summary.recommendations %}
                 <div class="recommendations-section" style="margin-top: 1.5rem; background: {% if summary.overall_verdict == 'critical' or summary.overall_verdict == 'high' %}rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3);{% elif summary.overall_verdict == 'medium' %}rgba(234, 179, 8, 0.1); border: 1px solid rgba(234, 179, 8, 0.3);{% else %}rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3);{% endif %} border-radius: 12px; padding: 1.25rem;">
                     <h4 style="margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.5rem; color: {% if summary.overall_verdict == 'critical' or summary.overall_verdict == 'high' %}#f87171{% elif summary.overall_verdict == 'medium' %}#fbbf24{% else %}#4ade80{% endif %};">
                         {% if summary.overall_verdict == 'critical' or summary.overall_verdict == 'high' %}
