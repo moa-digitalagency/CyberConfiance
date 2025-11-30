@@ -261,126 +261,110 @@
                 </div>
                 {% endif %}
 
-                {% if results.issues %}
-                <div class="issues-section">
-                    <h4>Problemes Detectes ({{ results.issues|length }})</h4>
-                    <div class="issues-list">
-                        {% for issue in results.issues %}
-                        <div class="issue-item severity-{{ issue.severity }}">
-                            <span class="issue-severity">{{ issue.severity|upper }}</span>
-                            <span class="issue-message">{{ issue.message }}</span>
+                {% set summary = results.consolidated_summary %}
+                {% if summary and summary.key_findings %}
+                <div class="findings-section" style="margin-top: 1.5rem;">
+                    <h4 style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; color: #e2e8f0;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 11l3 3L22 4"/>
+                            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                        </svg>
+                        Resultats de l'Analyse ({{ summary.key_findings|length }} element{{ 's' if summary.key_findings|length > 1 else '' }})
+                    </h4>
+                    <div class="findings-grid" style="display: grid; gap: 0.75rem;">
+                        {% for finding in summary.key_findings %}
+                        <div class="finding-card" style="background: {% if finding.severity == 'critical' %}rgba(239, 68, 68, 0.15); border-left: 4px solid #ef4444;{% elif finding.severity == 'high' %}rgba(249, 115, 22, 0.15); border-left: 4px solid #f97316;{% elif finding.severity == 'medium' %}rgba(234, 179, 8, 0.15); border-left: 4px solid #eab308;{% else %}rgba(59, 130, 246, 0.15); border-left: 4px solid #3b82f6;{% endif %} border-radius: 8px; padding: 1rem;">
+                            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                <div style="width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: {% if finding.severity == 'critical' %}rgba(239, 68, 68, 0.2){% elif finding.severity == 'high' %}rgba(249, 115, 22, 0.2){% elif finding.severity == 'medium' %}rgba(234, 179, 8, 0.2){% else %}rgba(59, 130, 246, 0.2){% endif %};">
+                                    {% if finding.icon == 'alert-triangle' %}
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="{% if finding.severity == 'critical' %}#ef4444{% elif finding.severity == 'high' %}#f97316{% else %}#eab308{% endif %}" stroke-width="2">
+                                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                                        <line x1="12" y1="9" x2="12" y2="13"/>
+                                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                                    </svg>
+                                    {% elif finding.icon == 'shield-off' %}
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2">
+                                        <path d="M19.69 14a6.9 6.9 0 0 0 .31-2V5l-8-3-3.16 1.18"/>
+                                        <path d="M4.73 4.73L4 5v7c0 6 8 10 8 10a20.29 20.29 0 0 0 5.62-4.38"/>
+                                        <line x1="1" y1="1" x2="23" y2="23"/>
+                                    </svg>
+                                    {% elif finding.icon == 'eye' %}
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="2">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                        <circle cx="12" cy="12" r="3"/>
+                                    </svg>
+                                    {% elif finding.icon == 'link' %}
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2">
+                                        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                                        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                                    </svg>
+                                    {% else %}
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <line x1="12" y1="8" x2="12" y2="12"/>
+                                        <line x1="12" y1="16" x2="12.01" y2="16"/>
+                                    </svg>
+                                    {% endif %}
+                                </div>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; color: {% if finding.severity == 'critical' %}#f87171{% elif finding.severity == 'high' %}#fb923c{% elif finding.severity == 'medium' %}#fbbf24{% else %}#60a5fa{% endif %}; font-size: 0.95rem;">{{ finding.title }}</div>
+                                    <div style="color: #94a3b8; font-size: 0.85rem; margin-top: 2px;">{{ finding.description }}</div>
+                                </div>
+                                <span style="padding: 4px 10px; border-radius: 4px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; background: {% if finding.severity == 'critical' %}rgba(239, 68, 68, 0.3); color: #fca5a5;{% elif finding.severity == 'high' %}rgba(249, 115, 22, 0.3); color: #fdba74;{% elif finding.severity == 'medium' %}rgba(234, 179, 8, 0.3); color: #fde047;{% else %}rgba(59, 130, 246, 0.3); color: #93c5fd;{% endif %}">{{ finding.severity }}</span>
+                            </div>
                         </div>
                         {% endfor %}
                     </div>
                 </div>
                 {% endif %}
-
-                {% if results.blacklist_result %}
-                <div class="blacklist-result">
-                    <h4>Verification Liste Noire</h4>
-                    {% if results.blacklist_result.is_blacklisted %}
-                    <div class="alert alert-danger">
-                        <p><strong>URL detectee comme malveillante</strong> par {{ results.blacklist_result.malicious }} source(s) de securite.</p>
-                    </div>
-                    {% else %}
-                    <div class="alert alert-success">
-                        <p>URL non repertoriee dans les listes noires connues.</p>
-                    </div>
-                    {% endif %}
-                </div>
-                {% endif %}
-
-                {% if results.tracker_analysis %}
-                <div class="tracker-analysis-section" style="margin-top: 1.5rem;">
-                    <h4 style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+                
+                {% if summary and summary.recommendations %}
+                <div class="recommendations-section" style="margin-top: 1.5rem; background: {% if summary.overall_verdict == 'critical' or summary.overall_verdict == 'high' %}rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3);{% elif summary.overall_verdict == 'medium' %}rgba(234, 179, 8, 0.1); border: 1px solid rgba(234, 179, 8, 0.3);{% else %}rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3);{% endif %} border-radius: 12px; padding: 1.25rem;">
+                    <h4 style="margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.5rem; color: {% if summary.overall_verdict == 'critical' or summary.overall_verdict == 'high' %}#f87171{% elif summary.overall_verdict == 'medium' %}#fbbf24{% else %}#4ade80{% endif %};">
+                        {% if summary.overall_verdict == 'critical' or summary.overall_verdict == 'high' %}
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                            <circle cx="12" cy="12" r="3"/>
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="15" y1="9" x2="9" y2="15"/>
+                            <line x1="9" y1="9" x2="15" y2="15"/>
                         </svg>
-                        Analyse Trackers & IP Loggers
-                    </h4>
-                    
-                    {% if results.tracker_analysis.is_ip_logger %}
-                    <div class="alert alert-danger" style="margin-bottom: 1rem;">
-                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2">
-                                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                                <line x1="12" y1="9" x2="12" y2="13"/>
-                                <line x1="12" y1="17" x2="12.01" y2="17"/>
-                            </svg>
-                            <strong style="color: #ef4444;">IP LOGGER DETECTE</strong>
-                        </div>
-                        <p>Ce lien est concu pour capturer votre adresse IP et potentiellement votre localisation geographique. <strong>Ne cliquez jamais sur ce lien.</strong></p>
-                        {% if results.tracker_analysis.ip_logger_service %}
-                        <p><strong>Service detecte:</strong> {{ results.tracker_analysis.ip_logger_service }}</p>
+                        Avertissement de Securite
+                        {% elif summary.overall_verdict == 'medium' %}
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                            <line x1="12" y1="9" x2="12" y2="13"/>
+                            <line x1="12" y1="17" x2="12.01" y2="17"/>
+                        </svg>
+                        Points d'Attention
+                        {% else %}
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                            <polyline points="22 4 12 14.01 9 11.01"/>
+                        </svg>
+                        Recommandations
                         {% endif %}
-                    </div>
-                    {% endif %}
-                    
-                    {% if results.tracker_analysis.has_fingerprinting %}
-                    <div class="alert alert-warning" style="margin-bottom: 1rem;">
-                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
-                                <path d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"/>
-                            </svg>
-                            <strong style="color: #f59e0b;">Fingerprinting Detecte</strong>
-                        </div>
-                        <p>Ce site utilise des techniques de fingerprinting pour identifier votre appareil de maniere unique, meme sans cookies.</p>
-                    </div>
-                    {% endif %}
-                    
-                    {% if results.tracker_analysis.is_tracker and not results.tracker_analysis.is_ip_logger %}
-                    <div class="alert alert-info" style="margin-bottom: 1rem;">
-                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2">
-                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                                <circle cx="12" cy="12" r="3"/>
-                            </svg>
-                            <strong style="color: #3b82f6;">Trackers Detectes</strong>
-                        </div>
-                        <p>{{ results.tracker_analysis.detections|length if results.tracker_analysis.detections else 0 }} element(s) de tracking ont ete detectes.</p>
-                    </div>
-                    {% endif %}
-                    
-                    {% if results.tracker_analysis.detections %}
-                    <div style="background: rgba(30, 41, 59, 0.5); border-radius: 8px; padding: 1rem;">
-                        <h5 style="color: #94a3b8; margin: 0 0 0.75rem 0; font-size: 0.85rem;">Details des elements detectes:</h5>
-                        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
-                            {% for detection in results.tracker_analysis.detections[:10] %}
-                            <span style="background: {% if detection.type == 'ip_logger' %}rgba(239, 68, 68, 0.2); color: #f87171;{% elif detection.type == 'fingerprinting' %}rgba(217, 119, 6, 0.2); color: #fbbf24;{% else %}rgba(59, 130, 246, 0.2); color: #60a5fa;{% endif %} padding: 4px 10px; border-radius: 4px; font-size: 0.8rem;">
-                                {{ detection.category|default(detection.type, true) }}
-                            </span>
-                            {% endfor %}
-                            {% if results.tracker_analysis.detections|length > 10 %}
-                            <span style="color: #64748b; font-size: 0.8rem; padding: 4px;">+{{ results.tracker_analysis.detections|length - 10 }} autres</span>
-                            {% endif %}
-                        </div>
-                    </div>
-                    {% endif %}
-                    
-                    {% if not results.tracker_analysis.is_ip_logger and not results.tracker_analysis.is_tracker and not results.tracker_analysis.has_fingerprinting %}
-                    <div class="alert alert-success">
-                        <p>Aucun tracker ni IP logger detecte sur cette URL.</p>
-                    </div>
-                    {% endif %}
-                </div>
-                {% endif %}
-
-                {% if results.threat_detected %}
-                <div class="alert alert-danger">
-                    <h4>Menace Potentielle Detectee</h4>
-                    <p>Ce QR code presente des caracteristiques suspectes. <strong>Ne scannez pas ce QR code</strong> avec votre telephone.</p>
-                    <ul class="safety-recommendations">
-                        <li>N'ouvrez pas cette URL directement</li>
-                        <li>Ne saisissez aucune information personnelle</li>
-                        <li>Signalez ce QR code si vous l'avez trouve dans un lieu public</li>
+                    </h4>
+                    <ul style="margin: 0; padding-left: 1.25rem; color: #cbd5e1;">
+                        {% for rec in summary.recommendations %}
+                        <li style="margin-bottom: 0.5rem; line-height: 1.5;">{{ rec }}</li>
+                        {% endfor %}
                     </ul>
                 </div>
+                {% endif %}
+                
                 {% else %}
-                <div class="alert alert-success">
+                
+                {% if results.threat_detected %}
+                <div class="alert alert-danger" style="margin-top: 1.5rem;">
+                    <h4>Menace Potentielle Detectee</h4>
+                    <p>Ce QR code presente des caracteristiques suspectes. <strong>Ne scannez pas ce QR code</strong> avec votre telephone.</p>
+                </div>
+                {% else %}
+                <div class="alert alert-success" style="margin-top: 1.5rem;">
                     <h4>Aucune Menace Majeure Detectee</h4>
                     <p>Ce QR code semble sur, mais restez vigilant lors de la navigation.</p>
                 </div>
+                {% endif %}
+                
                 {% endif %}
 
                 <div style="margin-top: 2rem; text-align: center; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">

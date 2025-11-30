@@ -1222,4 +1222,265 @@ class QRCodeAnalyzerService:
         else:
             result['threat_level'] = 'low' if result['issues'] else 'safe'
         
+        result['consolidated_summary'] = self._create_consolidated_summary(result)
+        
         return result
+    
+    def _create_consolidated_summary(self, result: dict) -> dict:
+        """
+        Crée un résumé consolidé et cohérent de tous les résultats d'analyse.
+        Élimine les redondances et fournit une vue unique et claire.
+        """
+        summary = {
+            'ip_logger_detected': False,
+            'ip_logger_details': [],
+            'trackers_detected': False,
+            'tracker_count': 0,
+            'tracker_details': [],
+            'fingerprinting_detected': False,
+            'fingerprinting_details': [],
+            'url_shortener_detected': False,
+            'shortener_service': None,
+            'multiple_shorteners': False,
+            'malware_detected': False,
+            'malware_sources': [],
+            'phishing_detected': False,
+            'phishing_sources': [],
+            'blacklisted': False,
+            'blacklist_count': 0,
+            'tracking_params': [],
+            'suspicious_patterns': [],
+            'redirect_warnings': [],
+            'overall_verdict': 'safe',
+            'overall_risk_score': 0,
+            'key_findings': [],
+            'recommendations': []
+        }
+        
+        if result.get('tracker_analysis', {}).get('is_ip_logger'):
+            summary['ip_logger_detected'] = True
+            for det in result.get('tracker_analysis', {}).get('detections', []):
+                if det.get('type') == 'ip_logger':
+                    summary['ip_logger_details'].append({
+                        'domain': det.get('domain', ''),
+                        'location': 'URL initiale'
+                    })
+        
+        chain_analysis = result.get('chain_tracker_analysis', {})
+        for logger in chain_analysis.get('ip_loggers_found', []):
+            summary['ip_logger_detected'] = True
+            summary['ip_logger_details'].append({
+                'domain': logger.get('url', ''),
+                'step': logger.get('step'),
+                'location': f"Etape {logger.get('step')} de la redirection"
+            })
+        
+        if result.get('tracker_analysis', {}).get('is_tracker'):
+            summary['trackers_detected'] = True
+            for det in result.get('tracker_analysis', {}).get('detections', []):
+                if det.get('type') == 'tracker':
+                    summary['tracker_details'].append(det.get('domain', det.get('message', '')))
+        
+        for tracker in chain_analysis.get('trackers_found', []):
+            summary['trackers_detected'] = True
+            if tracker.get('url') not in summary['tracker_details']:
+                summary['tracker_details'].append(tracker.get('url', ''))
+        
+        summary['tracker_count'] = len(summary['tracker_details'])
+        
+        if result.get('tracker_analysis', {}).get('has_fingerprinting'):
+            summary['fingerprinting_detected'] = True
+            for det in result.get('tracker_analysis', {}).get('detections', []):
+                if det.get('type') == 'fingerprinting':
+                    summary['fingerprinting_details'].append(det.get('indicator', det.get('message', '')))
+        
+        shortener_info = result.get('url_shortener', {})
+        if shortener_info.get('detected'):
+            summary['url_shortener_detected'] = True
+            summary['shortener_service'] = shortener_info.get('service')
+            summary['multiple_shorteners'] = shortener_info.get('multiple_shorteners', False)
+        
+        multi_api = result.get('multi_api_analysis', {})
+        if not multi_api.get('error'):
+            for threat in multi_api.get('all_threats', []):
+                threat_type = threat.get('type', '').lower()
+                source = threat.get('source', 'Unknown')
+                
+                if 'malware' in threat_type or 'malicious' in threat_type:
+                    summary['malware_detected'] = True
+                    if source not in summary['malware_sources']:
+                        summary['malware_sources'].append(source)
+                
+                if 'phishing' in threat_type or 'social_engineering' in threat_type:
+                    summary['phishing_detected'] = True
+                    if source not in summary['phishing_sources']:
+                        summary['phishing_sources'].append(source)
+        
+        blacklist = result.get('blacklist_result', {})
+        if blacklist.get('is_blacklisted'):
+            summary['blacklisted'] = True
+            summary['blacklist_count'] = blacklist.get('malicious', 0)
+        
+        tracking_params = result.get('tracker_analysis', {}).get('tracking_params_found', [])
+        for param in tracking_params:
+            if param.get('name') not in summary['tracking_params']:
+                summary['tracking_params'].append(param.get('name'))
+        
+        for param in chain_analysis.get('tracking_params_all', []):
+            if param.get('name') not in summary['tracking_params']:
+                summary['tracking_params'].append(param.get('name'))
+        
+        for issue in result.get('issues', []):
+            issue_type = issue.get('type', '')
+            if issue_type in ['suspicious_tld', 'phishing_keywords', 'ip_address', 'no_https']:
+                summary['suspicious_patterns'].append(issue.get('message'))
+        
+        redirect_count = result.get('redirect_count', 0)
+        if redirect_count > 3:
+            summary['redirect_warnings'].append(f"{redirect_count} redirections detectees")
+        if result.get('js_redirects'):
+            summary['redirect_warnings'].append(f"{len(result['js_redirects'])} redirection(s) JavaScript")
+        
+        if summary['ip_logger_detected']:
+            summary['key_findings'].append({
+                'severity': 'critical',
+                'icon': 'alert-triangle',
+                'title': 'IP Logger Detecte',
+                'description': 'Ce lien capture votre adresse IP et localisation'
+            })
+            summary['overall_risk_score'] += 80
+        
+        if summary['malware_detected']:
+            sources_text = ', '.join(summary['malware_sources'][:3])
+            summary['key_findings'].append({
+                'severity': 'critical',
+                'icon': 'shield-off',
+                'title': 'Malware Detecte',
+                'description': f"Detecte par: {sources_text}"
+            })
+            summary['overall_risk_score'] += 70
+        
+        if summary['phishing_detected']:
+            sources_text = ', '.join(summary['phishing_sources'][:3])
+            summary['key_findings'].append({
+                'severity': 'critical',
+                'icon': 'user-x',
+                'title': 'Phishing Detecte',
+                'description': f"Detecte par: {sources_text}"
+            })
+            summary['overall_risk_score'] += 70
+        
+        if summary['blacklisted']:
+            summary['key_findings'].append({
+                'severity': 'high',
+                'icon': 'x-circle',
+                'title': 'URL sur Liste Noire',
+                'description': f"Detectee par {summary['blacklist_count']} source(s)"
+            })
+            summary['overall_risk_score'] += 50
+        
+        if summary['fingerprinting_detected']:
+            summary['key_findings'].append({
+                'severity': 'high',
+                'icon': 'fingerprint',
+                'title': 'Fingerprinting Detecte',
+                'description': 'Identification unique de votre appareil'
+            })
+            summary['overall_risk_score'] += 40
+        
+        if summary['multiple_shorteners']:
+            summary['key_findings'].append({
+                'severity': 'high',
+                'icon': 'link-2',
+                'title': 'Obfuscation Detectee',
+                'description': 'Plusieurs raccourcisseurs imbriques'
+            })
+            summary['overall_risk_score'] += 30
+        
+        if summary['trackers_detected'] and summary['tracker_count'] > 0:
+            summary['key_findings'].append({
+                'severity': 'medium',
+                'icon': 'eye',
+                'title': f"{summary['tracker_count']} Tracker(s) Detecte(s)",
+                'description': 'Collecte de donnees de navigation'
+            })
+            summary['overall_risk_score'] += 20
+        
+        if summary['url_shortener_detected'] and not summary['multiple_shorteners']:
+            summary['key_findings'].append({
+                'severity': 'low',
+                'icon': 'link',
+                'title': 'URL Raccourcie',
+                'description': f"Service: {summary['shortener_service']}"
+            })
+            summary['overall_risk_score'] += 10
+        
+        if len(summary['tracking_params']) > 0:
+            summary['key_findings'].append({
+                'severity': 'low',
+                'icon': 'activity',
+                'title': 'Parametres de Tracking',
+                'description': f"{len(summary['tracking_params'])} parametre(s) detecte(s)"
+            })
+            summary['overall_risk_score'] += 5
+        
+        threat_level = result.get('threat_level', 'safe')
+        if threat_level == 'critical' and summary['overall_risk_score'] < 80:
+            summary['overall_risk_score'] = 80
+        elif threat_level == 'high' and summary['overall_risk_score'] < 50:
+            summary['overall_risk_score'] = 50
+        elif threat_level == 'medium' and summary['overall_risk_score'] < 30:
+            summary['overall_risk_score'] = 30
+        
+        if summary['overall_risk_score'] >= 80:
+            summary['overall_verdict'] = 'critical'
+        elif summary['overall_risk_score'] >= 50:
+            summary['overall_verdict'] = 'high'
+        elif summary['overall_risk_score'] >= 30:
+            summary['overall_verdict'] = 'medium'
+        elif summary['overall_risk_score'] >= 10:
+            summary['overall_verdict'] = 'low'
+        else:
+            summary['overall_verdict'] = 'safe'
+        
+        if not summary['key_findings']:
+            if summary['overall_verdict'] == 'safe':
+                summary['key_findings'].append({
+                    'severity': 'safe',
+                    'icon': 'check-circle',
+                    'title': 'Aucune Menace Detectee',
+                    'description': 'Ce lien ne presente pas de risque apparent'
+                })
+            elif result.get('threat_detected') and not summary['key_findings']:
+                summary['key_findings'].append({
+                    'severity': summary['overall_verdict'],
+                    'icon': 'alert-triangle',
+                    'title': 'Menaces Detectees',
+                    'description': f"Niveau de risque: {summary['overall_verdict']}"
+                })
+        
+        if summary['ip_logger_detected']:
+            summary['recommendations'].append("Ne cliquez JAMAIS sur ce lien - votre IP sera capturee")
+            summary['recommendations'].append("Ne partagez pas ce lien avec d'autres personnes")
+        
+        if summary['malware_detected'] or summary['phishing_detected']:
+            summary['recommendations'].append("N'ouvrez pas cette URL - elle est malveillante")
+            summary['recommendations'].append("Signalez ce lien aux autorites competentes")
+        
+        if summary['fingerprinting_detected']:
+            summary['recommendations'].append("Utilisez un navigateur avec protection anti-fingerprint")
+        
+        if summary['trackers_detected']:
+            summary['recommendations'].append("Utilisez un bloqueur de trackers si vous visitez ce site")
+        
+        if not summary['recommendations']:
+            if summary['overall_verdict'] in ['critical', 'high']:
+                summary['recommendations'].append("N'ouvrez pas cette URL - elle presente des risques")
+                summary['recommendations'].append("Ne saisissez aucune information personnelle")
+            elif summary['overall_verdict'] == 'medium':
+                summary['recommendations'].append("Soyez prudent si vous visitez ce site")
+                summary['recommendations'].append("Verifiez l'URL avant toute action")
+            else:
+                summary['recommendations'].append("Ce lien semble sur, mais restez vigilant")
+        
+        return summary

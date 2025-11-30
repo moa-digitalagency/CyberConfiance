@@ -931,63 +931,80 @@ class PDFReportService:
             
             y_pos += 10
         
-        threat_details = analysis.threat_details or []
-        if threat_details:
+        analysis_results = analysis.analysis_results or {}
+        consolidated_summary = analysis_results.get('consolidated_summary', {})
+        key_findings = consolidated_summary.get('key_findings', [])
+        
+        if key_findings:
             if y_pos > self.max_y - 100:
                 page = doc.new_page(width=595, height=842)
                 y_pos = 90
             
-            page.insert_text((30, y_pos), "PROBLEMES DE SECURITE DETECTES", 
-                            fontsize=14, fontname="helv", color=self.danger_color)
+            page.draw_line((30, y_pos), (565, y_pos), color=self.base_color, width=1)
+            y_pos += 20
+            
+            page.insert_text((30, y_pos), f"RESULTATS DE L'ANALYSE ({len(key_findings)} element{'s' if len(key_findings) > 1 else ''})", 
+                            fontsize=14, fontname="helv", color=self.base_color)
             y_pos += 25
             
-            for idx, issue in enumerate(threat_details[:15], 1):
+            for finding in key_findings:
                 if y_pos > self.max_y - 60:
                     page = doc.new_page(width=595, height=842)
                     y_pos = 90
                 
-                severity = issue.get('severity', 'low')
+                severity = finding.get('severity', 'low')
                 severity_color = self._get_risk_color(severity)
+                title = finding.get('title', '')
+                description = finding.get('description', '')
                 
-                page.insert_text((40, y_pos), f"{idx}. [{severity.upper()}] {issue.get('message', '')[:70]}", 
+                page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + 35), 
+                              color=severity_color, fill=severity_color, fill_opacity=0.08)
+                page.draw_rect(fitz.Rect(30, y_pos, 34, y_pos + 35), 
+                              color=severity_color, fill=severity_color)
+                
+                y_pos += 12
+                page.insert_text((40, y_pos), f"[{severity.upper()}] {title}", 
                                 fontsize=10, fontname="helv", color=severity_color)
-                y_pos += 18
+                y_pos += 14
+                if description:
+                    desc_lines = self._wrap_text(description, 85)
+                    for line in desc_lines[:2]:
+                        page.insert_text((40, y_pos), line, fontsize=8, color=(0.4, 0.4, 0.4))
+                        y_pos += 10
+                y_pos += 12
         else:
-            page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + 60), 
-                          color=self.success_color, fill=self.success_color, fill_opacity=0.1)
-            y_pos += 25
-            page.insert_text((40, y_pos), "Aucun probleme de securite majeur detecte", 
-                            fontsize=12, fontname="helv", color=self.success_color)
-            y_pos += 20
-            page.insert_text((40, y_pos), 
-                            "Ce QR code semble sur selon notre analyse.", 
-                            fontsize=10)
-            y_pos += 35
-        
-        if analysis.blacklist_matches:
-            if y_pos > self.max_y - 80:
-                page = doc.new_page(width=595, height=842)
-                y_pos = 90
-            
-            page.insert_text((30, y_pos), "VERIFICATION LISTE NOIRE", 
-                            fontsize=14, fontname="helv", color=self.base_color)
-            y_pos += 25
-            
-            bl = analysis.blacklist_matches
-            if bl.get('is_blacklisted'):
-                page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + 50), 
-                              color=self.danger_color, fill=self.danger_color, fill_opacity=0.1)
-                y_pos += 20
-                page.insert_text((40, y_pos), f"URL MALVEILLANTE - Detectee par {bl.get('malicious', 0)} source(s)", 
-                               fontsize=11, fontname="helv", color=self.danger_color)
-                y_pos += 50
+            threat_details = analysis.threat_details or []
+            if threat_details:
+                if y_pos > self.max_y - 100:
+                    page = doc.new_page(width=595, height=842)
+                    y_pos = 90
+                
+                page.insert_text((30, y_pos), "PROBLEMES DE SECURITE DETECTES", 
+                                fontsize=14, fontname="helv", color=self.danger_color)
+                y_pos += 25
+                
+                for idx, issue in enumerate(threat_details[:15], 1):
+                    if y_pos > self.max_y - 60:
+                        page = doc.new_page(width=595, height=842)
+                        y_pos = 90
+                    
+                    severity = issue.get('severity', 'low')
+                    severity_color = self._get_risk_color(severity)
+                    
+                    page.insert_text((40, y_pos), f"{idx}. [{severity.upper()}] {issue.get('message', '')[:70]}", 
+                                    fontsize=10, fontname="helv", color=severity_color)
+                    y_pos += 18
             else:
-                page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + 50), 
+                page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + 60), 
                               color=self.success_color, fill=self.success_color, fill_opacity=0.1)
+                y_pos += 25
+                page.insert_text((40, y_pos), "Aucun probleme de securite majeur detecte", 
+                                fontsize=12, fontname="helv", color=self.success_color)
                 y_pos += 20
-                page.insert_text((40, y_pos), "URL non repertoriee dans les listes noires connues", 
-                               fontsize=11, fontname="helv", color=self.success_color)
-                y_pos += 50
+                page.insert_text((40, y_pos), 
+                                "Ce QR code semble sur selon notre analyse.", 
+                                fontsize=10)
+                y_pos += 35
         
         if y_pos > self.max_y - 120:
             page = doc.new_page(width=595, height=842)
@@ -996,29 +1013,50 @@ class PDFReportService:
         page.draw_line((30, y_pos), (565, y_pos), color=self.base_color, width=1)
         y_pos += 20
         
-        page.insert_text((30, y_pos), "RECOMMANDATIONS DE SECURITE", 
-                        fontsize=14, fontname="helv", color=self.base_color)
+        summary_recommendations = consolidated_summary.get('recommendations', [])
+        overall_verdict = consolidated_summary.get('overall_verdict', 'safe')
+        
+        if overall_verdict in ['critical', 'high']:
+            rec_color = self.danger_color
+            rec_title = "AVERTISSEMENT DE SECURITE"
+        elif overall_verdict == 'medium':
+            rec_color = self.warning_color
+            rec_title = "POINTS D'ATTENTION"
+        else:
+            rec_color = self.success_color
+            rec_title = "RECOMMANDATIONS"
+        
+        page.insert_text((30, y_pos), rec_title, 
+                        fontsize=14, fontname="helv", color=rec_color)
         y_pos += 25
         
-        if analysis.threat_detected:
-            recommendations = [
-                "Ne scannez pas ce QR code avec votre telephone personnel",
-                "N'ouvrez pas cette URL directement dans votre navigateur",
-                "Ne saisissez aucune information personnelle ou bancaire",
-                "Signalez ce QR code aux autorites si trouve dans un lieu public",
-                "Verifiez l'authenticite du QR code aupres de l'emetteur officiel"
-            ]
+        if summary_recommendations:
+            for rec in summary_recommendations:
+                if y_pos > self.max_y - 30:
+                    page = doc.new_page(width=595, height=842)
+                    y_pos = 90
+                page.insert_text((40, y_pos), f"- {rec}", fontsize=9, color=(0.3, 0.3, 0.3))
+                y_pos += 16
         else:
-            recommendations = [
-                "Ce QR code semble sur, mais restez toujours vigilant",
-                "Verifiez toujours l'URL avant de saisir des donnees sensibles",
-                "Ne partagez pas d'informations personnelles sur des sites inconnus",
-                "En cas de doute, contactez directement l'organisme concerne"
-            ]
-        
-        for rec in recommendations:
-            page.insert_text((40, y_pos), f"- {rec}", fontsize=9, color=(0.3, 0.3, 0.3))
-            y_pos += 16
+            if analysis.threat_detected:
+                recommendations = [
+                    "Ne scannez pas ce QR code avec votre telephone personnel",
+                    "N'ouvrez pas cette URL directement dans votre navigateur",
+                    "Ne saisissez aucune information personnelle ou bancaire",
+                    "Signalez ce QR code aux autorites si trouve dans un lieu public",
+                    "Verifiez l'authenticite du QR code aupres de l'emetteur officiel"
+                ]
+            else:
+                recommendations = [
+                    "Ce QR code semble sur, mais restez toujours vigilant",
+                    "Verifiez toujours l'URL avant de saisir des donnees sensibles",
+                    "Ne partagez pas d'informations personnelles sur des sites inconnus",
+                    "En cas de doute, contactez directement l'organisme concerne"
+                ]
+            
+            for rec in recommendations:
+                page.insert_text((40, y_pos), f"- {rec}", fontsize=9, color=(0.3, 0.3, 0.3))
+                y_pos += 16
         
         total_pages = len(doc)
         for page_num, p in enumerate(doc, 1):
