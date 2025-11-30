@@ -16,8 +16,8 @@ document.addEventListener('DOMContentLoaded', function() {
         observer.observe(el);
     });
     
-    const alerts = document.querySelectorAll('.alert');
-    alerts.forEach(alert => {
+    const flashAlerts = document.querySelectorAll('.flash-alert');
+    flashAlerts.forEach(alert => {
         setTimeout(() => {
             alert.style.opacity = '0';
             alert.style.transform = 'translateY(-20px)';
