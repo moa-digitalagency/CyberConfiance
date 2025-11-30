@@ -282,11 +282,7 @@ def link_analyzer():
 @bp.route('/outils/analyseur-securite', methods=['GET', 'POST'])
 def security_analyzer():
     results = None
-    breach_result = None
     analysis_id = None
-    breach_analysis_id = None
-    
-    print(f"[DEBUG] Security Analyzer POST: {request.method}")
     
     if request.method == 'POST':
         try:
@@ -297,58 +293,11 @@ def security_analyzer():
             if uploaded_file and uploaded_file.filename:
                 input_type = 'file'
             
-            if input_type == 'email' and input_value:
-                email_to_check = input_value
-            else:
-                email_to_check = request.form.get('email_check', '').strip()
-            
-            if not input_value and not email_to_check and not uploaded_file:
-                flash('Veuillez fournir une valeur à analyser ou un email à vérifier.', 'error')
+            if not input_value and not uploaded_file:
+                flash('Veuillez fournir une valeur à analyser.', 'error')
                 return redirect(url_for('main.security_analyzer'))
             
-            breach_analysis_record = None
-            
-            if email_to_check:
-                breach_result = HaveIBeenPwnedService.check_email_breach(email_to_check)
-                
-                if breach_result and not breach_result.get('error'):
-                    try:
-                        breach_count = breach_result.get('count', 0)
-                        if breach_count == 0:
-                            risk_level = 'safe'
-                        elif breach_count <= 3:
-                            risk_level = 'warning'
-                        else:
-                            risk_level = 'danger'
-                        
-                        breaches_data_sanitized = {
-                            'breaches': breach_result.get('breaches', [])[:50],
-                            'count': breach_count,
-                            'email': breach_result.get('email')
-                        }
-                        
-                        breach_analysis_record = BreachAnalysis(
-                            email=email_to_check,
-                            breach_count=breach_count,
-                            risk_level=risk_level,
-                            breaches_found=','.join([b.get('Name', '') for b in breach_result.get('breaches', [])[:20]]),
-                            breaches_data=breaches_data_sanitized,
-                            document_code=ensure_unique_code(BreachAnalysis),
-                            ip_address=get_client_ip(request),
-                            user_agent=request.headers.get('User-Agent', '')[:500]
-                        )
-                        db.session.add(breach_analysis_record)
-                        db.session.commit()
-                        breach_analysis_id = breach_analysis_record.id
-                        print(f"[OK] BreachAnalysis saved: ID={breach_analysis_id}, email={email_to_check}")
-                    except Exception as e:
-                        print(f"[ERROR] Error saving breach analysis: {str(e)}")
-                        db.session.rollback()
-                        breach_analysis_record = None
-                elif breach_result and breach_result.get('error'):
-                    flash(f"Erreur lors de l'analyse de fuite: {breach_result.get('error')}", 'warning')
-            
-            if (input_value or uploaded_file) and input_type != 'email':
+            if input_value or uploaded_file:
                 analyzer = SecurityAnalyzerService()
                 if input_type == 'file' and uploaded_file:
                     from services.file_upload_service import FileUploadService
@@ -376,7 +325,6 @@ def security_analyzer():
                         threat_level=results.get('threat_level'),
                         malicious_count=results.get('malicious', 0),
                         total_engines=results.get('total', 0),
-                        breach_analysis_id=breach_analysis_record.id if breach_analysis_record else None,
                         document_code=ensure_unique_code(SecurityAnalysis),
                         ip_address=get_client_ip(request),
                         user_agent=request.headers.get('User-Agent', '')
@@ -384,56 +332,16 @@ def security_analyzer():
                     db.session.add(analysis_record)
                     db.session.commit()
                     analysis_id = analysis_record.id
-                    print(f"[OK] SecurityAnalysis saved: ID={analysis_id}, type={input_type}")
                 except Exception as e:
                     print(f"[ERROR] Error saving security analysis: {str(e)}")
-                    db.session.rollback()
-            elif input_type == 'email' and breach_analysis_record:
-                try:
-                    email_results = {
-                        'breach_count': breach_analysis_record.breach_count,
-                        'risk_level': breach_analysis_record.risk_level,
-                        'malicious': breach_analysis_record.breach_count,
-                        'suspicious': 0,
-                        'clean': 0,
-                        'total': breach_analysis_record.breach_count,
-                        'threat_detected': breach_analysis_record.breach_count > 0,
-                        'threat_level': breach_analysis_record.risk_level,
-                        'type': 'email',
-                        'email': email_to_check
-                    }
-                    analysis_record = SecurityAnalysis(
-                        input_value=email_to_check,
-                        input_type='email',
-                        analysis_results=email_results,
-                        threat_detected=breach_analysis_record.breach_count > 0,
-                        threat_level=breach_analysis_record.risk_level,
-                        malicious_count=breach_analysis_record.breach_count,
-                        total_engines=breach_analysis_record.breach_count,
-                        breach_analysis_id=breach_analysis_record.id,
-                        document_code=ensure_unique_code(SecurityAnalysis),
-                        ip_address=get_client_ip(request),
-                        user_agent=request.headers.get('User-Agent', '')
-                    )
-                    db.session.add(analysis_record)
-                    db.session.commit()
-                    analysis_id = analysis_record.id
-                except Exception as e:
-                    print(f"[ERROR] Error saving email security analysis: {str(e)}")
                     db.session.rollback()
         except Exception as e:
             print(f"[ERROR] Critical error in security_analyzer: {str(e)}")
             db.session.rollback()
     
-    print(f"[DEBUG] Rendering security_analyzer: analysis_id={analysis_id}, breach_analysis_id={breach_analysis_id}")
-    print(f"[DEBUG] Results: {results}")
-    print(f"[DEBUG] Breach Result: {breach_result}")
-    
     return render_template('outils/security_analyzer.html', 
                          results=results, 
-                         breach_result=breach_result,
-                         analysis_id=analysis_id,
-                         breach_analysis_id=breach_analysis_id)
+                         analysis_id=analysis_id)
 
 @bp.route('/quiz', methods=['GET', 'POST'])
 def quiz():
