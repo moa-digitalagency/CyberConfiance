@@ -113,6 +113,10 @@ Comprehensive documentation is available in the `docs/` folder:
 - **OUTILS_REFERENCE.md**: Detailed reference for all services (TrackerDetector, URLScan, QRCodeAnalyzer, etc.)
 
 ## Recent Changes (November 2025)
+- **QR Code Detection Enhancement**: Added OpenCV QRCodeDetector with 8 preprocessing techniques (CLAHE, thresholding, sharpening, resizing) as primary detector with pyzbar fallback
+- **QR Scanner Progress Animation**: When a QR code is detected during camera scanning, the camera view is replaced with an animated progress bar and step indicators showing analysis status
+- **Contact Form Security Analysis**: Contact form now includes prompt injection detection and security analysis using PromptAnalyzerService, with threat logging and redirect to security alert page
+- **All Forms Protected**: All submission forms (contact, fact-checking, cybercrime report, cyberconsultation, OSINT investigation) now have security analysis with prompt injection detection
 - **Unified Security Analysis Pipeline**: All analyzers now use the same SecurityAnalyzerService for consistent multi-API security checks
 - **Prompt Analyzer URL/IP Detection**: Prompt analyzer now detects and analyzes URLs, IP addresses, and domains embedded in prompts, routing URLs through the full security analysis pipeline
 - **Harmonized PDF Reports**: QR code PDF reports now display per-source security results (VirusTotal, Google Safe Browsing, URLhaus, URLScan.io) matching the security analysis report format
