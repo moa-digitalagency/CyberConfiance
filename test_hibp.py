@@ -21,7 +21,7 @@ def test_password_checker():
     ]
     
     for password, description in test_passwords:
-        print(f"\n🔐 Test: '{password}' ({description})")
+        print(f"\n🔐 Test: ({description})")
         print("-" * 80)
         
         # Vérification simple
