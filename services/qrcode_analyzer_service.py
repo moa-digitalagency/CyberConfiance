@@ -105,9 +105,6 @@ class QRCodeAnalyzerService:
         ]
     
     def decode_qr_from_image(self, image_data):
-        if not PYZBAR_AVAILABLE:
-            return None, "Bibliotheque de decodage QR non disponible"
-        
         try:
             if isinstance(image_data, bytes):
                 image = Image.open(io.BytesIO(image_data))
@@ -117,22 +114,169 @@ class QRCodeAnalyzerService:
             if image.mode != 'RGB':
                 image = image.convert('RGB')
             
-            decoded_objects = pyzbar_decode(image)
+            # Try OpenCV QR detector first (more reliable)
+            result = self._decode_with_opencv(image)
+            if result:
+                return result, None
             
-            if not decoded_objects:
-                gray = image.convert('L')
-                decoded_objects = pyzbar_decode(gray)
-            
-            if decoded_objects:
-                for obj in decoded_objects:
-                    if obj.type == 'QRCODE':
-                        return obj.data.decode('utf-8'), None
-                return decoded_objects[0].data.decode('utf-8'), None
+            # Fallback to pyzbar with multiple preprocessing methods
+            if PYZBAR_AVAILABLE:
+                result = self._decode_with_pyzbar(image)
+                if result:
+                    return result, None
             
             return None, "Aucun QR code detecte dans l'image"
             
         except Exception as e:
             return None, f"Erreur lors du decodage: {str(e)}"
+    
+    def _decode_with_opencv(self, pil_image):
+        """Try to decode QR code using OpenCV's QRCodeDetector"""
+        try:
+            import cv2
+            import numpy as np
+            
+            # Convert PIL to OpenCV format
+            img_array = np.array(pil_image)
+            img_cv = cv2.cvtColor(img_array, cv2.COLOR_RGB2BGR)
+            
+            # Initialize QR detector
+            detector = cv2.QRCodeDetector()
+            
+            # Try original image
+            data, bbox, _ = detector.detectAndDecode(img_cv)
+            if data:
+                return data
+            
+            # Try grayscale
+            gray = cv2.cvtColor(img_cv, cv2.COLOR_BGR2GRAY)
+            data, bbox, _ = detector.detectAndDecode(gray)
+            if data:
+                return data
+            
+            # Try with contrast enhancement (CLAHE)
+            clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+            enhanced = clahe.apply(gray)
+            data, bbox, _ = detector.detectAndDecode(enhanced)
+            if data:
+                return data
+            
+            # Try binary threshold
+            _, binary = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+            data, bbox, _ = detector.detectAndDecode(binary)
+            if data:
+                return data
+            
+            # Try inverted binary
+            inverted = cv2.bitwise_not(binary)
+            data, bbox, _ = detector.detectAndDecode(inverted)
+            if data:
+                return data
+            
+            # Try adaptive threshold
+            adaptive = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
+            data, bbox, _ = detector.detectAndDecode(adaptive)
+            if data:
+                return data
+            
+            # Try with sharpening
+            kernel = np.array([[-1,-1,-1], [-1,9,-1], [-1,-1,-1]])
+            sharpened = cv2.filter2D(gray, -1, kernel)
+            data, bbox, _ = detector.detectAndDecode(sharpened)
+            if data:
+                return data
+            
+            # Try resizing if image is very large
+            height, width = gray.shape
+            if width > 1000 or height > 1000:
+                scale = 800 / max(width, height)
+                resized = cv2.resize(gray, None, fx=scale, fy=scale, interpolation=cv2.INTER_AREA)
+                data, bbox, _ = detector.detectAndDecode(resized)
+                if data:
+                    return data
+            
+            # Try upscaling if image is small
+            if width < 300 or height < 300:
+                scale = 2.0
+                upscaled = cv2.resize(gray, None, fx=scale, fy=scale, interpolation=cv2.INTER_CUBIC)
+                data, bbox, _ = detector.detectAndDecode(upscaled)
+                if data:
+                    return data
+            
+            return None
+        except Exception as e:
+            print(f"OpenCV QR detection failed: {e}")
+            return None
+    
+    def _decode_with_pyzbar(self, pil_image):
+        """Fallback to pyzbar with multiple preprocessing attempts"""
+        if not PYZBAR_AVAILABLE:
+            return None
+        
+        try:
+            from PIL import ImageEnhance, ImageFilter
+            
+            # Try original RGB
+            decoded = pyzbar_decode(pil_image)
+            if decoded:
+                for obj in decoded:
+                    if obj.type == 'QRCODE':
+                        return obj.data.decode('utf-8')
+                return decoded[0].data.decode('utf-8')
+            
+            # Try grayscale
+            gray = pil_image.convert('L')
+            decoded = pyzbar_decode(gray)
+            if decoded:
+                for obj in decoded:
+                    if obj.type == 'QRCODE':
+                        return obj.data.decode('utf-8')
+                return decoded[0].data.decode('utf-8')
+            
+            # Try with enhanced contrast
+            enhancer = ImageEnhance.Contrast(gray)
+            for factor in [1.5, 2.0, 2.5]:
+                enhanced = enhancer.enhance(factor)
+                decoded = pyzbar_decode(enhanced)
+                if decoded:
+                    for obj in decoded:
+                        if obj.type == 'QRCODE':
+                            return obj.data.decode('utf-8')
+                    return decoded[0].data.decode('utf-8')
+            
+            # Try with sharpening
+            sharpened = gray.filter(ImageFilter.SHARPEN)
+            decoded = pyzbar_decode(sharpened)
+            if decoded:
+                for obj in decoded:
+                    if obj.type == 'QRCODE':
+                        return obj.data.decode('utf-8')
+                return decoded[0].data.decode('utf-8')
+            
+            # Try binary threshold
+            threshold = 128
+            binary = gray.point(lambda x: 255 if x > threshold else 0, mode='1')
+            decoded = pyzbar_decode(binary)
+            if decoded:
+                for obj in decoded:
+                    if obj.type == 'QRCODE':
+                        return obj.data.decode('utf-8')
+                return decoded[0].data.decode('utf-8')
+            
+            # Try inverted
+            from PIL import ImageOps
+            inverted = ImageOps.invert(gray)
+            decoded = pyzbar_decode(inverted)
+            if decoded:
+                for obj in decoded:
+                    if obj.type == 'QRCODE':
+                        return obj.data.decode('utf-8')
+                return decoded[0].data.decode('utf-8')
+            
+            return None
+        except Exception as e:
+            print(f"Pyzbar detection failed: {e}")
+            return None
     
     def is_safe_url(self, url):
         try:
