@@ -1,0 +1,390 @@
+{% extends "base.html" %}
+
+{% block title %}Analyseur de Fuite d'Email - CyberConfiance{% endblock %}
+
+{% block content %}
+<section class="page-header-modern">
+    <div class="container">
+        <div class="header-content-centered">
+            <h1 class="page-title-modern">Analyseur de Fuite d'Email</h1>
+            <p class="page-subtitle-modern">Verifiez si votre adresse email a ete compromise dans une fuite de donnees</p>
+        </div>
+    </div>
+</section>
+
+<section class="analyzer-container">
+    <div class="container">
+        {% if not results %}
+        <div class="analyzer-card">
+            <h2>Verification de Fuite de Donnees</h2>
+            <p class="analyzer-description">
+                Entrez votre adresse email pour verifier si elle a ete exposee dans des violations de donnees connues. 
+                Nous utilisons la base de donnees Have I Been Pwned (HIBP) qui recense des milliards de comptes compromis.
+            </p>
+
+            <form method="POST" action="{{ url_for('main.breach_analyzer') }}" class="analyzer-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                
+                <div class="input-group" style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 300px;">
+                        <label for="email" style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">Adresse Email</label>
+                        <input 
+                            type="email" 
+                            name="email" 
+                            id="email" 
+                            placeholder="exemple@email.com" 
+                            class="analyzer-input"
+                            required
+                            style="width: 100%;"
+                        >
+                    </div>
+                    <div style="display: flex; align-items: flex-end;">
+                        <button type="submit" class="btn-primary" style="white-space: nowrap;">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;">
+                                <circle cx="11" cy="11" r="8"/>
+                                <path d="m21 21-4.35-4.35"/>
+                            </svg>
+                            Verifier
+                        </button>
+                    </div>
+                </div>
+            </form>
+            
+            <div style="padding: 15px; background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%); border-left: 3px solid #3b82f6; border-radius: 8px; margin-top: 1.5rem;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2.5">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                    <h4 style="color: #3b82f6; font-size: 0.95rem; font-weight: 700; margin: 0;">Vos donnees sont protegees</h4>
+                </div>
+                <p style="margin: 0; color: #94a3b8; font-size: 0.875rem; line-height: 1.5;">
+                    Aucun marketing ni tracking. Stockage chiffre et anonymise. Vos informations restent confidentielles.
+                </p>
+            </div>
+            
+            <div style="padding: 15px; background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0.05) 100%); border-left: 3px solid #ef4444; border-radius: 8px; margin-top: 1rem;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                        <line x1="12" y1="9" x2="12" y2="13"/>
+                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                    </svg>
+                    <h4 style="color: #ef4444; font-size: 0.95rem; font-weight: 700; margin: 0;">Qu'est-ce qu'une fuite de donnees ?</h4>
+                </div>
+                <p style="margin: 0; color: #94a3b8; font-size: 0.875rem; line-height: 1.5;">
+                    Une fuite de donnees se produit lorsque des informations personnelles sont exposees suite a une cyberattaque. 
+                    Cela peut inclure emails, mots de passe, numeros de telephone et autres donnees sensibles.
+                </p>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if results %}
+        <div class="results-card">
+            {% if results.error %}
+            <div class="alert alert-error">
+                <h3>Erreur lors de la verification</h3>
+                <p>{{ results.error }}</p>
+            </div>
+            <div style="margin-top: 1.5rem; text-align: center;">
+                <a href="{{ url_for('main.breach_analyzer') }}" class="btn-secondary" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; text-decoration: none;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                        <polyline points="22,6 12,13 2,6"/>
+                    </svg>
+                    <span>Nouvelle Verification</span>
+                </a>
+            </div>
+            {% else %}
+            <div class="result-header {% if results.count > 0 %}danger{% else %}safe{% endif %}">
+                <div class="result-icon">
+                    {% if results.count > 0 %}
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                        <line x1="12" y1="9" x2="12" y2="13"/>
+                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                    </svg>
+                    {% else %}
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                    {% endif %}
+                </div>
+                <div class="result-summary">
+                    <h3 class="result-title">
+                        {% if results.count > 0 %}
+                        {{ results.count }} fuite(s) detectee(s)
+                        {% else %}
+                        Aucune fuite detectee
+                        {% endif %}
+                    </h3>
+                    <p class="result-subtitle">
+                        {% if results.count > 0 %}
+                        Votre email <strong>{{ results.email }}</strong> a ete trouve dans {{ results.count }} violation(s) de donnees.
+                        {% else %}
+                        Votre email <strong>{{ results.email }}</strong> n'apparait dans aucune fuite de donnees connue.
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+            
+            {% if results.count > 0 and results.breaches %}
+            <div class="breaches-section" style="margin-top: 2rem;">
+                <h4 style="color: var(--text-primary); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    </svg>
+                    Details des fuites
+                </h4>
+                
+                <div class="breaches-grid" style="display: grid; gap: 1rem;">
+                    {% for breach in results.breaches %}
+                    <div class="breach-item" style="background: rgba(239, 68, 68, 0.08); padding: 1.25rem; border-radius: 10px; border: 1px solid rgba(239, 68, 68, 0.2);">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+                            <h5 style="margin: 0; color: #ef4444; font-size: 1.1rem;">{{ breach.Name }}</h5>
+                            {% if breach.BreachDate %}
+                            <span style="background: rgba(239, 68, 68, 0.15); color: #fca5a5; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem;">
+                                {{ breach.BreachDate }}
+                            </span>
+                            {% endif %}
+                        </div>
+                        
+                        {% if breach.Domain %}
+                        <p style="margin: 0.5rem 0; color: var(--text-secondary); font-size: 0.9rem;">
+                            <strong>Domaine:</strong> {{ breach.Domain }}
+                        </p>
+                        {% endif %}
+                        
+                        {% if breach.DataClasses %}
+                        <div style="margin-top: 0.75rem;">
+                            <strong style="color: var(--text-secondary); font-size: 0.85rem;">Donnees compromises:</strong>
+                            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem;">
+                                {% for data_class in breach.DataClasses %}
+                                <span style="background: rgba(239, 68, 68, 0.15); color: #fca5a5; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem;">{{ data_class }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if breach.Description %}
+                        <p style="margin-top: 0.75rem; color: var(--text-muted); font-size: 0.85rem; line-height: 1.5;">
+                            {{ breach.Description|striptags|truncate(200) }}
+                        </p>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <div style="margin-top: 1.5rem; padding: 1.25rem; background: rgba(59, 130, 246, 0.1); border-radius: 10px; border: 1px solid rgba(59, 130, 246, 0.3);">
+                <strong style="color: var(--accent-blue); font-size: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                    </svg>
+                    Recommandations de securite
+                </strong>
+                <ul style="margin-top: 0.75rem; color: var(--text-secondary); padding-left: 1.5rem; line-height: 1.8;">
+                    <li>Changez immediatement les mots de passe des comptes affectes</li>
+                    <li>Activez l'authentification a deux facteurs (2FA)</li>
+                    <li>Surveillez les activites suspectes sur vos comptes</li>
+                    <li>Ne reutilisez jamais le meme mot de passe</li>
+                    <li>Utilisez un gestionnaire de mots de passe</li>
+                </ul>
+            </div>
+            {% else %}
+            <div style="margin-top: 2rem; padding: 2rem; text-align: center; background: rgba(34, 197, 94, 0.1); border-radius: 12px;">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="rgba(34, 197, 94, 1)" stroke-width="1.5" style="margin-bottom: 1rem;">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    <polyline points="9 12 11 14 15 10"/>
+                </svg>
+                <h4 style="color: rgba(34, 197, 94, 1); margin-bottom: 0.5rem;">Bonne nouvelle !</h4>
+                <p style="color: var(--text-secondary); margin: 0;">
+                    Votre email n'a pas ete trouve dans les bases de donnees de fuites connues. 
+                    Continuez a maintenir de bonnes pratiques de securite.
+                </p>
+            </div>
+            {% endif %}
+            
+            <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <a href="{{ url_for('main.breach_analyzer') }}" class="btn-secondary" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; text-decoration: none;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                        <polyline points="22,6 12,13 2,6"/>
+                    </svg>
+                    <span>Nouvelle Verification</span>
+                </a>
+                {% if analysis_id %}
+                <a href="{{ url_for('main.generate_breach_pdf', analysis_id=analysis_id) }}" class="btn-primary" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; text-decoration: none;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                        <line x1="16" y1="13" x2="8" y2="13"/>
+                        <line x1="16" y1="17" x2="8" y2="17"/>
+                    </svg>
+                    <span>Telecharger le Rapport PDF</span>
+                </a>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<style>
+.analyzer-container {
+    padding: 3rem 0;
+}
+
+.analyzer-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 2.5rem;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.analyzer-card h2 {
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+.analyzer-description {
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 2rem;
+}
+
+.analyzer-input {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 1rem;
+    color: var(--text-primary);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.analyzer-input:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.analyzer-input::placeholder {
+    color: var(--text-muted);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.results-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 2.5rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.result-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    border-radius: 12px;
+}
+
+.result-header.danger {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.result-header.danger .result-icon {
+    color: #ef4444;
+}
+
+.result-header.safe {
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.result-header.safe .result-icon {
+    color: #22c55e;
+}
+
+.result-title {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.3rem;
+}
+
+.result-header.danger .result-title {
+    color: #ef4444;
+}
+
+.result-header.safe .result-title {
+    color: #22c55e;
+}
+
+.result-subtitle {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+}
+
+.alert-error {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    padding: 1.5rem;
+    border-radius: 12px;
+}
+
+.alert-error h3 {
+    color: #ef4444;
+    margin: 0 0 0.5rem 0;
+}
+
+.alert-error p {
+    color: var(--text-secondary);
+    margin: 0;
+}
+</style>
+{% endblock %}

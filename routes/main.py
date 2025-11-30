@@ -912,7 +912,7 @@ def sitemap():
         ('main.news', '0.9', 'daily'),
         ('main.contact', '0.6', 'monthly'),
         ('main.quiz', '0.9', 'weekly'),
-        ('main.breach_analysis', '0.9', 'weekly'),
+        ('main.breach_analyzer', '0.9', 'weekly'),
         ('main.security_analyzer', '0.9', 'weekly'),
         ('main.attack_types', '0.8', 'weekly'),
         ('main.osint_methodology', '0.7', 'monthly'),
@@ -1171,4 +1171,73 @@ def generate_prompt_pdf(analysis_id):
         as_attachment=True,
         download_name=f"rapport_prompt_{analysis.id}.pdf"
     )
+
+
+@bp.route('/outils/analyseur-fuite', methods=['GET', 'POST'])
+def breach_analyzer():
+    results = None
+    analysis_id = None
+    
+    if request.method == 'POST':
+        try:
+            email = request.form.get('email', '').strip()
+            
+            if not email:
+                flash('Veuillez entrer une adresse email.', 'error')
+                return redirect(url_for('main.breach_analyzer'))
+            
+            import re
+            email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+            if not re.match(email_pattern, email):
+                flash('Veuillez entrer une adresse email valide.', 'error')
+                return redirect(url_for('main.breach_analyzer'))
+            
+            breach_result = HaveIBeenPwnedService.check_email_breach(email)
+            
+            if breach_result and not breach_result.get('error'):
+                try:
+                    breach_count = breach_result.get('count', 0)
+                    if breach_count == 0:
+                        risk_level = 'safe'
+                    elif breach_count <= 3:
+                        risk_level = 'warning'
+                    else:
+                        risk_level = 'danger'
+                    
+                    breaches_data_sanitized = {
+                        'breaches': breach_result.get('breaches', [])[:50],
+                        'count': breach_count,
+                        'email': breach_result.get('email')
+                    }
+                    
+                    breach_analysis_record = BreachAnalysis(
+                        email=email,
+                        breach_count=breach_count,
+                        risk_level=risk_level,
+                        breaches_found=','.join([b.get('Name', '') for b in breach_result.get('breaches', [])[:20]]),
+                        breaches_data=breaches_data_sanitized,
+                        document_code=ensure_unique_code(BreachAnalysis),
+                        ip_address=get_client_ip(request),
+                        user_agent=request.headers.get('User-Agent', '')[:500]
+                    )
+                    db.session.add(breach_analysis_record)
+                    db.session.commit()
+                    analysis_id = breach_analysis_record.id
+                    
+                    results = breach_result
+                    
+                except Exception as e:
+                    print(f"[ERROR] Error saving breach analysis: {str(e)}")
+                    db.session.rollback()
+                    results = breach_result
+            elif breach_result and breach_result.get('error'):
+                results = breach_result
+            else:
+                results = {'error': 'Erreur lors de la verification. Veuillez reessayer.'}
+                
+        except Exception as e:
+            flash(f'Erreur lors de la verification: {str(e)}', 'error')
+            return redirect(url_for('main.breach_analyzer'))
+    
+    return render_template('outils/breach_analyzer.html', results=results, analysis_id=analysis_id)
 
