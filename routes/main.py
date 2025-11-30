@@ -224,6 +224,7 @@ def link_analyzer():
         
         from urllib.parse import urlparse
         import ipaddress
+        import socket
         
         def is_safe_url(check_url):
             try:
@@ -251,20 +252,31 @@ def link_analyzer():
                 if hostname.startswith('169.254.'):
                     return False
                 
-                # Validate IP address (both IPv4 and IPv6)
+                # Block common internal TLDs
+                if hostname.endswith('.local') or hostname.endswith('.internal'):
+                    return False
+                
+                # Ensure hostname looks reasonable (basic validation)
+                if not hostname.replace('-', '').replace('.', '').replace('_', '').isalnum():
+                    return False
+                
+                # Resolve DNS and validate the actual IP address (prevents DNS rebinding attacks)
                 try:
-                    ip = ipaddress.ip_address(hostname)
-                    # Block private, loopback, link-local, multicast, and reserved IPs
-                    if ip.is_private or ip.is_loopback or ip.is_link_local or ip.is_multicast or ip.is_reserved:
-                        return False
-                except ValueError:
-                    # Not a direct IP, validate hostname
-                    # Block common internal TLDs
-                    if hostname.endswith('.local') or hostname.endswith('.internal'):
-                        return False
-                    # Ensure hostname looks reasonable (basic validation)
-                    if not hostname.replace('-', '').replace('.', '').replace('_', '').isalnum():
-                        return False
+                    # Get all IP addresses for this hostname
+                    addr_info = socket.getaddrinfo(hostname, None)
+                    for info in addr_info:
+                        resolved_ip_str = info[4][0]
+                        # Remove zone ID from IPv6 addresses (e.g., "::1%lo0" -> "::1")
+                        if '%' in resolved_ip_str:
+                            resolved_ip_str = resolved_ip_str.split('%')[0]
+                        
+                        ip = ipaddress.ip_address(resolved_ip_str)
+                        # Block private, loopback, link-local, multicast, and reserved IPs
+                        if ip.is_private or ip.is_loopback or ip.is_link_local or ip.is_multicast or ip.is_reserved:
+                            return False
+                except (socket.gaierror, ValueError, OSError):
+                    # DNS resolution failed or invalid IP
+                    return False
                 
                 return True
             except Exception:
