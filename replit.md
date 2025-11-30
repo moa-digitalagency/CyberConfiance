@@ -100,10 +100,18 @@ I prefer that the agent adheres to existing architectural patterns and design de
 
 ## Documentation
 Comprehensive documentation is available in the `docs/` folder:
+- **GUIDE_TECHNIQUE.md**: Technical guide explaining how each security tool works in detail
+- **GUIDE_UTILISATEUR.md**: User-friendly guide with tool names as displayed on the site
 - **SECURITY_TOOLS.md**: Complete documentation of all security analysis tools and services
 - **ARCHITECTURE.md**: Technical architecture and system design documentation
 - **API_INTEGRATIONS.md**: API integration details and configuration guides
 - **OUTILS_REFERENCE.md**: Detailed reference for all services (TrackerDetector, URLScan, QRCodeAnalyzer, etc.)
+
+## Recent Changes (November 2025)
+- **Consolidated Summary System**: QR code analyzer now produces a unified, consistent verdict by aggregating all detection sources (tracker_analysis, chain_tracker_analysis, multi_api_analysis) into a single authoritative summary
+- **Coherent PDF Reports**: PDF service now uses consolidated summary for consistent, non-redundant reports with proper section ordering
+- **Legacy Data Support**: Template and service handle historical records without consolidated_summary via fallback rendering
+- **Environment Check**: check_env.py now verifies all 5 security APIs with detailed descriptions at startup
 
 ## API Keys Configuration
 - `SECURITY_ANALYSIS_API_KEY`: VirusTotal API key
