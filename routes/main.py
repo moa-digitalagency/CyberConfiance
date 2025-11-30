@@ -231,22 +231,40 @@ def link_analyzer():
                 if parsed.scheme not in ['http', 'https']:
                     return False
                 
+                # Block URLs with embedded credentials
+                if parsed.username or parsed.password:
+                    return False
+                
                 hostname = parsed.hostname
                 if not hostname:
                     return False
                 
-                if hostname in ['localhost', '127.0.0.1', '0.0.0.0']:
+                # Block localhost variants (IPv4 and IPv6)
+                if hostname.lower() in ['localhost', '127.0.0.1', '0.0.0.0', '::1', '0:0:0:0:0:0:0:1']:
                     return False
                 
+                # Block cloud metadata endpoint
+                if hostname == '169.254.169.254':
+                    return False
+                
+                # Block link-local addresses
                 if hostname.startswith('169.254.'):
                     return False
                 
+                # Validate IP address (both IPv4 and IPv6)
                 try:
                     ip = ipaddress.ip_address(hostname)
-                    if ip.is_private or ip.is_loopback or ip.is_link_local:
+                    # Block private, loopback, link-local, multicast, and reserved IPs
+                    if ip.is_private or ip.is_loopback or ip.is_link_local or ip.is_multicast or ip.is_reserved:
                         return False
                 except ValueError:
-                    pass
+                    # Not a direct IP, validate hostname
+                    # Block common internal TLDs
+                    if hostname.endswith('.local') or hostname.endswith('.internal'):
+                        return False
+                    # Ensure hostname looks reasonable (basic validation)
+                    if not hostname.replace('-', '').replace('.', '').replace('_', '').isalnum():
+                        return False
                 
                 return True
             except Exception:
