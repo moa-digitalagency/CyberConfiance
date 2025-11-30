@@ -932,6 +932,105 @@ class PDFReportService:
             y_pos += 10
         
         analysis_results = analysis.analysis_results or {}
+        multi_api_analysis = analysis_results.get('multi_api_analysis', {})
+        
+        source_results = multi_api_analysis.get('source_results', {})
+        if source_results and not multi_api_analysis.get('error'):
+            if y_pos > self.max_y - 150:
+                page = doc.new_page(width=595, height=842)
+                y_pos = 90
+            
+            page.draw_line((30, y_pos), (565, y_pos), color=self.base_color, width=1)
+            y_pos += 20
+            
+            page.insert_text((30, y_pos), "RESULTATS PAR SOURCE DE SECURITE", 
+                            fontsize=14, fontname="helv", color=self.base_color)
+            y_pos += 25
+            
+            vt_result = source_results.get('virustotal', {})
+            if vt_result:
+                if y_pos > self.max_y - 80:
+                    page = doc.new_page(width=595, height=842)
+                    y_pos = 90
+                vt_color = self.danger_color if vt_result.get('malicious', 0) > 0 else self.success_color
+                page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + 70), color=vt_color, fill=vt_color, fill_opacity=0.05)
+                y_pos += 15
+                page.insert_text((40, y_pos), "VirusTotal", fontsize=12, fontname="helv", color=vt_color)
+                y_pos += 18
+                if vt_result.get('error'):
+                    page.insert_text((50, y_pos), f"Erreur: {vt_result.get('error')}", fontsize=9, color=(0.5, 0.5, 0.5))
+                else:
+                    page.insert_text((50, y_pos), f"Malveillant: {vt_result.get('malicious', 0)} | Suspect: {vt_result.get('suspicious', 0)} | Sur: {vt_result.get('clean', 0)}", fontsize=9)
+                    y_pos += 14
+                    page.insert_text((50, y_pos), f"Total des moteurs: {vt_result.get('total', 0)}", fontsize=9, color=(0.5, 0.5, 0.5))
+                y_pos += 25
+            
+            gsb_result = source_results.get('google_safe_browsing', {})
+            if gsb_result:
+                if y_pos > self.max_y - 70:
+                    page = doc.new_page(width=595, height=842)
+                    y_pos = 90
+                gsb_safe = gsb_result.get('safe', True)
+                gsb_color = self.success_color if gsb_safe else self.danger_color
+                page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + 50), color=gsb_color, fill=gsb_color, fill_opacity=0.05)
+                y_pos += 15
+                page.insert_text((40, y_pos), "Google Safe Browsing", fontsize=12, fontname="helv", color=gsb_color)
+                y_pos += 18
+                if gsb_result.get('error'):
+                    page.insert_text((50, y_pos), f"Erreur: {gsb_result.get('error')}", fontsize=9, color=(0.5, 0.5, 0.5))
+                else:
+                    status_text = "Sur - Aucune menace detectee" if gsb_safe else "Menace detectee"
+                    page.insert_text((50, y_pos), status_text, fontsize=9, color=gsb_color)
+                    if not gsb_safe and gsb_result.get('threats'):
+                        y_pos += 14
+                        threats_str = ', '.join(gsb_result.get('threats', []))[:80]
+                        page.insert_text((50, y_pos), f"Types: {threats_str}", fontsize=9, color=(0.5, 0.5, 0.5))
+                y_pos += 25
+            
+            urlhaus_result = source_results.get('urlhaus', {})
+            if urlhaus_result:
+                if y_pos > self.max_y - 70:
+                    page = doc.new_page(width=595, height=842)
+                    y_pos = 90
+                urlhaus_safe = not urlhaus_result.get('found', False)
+                urlhaus_color = self.success_color if urlhaus_safe else self.danger_color
+                page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + 50), color=urlhaus_color, fill=urlhaus_color, fill_opacity=0.05)
+                y_pos += 15
+                page.insert_text((40, y_pos), "URLhaus (abuse.ch)", fontsize=12, fontname="helv", color=urlhaus_color)
+                y_pos += 18
+                if urlhaus_result.get('error'):
+                    page.insert_text((50, y_pos), f"Erreur: {urlhaus_result.get('error')}", fontsize=9, color=(0.5, 0.5, 0.5))
+                else:
+                    status_text = "Sur - Non repertorie" if urlhaus_safe else "URL malveillante detectee"
+                    page.insert_text((50, y_pos), status_text, fontsize=9, color=urlhaus_color)
+                    if not urlhaus_safe and urlhaus_result.get('threat_type'):
+                        y_pos += 14
+                        page.insert_text((50, y_pos), f"Type: {urlhaus_result.get('threat_type')}", fontsize=9, color=(0.5, 0.5, 0.5))
+                y_pos += 25
+            
+            urlscan_result = source_results.get('urlscan', {})
+            if urlscan_result:
+                if y_pos > self.max_y - 70:
+                    page = doc.new_page(width=595, height=842)
+                    y_pos = 90
+                urlscan_safe = not urlscan_result.get('malicious', False)
+                urlscan_color = self.success_color if urlscan_safe else self.danger_color
+                page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + 50), color=urlscan_color, fill=urlscan_color, fill_opacity=0.05)
+                y_pos += 15
+                page.insert_text((40, y_pos), "URLScan.io", fontsize=12, fontname="helv", color=urlscan_color)
+                y_pos += 18
+                if urlscan_result.get('error'):
+                    page.insert_text((50, y_pos), f"Erreur: {urlscan_result.get('error')}", fontsize=9, color=(0.5, 0.5, 0.5))
+                else:
+                    status_text = "Sur - Aucune menace detectee" if urlscan_safe else "Menace potentielle detectee"
+                    page.insert_text((50, y_pos), status_text, fontsize=9, color=urlscan_color)
+                    if urlscan_result.get('score'):
+                        y_pos += 14
+                        page.insert_text((50, y_pos), f"Score de risque: {urlscan_result.get('score')}/100", fontsize=9, color=(0.5, 0.5, 0.5))
+                y_pos += 25
+            
+            y_pos += 10
+        
         consolidated_summary = analysis_results.get('consolidated_summary', {})
         key_findings = consolidated_summary.get('key_findings', [])
         

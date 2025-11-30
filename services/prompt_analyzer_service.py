@@ -1,6 +1,7 @@
 import re
 import ast
 import unicodedata
+from urllib.parse import urlparse
 
 class PromptAnalyzerService:
     
@@ -76,6 +77,131 @@ class PromptAnalyzerService:
             "]+",
             flags=re.UNICODE
         )
+        
+        self.url_pattern = re.compile(
+            r'https?://[^\s<>"{}|\\^`\[\]]+',
+            re.IGNORECASE
+        )
+        
+        self.ipv4_pattern = re.compile(
+            r'\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b'
+        )
+        
+        self.ipv6_pattern = re.compile(
+            r'\b(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}\b|\b(?:[0-9a-fA-F]{1,4}:){1,7}:\b|\b(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}\b'
+        )
+        
+        self.domain_pattern = re.compile(
+            r'\b(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}\b'
+        )
+        
+        self._security_analyzer = None
+    
+    def _get_security_analyzer(self):
+        if self._security_analyzer is None:
+            from services.security_analyzer import SecurityAnalyzerService
+            self._security_analyzer = SecurityAnalyzerService()
+        return self._security_analyzer
+    
+    def extract_urls(self, text):
+        urls = []
+        matches = self.url_pattern.findall(text)
+        for url in matches:
+            url = url.rstrip('.,;:!?)"\']')
+            if url and len(url) > 10:
+                try:
+                    parsed = urlparse(url)
+                    if parsed.netloc:
+                        urls.append(url)
+                except:
+                    pass
+        return list(set(urls))
+    
+    def extract_ips(self, text):
+        ipv4_matches = self.ipv4_pattern.findall(text)
+        ipv6_matches = self.ipv6_pattern.findall(text)
+        
+        ips = []
+        private_ranges = [
+            ('10.', '10.'),
+            ('172.16.', '172.31.'),
+            ('192.168.', '192.168.'),
+            ('127.', '127.'),
+            ('0.', '0.'),
+        ]
+        
+        for ip in ipv4_matches:
+            is_private = False
+            for start, end in private_ranges:
+                if ip.startswith(start):
+                    is_private = True
+                    break
+            if not is_private:
+                ips.append({'ip': ip, 'version': 'v4'})
+        
+        for ip in ipv6_matches:
+            if not ip.startswith('::1') and not ip.startswith('fe80'):
+                ips.append({'ip': ip, 'version': 'v6'})
+        
+        return ips
+    
+    def extract_domains(self, text):
+        matches = self.domain_pattern.findall(text)
+        
+        common_words = {'example.com', 'test.com', 'localhost.local', 'domain.com'}
+        excluded_tlds = {'.txt', '.pdf', '.doc', '.png', '.jpg', '.gif', '.css', '.js', '.html'}
+        
+        domains = []
+        for domain in matches:
+            domain_lower = domain.lower()
+            if domain_lower in common_words:
+                continue
+            if any(domain_lower.endswith(ext) for ext in excluded_tlds):
+                continue
+            if '.' in domain and len(domain) > 4:
+                domains.append(domain)
+        
+        return list(set(domains))
+    
+    def analyze_urls_with_security_service(self, urls, max_urls=5):
+        results = []
+        
+        if not urls:
+            return results
+        
+        try:
+            security_analyzer = self._get_security_analyzer()
+            
+            for url in urls[:max_urls]:
+                print(f"[Prompt] Analyse de securite pour URL: {url}")
+                analysis = security_analyzer.analyze(url, 'url')
+                
+                if not analysis.get('error'):
+                    results.append({
+                        'url': url,
+                        'threat_detected': analysis.get('threat_detected', False),
+                        'threat_level': analysis.get('threat_level', 'inconnu'),
+                        'sources_checked': analysis.get('sources_checked', 0),
+                        'sources_with_threat': analysis.get('sources_with_threat', 0),
+                        'all_threats': analysis.get('all_threats', []),
+                        'source_results': analysis.get('source_results', {})
+                    })
+                else:
+                    results.append({
+                        'url': url,
+                        'error': True,
+                        'message': analysis.get('message', 'Erreur lors de l\'analyse')
+                    })
+        except Exception as e:
+            print(f"[Prompt] Erreur analyse securite: {e}")
+            for url in urls[:max_urls]:
+                results.append({
+                    'url': url,
+                    'error': True,
+                    'message': str(e)[:100]
+                })
+        
+        return results
     
     def clean_text(self, text):
         cleaned = self.emoji_pattern.sub(' ', text)
@@ -252,7 +378,7 @@ class PromptAnalyzerService:
         }
         return messages.get(issue_type, f"Problème détecté: {issue_type}")
     
-    def analyze_prompt(self, prompt_text):
+    def analyze_prompt(self, prompt_text, analyze_urls=True):
         result = {
             'success': True,
             'prompt_length': len(prompt_text),
@@ -261,9 +387,14 @@ class PromptAnalyzerService:
             'injection_detected': False,
             'code_detected': False,
             'obfuscation_detected': False,
+            'urls_detected': False,
+            'ips_detected': False,
             'issues': [],
             'cleaned_text': None,
-            'summary': {}
+            'summary': {},
+            'url_analysis': None,
+            'ip_analysis': None,
+            'domain_analysis': None
         }
         
         if not prompt_text or not prompt_text.strip():
@@ -287,9 +418,92 @@ class PromptAnalyzerService:
         ast_issues = self.analyze_with_ast(prompt_text)
         result['issues'].extend(ast_issues)
         
+        extracted_urls = self.extract_urls(prompt_text)
+        extracted_ips = self.extract_ips(prompt_text)
+        extracted_domains = self.extract_domains(prompt_text)
+        
+        if extracted_urls:
+            result['urls_detected'] = True
+            result['url_analysis'] = {
+                'urls_found': extracted_urls,
+                'count': len(extracted_urls),
+                'security_results': []
+            }
+            
+            result['issues'].append({
+                'type': 'urls_in_prompt',
+                'severity': 'medium',
+                'category': 'urls',
+                'message': f"{len(extracted_urls)} URL(s) detectee(s) dans le texte",
+                'urls': extracted_urls[:10]
+            })
+            
+            if analyze_urls:
+                security_results = self.analyze_urls_with_security_service(extracted_urls)
+                result['url_analysis']['security_results'] = security_results
+                
+                for sec_result in security_results:
+                    if sec_result.get('threat_detected') and not sec_result.get('error'):
+                        threat_level = sec_result.get('threat_level', 'modere')
+                        severity_map = {'critique': 'critical', 'eleve': 'high', 'modere': 'medium', 'sur': 'low'}
+                        severity = severity_map.get(threat_level, 'medium')
+                        
+                        result['issues'].append({
+                            'type': 'malicious_url_detected',
+                            'severity': severity,
+                            'category': 'security',
+                            'message': f"URL malveillante detectee: {sec_result['url'][:50]}...",
+                            'url': sec_result['url'],
+                            'sources_with_threat': sec_result.get('sources_with_threat', 0),
+                            'all_threats': sec_result.get('all_threats', [])
+                        })
+        
+        if extracted_ips:
+            result['ips_detected'] = True
+            result['ip_analysis'] = {
+                'ips_found': extracted_ips,
+                'count': len(extracted_ips)
+            }
+            
+            result['issues'].append({
+                'type': 'ips_in_prompt',
+                'severity': 'medium',
+                'category': 'ips',
+                'message': f"{len(extracted_ips)} adresse(s) IP detectee(s) dans le texte",
+                'ips': extracted_ips[:10]
+            })
+        
+        if extracted_domains:
+            url_domains = set()
+            for url in extracted_urls:
+                try:
+                    parsed = urlparse(url)
+                    if parsed.netloc:
+                        url_domains.add(parsed.netloc.lower().split(':')[0])
+                except:
+                    pass
+            
+            standalone_domains = [d for d in extracted_domains if d.lower() not in url_domains]
+            
+            if standalone_domains:
+                result['domain_analysis'] = {
+                    'domains_found': standalone_domains,
+                    'count': len(standalone_domains)
+                }
+                
+                result['issues'].append({
+                    'type': 'domains_in_prompt',
+                    'severity': 'low',
+                    'category': 'domains',
+                    'message': f"{len(standalone_domains)} domaine(s) detecte(s) dans le texte",
+                    'domains': standalone_domains[:10]
+                })
+        
         injection_issues = [i for i in result['issues'] if i.get('category') == 'injection' or i.get('type') in ['ignore_instructions', 'system_override', 'jailbreak_attempt']]
         code_issues = [i for i in result['issues'] if i.get('category') == 'code' or i.get('type') in ['dangerous_function', 'dangerous_import']]
         obfuscation_issues = [i for i in result['issues'] if i.get('category') == 'obfuscation']
+        url_issues = [i for i in result['issues'] if i.get('category') in ['urls', 'security']]
+        ip_issues = [i for i in result['issues'] if i.get('category') == 'ips']
         
         result['injection_detected'] = len(injection_issues) > 0
         result['code_detected'] = len(code_issues) > 0
@@ -324,7 +538,10 @@ class PromptAnalyzerService:
             'severity_counts': severity_counts,
             'injection_count': len(injection_issues),
             'code_count': len(code_issues),
-            'obfuscation_count': len(obfuscation_issues)
+            'obfuscation_count': len(obfuscation_issues),
+            'url_count': len(extracted_urls),
+            'ip_count': len(extracted_ips),
+            'url_security_issues': len([i for i in url_issues if i.get('type') == 'malicious_url_detected'])
         }
         
         return result
