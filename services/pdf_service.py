@@ -104,6 +104,34 @@ class PDFReportService:
             'sûr': self.success_color
         }
         return risk_colors.get(risk_level.lower(), self.base_color)
+    
+    def _insert_wrapped_url(self, page, doc, url, x_pos, y_pos, fontsize=8, color=None, max_width=500):
+        """Insert a URL with automatic line wrapping to display complete URLs without truncation.
+        
+        Returns:
+            tuple: (page, y_pos) - returns possibly new page object and updated y position
+        """
+        if color is None:
+            color = (0.3, 0.3, 0.3)
+        
+        chars_per_line = int(max_width / (fontsize * 0.5))
+        
+        if len(url) <= chars_per_line:
+            page.insert_text((x_pos, y_pos), url, fontsize=fontsize, color=color)
+            return page, y_pos + fontsize + 4
+        
+        lines = []
+        for i in range(0, len(url), chars_per_line):
+            lines.append(url[i:i + chars_per_line])
+        
+        for line in lines:
+            if y_pos > self.max_y - 20:
+                page = doc.new_page(width=595, height=842)
+                y_pos = 90
+            page.insert_text((x_pos, y_pos), line, fontsize=fontsize, color=color)
+            y_pos += fontsize + 3
+        
+        return page, y_pos
         
     def generate_breach_report(self, breach_analysis, breach_result, ip_address):
         """
@@ -431,6 +459,93 @@ class PDFReportService:
                         y_pos += 14
                         page.insert_text((50, y_pos), f"Type: {urlhaus_result.get('threat_type')}", fontsize=9, color=(0.5, 0.5, 0.5))
                 y_pos += 25
+        
+        url_shortener = results.get('url_shortener', {})
+        if url_shortener.get('detected'):
+            if y_pos > self.max_y - 150:
+                page = doc.new_page(width=595, height=842)
+                y_pos = 90
+            
+            page.draw_line((30, y_pos), (565, y_pos), color=self.warning_color, width=1)
+            y_pos += 20
+            
+            page.insert_text((30, y_pos), "CHAINE DE REDIRECTION (URL RACCOURCIE)", 
+                            fontsize=14, fontname="helv", color=self.warning_color)
+            y_pos += 25
+            
+            service = url_shortener.get('service', 'Inconnu')
+            page.insert_text((40, y_pos), f"Service detecte: {service}", fontsize=10, fontname="helv", color=self.warning_color)
+            y_pos += 18
+            
+            original_url = url_shortener.get('original_url', '')
+            if original_url:
+                page.insert_text((40, y_pos), "URL originale:", fontsize=9, fontname="helv")
+                y_pos += 12
+                page, y_pos = self._insert_wrapped_url(page, doc, original_url, 50, y_pos, fontsize=8)
+                y_pos += 8
+            
+            final_url = url_shortener.get('final_url', '')
+            if final_url and final_url != original_url:
+                if y_pos > self.max_y - 40:
+                    page = doc.new_page(width=595, height=842)
+                    y_pos = 90
+                page.insert_text((40, y_pos), "URL finale:", fontsize=9, fontname="helv", color=self.success_color)
+                y_pos += 12
+                page, y_pos = self._insert_wrapped_url(page, doc, final_url, 50, y_pos, fontsize=8, color=self.success_color)
+                y_pos += 8
+            
+            redirect_count = url_shortener.get('redirect_count', 0)
+            page.insert_text((40, y_pos), f"Nombre de redirections: {redirect_count}", fontsize=9)
+            y_pos += 20
+            
+            redirect_chain = url_shortener.get('redirect_chain', [])
+            if redirect_chain:
+                page.insert_text((40, y_pos), "Chaine de redirection complete:", fontsize=10, fontname="helv")
+                y_pos += 18
+                
+                for idx, redirect in enumerate(redirect_chain, 1):
+                    if y_pos > self.max_y - 60:
+                        page = doc.new_page(width=595, height=842)
+                        y_pos = 90
+                    
+                    status_code = redirect.get('status_code', '')
+                    redirect_type = redirect.get('redirect_type', '')
+                    is_shortener = redirect.get('is_shortener', False)
+                    
+                    step_color = self.warning_color if is_shortener else self.base_color
+                    page.draw_rect(fitz.Rect(40, y_pos, 565, y_pos + 4), color=step_color, fill=step_color)
+                    y_pos += 12
+                    
+                    step_info = f"Etape {idx}"
+                    if status_code:
+                        step_info += f" | HTTP {status_code}"
+                    if redirect_type:
+                        step_info += f" | {redirect_type}"
+                    if is_shortener:
+                        step_info += " | [Raccourcisseur]"
+                    
+                    page.insert_text((50, y_pos), step_info, fontsize=8, fontname="helv", color=step_color)
+                    y_pos += 12
+                    
+                    url = redirect.get('url', '')
+                    page, y_pos = self._insert_wrapped_url(page, doc, url, 50, y_pos, fontsize=7)
+                    y_pos += 6
+            
+            if url_shortener.get('multiple_shorteners'):
+                y_pos += 5
+                page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + 30), 
+                              color=self.danger_color, fill=self.danger_color, fill_opacity=0.1)
+                y_pos += 12
+                page.insert_text((40, y_pos), "ATTENTION: Plusieurs raccourcisseurs detectes dans la chaine", 
+                                fontsize=9, fontname="helv", color=self.danger_color)
+                y_pos += 25
+            
+            if url_shortener.get('expansion_error'):
+                page.insert_text((40, y_pos), f"Erreur: {url_shortener.get('expansion_error')}", 
+                                fontsize=8, color=self.danger_color)
+                y_pos += 14
+            
+            y_pos += 10
         
         if breach_analysis:
             if y_pos > self.max_y - 120:
@@ -760,6 +875,64 @@ class PDFReportService:
             final_display = analysis.final_url[:90] + ('...' if len(analysis.final_url) > 90 else '')
             page.insert_text((40, y_pos), final_display, fontsize=9, color=(0.2, 0.2, 0.2))
             y_pos += 40
+        
+        redirect_chain = analysis.redirect_chain or []
+        if redirect_chain and len(redirect_chain) > 0:
+            if y_pos > self.max_y - 150:
+                page = doc.new_page(width=595, height=842)
+                y_pos = 90
+            
+            page.draw_line((30, y_pos), (565, y_pos), color=self.warning_color, width=1)
+            y_pos += 20
+            
+            redirect_count = analysis.redirect_count or len(redirect_chain)
+            page.insert_text((30, y_pos), f"CHAINE DE REDIRECTION COMPLETE ({redirect_count} redirection{'s' if redirect_count > 1 else ''})", 
+                            fontsize=14, fontname="helv", color=self.warning_color)
+            y_pos += 25
+            
+            for idx, redirect in enumerate(redirect_chain, 1):
+                if y_pos > self.max_y - 60:
+                    page = doc.new_page(width=595, height=842)
+                    y_pos = 90
+                
+                status_code = redirect.get('status_code', '')
+                redirect_type = redirect.get('redirect_type', '')
+                is_shortener = redirect.get('is_shortener', False)
+                js_redirect = redirect.get('js_redirect_detected', False)
+                
+                if js_redirect:
+                    step_color = self.danger_color
+                elif is_shortener:
+                    step_color = self.warning_color
+                else:
+                    step_color = self.base_color
+                
+                page.draw_rect(fitz.Rect(40, y_pos, 565, y_pos + 4), color=step_color, fill=step_color)
+                y_pos += 12
+                
+                step_info = f"Etape {idx}"
+                if status_code:
+                    step_info += f" | HTTP {status_code}"
+                if redirect_type:
+                    step_info += f" | {redirect_type}"
+                if is_shortener:
+                    step_info += " | [Raccourcisseur]"
+                if js_redirect:
+                    step_info += " | [JavaScript]"
+                
+                page.insert_text((50, y_pos), step_info, fontsize=8, fontname="helv", color=step_color)
+                y_pos += 12
+                
+                url = redirect.get('url', '')
+                page, y_pos = self._insert_wrapped_url(page, doc, url, 50, y_pos, fontsize=7)
+                
+                if redirect.get('error'):
+                    page.insert_text((50, y_pos), f"Erreur: {redirect.get('error')}", fontsize=7, color=self.danger_color)
+                    y_pos += 10
+                
+                y_pos += 6
+            
+            y_pos += 10
         
         threat_details = analysis.threat_details or []
         if threat_details:
