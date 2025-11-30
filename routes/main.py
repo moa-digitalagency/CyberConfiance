@@ -369,8 +369,9 @@ def security_analyzer():
                     if upload_result.get('success'):
                         results = upload_result.get('scan_result', {})
                         input_value = f"{uploaded_file.filename} (Hash: {upload_result.get('file_hash', 'N/A')[:16]}...)"
-                        if upload_result.get('temp_path') and os.path.exists(upload_result.get('temp_path')):
-                            os.remove(upload_result.get('temp_path'))
+                        temp_path = upload_result.get('temp_path')
+                        if temp_path and os.path.exists(temp_path):
+                            os.remove(temp_path)
                     else:
                         results = {'error': True, 'message': upload_result.get('error', 'Upload failed')}
                         input_value = uploaded_file.filename
