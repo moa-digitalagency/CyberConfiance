@@ -14,6 +14,7 @@
 
 <section class="analyzer-container">
     <div class="container">
+        {% if not results and not breach_result %}
         <div class="analyzer-card">
             <h2>Analyse de Sécurité</h2>
             <p class="analyzer-description">
@@ -124,6 +125,7 @@
                 </p>
             </div>
         </div>
+        {% endif %}
 
         {% if breach_result %}
         <div class="results-card">
@@ -383,6 +385,7 @@
         </div>
         {% endif %}
 
+        {% if not results and not breach_result %}
         <div class="info-card">
             <h3>À Propos de Cet Outil</h3>
             
@@ -428,6 +431,7 @@
                 </ul>
             </div>
         </div>
+        {% endif %}
     </div>
 </section>
 

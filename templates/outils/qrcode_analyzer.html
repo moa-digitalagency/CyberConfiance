@@ -16,6 +16,7 @@
 
 <section class="analyzer-container">
     <div class="container">
+        {% if not results %}
         <div class="analyzer-card">
             <h2>Analyse Anti-Quishing</h2>
             <p class="analyzer-description">
@@ -146,6 +147,7 @@
                 </p>
             </div>
         </div>
+        {% endif %}
 
         {% if results %}
         <div class="results-card">
@@ -312,6 +314,7 @@
         </div>
         {% endif %}
 
+        {% if not results %}
         <div class="info-card">
             <h3>A Propos de Cet Outil</h3>
             
@@ -345,6 +348,7 @@
                 </div>
             </div>
         </div>
+        {% endif %}
     </div>
 </section>
 
