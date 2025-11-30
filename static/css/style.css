@@ -90,13 +90,19 @@ header {
     top: 0;
     left: 0;
     right: 0;
-    z-index: 1000;
-    background: rgba(10, 22, 40, 0.8);
+    z-index: 9999;
+    background: rgba(10, 22, 40, 0.95);
     backdrop-filter: blur(60px) saturate(180%);
     -webkit-backdrop-filter: blur(60px) saturate(180%);
     border-bottom: 1px solid rgba(59, 130, 246, 0.2);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3),
                 inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+main {
+    position: relative;
+    z-index: 1;
+    isolation: isolate;
 }
 
 .navbar {
@@ -2911,7 +2917,7 @@ optgroup {
     top: 100%;
     left: 0;
     min-width: 250px;
-    background: rgba(10, 10, 10, 0.95);
+    background: rgba(10, 10, 10, 0.98);
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
     border: 1px solid rgba(255, 255, 255, 0.15);
@@ -2923,7 +2929,7 @@ optgroup {
     transition: all 0.3s ease;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5),
                 inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    z-index: 1000;
+    z-index: 99999;
     list-style: none;
 }
 
