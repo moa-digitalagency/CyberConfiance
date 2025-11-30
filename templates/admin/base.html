@@ -843,6 +843,8 @@
                     <ul>
                         <li><a href="{{ url_for('admin_panel.quiz_history') }}" class="{% if request.endpoint == 'admin_panel.quiz_history' %}active{% endif %}">Quiz</a></li>
                         <li><a href="{{ url_for('admin_panel.security_history') }}" class="{% if request.endpoint == 'admin_panel.security_history' %}active{% endif %}">Analyses sécurité</a></li>
+                        <li><a href="{{ url_for('admin_panel.qrcode_history') }}" class="{% if request.endpoint == 'admin_panel.qrcode_history' %}active{% endif %}">Analyses QR Code</a></li>
+                        <li><a href="{{ url_for('admin_panel.prompt_history') }}" class="{% if request.endpoint == 'admin_panel.prompt_history' %}active{% endif %}">Analyses Prompt</a></li>
                         <li><a href="{{ url_for('admin_panel.breach_history') }}" class="{% if request.endpoint == 'admin_panel.breach_history' %}active{% endif %}">Analyses fuites</a></li>
                         <li><a href="{{ url_for('admin_panel.documents_management') }}" class="{% if request.endpoint == 'admin_panel.documents_management' %}active{% endif %}">Documents</a></li>
                     </ul>
