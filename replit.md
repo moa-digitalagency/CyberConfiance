@@ -33,12 +33,19 @@ I prefer that the agent adheres to existing architectural patterns and design de
         - Automatically expands shortened URLs to reveal the final destination
         - Detects multiple shorteners in redirect chains (potential obfuscation technique)
         - Analyzes all URLs in the redirect chain with security APIs
-    - **URL Analysis uses 3 security sources in parallel**:
+    - **URL Analysis uses 5 security sources in parallel**:
         - VirusTotal: 90+ antivirus engines for malware/phishing detection
         - Google Safe Browsing: Real-time phishing/malware database from Google
         - URLhaus: Malware distribution URL database from abuse.ch
+        - URLScan.io: Behavioral analysis with screenshot, brand detection, tracker identification
+        - TrackerDetector (internal): IP logger detection (Grabify, iplogger, etc.), fingerprinting, tracking parameters
     - Results are combined with highest threat level prioritization
     - UI displays individual source results with visual indicators
+    - **Tracker & IP Logger Detection**:
+        - Detects 30+ known IP logger services (Grabify, iplogger, 2no.co, etc.)
+        - Fingerprinting detection (Canvas, WebGL, Audio fingerprinting)
+        - Tracking parameter analysis (UTM, gclid, fbclid, etc.)
+        - Ad network and tracking pixel detection
 - **QR Code Analyzer (Anti-Quishing)**:
     - Decodes QR codes from images or real-time camera feeds.
     - **URL Shortener Detection in QR Codes**:
@@ -54,9 +61,13 @@ I prefer that the agent adheres to existing architectural patterns and design de
         - URL parameter redirects (common params: url, redirect, next, return_url, etc.)
         - Frame/iframe full-page embed detection
     - **Multi-API Security Analysis**:
-        - VirusTotal, Google Safe Browsing, and URLhaus analysis
+        - VirusTotal, Google Safe Browsing, URLhaus, URLScan.io, and TrackerDetector analysis
         - Analyzes both original and final URLs after redirect resolution
         - Threat detection with combined severity scoring
+    - **Tracker & IP Logger Detection in QR Codes**:
+        - Real-time detection of IP loggers in QR code URLs
+        - Chain analysis for trackers in redirect paths
+        - Clear warnings displayed in analysis results
     - Session-backed HTTP client with realistic browser headers
     - Hardened with SSRF protection, DNS rebinding prevention, content-length limits, and cloud metadata endpoint protection.
 - **Prompt Analyzer (Anti-Injection)**:
@@ -79,9 +90,23 @@ I prefer that the agent adheres to existing architectural patterns and design de
 - **VirusTotal API (v3 REST)**: For URL and file reputation analysis in security and QR code analyses.
 - **Google Safe Browsing API (v4)**: For real-time phishing and malware URL detection.
 - **URLhaus API (abuse.ch)**: For malware distribution URL detection.
+- **URLScan.io API**: For behavioral URL analysis, screenshot capture, brand detection, and tracker identification.
 - **jsQR library**: Used for real-time QR code scanning via camera.
 - **Flask-Admin**: For administrative interface functionalities.
 - **MediaDevices API**: For camera access in the QR code analyzer.
 - **PostgreSQL (or compatible SQL database)**: For data persistence.
 - **Google Analytics / Facebook Pixel (Optional)**: Via custom head code injection.
 - **reCAPTCHA (Optional)**: For form security, configurable via site settings.
+
+## Documentation
+Comprehensive documentation is available in the `docs/` folder:
+- **SECURITY_TOOLS.md**: Complete documentation of all security analysis tools and services
+- **ARCHITECTURE.md**: Technical architecture and system design documentation
+- **API_INTEGRATIONS.md**: API integration details and configuration guides
+
+## API Keys Configuration
+- `SECURITY_ANALYSIS_API_KEY`: VirusTotal API key
+- `SECURITY_ANALYSIS_API_KEY_1`: Google Safe Browsing API key
+- `SECURITY_ANALYSIS_API_KEY_2`: URLhaus API key (optional)
+- `SECURITY_ANALYSIS_API_KEY_3`: URLScan.io API key
+- `HIBP_API_KEY`: Have I Been Pwned API key
