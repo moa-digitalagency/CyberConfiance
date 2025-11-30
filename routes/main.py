@@ -662,7 +662,7 @@ def set_language(lang=None):
         referrer_host = urlparse(referrer).netloc
         current_host = request.host
         
-        if referrer_host == current_host:
+        if referrer_host and referrer_host == current_host:
             return redirect(referrer)
     
     return redirect(url_for('main.index'))
