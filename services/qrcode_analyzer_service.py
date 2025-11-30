@@ -8,6 +8,7 @@ from PIL import Image
 from bs4 import BeautifulSoup
 from ctypes import cdll
 import ctypes.util
+from services.url_shortener_service import URLShortenerService
 
 ZBAR_LIB_PATH = "/nix/store/lcjf0hd46s7b16vr94q3bcas7yg05c3c-zbar-0.23.93-lib/lib/libzbar.so.0"
 
@@ -36,6 +37,8 @@ class QRCodeAnalyzerService:
         self.api_key = os.environ.get('SECURITY_ANALYSIS_API_KEY') or os.environ.get('VT_API_KEY')
         self.max_redirects = 20
         self.request_timeout = 15
+        self.url_shortener = URLShortenerService()
+        self._security_analyzer = None
         
         self.phishing_keywords = [
             'login', 'signin', 'verify', 'account', 'secure', 'update',
@@ -957,6 +960,12 @@ class QRCodeAnalyzerService:
         except Exception as e:
             return None, f"Erreur inattendue: {str(e)[:100]}"
     
+    def _get_security_analyzer(self):
+        if self._security_analyzer is None:
+            from services.security_analyzer import SecurityAnalyzerService
+            self._security_analyzer = SecurityAnalyzerService()
+        return self._security_analyzer
+    
     def analyze_qr_image(self, image_data, filename=None):
         result = {
             'success': False,
@@ -970,7 +979,9 @@ class QRCodeAnalyzerService:
             'blacklist_result': None,
             'js_redirects': [],
             'all_redirects_found': [],
-            'original_filename': filename
+            'original_filename': filename,
+            'url_shortener': {'detected': False},
+            'multi_api_analysis': None
         }
         
         extracted_data, error = self.decode_qr_from_image(image_data)
@@ -1004,6 +1015,21 @@ class QRCodeAnalyzerService:
         result['data_type'] = 'url'
         result['success'] = True
         
+        is_shortened, shortener_service = self.url_shortener.is_shortened_url(url)
+        if is_shortened:
+            print(f"[QR] URL raccourcie detectee: {url} (service: {shortener_service})")
+            result['url_shortener'] = {
+                'detected': True,
+                'service': shortener_service,
+                'service_details': self.url_shortener.get_shortener_info(shortener_service),
+                'original_url': url
+            }
+            result['issues'].append({
+                'type': 'url_shortener',
+                'severity': 'medium',
+                'message': f"URL raccourcie detectee ({shortener_service}) - destination masquee"
+            })
+        
         url_issues = self.analyze_url_patterns(url)
         result['issues'].extend(url_issues)
         
@@ -1013,6 +1039,26 @@ class QRCodeAnalyzerService:
         result['redirect_count'] = redirect_result['redirect_count']
         result['js_redirects'] = redirect_result['js_redirects']
         result['all_redirects_found'] = redirect_result.get('all_redirects_found', [])
+        
+        if is_shortened:
+            result['url_shortener']['final_url'] = result['final_url']
+            result['url_shortener']['redirect_count'] = result['redirect_count']
+            
+            shorteners_in_chain = []
+            for redirect in result['redirect_chain']:
+                redirect_url = redirect.get('url', '')
+                is_short, service = self.url_shortener.is_shortened_url(redirect_url)
+                if is_short:
+                    shorteners_in_chain.append({'url': redirect_url, 'service': service})
+            
+            if len(shorteners_in_chain) > 1:
+                result['url_shortener']['multiple_shorteners'] = True
+                result['url_shortener']['shorteners_found'] = shorteners_in_chain
+                result['issues'].append({
+                    'type': 'multiple_shorteners',
+                    'severity': 'high',
+                    'message': f"Plusieurs raccourcisseurs detectes ({len(shorteners_in_chain)}) - technique d'obfuscation"
+                })
         
         if result['js_redirects']:
             result['issues'].append({
@@ -1033,6 +1079,64 @@ class QRCodeAnalyzerService:
             for issue in final_issues:
                 issue['location'] = 'final_url'
                 result['issues'].append(issue)
+        
+        try:
+            security_analyzer = self._get_security_analyzer()
+            url_to_analyze = result['final_url'] if result['final_url'] else url
+            
+            print(f"[QR] Analyse multi-API de l'URL: {url_to_analyze}")
+            multi_api_result = security_analyzer.analyze(url_to_analyze, 'url')
+            
+            if not multi_api_result.get('error'):
+                result['multi_api_analysis'] = {
+                    'url_analyzed': url_to_analyze,
+                    'threat_detected': multi_api_result.get('threat_detected', False),
+                    'threat_level': multi_api_result.get('threat_level', 'inconnu'),
+                    'sources_checked': multi_api_result.get('sources_checked', 0),
+                    'sources_with_threat': multi_api_result.get('sources_with_threat', 0),
+                    'all_threats': multi_api_result.get('all_threats', []),
+                    'source_results': multi_api_result.get('source_results', {})
+                }
+                
+                if multi_api_result.get('threat_detected'):
+                    threat_level = multi_api_result.get('threat_level', 'modéré')
+                    severity_map = {'critique': 'critical', 'élevé': 'high', 'modéré': 'medium', 'sûr': 'low'}
+                    severity = severity_map.get(threat_level, 'medium')
+                    
+                    result['issues'].append({
+                        'type': 'multi_api_threat',
+                        'severity': severity,
+                        'message': f"Menace detectee par {multi_api_result.get('sources_with_threat', 0)} source(s) de securite"
+                    })
+                    
+                    for threat in multi_api_result.get('all_threats', []):
+                        result['issues'].append({
+                            'type': f"threat_{threat.get('source', 'unknown').lower().replace(' ', '_')}",
+                            'severity': severity,
+                            'message': f"{threat.get('source')}: {threat.get('type')} - {threat.get('details', '')}"
+                        })
+                
+                if url != url_to_analyze:
+                    print(f"[QR] Analyse multi-API de l'URL originale: {url}")
+                    original_api_result = security_analyzer.analyze(url, 'url')
+                    if not original_api_result.get('error') and original_api_result.get('threat_detected'):
+                        result['multi_api_analysis']['original_url_threat'] = True
+                        result['issues'].append({
+                            'type': 'original_url_threat',
+                            'severity': 'high',
+                            'message': f"L'URL originale (raccourcie) est aussi detectee comme menace"
+                        })
+            else:
+                result['multi_api_analysis'] = {
+                    'error': True,
+                    'message': multi_api_result.get('message', 'Erreur lors de l\'analyse multi-API')
+                }
+        except Exception as e:
+            print(f"[QR] Erreur analyse multi-API: {e}")
+            result['multi_api_analysis'] = {
+                'error': True,
+                'message': str(e)[:100]
+            }
         
         blacklist_result, bl_error = self.check_blacklist(url)
         if blacklist_result:
