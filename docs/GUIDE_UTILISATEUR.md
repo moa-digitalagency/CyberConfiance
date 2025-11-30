@@ -72,7 +72,29 @@ Verifiez si un fichier, une URL ou un domaine est dangereux. L'outil consulte pl
 
 ---
 
-### 3. Verification des Fuites de Donnees
+### 3. Analyseur de Prompt (Anti-Injection)
+
+**Ou le trouver :** Menu > Outils > Analyseur Prompt
+
+**A quoi ca sert :**
+Cet outil analyse les textes pour detecter les tentatives d'injection malveillante, notamment dans les systemes d'intelligence artificielle.
+
+**Comment l'utiliser :**
+1. Collez le texte suspect dans la zone de saisie
+2. Cliquez sur "Analyser"
+3. L'outil detecte les patterns dangereux
+4. Consultez le rapport avec les problemes identifies
+
+**Ce que l'outil detecte :**
+- Tentatives d'injection de prompts
+- Code malveillant cache (eval, exec)
+- Techniques d'obfuscation
+- URLs et adresses IP suspectes dans le texte
+- Tentatives de jailbreak
+
+---
+
+### 4. Verification des Fuites de Donnees
 
 **Ou le trouver :** Menu > Outils > Verification Fuites
 
@@ -92,7 +114,7 @@ Verifiez si votre adresse email a ete compromise dans une fuite de donnees. Si c
 
 ---
 
-### 4. Quiz Cybersecurite
+### 5. Quiz Cybersecurite
 
 **Ou le trouver :** Menu > Quiz
 
@@ -101,7 +123,7 @@ Testez vos connaissances en cybersecurite et identifiez vos points faibles. Le q
 
 **Comment l'utiliser :**
 1. Cliquez sur "Commencer le Quiz"
-2. Repondez aux questions honnêtement
+2. Repondez aux questions honnetement
 3. Consultez votre score et vos resultats
 4. Suivez les recommandations pour vous ameliorer
 
@@ -149,9 +171,10 @@ Testez vos connaissances en cybersecurite et identifiez vos points faibles. Le q
 
 1. **Resume** : Vue d'ensemble du probleme
 2. **Details** : Explication technique
-3. **Preuves** : Captures des redirections et trackers
-4. **Recommandations** : Actions a entreprendre
-5. **Reference** : Date, heure et identifiant unique
+3. **Sources** : APIs de securite consultees (VirusTotal, Google Safe Browsing, etc.)
+4. **Preuves** : Captures des redirections et trackers
+5. **Recommandations** : Actions a entreprendre
+6. **Reference** : Date, heure et identifiant unique
 
 ---
 
@@ -163,6 +186,7 @@ Testez vos connaissances en cybersecurite et identifiez vos points faibles. Le q
 - Mefiez-vous des QR codes dans les emails non sollicites
 - Verifiez toujours l'URL avant de cliquer
 - Si le lien semble bizarre, n'y allez pas
+- Utilisez l'analyseur CyberConfiance avant de scanner
 
 ### Mots de Passe
 
@@ -170,6 +194,7 @@ Testez vos connaissances en cybersecurite et identifiez vos points faibles. Le q
 - Minimum 12 caracteres avec majuscules, chiffres et symboles
 - Utilisez un gestionnaire de mots de passe
 - Ne partagez jamais vos mots de passe
+- Activez l'authentification a deux facteurs
 
 ### Navigation Web
 
@@ -177,6 +202,14 @@ Testez vos connaissances en cybersecurite et identifiez vos points faibles. Le q
 - Mefiez-vous des offres trop belles pour etre vraies
 - Ne telechargez pas de fichiers de sources inconnues
 - Gardez votre navigateur a jour
+- Installez un bloqueur de publicites
+
+### Emails et Phishing
+
+- Ne cliquez pas sur les liens dans les emails suspects
+- Verifiez l'adresse de l'expediteur (pas juste le nom)
+- Mefiez-vous des demandes urgentes d'informations
+- En cas de doute, contactez directement l'organisme concerne
 
 ---
 
@@ -184,11 +217,11 @@ Testez vos connaissances en cybersecurite et identifiez vos points faibles. Le q
 
 ### L'outil stocke-t-il mes donnees ?
 
-Vos analyses sont enregistrees temporairement pour generer les rapports. Aucune donnee personnelle n'est vendue ou partagee.
+Vos analyses sont enregistrees temporairement pour generer les rapports et permettre un suivi dans le panneau d'administration. Aucune donnee personnelle n'est vendue ou partagee.
 
 ### Pourquoi l'analyse prend du temps ?
 
-L'outil consulte plusieurs sources de securite pour vous donner un resultat fiable. Cela prend quelques secondes.
+L'outil consulte plusieurs sources de securite (VirusTotal, Google Safe Browsing, URLhaus, URLScan.io) pour vous donner un resultat fiable. Cela prend quelques secondes.
 
 ### Un QR code "sur" peut-il devenir dangereux ?
 
@@ -196,7 +229,25 @@ Oui, le site de destination peut changer. Nous vous recommandons de re-verifier 
 
 ### Puis-je utiliser l'outil sur mobile ?
 
-Oui, le site est optimise pour les smartphones et tablettes.
+Oui, le site est optimise pour les smartphones et tablettes. Vous pouvez meme utiliser la camera de votre telephone pour scanner les QR codes directement.
+
+### Que faire si une menace est detectee ?
+
+1. Ne visitez pas le lien
+2. Ne partagez pas ce lien avec d'autres personnes
+3. Si vous avez deja visite le site, changez vos mots de passe
+4. Signalez le lien malveillant aux autorites competentes
+
+### Comment sont calculees les menaces ?
+
+Chaque URL est analysee par 4-5 services de securite independants :
+- **VirusTotal** : 70+ moteurs antivirus
+- **Google Safe Browsing** : Base de phishing/malware Google
+- **URLhaus** : Base de malwares abuse.ch
+- **URLScan.io** : Analyse comportementale
+- **Detecteur interne** : IP loggers et trackers
+
+Le niveau de menace affiche est le plus eleve parmi toutes les sources.
 
 ---
 

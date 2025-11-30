@@ -104,13 +104,9 @@ I prefer that the agent adheres to existing architectural patterns and design de
 - **reCAPTCHA (Optional)**: For form security, configurable via site settings.
 
 ## Documentation
-Comprehensive documentation is available in the `docs/` folder:
-- **GUIDE_TECHNIQUE.md**: Technical guide explaining how each security tool works in detail
-- **GUIDE_UTILISATEUR.md**: User-friendly guide with tool names as displayed on the site
-- **SECURITY_TOOLS.md**: Complete documentation of all security analysis tools and services
-- **ARCHITECTURE.md**: Technical architecture and system design documentation
-- **API_INTEGRATIONS.md**: API integration details and configuration guides
-- **OUTILS_REFERENCE.md**: Detailed reference for all services (TrackerDetector, URLScan, QRCodeAnalyzer, etc.)
+Comprehensive documentation is available in the `docs/` folder (harmonized November 2025):
+- **GUIDE_TECHNIQUE.md**: Complete technical documentation including architecture, all services (QRCodeAnalyzer, SecurityAnalyzer, TrackerDetector, URLShortener, PromptAnalyzer), API integrations, database schema, deployment procedures (VPS, Docker), and maintenance guides
+- **GUIDE_UTILISATEUR.md**: User-friendly guide explaining each tool, how to use them, understanding results, security tips, and FAQ
 
 ## Recent Changes (November 2025)
 - **QR Code Detection Enhancement**: Added OpenCV QRCodeDetector with 8 preprocessing techniques (CLAHE, thresholding, sharpening, resizing) as primary detector with pyzbar fallback

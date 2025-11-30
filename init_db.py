@@ -164,14 +164,16 @@ def verify_models_loaded():
         User, Rule, Scenario, GlossaryTerm, Tool, News, 
         RequestSubmission, Contact, QuizResult, BreachAnalysis,
         SecurityAnalysis, AttackType, Newsletter, ActivityLog,
-        ThreatLog, SiteSettings, SEOMetadata
+        ThreatLog, SiteSettings, SEOMetadata, Article, Resource,
+        SecurityLog, QRCodeAnalysis, PromptAnalysis
     )
     
     required_tables = [
         'users', 'rules', 'scenarios', 'glossary', 'tools', 'news',
         'request_submissions', 'contacts', 'quiz_results', 'breach_analyses',
         'security_analyses', 'attack_types', 'newsletter', 'activity_logs',
-        'threat_logs', 'site_settings', 'seo_metadata'
+        'threat_logs', 'site_settings', 'seo_metadata', 'articles', 'resources',
+        'security_logs', 'qrcode_analyses', 'prompt_analyses'
     ]
     
     registered_tables = [table.name for table in db.metadata.sorted_tables]
@@ -200,6 +202,8 @@ def verify_table_columns():
         'breach_analyses': ['id', 'email', 'breach_count', 'pdf_report', 'pdf_generated_at', 'ip_address'],
         'security_analyses': ['id', 'input_value', 'input_type', 'pdf_report', 'pdf_generated_at', 'breach_analysis_id'],
         'quiz_results': ['id', 'email', 'overall_score', 'pdf_report', 'pdf_generated_at', 'document_code'],
+        'qrcode_analyses': ['id', 'extracted_url', 'final_url', 'threat_level', 'pdf_report', 'pdf_generated_at', 'document_code', 'ip_address'],
+        'prompt_analyses': ['id', 'prompt_text', 'threat_level', 'threat_detected', 'pdf_report', 'pdf_generated_at', 'document_code', 'ip_address'],
     }
     
     all_valid = True
@@ -234,7 +238,8 @@ def check_vps_compatibility():
     """Check VPS PostgreSQL transaction compatibility"""
     print("\n[VPS CHECK] Verifying PostgreSQL transaction handling...")
     try:
-        result = db.session.execute("SELECT 1")
+        from sqlalchemy import text
+        result = db.session.execute(text("SELECT 1"))
         db.session.rollback()
         print("✓ PostgreSQL transaction handling: OK")
         return True
