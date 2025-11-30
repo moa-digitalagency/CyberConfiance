@@ -351,6 +351,9 @@ class PDFReportService:
             ]
             
             for label, value, color in stats:
+                if y_pos > self.max_y - 50:
+                    page = doc.new_page(width=595, height=842)
+                    y_pos = 90
                 page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + 30), color=color, fill=color, fill_opacity=0.05)
                 page.insert_text((40, y_pos + 15), f"{label}: {value}", fontsize=10, fontname="helv")
                 y_pos += 35
@@ -370,6 +373,9 @@ class PDFReportService:
             
             vt_result = source_results.get('virustotal', {})
             if vt_result:
+                if y_pos > self.max_y - 80:
+                    page = doc.new_page(width=595, height=842)
+                    y_pos = 90
                 vt_color = self.danger_color if vt_result.get('malicious', 0) > 0 else self.success_color
                 page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + 70), color=vt_color, fill=vt_color, fill_opacity=0.05)
                 y_pos += 15
@@ -385,6 +391,9 @@ class PDFReportService:
             
             gsb_result = source_results.get('google_safe_browsing', {})
             if gsb_result:
+                if y_pos > self.max_y - 70:
+                    page = doc.new_page(width=595, height=842)
+                    y_pos = 90
                 gsb_safe = gsb_result.get('safe', True)
                 gsb_color = self.success_color if gsb_safe else self.danger_color
                 page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + 50), color=gsb_color, fill=gsb_color, fill_opacity=0.05)
@@ -404,6 +413,9 @@ class PDFReportService:
             
             urlhaus_result = source_results.get('urlhaus', {})
             if urlhaus_result:
+                if y_pos > self.max_y - 70:
+                    page = doc.new_page(width=595, height=842)
+                    y_pos = 90
                 urlhaus_safe = not urlhaus_result.get('found', False)
                 urlhaus_color = self.success_color if urlhaus_safe else self.danger_color
                 page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + 50), color=urlhaus_color, fill=urlhaus_color, fill_opacity=0.05)
@@ -421,7 +433,7 @@ class PDFReportService:
                 y_pos += 25
         
         if breach_analysis:
-            if y_pos > self.max_y:
+            if y_pos > self.max_y - 120:
                 page = doc.new_page(width=595, height=842)
                 y_pos = 90
             
@@ -446,9 +458,15 @@ class PDFReportService:
             if breach_analysis.breaches_data:
                 breach_data = breach_analysis.breaches_data
                 if breach_data.get('breaches'):
+                    if y_pos > self.max_y - 50:
+                        page = doc.new_page(width=595, height=842)
+                        y_pos = 90
                     page.insert_text((40, y_pos), "Fuites identifiées:", fontsize=10, fontname="helv")
                     y_pos += 18
                     for breach in breach_data['breaches'][:5]:
+                        if y_pos > self.max_y - 30:
+                            page = doc.new_page(width=595, height=842)
+                            y_pos = 90
                         breach_name = breach.get('Name', 'Inconnu')
                         breach_date = breach.get('BreachDate', '')
                         page.insert_text((50, y_pos), f"• {breach_name} ({breach_date})", fontsize=9)
