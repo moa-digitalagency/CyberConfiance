@@ -426,6 +426,8 @@ def security_analyzer():
             db.session.rollback()
     
     print(f"[DEBUG] Rendering security_analyzer: analysis_id={analysis_id}, breach_analysis_id={breach_analysis_id}")
+    print(f"[DEBUG] Results: {results}")
+    print(f"[DEBUG] Breach Result: {breach_result}")
     
     return render_template('outils/security_analyzer.html', 
                          results=results, 
