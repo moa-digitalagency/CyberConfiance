@@ -26,7 +26,14 @@ I prefer that the agent adheres to existing architectural patterns and design de
 
 ### Feature Specifications
 - **Email Breach Analysis**: Integrates with Have I Been Pwned for email compromise checks.
-- **Security Analysis**: Provides analysis for URLs, files, domains, IPs, and hashes.
+- **Security Analysis (Multi-Source)**: 
+    - Provides analysis for URLs, files, domains, IPs, and hashes.
+    - **URL Analysis uses 3 security sources in parallel**:
+        - VirusTotal: 90+ antivirus engines for malware/phishing detection
+        - Google Safe Browsing: Real-time phishing/malware database from Google
+        - URLhaus: Malware distribution URL database from abuse.ch
+    - Results are combined with highest threat level prioritization
+    - UI displays individual source results with visual indicators
 - **QR Code Analyzer (Anti-Quishing)**:
     - Decodes QR codes from images or real-time camera feeds.
     - **Comprehensive Multi-Protocol Redirect Detection**:
@@ -57,6 +64,8 @@ I prefer that the agent adheres to existing architectural patterns and design de
 ## External Dependencies
 - **Have I Been Pwned API**: For email breach detection.
 - **VirusTotal API (v3 REST)**: For URL and file reputation analysis in security and QR code analyses.
+- **Google Safe Browsing API (v4)**: For real-time phishing and malware URL detection.
+- **URLhaus API (abuse.ch)**: For malware distribution URL detection.
 - **jsQR library**: Used for real-time QR code scanning via camera.
 - **Flask-Admin**: For administrative interface functionalities.
 - **MediaDevices API**: For camera access in the QR code analyzer.

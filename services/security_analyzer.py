@@ -4,12 +4,16 @@ import hashlib
 import re
 from datetime import datetime
 from urllib.parse import urlparse
+from services.google_safe_browsing_service import GoogleSafeBrowsingService
+from services.urlhaus_service import URLhausService
 
 class SecurityAnalyzerService:
-    """Service for analyzing security threats"""
+    """Service for analyzing security threats using multiple sources"""
     
     def __init__(self):
         self.api_key = os.environ.get('SECURITY_ANALYSIS_API_KEY') or os.environ.get('VT_API_KEY')
+        self.google_safe_browsing = GoogleSafeBrowsingService()
+        self.urlhaus = URLhausService()
         
         self.malicious_patterns = [
             r'<script[^>]*>.*?</script>',
@@ -173,8 +177,43 @@ class SecurityAnalyzerService:
             raise e
     
     def _analyze_url(self, client, url):
-        """Analyze a URL - submits for scanning if not found"""
+        """Analyze a URL using multiple sources (VirusTotal, Google Safe Browsing, URLhaus)"""
         import time
+        from concurrent.futures import ThreadPoolExecutor, as_completed
+        
+        multi_source_results = {
+            'virustotal': None,
+            'google_safe_browsing': None,
+            'urlhaus': None
+        }
+        
+        def check_google_safe_browsing():
+            try:
+                return self.google_safe_browsing.check_url(url)
+            except Exception as e:
+                print(f"[ERROR] Google Safe Browsing check failed: {e}")
+                return {'error': True, 'source': 'google_safe_browsing', 'message': str(e)}
+        
+        def check_urlhaus():
+            try:
+                return self.urlhaus.check_url(url)
+            except Exception as e:
+                print(f"[ERROR] URLhaus check failed: {e}")
+                return {'error': True, 'source': 'urlhaus', 'message': str(e)}
+        
+        with ThreadPoolExecutor(max_workers=2) as executor:
+            futures = {
+                executor.submit(check_google_safe_browsing): 'google_safe_browsing',
+                executor.submit(check_urlhaus): 'urlhaus'
+            }
+            for future in as_completed(futures):
+                source = futures[future]
+                try:
+                    multi_source_results[source] = future.result()
+                    print(f"[INFO] {source} result: threat_detected={multi_source_results[source].get('threat_detected', False)}")
+                except Exception as e:
+                    print(f"[ERROR] {source} future failed: {e}")
+                    multi_source_results[source] = {'error': True, 'source': source, 'message': str(e)}
         
         try:
             url_id = vt.url_id(url)
@@ -184,10 +223,10 @@ class SecurityAnalyzerService:
             try:
                 url_obj = client.get_object(f"/urls/{url_id}")
                 stats = url_obj.last_analysis_stats
-                print(f"[INFO] URL found in database: {url}")
+                print(f"[INFO] URL found in VirusTotal database: {url}")
             except vt.APIError as e:
                 if 'NotFoundError' in str(e):
-                    print(f"[INFO] URL not in database, submitting for scan: {url}")
+                    print(f"[INFO] URL not in VirusTotal database, submitting for scan: {url}")
                     try:
                         analysis = client.scan_url(url)
                         analysis_id = analysis.id
@@ -208,75 +247,177 @@ class SecurityAnalyzerService:
                             except Exception as poll_error:
                                 print(f"[WARN] Polling error: {str(poll_error)}")
                                 continue
-                        
-                        if stats is None:
-                            return {
-                                'error': False,
-                                'found': False,
-                                'type': 'url',
-                                'url': url,
-                                'message': 'Analyse en cours. Veuillez réessayer dans quelques instants.',
-                                'malicious': 0,
-                                'suspicious': 0,
-                                'total': 0,
-                                'clean': 0,
-                                'threat_detected': False,
-                                'threat_level': 'inconnu'
-                            }
                     except Exception as scan_error:
-                        print(f"[ERROR] URL scan failed: {str(scan_error)}")
-                        return {
-                            'error': False,
-                            'found': False,
-                            'type': 'url',
-                            'url': url,
-                            'message': 'Impossible de soumettre l\'URL pour analyse. Veuillez réessayer.',
-                            'malicious': 0,
-                            'suspicious': 0,
-                            'total': 0,
-                            'clean': 0,
-                            'threat_detected': False,
-                            'threat_level': 'inconnu'
-                        }
+                        print(f"[ERROR] VirusTotal URL scan failed: {str(scan_error)}")
                 else:
                     raise e
             
-            if stats is None:
-                return {
+            if stats:
+                malicious = stats.get('malicious', 0)
+                suspicious = stats.get('suspicious', 0)
+                total = sum(stats.values())
+                
+                multi_source_results['virustotal'] = {
                     'error': False,
+                    'source': 'virustotal',
+                    'found': True,
+                    'malicious': malicious,
+                    'suspicious': suspicious,
+                    'total': total,
+                    'clean': stats.get('harmless', 0) + stats.get('undetected', 0),
+                    'stats': stats,
+                    'categories': url_obj.get('categories', {}) if url_obj else {},
+                    'times_submitted': url_obj.get('times_submitted', 0) if url_obj else 0,
+                    'threat_detected': malicious > 0 or suspicious > 0,
+                    'threat_level': self._calculate_threat_level(malicious, suspicious, total)
+                }
+            else:
+                multi_source_results['virustotal'] = {
+                    'error': False,
+                    'source': 'virustotal',
                     'found': False,
-                    'type': 'url',
-                    'url': url,
-                    'message': 'Aucune donnée disponible pour cette URL.',
-                    'malicious': 0,
-                    'suspicious': 0,
-                    'total': 0,
-                    'clean': 0,
                     'threat_detected': False,
-                    'threat_level': 'inconnu'
+                    'threat_level': 'inconnu',
+                    'message': 'Analyse en cours ou URL non trouvée'
                 }
             
-            malicious = stats.get('malicious', 0)
-            suspicious = stats.get('suspicious', 0)
-            total = sum(stats.values())
-            
-            return {
-                'error': False,
-                'found': True,
-                'type': 'url',
-                'url': url,
-                'malicious': malicious,
-                'suspicious': suspicious,
-                'total': total,
-                'clean': stats.get('harmless', 0) + stats.get('undetected', 0),
-                'stats': stats,
-                'categories': url_obj.get('categories', {}) if url_obj else {},
-                'times_submitted': url_obj.get('times_submitted', 0) if url_obj else 0,
-                'threat_detected': malicious > 0 or suspicious > 0,
-                'threat_level': self._calculate_threat_level(malicious, suspicious, total)
-            }
         except Exception as e:
-            raise e
+            print(f"[ERROR] VirusTotal analysis failed: {e}")
+            multi_source_results['virustotal'] = {
+                'error': True,
+                'source': 'virustotal',
+                'message': str(e)
+            }
+        
+        combined_result = self._combine_url_results(url, multi_source_results)
+        return combined_result
+    
+    def _combine_url_results(self, url, multi_source_results):
+        """Combine results from all security analysis sources"""
+        
+        sources_checked = 0
+        sources_with_threat = 0
+        all_threats = []
+        highest_threat_level = 'sûr'
+        threat_levels_priority = {'sûr': 0, 'inconnu': 1, 'modéré': 2, 'élevé': 3, 'critique': 4}
+        
+        vt_result = multi_source_results.get('virustotal', {})
+        vt_malicious = 0
+        vt_suspicious = 0
+        vt_total = 0
+        vt_stats = {}
+        vt_categories = {}
+        
+        if vt_result and not vt_result.get('error'):
+            sources_checked += 1
+            if vt_result.get('threat_detected'):
+                sources_with_threat += 1
+                all_threats.append({
+                    'source': 'VirusTotal',
+                    'type': 'malware/phishing',
+                    'details': f"{vt_result.get('malicious', 0)} malveillants, {vt_result.get('suspicious', 0)} suspects"
+                })
+            vt_malicious = vt_result.get('malicious', 0)
+            vt_suspicious = vt_result.get('suspicious', 0)
+            vt_total = vt_result.get('total', 0)
+            vt_stats = vt_result.get('stats', {})
+            vt_categories = vt_result.get('categories', {})
+            
+            vt_level = vt_result.get('threat_level', 'sûr')
+            if threat_levels_priority.get(vt_level, 0) > threat_levels_priority.get(highest_threat_level, 0):
+                highest_threat_level = vt_level
+        
+        gsb_result = multi_source_results.get('google_safe_browsing', {})
+        gsb_threats = []
+        
+        if gsb_result and not gsb_result.get('error'):
+            sources_checked += 1
+            if gsb_result.get('threat_detected'):
+                sources_with_threat += 1
+                gsb_threats = gsb_result.get('threats', [])
+                threat_types = gsb_result.get('threat_types', [])
+                for threat_type in threat_types:
+                    all_threats.append({
+                        'source': 'Google Safe Browsing',
+                        'type': self.google_safe_browsing.get_threat_description(threat_type),
+                        'details': threat_type
+                    })
+                
+                gsb_level = gsb_result.get('threat_level', 'sûr')
+                if threat_levels_priority.get(gsb_level, 0) > threat_levels_priority.get(highest_threat_level, 0):
+                    highest_threat_level = gsb_level
+        
+        urlhaus_result = multi_source_results.get('urlhaus', {})
+        urlhaus_info = {}
+        
+        if urlhaus_result and not urlhaus_result.get('error'):
+            sources_checked += 1
+            if urlhaus_result.get('threat_detected'):
+                sources_with_threat += 1
+                urlhaus_info = {
+                    'threat_type': urlhaus_result.get('threat_type', ''),
+                    'url_status': urlhaus_result.get('url_status', ''),
+                    'tags': urlhaus_result.get('tags', []),
+                    'payloads': urlhaus_result.get('payloads', [])
+                }
+                all_threats.append({
+                    'source': 'URLhaus',
+                    'type': self.urlhaus.get_threat_description(urlhaus_result.get('threat_type', '')),
+                    'details': f"Status: {urlhaus_result.get('url_status', 'unknown')}"
+                })
+                
+                urlhaus_level = urlhaus_result.get('threat_level', 'sûr')
+                if threat_levels_priority.get(urlhaus_level, 0) > threat_levels_priority.get(highest_threat_level, 0):
+                    highest_threat_level = urlhaus_level
+        
+        overall_threat_detected = sources_with_threat > 0
+        
+        confidence_score = 0
+        if sources_checked > 0:
+            if sources_with_threat == 0:
+                confidence_score = min(100, sources_checked * 33)
+            else:
+                confidence_score = min(100, (sources_with_threat / sources_checked) * 100)
+        
+        return {
+            'error': False,
+            'found': True,
+            'type': 'url',
+            'url': url,
+            'malicious': vt_malicious,
+            'suspicious': vt_suspicious,
+            'total': vt_total,
+            'clean': vt_stats.get('harmless', 0) + vt_stats.get('undetected', 0),
+            'stats': vt_stats,
+            'categories': vt_categories,
+            'times_submitted': vt_result.get('times_submitted', 0) if vt_result else 0,
+            'threat_detected': overall_threat_detected,
+            'threat_level': highest_threat_level,
+            'multi_source': True,
+            'sources_checked': sources_checked,
+            'sources_with_threat': sources_with_threat,
+            'all_threats': all_threats,
+            'confidence_score': confidence_score,
+            'source_results': {
+                'virustotal': {
+                    'available': vt_result and not vt_result.get('error'),
+                    'threat_detected': vt_result.get('threat_detected', False) if vt_result else False,
+                    'malicious': vt_malicious,
+                    'suspicious': vt_suspicious,
+                    'total': vt_total
+                },
+                'google_safe_browsing': {
+                    'available': gsb_result and not gsb_result.get('error'),
+                    'threat_detected': gsb_result.get('threat_detected', False) if gsb_result else False,
+                    'threats': gsb_threats
+                },
+                'urlhaus': {
+                    'available': urlhaus_result and not urlhaus_result.get('error'),
+                    'threat_detected': urlhaus_result.get('threat_detected', False) if urlhaus_result else False,
+                    'info': urlhaus_info
+                }
+            }
+        }
     
     def _calculate_threat_level(self, malicious, suspicious, total):
         """Calculate threat level based on detection ratios
