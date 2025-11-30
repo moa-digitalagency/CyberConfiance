@@ -4,7 +4,7 @@
 
 {% block content %}
 <!-- VERSION: 2024-11-18-FULL-DETAILS-VISIBLE -->
-<section class="page-header-modern">
+<section class="page-header-modern" style="position: relative; z-index: 1;">
     <div class="container">
         <div class="header-content-centered">
             <h1 class="page-title-modern">Analyse de sécurité</h1>
@@ -13,7 +13,7 @@
     </div>
 </section>
 
-<section class="section" style="padding-bottom: 4rem;">
+<section class="section" style="padding-bottom: 4rem; position: relative; z-index: 1;">
     <div class="container">
         {% if recommendations.level == 'safe' %}
         <div class="breach-result-card safe-card">
