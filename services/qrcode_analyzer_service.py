@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup
 from ctypes import cdll
 import ctypes.util
 from services.url_shortener_service import URLShortenerService
+from services.tracker_detector_service import TrackerDetectorService
 
 ZBAR_LIB_PATH = "/nix/store/lcjf0hd46s7b16vr94q3bcas7yg05c3c-zbar-0.23.93-lib/lib/libzbar.so.0"
 
@@ -38,6 +39,7 @@ class QRCodeAnalyzerService:
         self.max_redirects = 20
         self.request_timeout = 15
         self.url_shortener = URLShortenerService()
+        self.tracker_detector = TrackerDetectorService()
         self._security_analyzer = None
         
         self.phishing_keywords = [
@@ -1033,6 +1035,30 @@ class QRCodeAnalyzerService:
         url_issues = self.analyze_url_patterns(url)
         result['issues'].extend(url_issues)
         
+        tracker_analysis = self.tracker_detector.analyze_url(url)
+        result['tracker_analysis'] = tracker_analysis
+        
+        if tracker_analysis.get('is_ip_logger'):
+            result['issues'].append({
+                'type': 'ip_logger',
+                'severity': 'critical',
+                'message': 'IP Logger detecte - Ce lien capture votre adresse IP et localisation'
+            })
+        
+        if tracker_analysis.get('has_fingerprinting'):
+            result['issues'].append({
+                'type': 'fingerprinting',
+                'severity': 'high',
+                'message': 'Fingerprinting detecte - Ce site identifie votre appareil de maniere unique'
+            })
+        
+        if tracker_analysis.get('is_tracker') and not tracker_analysis.get('is_ip_logger'):
+            result['issues'].append({
+                'type': 'tracker',
+                'severity': 'medium',
+                'message': f"Trackers detectes: {len(tracker_analysis.get('detections', []))} element(s)"
+            })
+        
         redirect_result = self.follow_redirects_safely(url)
         result['redirect_chain'] = redirect_result['redirect_chain']
         result['final_url'] = redirect_result['final_url']
@@ -1073,6 +1099,27 @@ class QRCodeAnalyzerService:
                 'severity': 'medium',
                 'message': f'Nombre eleve de redirections: {result["redirect_count"]}'
             })
+        
+        if result['redirect_chain']:
+            chain_tracker_analysis = self.tracker_detector.analyze_redirect_chain(result['redirect_chain'])
+            result['chain_tracker_analysis'] = chain_tracker_analysis
+            
+            if chain_tracker_analysis.get('ip_loggers_found'):
+                for logger in chain_tracker_analysis.get('ip_loggers_found', []):
+                    result['issues'].append({
+                        'type': 'ip_logger_in_chain',
+                        'severity': 'critical',
+                        'message': f"IP Logger detecte a l'etape {logger.get('step', '?')} de la redirection"
+                    })
+            
+            if chain_tracker_analysis.get('trackers_found'):
+                tracker_count = len(chain_tracker_analysis.get('trackers_found', []))
+                if tracker_count > 0:
+                    result['issues'].append({
+                        'type': 'trackers_in_chain',
+                        'severity': 'medium',
+                        'message': f"{tracker_count} tracker(s) detecte(s) dans la chaine de redirection"
+                    })
         
         if result['final_url'] and result['final_url'] != url:
             final_issues = self.analyze_url_patterns(result['final_url'])

@@ -7,6 +7,8 @@ from urllib.parse import urlparse
 from services.google_safe_browsing_service import GoogleSafeBrowsingService
 from services.urlhaus_service import URLhausService
 from services.url_shortener_service import URLShortenerService
+from services.urlscan_service import URLScanService
+from services.tracker_detector_service import TrackerDetectorService
 
 class SecurityAnalyzerService:
     """Service for analyzing security threats using multiple sources"""
@@ -16,6 +18,8 @@ class SecurityAnalyzerService:
         self.google_safe_browsing = GoogleSafeBrowsingService()
         self.urlhaus = URLhausService()
         self.url_shortener = URLShortenerService()
+        self.urlscan = URLScanService()
+        self.tracker_detector = TrackerDetectorService()
         
         self.malicious_patterns = [
             r'<script[^>]*>.*?</script>',
@@ -215,7 +219,9 @@ class SecurityAnalyzerService:
         multi_source_results = {
             'virustotal': None,
             'google_safe_browsing': None,
-            'urlhaus': None
+            'urlhaus': None,
+            'urlscan': None,
+            'tracker_detector': None
         }
         
         def check_google_safe_browsing():
@@ -232,16 +238,43 @@ class SecurityAnalyzerService:
                 print(f"[ERROR] URLhaus check failed: {e}")
                 return {'error': True, 'source': 'urlhaus', 'message': str(e)}
         
-        with ThreadPoolExecutor(max_workers=2) as executor:
+        def check_urlscan():
+            try:
+                if self.urlscan.is_available():
+                    return self.urlscan.scan_url(url_to_analyze)
+                return {'error': True, 'source': 'urlscan', 'message': 'URLScan.io non configuré'}
+            except Exception as e:
+                print(f"[ERROR] URLScan check failed: {e}")
+                return {'error': True, 'source': 'urlscan', 'message': str(e)}
+        
+        def check_tracker_detector():
+            try:
+                result = self.tracker_detector.analyze_url(url_to_analyze)
+                if shortener_info.get('redirect_chain'):
+                    chain_analysis = self.tracker_detector.analyze_redirect_chain(shortener_info['redirect_chain'])
+                    result['chain_analysis'] = chain_analysis
+                return result
+            except Exception as e:
+                print(f"[ERROR] Tracker detector check failed: {e}")
+                return {'error': True, 'source': 'tracker_detector', 'message': str(e)}
+        
+        multi_source_results['tracker_detector'] = check_tracker_detector()
+        print(f"[INFO] tracker_detector result: is_ip_logger={multi_source_results['tracker_detector'].get('is_ip_logger', False)}")
+        
+        with ThreadPoolExecutor(max_workers=3) as executor:
             futures = {
                 executor.submit(check_google_safe_browsing): 'google_safe_browsing',
-                executor.submit(check_urlhaus): 'urlhaus'
+                executor.submit(check_urlhaus): 'urlhaus',
+                executor.submit(check_urlscan): 'urlscan'
             }
             for future in as_completed(futures):
                 source = futures[future]
                 try:
                     multi_source_results[source] = future.result()
-                    print(f"[INFO] {source} result: threat_detected={multi_source_results[source].get('threat_detected', False)}")
+                    if source == 'urlscan':
+                        print(f"[INFO] {source} result: threat_score={multi_source_results[source].get('threat_score', 0)}")
+                    else:
+                        print(f"[INFO] {source} result: threat_detected={multi_source_results[source].get('threat_detected', False)}")
                 except Exception as e:
                     print(f"[ERROR] {source} future failed: {e}")
                     multi_source_results[source] = {'error': True, 'source': source, 'message': str(e)}
@@ -404,6 +437,97 @@ class SecurityAnalyzerService:
                 if threat_levels_priority.get(urlhaus_level, 0) > threat_levels_priority.get(highest_threat_level, 0):
                     highest_threat_level = urlhaus_level
         
+        urlscan_result = multi_source_results.get('urlscan', {})
+        urlscan_info = {}
+        
+        if urlscan_result and not urlscan_result.get('error'):
+            sources_checked += 1
+            urlscan_info = {
+                'uuid': urlscan_result.get('uuid', ''),
+                'result_url': urlscan_result.get('result_url', ''),
+                'screenshot_url': urlscan_result.get('screenshot_url', ''),
+                'threat_score': urlscan_result.get('threat_score', 0),
+                'page': urlscan_result.get('page', {}),
+                'stats': urlscan_result.get('stats', {}),
+                'verdicts': urlscan_result.get('verdicts', {}),
+                'brands_detected': urlscan_result.get('brands_detected', []),
+                'trackers_detected': urlscan_result.get('trackers_detected', []),
+                'ip_logger_indicators': urlscan_result.get('ip_logger_indicators', [])
+            }
+            
+            if urlscan_result.get('threat_detected') or urlscan_result.get('threat_score', 0) > 25:
+                sources_with_threat += 1
+                all_threats.append({
+                    'source': 'URLScan.io',
+                    'type': 'Analyse comportementale',
+                    'details': f"Score: {urlscan_result.get('threat_score', 0)}/100"
+                })
+                
+                urlscan_level = urlscan_result.get('threat_level', 'sûr')
+                urlscan_level_map = {'safe': 'sûr', 'low': 'modéré', 'medium': 'modéré', 'high': 'élevé', 'critical': 'critique'}
+                urlscan_level = urlscan_level_map.get(urlscan_level, 'sûr')
+                if threat_levels_priority.get(urlscan_level, 0) > threat_levels_priority.get(highest_threat_level, 0):
+                    highest_threat_level = urlscan_level
+            
+            if urlscan_result.get('brands_detected'):
+                all_threats.append({
+                    'source': 'URLScan.io',
+                    'type': 'Usurpation de marque',
+                    'details': f"Marques: {', '.join(urlscan_result.get('brands_detected', [])[:3])}"
+                })
+        
+        tracker_result = multi_source_results.get('tracker_detector', {})
+        tracker_info = {}
+        
+        if tracker_result and not tracker_result.get('error'):
+            sources_checked += 1
+            tracker_info = {
+                'is_ip_logger': tracker_result.get('is_ip_logger', False),
+                'is_tracker': tracker_result.get('is_tracker', False),
+                'is_ad_network': tracker_result.get('is_ad_network', False),
+                'has_fingerprinting': tracker_result.get('has_fingerprinting', False),
+                'has_tracking_params': tracker_result.get('has_tracking_params', False),
+                'threat_score': tracker_result.get('threat_score', 0),
+                'detections': tracker_result.get('detections', []),
+                'tracking_params_found': tracker_result.get('tracking_params_found', []),
+                'recommendations': tracker_result.get('recommendations', []),
+                'chain_analysis': tracker_result.get('chain_analysis', {})
+            }
+            
+            if tracker_result.get('is_ip_logger'):
+                sources_with_threat += 1
+                all_threats.append({
+                    'source': 'Détecteur de Trackers',
+                    'type': 'IP Logger détecté',
+                    'details': 'Ce lien capture votre adresse IP et localisation'
+                })
+                highest_threat_level = 'critique'
+            elif tracker_result.get('has_fingerprinting'):
+                sources_with_threat += 1
+                all_threats.append({
+                    'source': 'Détecteur de Trackers',
+                    'type': 'Fingerprinting détecté',
+                    'details': 'Ce site identifie votre appareil de manière unique'
+                })
+                if threat_levels_priority.get('élevé', 0) > threat_levels_priority.get(highest_threat_level, 0):
+                    highest_threat_level = 'élevé'
+            elif tracker_result.get('is_tracker'):
+                all_threats.append({
+                    'source': 'Détecteur de Trackers',
+                    'type': 'Trackers détectés',
+                    'details': f"{len(tracker_result.get('detections', []))} élément(s) de suivi"
+                })
+            
+            chain_analysis = tracker_result.get('chain_analysis', {})
+            if chain_analysis.get('ip_loggers_found'):
+                for logger in chain_analysis.get('ip_loggers_found', []):
+                    all_threats.append({
+                        'source': 'Analyse chaîne redirection',
+                        'type': 'IP Logger dans redirection',
+                        'details': f"Étape {logger.get('step', '?')}: IP logger détecté"
+                    })
+                highest_threat_level = 'critique'
+        
         overall_threat_detected = sources_with_threat > 0
         
         confidence_score = 0
@@ -449,6 +573,20 @@ class SecurityAnalyzerService:
                     'available': urlhaus_result and not urlhaus_result.get('error'),
                     'threat_detected': urlhaus_result.get('threat_detected', False) if urlhaus_result else False,
                     'info': urlhaus_info
+                },
+                'urlscan': {
+                    'available': urlscan_result and not urlscan_result.get('error'),
+                    'threat_detected': urlscan_result.get('threat_detected', False) if urlscan_result else False,
+                    'threat_score': urlscan_info.get('threat_score', 0),
+                    'info': urlscan_info
+                },
+                'tracker_detector': {
+                    'available': tracker_result and not tracker_result.get('error'),
+                    'is_ip_logger': tracker_info.get('is_ip_logger', False),
+                    'is_tracker': tracker_info.get('is_tracker', False),
+                    'has_fingerprinting': tracker_info.get('has_fingerprinting', False),
+                    'threat_score': tracker_info.get('threat_score', 0),
+                    'info': tracker_info
                 }
             }
         }
