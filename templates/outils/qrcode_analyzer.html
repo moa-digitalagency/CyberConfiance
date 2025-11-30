@@ -563,16 +563,48 @@ document.addEventListener('DOMContentLoaded', function() {
             const imageData = ctx.getImageData(0, 0, scanCanvas.width, scanCanvas.height);
             
             if (typeof jsQR !== 'undefined') {
-                const code = jsQR(imageData.data, imageData.width, imageData.height, {
-                    inversionAttempts: 'dontInvert'
+                // Try with attemptBoth for better detection of inverted/normal QR codes
+                let code = jsQR(imageData.data, imageData.width, imageData.height, {
+                    inversionAttempts: 'attemptBoth'
                 });
+                
+                // If not found, try with enhanced contrast
+                if (!code) {
+                    const enhancedData = enhanceImageContrast(imageData);
+                    code = jsQR(enhancedData.data, enhancedData.width, enhancedData.height, {
+                        inversionAttempts: 'attemptBoth'
+                    });
+                }
                 
                 if (code && code.data && !qrDetectedRecently) {
                     qrDetectedRecently = true;
                     onQRCodeDetected(code);
                 }
             }
-        }, 150);
+        }, 100);
+    }
+    
+    function enhanceImageContrast(imageData) {
+        const data = new Uint8ClampedArray(imageData.data);
+        const factor = 1.3; // Contrast factor
+        
+        for (let i = 0; i < data.length; i += 4) {
+            // Convert to grayscale
+            const gray = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+            
+            // Apply contrast enhancement
+            let newValue = factor * (gray - 128) + 128;
+            newValue = Math.max(0, Math.min(255, newValue));
+            
+            // Apply threshold for better QR detection
+            const threshold = newValue > 128 ? 255 : 0;
+            
+            data[i] = threshold;
+            data[i + 1] = threshold;
+            data[i + 2] = threshold;
+        }
+        
+        return new ImageData(data, imageData.width, imageData.height);
     }
 
     function stopScanning() {
