@@ -5,7 +5,8 @@ from services.security_analyzer import SecurityAnalyzerService
 from services.pdf_service import PDFReportService
 from services.qrcode_analyzer_service import QRCodeAnalyzerService
 from services.prompt_analyzer_service import PromptAnalyzerService
-from models import Contact, User, BreachAnalysis, SecurityAnalysis, QRCodeAnalysis, PromptAnalysis
+from services.github_code_analyzer_service import GitHubCodeAnalyzerService
+from models import Contact, User, BreachAnalysis, SecurityAnalysis, QRCodeAnalysis, PromptAnalysis, GitHubCodeAnalysis
 from utils.document_code_generator import ensure_unique_code
 from utils.metadata_collector import get_client_ip
 import __init__ as app_module
@@ -1152,4 +1153,97 @@ def breach_analyzer():
     if request.method == 'POST':
         return redirect(url_for('main.analyze_breach'), code=307)
     return render_template('outils/breach_analyzer.html', results=None, analysis_id=None)
+
+
+@bp.route('/outils/analyseur-github', methods=['GET', 'POST'])
+def github_analyzer():
+    results = None
+    analysis_id = None
+    
+    if request.method == 'POST':
+        try:
+            repo_url = request.form.get('repo_url', '').strip()
+            branch = request.form.get('branch', 'main').strip() or 'main'
+            
+            if not repo_url:
+                flash('Veuillez entrer une URL de depot GitHub.', 'error')
+                return redirect(url_for('main.github_analyzer'))
+            
+            if 'github.com' not in repo_url:
+                flash('Seuls les depots GitHub sont supportes.', 'error')
+                return redirect(url_for('main.github_analyzer'))
+            
+            analyzer = GitHubCodeAnalyzerService()
+            results = analyzer.analyze(repo_url, branch)
+            
+            if results and not results.get('error'):
+                try:
+                    github_analysis = GitHubCodeAnalysis(
+                        repo_url=repo_url,
+                        repo_name=results.get('repo_name'),
+                        repo_owner=results.get('repo_owner'),
+                        branch=results.get('branch'),
+                        commit_hash=results.get('commit_hash'),
+                        overall_score=results.get('overall_score', 0),
+                        security_score=results.get('security_score', 0),
+                        risk_level=results.get('risk_level'),
+                        security_findings=results.get('security_findings', []),
+                        dependency_findings=results.get('dependency_findings', []),
+                        architecture_findings=results.get('architecture_findings', []),
+                        performance_findings=results.get('performance_findings', []),
+                        git_hygiene_findings=results.get('git_hygiene_findings', []),
+                        documentation_findings=results.get('documentation_findings', []),
+                        toxic_ai_patterns=results.get('toxic_ai_patterns', []),
+                        code_quality_findings=results.get('code_quality_findings', []),
+                        total_files_analyzed=results.get('total_files_analyzed', 0),
+                        total_issues_found=results.get('total_issues_found', 0),
+                        critical_issues=results.get('critical_issues', 0),
+                        high_issues=results.get('high_issues', 0),
+                        medium_issues=results.get('medium_issues', 0),
+                        low_issues=results.get('low_issues', 0),
+                        languages_detected=results.get('languages_detected', {}),
+                        frameworks_detected=results.get('frameworks_detected', []),
+                        analysis_summary=results.get('analysis_summary'),
+                        status='completed',
+                        analysis_duration=results.get('analysis_duration'),
+                        document_code=ensure_unique_code(GitHubCodeAnalysis),
+                        ip_address=get_client_ip(request),
+                        user_agent=request.headers.get('User-Agent', '')[:500]
+                    )
+                    db.session.add(github_analysis)
+                    db.session.commit()
+                    analysis_id = github_analysis.id
+                except Exception as e:
+                    db.session.rollback()
+                    print(f"[ERROR] Failed to save GitHub analysis: {e}")
+            
+        except Exception as e:
+            flash(f'Erreur lors de l\'analyse: {str(e)}', 'error')
+            return redirect(url_for('main.github_analyzer'))
+    
+    return render_template('outils/github_analyzer.html', results=results, analysis_id=analysis_id)
+
+
+@bp.route("/generate-github-pdf/<int:analysis_id>")
+def generate_github_pdf(analysis_id):
+    analysis = GitHubCodeAnalysis.query.get_or_404(analysis_id)
+    
+    user_ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()
+    
+    if analysis.pdf_report and analysis.pdf_generated_at:
+        pdf_bytes = analysis.pdf_report
+    else:
+        pdf_service = PDFReportService()
+        pdf_bytes = pdf_service.generate_github_analysis_report(analysis, user_ip)
+        
+        analysis.pdf_report = pdf_bytes
+        analysis.pdf_generated_at = datetime.utcnow()
+        db.session.commit()
+    
+    return send_file(
+        io.BytesIO(pdf_bytes),
+        mimetype="application/pdf",
+        as_attachment=True,
+        download_name=f"rapport_github_{analysis.repo_name}_{analysis.id}.pdf"
+    )
 

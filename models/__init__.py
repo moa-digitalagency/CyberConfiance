@@ -449,3 +449,52 @@ class PromptAnalysis(db.Model):
     
     def __repr__(self):
         return f'<PromptAnalysis {self.id} - Threat: {self.threat_detected}>'
+
+
+class GitHubCodeAnalysis(db.Model):
+    __tablename__ = 'github_code_analyses'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    repo_url = db.Column(db.String(500), nullable=False)
+    repo_name = db.Column(db.String(200))
+    repo_owner = db.Column(db.String(100))
+    branch = db.Column(db.String(100), default='main')
+    commit_hash = db.Column(db.String(50))
+    
+    overall_score = db.Column(db.Float, default=0.0)
+    security_score = db.Column(db.Float, default=0.0)
+    risk_level = db.Column(db.String(20))
+    
+    security_findings = db.Column(db.JSON)
+    dependency_findings = db.Column(db.JSON)
+    architecture_findings = db.Column(db.JSON)
+    performance_findings = db.Column(db.JSON)
+    git_hygiene_findings = db.Column(db.JSON)
+    documentation_findings = db.Column(db.JSON)
+    toxic_ai_patterns = db.Column(db.JSON)
+    code_quality_findings = db.Column(db.JSON)
+    
+    total_files_analyzed = db.Column(db.Integer, default=0)
+    total_issues_found = db.Column(db.Integer, default=0)
+    critical_issues = db.Column(db.Integer, default=0)
+    high_issues = db.Column(db.Integer, default=0)
+    medium_issues = db.Column(db.Integer, default=0)
+    low_issues = db.Column(db.Integer, default=0)
+    
+    languages_detected = db.Column(db.JSON)
+    frameworks_detected = db.Column(db.JSON)
+    analysis_summary = db.Column(db.Text)
+    
+    status = db.Column(db.String(20), default='pending')
+    error_message = db.Column(db.Text)
+    analysis_duration = db.Column(db.Float)
+    
+    document_code = db.Column(db.String(20), unique=True, index=True)
+    ip_address = db.Column(db.String(50))
+    user_agent = db.Column(db.String(500))
+    pdf_report = db.Column(db.LargeBinary)
+    pdf_generated_at = db.Column(db.DateTime)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    def __repr__(self):
+        return f'<GitHubCodeAnalysis {self.repo_name} - Score: {self.overall_score}>'
