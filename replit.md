@@ -78,6 +78,31 @@ I prefer that the agent adheres to existing architectural patterns and design de
         - Identifies standalone domain names
         - Reports security threats found in embedded URLs
     - Hardened with input size limits and robust error handling.
+- **GitHub Code Analyzer**:
+    - Analyzes public GitHub repositories for security vulnerabilities and code quality issues
+    - **Security Scanning**:
+        - Detects exposed secrets (API keys, passwords, tokens, database credentials)
+        - SQL injection patterns detection
+        - XSS vulnerability detection
+        - Command injection detection
+        - Path traversal vulnerabilities
+        - Insecure deserialization patterns
+        - Insecure configuration detection
+    - **Toxic AI Pattern Detection (Vibecoding)**:
+        - Unresolved TODOs and FIXMEs
+        - Silent exception handling
+        - Placeholder code (pass statements, NotImplementedError)
+        - Debug prints left in code
+    - **Performance Issue Detection**:
+        - N+1 query patterns
+        - Infinite loop risks
+        - Unoptimized SELECT * queries
+    - **Architecture Analysis**: File structure, test presence, modular design
+    - **Git Hygiene Analysis**: Sensitive files in history, commit quality
+    - **Dependency Analysis**: Unpinned versions, missing lockfiles
+    - **Documentation Check**: README presence, .gitignore configuration
+    - **Scoring System**: Weighted algorithm (Security 50%, Dependencies 10%, Architecture 10%, Toxic AI 10%, Performance 10%, Git 5%, Docs 5%)
+    - PDF report generation with detailed findings and remediation suggestions
 - **Admin Panel Enhancements**:
     - Detailed history views for all analyses (QR code, prompt, breach, security) with filtering and search.
     - Formatted display of analysis results, replacing raw JSON with visual cards and statistics.
@@ -107,6 +132,9 @@ I prefer that the agent adheres to existing architectural patterns and design de
 Comprehensive documentation is available in the `docs/` folder (harmonized November 2025):
 - **GUIDE_TECHNIQUE.md**: Complete technical documentation including architecture, all services (QRCodeAnalyzer, SecurityAnalyzer, TrackerDetector, URLShortener, PromptAnalyzer), API integrations, database schema, deployment procedures (VPS, Docker), and maintenance guides
 - **GUIDE_UTILISATEUR.md**: User-friendly guide explaining each tool, how to use them, understanding results, security tips, and FAQ
+
+## Recent Changes (December 2025)
+- **GitHub Code Analyzer**: New tool to analyze public GitHub repositories for security vulnerabilities, toxic AI patterns (vibecoding), performance issues, and code quality. Features weighted scoring algorithm and professional PDF report generation.
 
 ## Recent Changes (November 2025)
 - **QR Code Detection Enhancement**: Added OpenCV QRCodeDetector with 8 preprocessing techniques (CLAHE, thresholding, sharpening, resizing) as primary detector with pyzbar fallback
