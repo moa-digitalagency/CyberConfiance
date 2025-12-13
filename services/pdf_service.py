@@ -1440,7 +1440,10 @@ class PDFReportService:
             ("PATTERNS IA TOXIQUES (VIBECODING)", analysis_results.get('toxic_ai_patterns', []), self.warning_color),
             ("PROBLEMES DE PERFORMANCE", analysis_results.get('performance_findings', []), (251/255, 191/255, 36/255)),
             ("PROBLEMES DE DEPENDANCES", analysis_results.get('dependency_findings', []), self.base_color),
+            ("ARCHITECTURE", analysis_results.get('architecture_findings', []), self.base_color),
             ("HYGIENE GIT", analysis_results.get('git_hygiene_findings', []), self.base_color),
+            ("DOCUMENTATION", analysis_results.get('documentation_findings', []), self.base_color),
+            ("QUALITE DU CODE", analysis_results.get('code_quality_findings', []), self.warning_color),
         ]
         
         for section_title, findings, section_color in findings_sections:
