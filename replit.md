@@ -80,29 +80,41 @@ I prefer that the agent adheres to existing architectural patterns and design de
     - Hardened with input size limits and robust error handling.
 - **GitHub Code Analyzer**:
     - Analyzes public GitHub repositories for security vulnerabilities and code quality issues
-    - **Security Scanning**:
-        - Detects exposed secrets (API keys, passwords, tokens, database credentials)
-        - SQL injection patterns detection
-        - XSS vulnerability detection
-        - Command injection detection
-        - Path traversal vulnerabilities
-        - Insecure deserialization patterns
-        - Insecure configuration detection
+    - **Advanced Language & Framework Detection**:
+        - Supports 40+ programming languages (Python, JavaScript, TypeScript, Go, Rust, Java, C#, Ruby, PHP, etc.)
+        - Framework detection with confidence scores for Python (Django, Flask, FastAPI, Celery, SQLAlchemy, TensorFlow, PyTorch)
+        - JavaScript/TypeScript frameworks (React, Vue, Angular, Express, NestJS, Next.js, Nuxt.js)
+        - Backend frameworks (Ruby on Rails, Laravel, ASP.NET, Gin, Actix, Spring)
+    - **Security Scanning (OWASP Top 10 aligned)**:
+        - 30+ secret detection patterns (AWS, OpenAI, Anthropic, GitHub, Slack, Stripe, Discord, Telegram, etc.)
+        - SQL injection patterns (17 patterns for Python, Node.js, PHP)
+        - XSS vulnerability detection (18 patterns including React dangerouslySetInnerHTML, Vue v-html)
+        - Command injection detection (20 patterns for os.system, subprocess, child_process, exec)
+        - Path traversal vulnerabilities (LFI/RFI patterns)
+        - Insecure deserialization (pickle, yaml, marshal, unserialize)
+        - SSRF and CSRF vulnerability patterns
+        - Authentication issues (weak password comparison, insecure JWT, MD5/SHA1 hashing)
+        - Insecure configuration (DEBUG mode, CORS wildcards, disabled SSL verification)
+    - **Vulnerable Dependencies Database**:
+        - Known vulnerable Python packages (PyYAML, Django, Flask, Jinja2, etc.)
+        - Known vulnerable NPM packages (lodash, express, axios, etc.)
+        - Unpinned version detection and lockfile validation
     - **Toxic AI Pattern Detection (Vibecoding)**:
         - Unresolved TODOs and FIXMEs
-        - Silent exception handling
+        - Silent exception handling (except: pass patterns)
         - Placeholder code (pass statements, NotImplementedError)
-        - Debug prints left in code
+        - Debug prints and debugger statements left in code
+        - AI-generated code markers
     - **Performance Issue Detection**:
-        - N+1 query patterns
+        - N+1 query patterns (Django ORM, Sequelize)
         - Infinite loop risks
         - Unoptimized SELECT * queries
-    - **Architecture Analysis**: File structure, test presence, modular design
-    - **Git Hygiene Analysis**: Sensitive files in history, commit quality
-    - **Dependency Analysis**: Unpinned versions, missing lockfiles
-    - **Documentation Check**: README presence, .gitignore configuration
-    - **Scoring System**: Weighted algorithm (Security 50%, Dependencies 10%, Architecture 10%, Toxic AI 10%, Performance 10%, Git 5%, Docs 5%)
-    - PDF report generation with detailed findings and remediation suggestions
+        - Async/await antipatterns
+    - **Architecture Analysis**: File structure, test presence, CI/CD detection, modular design
+    - **Git Hygiene Analysis**: Sensitive files in history, commit quality, stale branches
+    - **Documentation Check**: README presence/quality, .gitignore configuration
+    - **Scoring System**: Weighted algorithm (Security 55%, Dependencies 12%, Architecture 8%, Toxic AI 8%, Performance 7%, Git 5%, Docs 5%)
+    - PDF report generation with OWASP references and remediation suggestions
 - **Admin Panel Enhancements**:
     - Detailed history views for all analyses (QR code, prompt, breach, security) with filtering and search.
     - Formatted display of analysis results, replacing raw JSON with visual cards and statistics.
@@ -134,7 +146,7 @@ Comprehensive documentation is available in the `docs/` folder (harmonized Novem
 - **GUIDE_UTILISATEUR.md**: User-friendly guide explaining each tool, how to use them, understanding results, security tips, and FAQ
 
 ## Recent Changes (December 2025)
-- **GitHub Code Analyzer**: New tool to analyze public GitHub repositories for security vulnerabilities, toxic AI patterns (vibecoding), performance issues, and code quality. Features weighted scoring algorithm and professional PDF report generation.
+- **GitHub Code Analyzer Enhanced**: Major upgrade with 40+ language support, framework detection with confidence scores, 30+ secret patterns (AWS, OpenAI, Anthropic, Discord, Telegram, etc.), OWASP Top 10 aligned vulnerability detection, vulnerable package database for Python/NPM, SSRF/CSRF detection, and improved weighted scoring algorithm.
 
 ## Recent Changes (November 2025)
 - **QR Code Detection Enhancement**: Added OpenCV QRCodeDetector with 8 preprocessing techniques (CLAHE, thresholding, sharpening, resizing) as primary detector with pyzbar fallback
