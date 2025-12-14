@@ -4,7 +4,9 @@ import os
 class QuizService:
     @staticmethod
     def load_quiz_data():
-        quiz_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data', 'quiz_questions.json')
+        # Get the project root directory (two levels up from services/quiz/)
+        project_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+        quiz_file = os.path.join(project_root, 'data', 'quiz_questions.json')
         with open(quiz_file, 'r', encoding='utf-8') as f:
             return json.load(f)
     
