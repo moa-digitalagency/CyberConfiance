@@ -1,0 +1,44 @@
+Algorithme Algorithme de chiffrement obsolète obsolète
+Algorithme de chiffrement obsolète ne devrait pas être utilisé pour la sécurité
+self.findings.extend(self._scan_patterns(content, filepath, self.INSECURE_DES...
+services/analyzers/security_analyzer.py:134
+Algorithme Algorithme de chiffrement obsolète obsolète
+Algorithme de chiffrement obsolète ne devrait pas être utilisé pour la sécurité
+INSECURE_DESERIALIZATION_PATTERNS,
+services/github/analyzer.py:21
+Algorithme Algorithme de chiffrement obsolète obsolète
+Algorithme de chiffrement obsolète ne devrait pas être utilisé pour la sécurité
+INSECURE_DESERIALIZATION_PATTERNS = INSECURE_DESERIALIZATION_PATTERNS
+services/github/analyzer.py:61
+Algorithme Algorithme de chiffrement obsolète obsolète
+Algorithme de chiffrement obsolète ne devrait pas être utilisé pour la sécurité
+INSECURE_DESERIALIZATION_PATTERNS = INSECURE_DESERIALIZATION_PATTERNS
+services/github/analyzer.py:61
+Algorithme Algorithme de chiffrement obsolète obsolète
+Algorithme de chiffrement obsolète ne devrait pas être utilisé pour la sécurité
+for pattern, description, severity in self.INSECURE_DESERIALIZATION_PATTERNS:
+services/github/analyzer.py:606
+Algorithme Algorithme de chiffrement obsolète obsolète
+Algorithme de chiffrement obsolète ne devrait pas être utilisé pour la sécurité
+INSECURE_DESERIALIZATION_PATTERNS = [
+services/github/patterns.py:119
+Algorithme Algorithme de chiffrement obsolète obsolète
+Algorithme de chiffrement obsolète ne devrait pas être utilisé pour la sécurité
+page.insert_text((30, y_pos), "DETAILS DES FUITES DETECTEES",
+services/pdf/breach_report.py:62
+Algorithme Algorithme de chiffrement obsolète obsolète
+Algorithme de chiffrement obsolète ne devrait pas être utilisé pour la sécurité
+page.insert_text((30, y_pos), "RESUME DES PROBLEMES",
+services/pdf/github_report.py:75
+Algorithme Algorithme de chiffrement obsolète obsolète
+Algorithme de chiffrement obsolète ne devrait pas être utilisé pour la sécurité
+page.insert_text((30, y_pos), "ANALYSE DES FUITES DE DONNEES",
+services/pdf/quiz_report.py:131
+Algorithme Algorithme de chiffrement obsolète obsolète
+Algorithme de chiffrement obsolète ne devrait pas être utilisé pour la sécurité
+page.insert_text((30, y_pos), "STATUT DES DETECTIONS",
+services/pdf/security_report.py:407
+Algorithme SHA1 (Python) obsolète
+SHA1 (Python) ne devrait pas être utilisé pour la sécurité
+sha1_hash = hashlib.sha1(password.encode('utf-8')).hexdigest().upper()
+utils/hibp_checker.py:47
