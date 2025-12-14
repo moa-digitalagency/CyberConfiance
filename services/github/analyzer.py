@@ -215,7 +215,7 @@ class GitHubCodeAnalyzerService:
             self._cleanup()
     
     def _build_result(self, repo_url, repo_name, owner, branch, commit_hash, scores, duration, mode):
-        """Construit le résultat de l'analyse."""
+        """Construit le résultat de l'analyse AVEC STATS ENRICHIES."""
         return {
             'error': False,
             'repo_url': repo_url,
@@ -241,6 +241,8 @@ class GitHubCodeAnalyzerService:
             'code_quality_findings': self.findings['code_quality'],
             'total_files_analyzed': self.stats['total_files'],
             'total_lines_analyzed': self.stats['total_lines'],
+            'total_directories': self.stats.get('total_directories', 0),
+            'file_types_distribution': self.stats.get('file_types', {}),
             'total_issues_found': sum(len(f) for f in self.findings.values()),
             'critical_issues': self._count_by_severity('critical'),
             'high_issues': self._count_by_severity('high'),
@@ -662,36 +664,42 @@ class GitHubCodeAnalyzerService:
                 pass
     
     def _analyze_all_files(self):
-        """Analyse tous les fichiers avec exclusions STRICTES."""
+        """Analyse ULTRA-OPTIMISÉE avec exclusions EXHAUSTIVES multi-langages."""
         if not self.temp_dir:
             return
         
         excluded_dirs = {
             '.git', 'node_modules', '__pycache__', 'venv', 'env', '.venv',
-            'vendor', 'dist', 'build', '.next', 'coverage', '.cache',
-            '.pytest_cache', '.mypy_cache', 'target', 'bower_components',
-            '.nuxt', '.output', 'out', '.tox', '.nox',
-            'docs', 'documentation', 'doc', 'wiki',
-            'attached_assets', 'uploads', 'static/uploads', 'media',
-            'assets', 'public/assets',
-            'tmp', 'temp', '.tmp', '.temp',
-            '.vscode', '.idea', '.vs', '.replit',
+            'virtualenv', 'vendor', 'dist', 'build', '.next', 'coverage',
+            '.cache', '.pytest_cache', '.mypy_cache', 'target', '.tox',
+            'bower_components', '.nuxt', '.output', 'out', 'public/build',
+            '.nox', 'wheels', 'eggs', '.eggs',
+            'docs', 'documentation', 'doc', 'wiki', 'man', 'help',
+            'attached_assets', 'uploads', 'media', 'assets', 'static/uploads',
+            'public/uploads', 'images', 'img', 'fonts', 'icons',
+            'tmp', 'temp', '.tmp', '.temp', 'log', 'logs',
+            '.vscode', '.idea', '.vs', '.replit', '.devcontainer', '.atom',
+            '.sublime', '.eclipse', '.settings',
             'migrations', 'alembic', 'locale', 'locales', 'i18n', 'translations',
-            '.local', 'replit_zip_error_log.txt',
+            'lang', 'languages',
+            '.local', '.history',
         }
         
         excluded_extensions = {
-            '.min.js', '.min.css', '.map',
+            '.min.js', '.min.css', '.map', '.bundle.js', '.chunk.js',
             '.lock', '.toml', '.ini', '.cfg', '.conf',
             '.svg', '.png', '.jpg', '.jpeg', '.gif', '.ico', '.webp',
-            '.bmp', '.tiff', '.psd',
+            '.bmp', '.tiff', '.tif', '.psd', '.ai', '.eps',
             '.woff', '.woff2', '.ttf', '.eot', '.otf',
             '.mp3', '.mp4', '.avi', '.mov', '.webm', '.mkv', '.flv',
-            '.pdf', '.zip', '.tar', '.gz', '.rar', '.7z', '.exe',
-            '.dll', '.so', '.dylib',
-            '.pyc', '.pyo', '.class', '.jar', '.war',
+            '.ogg', '.wav', '.m4a', '.aac',
+            '.pdf', '.zip', '.tar', '.gz', '.rar', '.7z', '.bz2',
+            '.exe', '.dll', '.so', '.dylib', '.bin',
+            '.pyc', '.pyo', '.pyd', '.class', '.jar', '.war', '.o',
+            '.a', '.lib', '.obj',
             '.log',
-            '.md', '.rst', '.txt', '.adoc', '.org',
+            '.md', '.rst', '.txt', '.adoc', '.org', '.tex',
+            '.csv', '.tsv', '.db', '.sqlite',
         }
         
         excluded_filename_patterns = [
@@ -699,43 +707,67 @@ class GitHubCodeAnalyzerService:
             r'^init_db\.py$',
             r'^init_demo_data\.py$',
             r'^init_demo\.py$',
+            r'^initialize\.py$',
+            r'^bootstrap\.py$',
             r'^seed\.py$',
             r'^seed_data\.py$',
             r'^demo_data\.py$',
+            r'^sample_data\.py$',
             r'.*_seed\.py$',
             r'.*_demo\.py$',
             r'^setup\.py$',
             r'^conftest\.py$',
-            r'^\d{3,}_.*\.py$',
-            r'^migration_.*\.py$',
-            r'.*_migration\.py$',
+            r'^\d{3,}_.*\.(py|js|ts|rb|php)$',
+            r'^migration_.*\.(py|js|ts|rb|php)$',
+            r'.*_migration\.(py|js|ts|rb|php)$',
             r'^\d{14}_.*\.py$',
-            r'^test_.*\.(py|js|ts)$',
-            r'.*_test\.(py|js|ts)$',
-            r'^.*\.test\.(js|ts)$',
-            r'^.*\.spec\.(js|ts)$',
+            r'^V\d+__.*\.sql$',
+            r'^\d{4}_\d{2}_\d{2}_\d{6}.*\.rb$',
+            r'^test_.*\.(py|js|ts|jsx|tsx|rb|php|go|rs)$',
+            r'.*_test\.(py|js|ts|jsx|tsx|rb|php|go|rs)$',
+            r'^.*\.test\.(js|ts|jsx|tsx)$',
+            r'^.*\.spec\.(js|ts|jsx|tsx)$',
+            r'.*Test\.(java|kt|swift)$',
+            r'.*_spec\.rb$',
+            r'.*\.feature$',
             r'^\.env.*',
-            r'^config\.(dev|prod|test|local)\..*$',
+            r'^config\.(dev|prod|test|local|staging)\..*$',
+            r'^.*\.config\.(js|ts|json)$',
             r'^README.*',
             r'^CHANGELOG.*',
             r'^LICENSE.*',
             r'^CONTRIBUTING.*',
             r'^AUTHORS.*',
             r'^HISTORY.*',
+            r'^INSTALL.*',
             r'^replit.*',
             r'^\.replit.*',
             r'^package-lock\.json$',
             r'^yarn\.lock$',
             r'^poetry\.lock$',
             r'^Pipfile\.lock$',
+            r'^composer\.lock$',
+            r'^Gemfile\.lock$',
+            r'^go\.sum$',
+            r'^Cargo\.lock$',
+            r'^.*\.min\.(js|css)$',
+            r'^bundle.*\.(js|css)$',
+            r'^chunk.*\.(js|css)$',
             r'.*Amelioration.*',
             r'.*seed\.json$',
+            r'^\.DS_Store$',
+            r'^Thumbs\.db$',
         ]
         
         files_analyzed = 0
         max_files = 500
         
+        total_directories = 0
+        file_types_counter = Counter()
+        
         for root, dirs, files in os.walk(self.temp_dir):
+            total_directories += len(dirs)
+            
             dirs[:] = [d for d in dirs if d not in excluded_dirs]
             
             for filename in files:
@@ -754,11 +786,17 @@ class GitHubCodeAnalyzerService:
                 filepath = os.path.join(root, filename)
                 relative_path = os.path.relpath(filepath, self.temp_dir)
                 
-                if any(excluded_dir in relative_path for excluded_dir in excluded_dirs):
+                path_parts = relative_path.split(os.sep)
+                if any(part in excluded_dirs for part in path_parts):
                     continue
                 
                 _, ext = os.path.splitext(filename)
                 ext_lower = ext.lower()
+                
+                if ext_lower:
+                    file_types_counter[ext_lower] += 1
+                else:
+                    file_types_counter['sans_extension'] += 1
                 
                 if ext_lower in self.LANGUAGE_EXTENSIONS:
                     self.stats['languages'][self.LANGUAGE_EXTENSIONS[ext_lower]] += 1
@@ -803,6 +841,9 @@ class GitHubCodeAnalyzerService:
                     
                 except Exception as e:
                     continue
+        
+        self.stats['total_directories'] = total_directories
+        self.stats['file_types'] = dict(file_types_counter.most_common(10))
     
     def _detect_frameworks(self, content, filepath, ext):
         primary_lang = None
@@ -1804,35 +1845,75 @@ class GitHubCodeAnalyzerService:
                             })
     
     def _calculate_scores(self):
-        def category_score(findings_list, expected_max_issues=10):
-            if not findings_list:
-                return 100
-            
-            severity_weights = {
-                'critical': 15,
-                'high': 10,
-                'medium': 5,
-                'low': 2,
-                'info': 1
-            }
-            
-            total_penalty = 0
-            for finding in findings_list:
-                severity = finding.get('severity', 'info')
-                total_penalty += severity_weights.get(severity, 1)
-            
-            max_expected_penalty = expected_max_issues * severity_weights['high']
-            normalized_penalty = min(total_penalty / max_expected_penalty, 1.0) * 100
-            
-            return max(0, round(100 - normalized_penalty, 1))
+        """
+        Calcul CORRECT des scores avec variance réaliste.
+        FIX: Le score sécurité était toujours à 0% à cause de la formule défaillante.
+        """
+        critical_count = self._count_by_severity('critical')
+        high_count = self._count_by_severity('high')
+        medium_count = self._count_by_severity('medium')
+        low_count = self._count_by_severity('low')
         
-        security_score = category_score(self.findings['security'], expected_max_issues=8)
-        deps_score = category_score(self.findings['dependencies'], expected_max_issues=5)
-        arch_score = category_score(self.findings['architecture'], expected_max_issues=5)
-        perf_score = category_score(self.findings['performance'], expected_max_issues=5)
-        git_score = category_score(self.findings['git_hygiene'], expected_max_issues=4)
-        doc_score = category_score(self.findings['documentation'], expected_max_issues=4)
-        toxic_score = category_score(self.findings['toxic_ai'], expected_max_issues=5)
+        security_findings = len(self.findings['security'])
+        
+        if security_findings == 0:
+            security_score = 100.0
+        else:
+            security_deduction = (
+                critical_count * 25 +
+                high_count * 15 +
+                medium_count * 8 +
+                low_count * 3
+            )
+            security_score = max(0.0, min(100.0, 100.0 - security_deduction))
+        
+        dependency_findings = len(self.findings['dependencies'])
+        if dependency_findings == 0:
+            deps_score = 100.0
+        else:
+            dep_critical = sum(1 for f in self.findings['dependencies'] if f.get('severity') == 'critical')
+            dep_high = sum(1 for f in self.findings['dependencies'] if f.get('severity') == 'high')
+            dep_medium = sum(1 for f in self.findings['dependencies'] if f.get('severity') == 'medium')
+            dep_low = sum(1 for f in self.findings['dependencies'] if f.get('severity') == 'low')
+            dep_deduction = (dep_critical * 20 + dep_high * 12 + dep_medium * 6 + dep_low * 2)
+            deps_score = max(0.0, 100.0 - dep_deduction)
+        
+        architecture_findings = len(self.findings['architecture'])
+        if architecture_findings == 0:
+            arch_score = 100.0
+        elif architecture_findings <= 2:
+            arch_score = 80.0
+        else:
+            arch_deduction = architecture_findings * 12
+            arch_score = max(0.0, 100.0 - arch_deduction)
+        
+        performance_findings = len(self.findings['performance'])
+        if performance_findings == 0:
+            perf_score = 100.0
+        else:
+            perf_deduction = performance_findings * 6
+            perf_score = max(0.0, 100.0 - perf_deduction)
+        
+        documentation_findings = len(self.findings['documentation'])
+        if documentation_findings == 0:
+            doc_score = 100.0
+        else:
+            doc_deduction = documentation_findings * 10
+            doc_score = max(0.0, 100.0 - doc_deduction)
+        
+        git_findings = len(self.findings['git_hygiene'])
+        if git_findings == 0:
+            git_score = 100.0
+        else:
+            git_deduction = git_findings * 8
+            git_score = max(0.0, 100.0 - git_deduction)
+        
+        toxic_findings = len(self.findings['toxic_ai'])
+        if toxic_findings == 0:
+            toxic_score = 100.0
+        else:
+            toxic_deduction = toxic_findings * 10
+            toxic_score = max(0.0, 100.0 - toxic_deduction)
         
         overall_score = (
             security_score * self.SECURITY_WEIGHT +
@@ -1844,14 +1925,16 @@ class GitHubCodeAnalyzerService:
             doc_score * self.DOCUMENTATION_WEIGHT
         )
         
-        if overall_score >= 80:
-            risk_level = 'low'
-        elif overall_score >= 60:
-            risk_level = 'medium'
-        elif overall_score >= 40:
-            risk_level = 'high'
+        overall_score = max(0.0, min(100.0, overall_score))
+        
+        if critical_count > 0 or security_score < 30:
+            risk_level = 'CRITICAL'
+        elif high_count > 5 or security_score < 50:
+            risk_level = 'HIGH'
+        elif high_count > 0 or security_score < 70:
+            risk_level = 'MEDIUM'
         else:
-            risk_level = 'critical'
+            risk_level = 'LOW'
         
         return {
             'overall': round(overall_score, 1),

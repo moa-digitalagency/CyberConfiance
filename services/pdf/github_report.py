@@ -49,7 +49,21 @@ class GitHubReportMixin:
                         fontsize=10)
         y_pos += 15
         page.insert_text((40, y_pos), f"Fichiers analyses: {analysis.total_files_analyzed}", fontsize=10)
-        y_pos += 30
+        y_pos += 15
+        
+        total_lines = getattr(analysis, 'total_lines_analyzed', 0) or 0
+        total_dirs = getattr(analysis, 'total_directories', 0) or 0
+        page.insert_text((40, y_pos), f"Lignes de code: {total_lines:,}  |  Dossiers scannes: {total_dirs}", fontsize=10)
+        y_pos += 15
+        
+        file_types = getattr(analysis, 'file_types_distribution', None) or {}
+        if file_types and isinstance(file_types, dict):
+            types_str = ", ".join([f"{ext}: {count}" for ext, count in list(file_types.items())[:5]])
+            if types_str:
+                page.insert_text((40, y_pos), f"Types de fichiers: {types_str}", fontsize=9, color=(0.3, 0.3, 0.3))
+                y_pos += 15
+        
+        y_pos += 15
         
         risk_color = self._get_risk_color(analysis.risk_level or 'safe')
         page.draw_rect(fitz.Rect(30, y_pos, 290, y_pos + 80), color=risk_color, fill=risk_color, fill_opacity=0.1)
