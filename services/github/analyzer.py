@@ -349,6 +349,20 @@ class GitHubCodeAnalyzerService:
                     "--timeout=300",
                     "--max-memory=2000",
                     "--quiet",
+                    "--exclude=*__init__*",
+                    "--exclude=*init_*.py",
+                    "--exclude=*seed*.py",
+                    "--exclude=*demo*.py",
+                    "--exclude=*test_*",
+                    "--exclude=*_test.*",
+                    "--exclude=*.spec.*",
+                    "--exclude=*conftest*",
+                    "--exclude=migrations/*",
+                    "--exclude=alembic/*",
+                    "--exclude=node_modules/*",
+                    "--exclude=.git/*",
+                    "--exclude=*.min.js",
+                    "--exclude=*.min.css",
                     repo_path
                 ],
                 capture_output=True,
@@ -380,7 +394,19 @@ class GitHubCodeAnalyzerService:
             "INFO": "medium"
         }
         
+        excluded_file_patterns = [
+            '__init__', 'init_db', 'init_demo', 'seed', 'demo_data', 'sample_data',
+            'conftest', 'test_', '_test.', '.spec.', 'migration', 'setup.py',
+            'bootstrap', 'initialize'
+        ]
+        
         for result in semgrep_results:
+            filepath = result.get("path", "")
+            filename = filepath.split('/')[-1] if filepath else ""
+            
+            if any(pattern in filename.lower() or pattern in filepath.lower() for pattern in excluded_file_patterns):
+                continue
+            
             extra = result.get("extra", {})
             metadata = extra.get("metadata", {})
             
@@ -1849,10 +1875,10 @@ class GitHubCodeAnalyzerService:
         Calcul CORRECT des scores avec variance réaliste.
         FIX: Le score sécurité était toujours à 0% à cause de la formule défaillante.
         """
-        critical_count = self._count_by_severity('critical')
-        high_count = self._count_by_severity('high')
-        medium_count = self._count_by_severity('medium')
-        low_count = self._count_by_severity('low')
+        sec_critical = sum(1 for f in self.findings['security'] if f.get('severity') == 'critical')
+        sec_high = sum(1 for f in self.findings['security'] if f.get('severity') == 'high')
+        sec_medium = sum(1 for f in self.findings['security'] if f.get('severity') == 'medium')
+        sec_low = sum(1 for f in self.findings['security'] if f.get('severity') == 'low')
         
         security_findings = len(self.findings['security'])
         
@@ -1860,12 +1886,15 @@ class GitHubCodeAnalyzerService:
             security_score = 100.0
         else:
             security_deduction = (
-                critical_count * 25 +
-                high_count * 15 +
-                medium_count * 8 +
-                low_count * 3
+                sec_critical * 25 +
+                sec_high * 15 +
+                sec_medium * 8 +
+                sec_low * 3
             )
             security_score = max(0.0, min(100.0, 100.0 - security_deduction))
+        
+        critical_count = self._count_by_severity('critical')
+        high_count = self._count_by_severity('high')
         
         dependency_findings = len(self.findings['dependencies'])
         if dependency_findings == 0:

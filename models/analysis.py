@@ -144,6 +144,9 @@ class GitHubCodeAnalysis(db.Model):
     code_quality_findings = db.Column(db.JSON)
     
     total_files_analyzed = db.Column(db.Integer, default=0)
+    total_lines_analyzed = db.Column(db.Integer, default=0)
+    total_directories = db.Column(db.Integer, default=0)
+    file_types_distribution = db.Column(db.JSON)
     total_issues_found = db.Column(db.Integer, default=0)
     critical_issues = db.Column(db.Integer, default=0)
     high_issues = db.Column(db.Integer, default=0)
