@@ -1,10 +1,10 @@
-modules = ["python-3.12", "web", "nodejs-20", "bash"]
+modules = ["web", "nodejs-20", "bash", "python-3.11"]
 [agent]
 expertMode = true
 
 [nix]
 channel = "stable-25_05"
-packages = ["file", "freetype", "gumbo", "harfbuzz", "jbig2dec", "lcms2", "libimagequant", "libjpeg", "libjpeg_turbo", "libtiff", "libwebp", "libxcrypt", "mupdf", "openjpeg", "swig", "tcl", "tk", "xcbuild", "zbar", "zlib"]
+packages = ["file", "freetype", "gumbo", "harfbuzz", "jbig2dec", "lcms2", "libGL", "libimagequant", "libjpeg", "libjpeg_turbo", "libtiff", "libwebp", "libxcrypt", "mupdf", "openjpeg", "swig", "tcl", "tk", "xcbuild", "zbar", "zlib"]
 
 [workflows]
 runButton = "Project"
