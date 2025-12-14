@@ -41,7 +41,7 @@ from .patterns import (
     GIT_QUALITY_WEIGHT,
     DOCUMENTATION_WEIGHT,
 )
-from .translations import translate_security_message
+from .translations import translate_security_message, translate_text, get_contextual_remediation
 
 
 class GitHubCodeAnalyzerService:
@@ -191,6 +191,7 @@ class GitHubCodeAnalyzerService:
             self._analyze_documentation()
             self._finalize_framework_detection()
             
+            self._post_process_findings()
             self._deduplicate_findings()
             
             print("  [6/6] Calcul des scores...")
@@ -385,9 +386,12 @@ class GitHubCodeAnalyzerService:
             translated_message = translate_security_message(original_message)
             
             original_remediation = metadata.get("fix", "")
-            if not original_remediation:
-                original_remediation = "Consultez la documentation Semgrep"
-            translated_remediation = translate_security_message(original_remediation)
+            rule_id = result.get("check_id", "")
+            
+            if not original_remediation or "Semgrep" in original_remediation or "documentation" in original_remediation.lower():
+                translated_remediation = get_contextual_remediation(rule_id if rule_id else original_message)
+            else:
+                translated_remediation = translate_security_message(original_remediation)
             
             cwe_data = metadata.get("cwe", [])
             cwe_str = ", ".join(cwe_data) if isinstance(cwe_data, list) else str(cwe_data)
@@ -425,7 +429,7 @@ class GitHubCodeAnalyzerService:
                     finding.get('type', ''),
                     finding.get('title', '')[:50],
                     finding.get('severity', ''),
-                    finding.get('file', ''),
+                    finding.get('file', '').split('/')[-1],
                     finding.get('line', 0)
                 )
                 
@@ -437,6 +441,24 @@ class GitHubCodeAnalyzerService:
             
             if len(self.findings[category]) > 50:
                 self.findings[category] = self.findings[category][:50]
+    
+    def _post_process_findings(self):
+        """
+        Post-traitement de tous les findings:
+        - Traduction des messages anglais restants
+        - Remplacement des rémediations génériques
+        """
+        for category in self.findings:
+            for finding in self.findings[category]:
+                if finding.get('title'):
+                    finding['title'] = translate_text(finding['title'], aggressive=True)
+                
+                remediation = finding.get('remediation', '')
+                if 'Semgrep' in remediation or 'documentation' in remediation.lower():
+                    issue_type = finding.get('type', 'default')
+                    finding['remediation'] = get_contextual_remediation(issue_type)
+                else:
+                    finding['remediation'] = translate_text(remediation, aggressive=True)
     
     def _fetch_file_via_api(self, owner: str, repo: str, filepath: str, ref: str = "main") -> str:
         """
