@@ -108,6 +108,8 @@ class GitHubReportMixin:
             if not findings:
                 continue
             
+            findings_to_display = findings[:15]
+            
             if y_pos > self.max_y - 100:
                 page = doc.new_page(width=595, height=842)
                 y_pos = 90
@@ -118,7 +120,7 @@ class GitHubReportMixin:
             page.insert_text((30, y_pos), section_title, fontsize=12, fontname="helv", color=section_color)
             y_pos += 20
             
-            for idx, finding in enumerate(findings[:10], 1):
+            for idx, finding in enumerate(findings_to_display, 1):
                 if y_pos > self.max_y - 60:
                     page = doc.new_page(width=595, height=842)
                     y_pos = 90
@@ -130,14 +132,24 @@ class GitHubReportMixin:
                               color=sev_color, fill=sev_color, fill_opacity=0.2)
                 page.insert_text((42, y_pos + 6), severity.upper()[:4], fontsize=7, color=sev_color)
                 
-                title = finding.get('title', 'Issue')[:60]
+                title = finding.get('title', 'Issue')
+                if len(title) > 80:
+                    title = title[:77] + "..."
                 page.insert_text((80, y_pos + 6), f"{idx}. {title}", fontsize=9, fontname="helv")
                 y_pos += 16
                 
                 file_info = finding.get('file', '')
                 line_info = finding.get('line', '')
                 if file_info:
-                    location = f"Fichier: {file_info[:50]}"
+                    if file_info.startswith('/tmp/github_analysis_'):
+                        parts = file_info.split('/')
+                        if len(parts) > 3:
+                            file_info = '/'.join(parts[3:])
+                    
+                    if len(file_info) > 60:
+                        file_info = "..." + file_info[-57:]
+                    
+                    location = f"Fichier: {file_info}"
                     if line_info:
                         location += f" (ligne {line_info})"
                     page.insert_text((80, y_pos), location, fontsize=8, color=(0.5, 0.5, 0.5))
@@ -145,14 +157,17 @@ class GitHubReportMixin:
                 
                 remediation = finding.get('remediation', '')
                 if remediation:
-                    rem_text = f"Remediation: {remediation[:70]}"
+                    if len(remediation) > 90:
+                        remediation = remediation[:87] + "..."
+                    rem_text = f"Remediation: {remediation}"
                     page.insert_text((80, y_pos), rem_text, fontsize=8, color=(0.3, 0.3, 0.3))
                     y_pos += 12
                 
                 y_pos += 8
             
-            if len(findings) > 10:
-                page.insert_text((40, y_pos), f"... et {len(findings) - 10} autres problemes", 
+            if len(findings) > 15:
+                remaining = len(findings) - 15
+                page.insert_text((40, y_pos), f"... et {remaining} autre{'s' if remaining > 1 else ''} probleme{'s' if remaining > 1 else ''}", 
                                 fontsize=8, color=(0.5, 0.5, 0.5))
                 y_pos += 15
             

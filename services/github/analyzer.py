@@ -41,6 +41,7 @@ from .patterns import (
     GIT_QUALITY_WEIGHT,
     DOCUMENTATION_WEIGHT,
 )
+from .translations import translate_security_message
 
 
 class GitHubCodeAnalyzerService:
@@ -189,6 +190,8 @@ class GitHubCodeAnalyzerService:
             self._analyze_architecture()
             self._analyze_documentation()
             self._finalize_framework_detection()
+            
+            self._deduplicate_findings()
             
             print("  [6/6] Calcul des scores...")
             scores = self._calculate_scores()
@@ -367,7 +370,7 @@ class GitHubCodeAnalyzerService:
             return []
     
     def _integrate_semgrep_findings(self, semgrep_results: List[Dict]):
-        """Intègre les résultats Semgrep dans les findings."""
+        """Integre les resultats Semgrep dans les findings avec traduction."""
         severity_map = {
             "ERROR": "critical",
             "WARNING": "high",
@@ -378,6 +381,14 @@ class GitHubCodeAnalyzerService:
             extra = result.get("extra", {})
             metadata = extra.get("metadata", {})
             
+            original_message = extra.get("message", "Vulnerabilite Semgrep")
+            translated_message = translate_security_message(original_message)
+            
+            original_remediation = metadata.get("fix", "")
+            if not original_remediation:
+                original_remediation = "Consultez la documentation Semgrep"
+            translated_remediation = translate_security_message(original_remediation)
+            
             cwe_data = metadata.get("cwe", [])
             cwe_str = ", ".join(cwe_data) if isinstance(cwe_data, list) else str(cwe_data)
             owasp_data = metadata.get("owasp", "")
@@ -386,19 +397,46 @@ class GitHubCodeAnalyzerService:
             finding = {
                 "type": "semgrep_sast",
                 "severity": severity_map.get(extra.get("severity", "INFO"), "medium"),
-                "title": extra.get("message", "Vulnérabilité Semgrep"),
+                "title": translated_message,
                 "file": result.get("path", "unknown"),
                 "line": result.get("start", {}).get("line", 0),
                 "evidence": str(extra.get("lines", ""))[:200],
                 "category": "Semgrep SAST (AST)",
                 "cwe": cwe_str,
                 "owasp": owasp_str,
-                "remediation": metadata.get("fix", "Consultez la documentation Semgrep"),
+                "remediation": translated_remediation,
                 "confidence": metadata.get("confidence", "MEDIUM"),
                 "rule_id": result.get("check_id", "")
             }
             
             self.findings["security"].append(finding)
+    
+    def _deduplicate_findings(self):
+        """Deduplique les findings identiques ou tres similaires."""
+        for category in self.findings:
+            if not self.findings[category]:
+                continue
+            
+            seen = set()
+            deduplicated = []
+            
+            for finding in self.findings[category]:
+                signature = (
+                    finding.get('type', ''),
+                    finding.get('title', '')[:50],
+                    finding.get('severity', ''),
+                    finding.get('file', ''),
+                    finding.get('line', 0)
+                )
+                
+                if signature not in seen:
+                    seen.add(signature)
+                    deduplicated.append(finding)
+            
+            self.findings[category] = deduplicated
+            
+            if len(self.findings[category]) > 50:
+                self.findings[category] = self.findings[category][:50]
     
     def _fetch_file_via_api(self, owner: str, repo: str, filepath: str, ref: str = "main") -> str:
         """
@@ -603,13 +641,30 @@ class GitHubCodeAnalyzerService:
         excluded_dirs = {'.git', 'node_modules', '__pycache__', 'venv', 'env', 
                         '.venv', 'vendor', 'dist', 'build', '.next', 'coverage',
                         '.cache', '.pytest_cache', '.mypy_cache', 'target',
-                        'bower_components', '.nuxt', '.output', 'out'}
+                        'bower_components', '.nuxt', '.output', 'out',
+                        'docs', 'documentation', 'attached_assets', 'uploads',
+                        'static/uploads', 'media', 'tmp', 'temp', '.replit',
+                        'replit_zip_error_log.txt', '.local', 'migrations'}
         excluded_extensions = {'.min.js', '.min.css', '.map', '.lock', '.svg', 
                               '.png', '.jpg', '.jpeg', '.gif', '.ico', '.woff', 
                               '.woff2', '.ttf', '.eot', '.otf', '.mp3', '.mp4',
                               '.avi', '.mov', '.webm', '.pdf', '.zip', '.tar',
                               '.gz', '.rar', '.7z', '.exe', '.dll', '.so',
-                              '.pyc', '.pyo', '.class', '.jar', '.war'}
+                              '.pyc', '.pyo', '.class', '.jar', '.war', '.md',
+                              '.log', '.txt'}
+        
+        excluded_patterns = [
+            r'.*README.*',
+            r'.*CHANGELOG.*',
+            r'.*LICENSE.*',
+            r'.*CONTRIBUTING.*',
+            r'.*GUIDE.*',
+            r'.*attached_assets/.*',
+            r'.*Amelioration.*',
+            r'.*replit.*',
+            r'.*seed\.json$',
+            r'.*/migrations/.*',
+        ]
         
         for root, dirs, files in os.walk(self.temp_dir):
             dirs[:] = [d for d in dirs if d not in excluded_dirs]
@@ -620,6 +675,9 @@ class GitHubCodeAnalyzerService:
                 
                 filepath = os.path.join(root, filename)
                 relative_path = os.path.relpath(filepath, self.temp_dir)
+                
+                if any(re.match(pattern, relative_path, re.IGNORECASE) for pattern in excluded_patterns):
+                    continue
                 
                 _, ext = os.path.splitext(filename)
                 ext_lower = ext.lower()
