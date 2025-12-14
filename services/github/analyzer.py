@@ -299,6 +299,9 @@ class GitHubCodeAnalyzerService:
             rule = alert.get("rule", {})
             location = alert.get("most_recent_instance", {}).get("location", {})
             
+            cwe_tags = rule.get("tags", [])
+            cwe_str = ", ".join(cwe_tags) if isinstance(cwe_tags, list) else str(cwe_tags)
+            
             finding = {
                 "type": "github_code_scanning",
                 "severity": severity_map.get(rule.get("security_severity_level", "none"), "medium"),
@@ -307,7 +310,7 @@ class GitHubCodeAnalyzerService:
                 "line": location.get("start_line", 0),
                 "evidence": alert.get("most_recent_instance", {}).get("message", {}).get("text", "")[:200],
                 "category": "GitHub CodeQL",
-                "cwe": rule.get("tags", []),
+                "cwe": cwe_str,
                 "owasp": "Détecté par CodeQL",
                 "remediation": rule.get("help_uri", "Voir la documentation GitHub"),
                 "github_alert_url": alert.get("html_url", ""),
@@ -375,16 +378,21 @@ class GitHubCodeAnalyzerService:
             extra = result.get("extra", {})
             metadata = extra.get("metadata", {})
             
+            cwe_data = metadata.get("cwe", [])
+            cwe_str = ", ".join(cwe_data) if isinstance(cwe_data, list) else str(cwe_data)
+            owasp_data = metadata.get("owasp", "")
+            owasp_str = ", ".join(owasp_data) if isinstance(owasp_data, list) else str(owasp_data)
+            
             finding = {
                 "type": "semgrep_sast",
                 "severity": severity_map.get(extra.get("severity", "INFO"), "medium"),
                 "title": extra.get("message", "Vulnérabilité Semgrep"),
                 "file": result.get("path", "unknown"),
                 "line": result.get("start", {}).get("line", 0),
-                "evidence": extra.get("lines", "")[:200],
+                "evidence": str(extra.get("lines", ""))[:200],
                 "category": "Semgrep SAST (AST)",
-                "cwe": metadata.get("cwe", []),
-                "owasp": metadata.get("owasp", ""),
+                "cwe": cwe_str,
+                "owasp": owasp_str,
                 "remediation": metadata.get("fix", "Consultez la documentation Semgrep"),
                 "confidence": metadata.get("confidence", "MEDIUM"),
                 "rule_id": result.get("check_id", "")
