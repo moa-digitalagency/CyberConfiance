@@ -4,32 +4,35 @@
 
 CyberConfiance est une plateforme de cybersecurite qui vous aide a vous proteger contre les menaces en ligne. Ce guide vous explique comment utiliser chaque outil de maniere simple.
 
+**Version**: 2.1  
+**Derniere mise a jour**: Decembre 2025
+
 ---
 
 ## Les Outils Disponibles
 
 ### 1. Analyseur de QR Code (Anti-Quishing)
 
-**Ou le trouver :** Menu > Outils > Analyseur QR Code
+**Ou le trouver:** Menu > Outils > Analyseur QR Code
 
-**A quoi ca sert :**
+**A quoi ca sert:**
 Cet outil vous permet de verifier si un QR code est dangereux AVANT de le scanner avec votre telephone. Il detecte les arnaques, les liens malveillants et les trackers caches.
 
-**Comment l'utiliser :**
+**Comment l'utiliser:**
 1. Prenez une photo du QR code suspect
 2. Telechargez l'image sur le site (ou utilisez la camera)
 3. L'outil analyse automatiquement le contenu
-4. Lisez le verdict : vert = sur, orange = prudence, rouge = danger
+4. Lisez le verdict: vert = sur, orange = prudence, rouge = danger
 
-**Ce que l'outil detecte :**
-- **IP Loggers** : Liens qui capturent votre adresse IP et localisation
-- **Trackers** : Elements qui suivent votre activite en ligne
-- **Redirections cachees** : Liens qui vous emmenent ailleurs que prevu
-- **Sites malveillants** : Pages connues pour distribuer des virus
-- **Phishing** : Faux sites imitant des marques legitimes
+**Ce que l'outil detecte:**
+- **IP Loggers**: Liens qui capturent votre adresse IP et localisation
+- **Trackers**: Elements qui suivent votre activite en ligne
+- **Redirections cachees**: Liens qui vous emmenent ailleurs que prevu
+- **Sites malveillants**: Pages connues pour distribuer des virus
+- **Phishing**: Faux sites imitant des marques legitimes
 
-**Resultat de l'analyse :**
-Vous recevez un rapport clair avec :
+**Resultat de l'analyse:**
+Vous recevez un rapport clair avec:
 - Le niveau de risque global (Sur, Faible, Moyen, Eleve, Critique)
 - La liste des problemes detectes
 - Des recommandations de securite
@@ -39,31 +42,31 @@ Vous recevez un rapport clair avec :
 
 ### 2. Analyseur de Securite
 
-**Ou le trouver :** Menu > Outils > Analyseur de Securite
+**Ou le trouver:** Menu > Outils > Analyseur de Securite
 
-**A quoi ca sert :**
+**A quoi ca sert:**
 Verifiez si un fichier, une URL ou un domaine est dangereux. L'outil consulte plus de 70 sources de securite differentes pour vous donner un verdict fiable.
 
-**Comment l'utiliser :**
+**Comment l'utiliser:**
 
-*Pour une URL :*
+*Pour une URL:*
 1. Copiez l'adresse du site suspect
 2. Collez-la dans le champ "URL"
 3. Cliquez sur "Analyser"
 4. Consultez les resultats
 
-*Pour un fichier :*
+*Pour un fichier:*
 1. Cliquez sur "Fichier"
 2. Selectionnez le fichier a verifier
 3. L'outil calcule son empreinte numerique
 4. Il verifie si le fichier est connu comme malveillant
 
-*Pour un domaine :*
+*Pour un domaine:*
 1. Entrez le nom de domaine (ex: exemple.com)
 2. L'outil verifie sa reputation
 3. Vous obtenez l'historique de securite
 
-**Ce que l'outil detecte :**
+**Ce que l'outil detecte:**
 - Virus et malwares
 - Ransomwares (logiciels de rancon)
 - Chevaux de Troie
@@ -74,18 +77,18 @@ Verifiez si un fichier, une URL ou un domaine est dangereux. L'outil consulte pl
 
 ### 3. Analyseur de Prompt (Anti-Injection)
 
-**Ou le trouver :** Menu > Outils > Analyseur Prompt
+**Ou le trouver:** Menu > Outils > Analyseur Prompt
 
-**A quoi ca sert :**
+**A quoi ca sert:**
 Cet outil analyse les textes pour detecter les tentatives d'injection malveillante, notamment dans les systemes d'intelligence artificielle.
 
-**Comment l'utiliser :**
+**Comment l'utiliser:**
 1. Collez le texte suspect dans la zone de saisie
 2. Cliquez sur "Analyser"
 3. L'outil detecte les patterns dangereux
 4. Consultez le rapport avec les problemes identifies
 
-**Ce que l'outil detecte :**
+**Ce que l'outil detecte:**
 - Tentatives d'injection de prompts
 - Code malveillant cache (eval, exec)
 - Techniques d'obfuscation
@@ -94,19 +97,49 @@ Cet outil analyse les textes pour detecter les tentatives d'injection malveillan
 
 ---
 
-### 4. Verification des Fuites de Donnees
+### 4. Analyseur de Code GitHub (BETA)
 
-**Ou le trouver :** Menu > Outils > Verification Fuites
+**Ou le trouver:** Menu > Outils > Analyseur GitHub
 
-**A quoi ca sert :**
+**A quoi ca sert:**
+Analysez la securite d'un depot de code GitHub avant de l'utiliser. L'outil detecte les vulnerabilites, les mauvaises pratiques et le code "vibecoding" genere par IA sans verification.
+
+**Comment l'utiliser:**
+1. Copiez l'URL du depot GitHub (ex: https://github.com/user/repo)
+2. Collez-la dans le champ URL
+3. Selectionnez la branche (main par defaut)
+4. Cliquez sur "Analyser"
+5. Consultez le rapport detaille
+
+**Ce que l'outil detecte:**
+- **Secrets exposes**: Cles API, mots de passe dans le code
+- **Injections SQL**: Requetes SQL vulnerables
+- **XSS**: Failles Cross-Site Scripting
+- **Dependances vulnerables**: Packages avec failles connues
+- **Code IA toxique**: TODOs, FIXMEs, code non implemente
+- **Problemes d'architecture**: Structure, tests manquants
+
+**Resultat de l'analyse:**
+- Score global sur 100
+- Scores par categorie (securite, architecture, performance...)
+- Liste des problemes avec recommandations
+- Detection des langages et frameworks utilises
+
+---
+
+### 5. Verification des Fuites de Donnees
+
+**Ou le trouver:** Menu > Outils > Verification Fuites
+
+**A quoi ca sert:**
 Verifiez si votre adresse email a ete compromise dans une fuite de donnees. Si c'est le cas, vos mots de passe pourraient etre en danger.
 
-**Comment l'utiliser :**
+**Comment l'utiliser:**
 1. Entrez votre adresse email
 2. Cliquez sur "Verifier"
 3. Consultez la liste des fuites detectees
 
-**Que faire si des fuites sont detectees :**
+**Que faire si des fuites sont detectees:**
 - Changez immediatement vos mots de passe
 - Activez la double authentification
 - Utilisez des mots de passe uniques pour chaque site
@@ -114,20 +147,20 @@ Verifiez si votre adresse email a ete compromise dans une fuite de donnees. Si c
 
 ---
 
-### 5. Quiz Cybersecurite
+### 6. Quiz Cybersecurite
 
-**Ou le trouver :** Menu > Quiz
+**Ou le trouver:** Menu > Quiz
 
-**A quoi ca sert :**
+**A quoi ca sert:**
 Testez vos connaissances en cybersecurite et identifiez vos points faibles. Le quiz analyse vos reponses et vous donne des conseils personnalises.
 
-**Comment l'utiliser :**
+**Comment l'utiliser:**
 1. Cliquez sur "Commencer le Quiz"
 2. Repondez aux questions honnetement
 3. Consultez votre score et vos resultats
 4. Suivez les recommandations pour vous ameliorer
 
-**Types de questions :**
+**Types de questions:**
 - Securite des mots de passe
 - Protection des donnees personnelles
 - Detection des arnaques
@@ -150,17 +183,17 @@ Testez vos connaissances en cybersecurite et identifiez vos points faibles. Le q
 
 ### Icones Courantes
 
-- **Triangle avec !** : Avertissement
-- **Bouclier** : Protection/Securite
-- **Oeil** : Tracker detecte
-- **Lien** : Redirection
-- **Cadenas** : Connexion securisee
+- **Triangle avec !**: Avertissement
+- **Bouclier**: Protection/Securite
+- **Oeil**: Tracker detecte
+- **Lien**: Redirection
+- **Cadenas**: Connexion securisee
 
 ---
 
 ## Les Rapports PDF
 
-### Pourquoi telecharger un rapport ?
+### Pourquoi telecharger un rapport?
 
 - Garder une trace de l'analyse
 - Partager les resultats avec quelqu'un
@@ -169,12 +202,12 @@ Testez vos connaissances en cybersecurite et identifiez vos points faibles. Le q
 
 ### Contenu du rapport
 
-1. **Resume** : Vue d'ensemble du probleme
-2. **Details** : Explication technique
-3. **Sources** : APIs de securite consultees (VirusTotal, Google Safe Browsing, etc.)
-4. **Preuves** : Captures des redirections et trackers
-5. **Recommandations** : Actions a entreprendre
-6. **Reference** : Date, heure et identifiant unique
+1. **Resume**: Vue d'ensemble du probleme
+2. **Details**: Explication technique
+3. **Sources**: APIs de securite consultees (VirusTotal, Google Safe Browsing, etc.)
+4. **Preuves**: Captures des redirections et trackers
+5. **Recommandations**: Actions a entreprendre
+6. **Reference**: Date, heure et identifiant unique
 
 ---
 
@@ -211,49 +244,60 @@ Testez vos connaissances en cybersecurite et identifiez vos points faibles. Le q
 - Mefiez-vous des demandes urgentes d'informations
 - En cas de doute, contactez directement l'organisme concerne
 
+### Code Source (pour developpeurs)
+
+- N'utilisez jamais de code sans le verifier d'abord
+- Analysez les depots GitHub avec notre outil
+- Mefiez-vous du code genere par IA non revise
+- Verifiez les dependances avant installation
+
 ---
 
 ## Questions Frequentes
 
-### L'outil stocke-t-il mes donnees ?
+### L'outil stocke-t-il mes donnees?
 
 Vos analyses sont enregistrees temporairement pour generer les rapports et permettre un suivi dans le panneau d'administration. Aucune donnee personnelle n'est vendue ou partagee.
 
-### Pourquoi l'analyse prend du temps ?
+### Pourquoi l'analyse prend du temps?
 
 L'outil consulte plusieurs sources de securite (VirusTotal, Google Safe Browsing, URLhaus, URLScan.io) pour vous donner un resultat fiable. Cela prend quelques secondes.
 
-### Un QR code "sur" peut-il devenir dangereux ?
+### Un QR code "sur" peut-il devenir dangereux?
 
 Oui, le site de destination peut changer. Nous vous recommandons de re-verifier les QR codes importants regulierement.
 
-### Puis-je utiliser l'outil sur mobile ?
+### Puis-je utiliser l'outil sur mobile?
 
 Oui, le site est optimise pour les smartphones et tablettes. Vous pouvez meme utiliser la camera de votre telephone pour scanner les QR codes directement.
 
-### Que faire si une menace est detectee ?
+### Que faire si une menace est detectee?
 
 1. Ne visitez pas le lien
 2. Ne partagez pas ce lien avec d'autres personnes
 3. Si vous avez deja visite le site, changez vos mots de passe
 4. Signalez le lien malveillant aux autorites competentes
 
-### Comment sont calculees les menaces ?
+### Comment sont calculees les menaces?
 
-Chaque URL est analysee par 4-5 services de securite independants :
-- **VirusTotal** : 70+ moteurs antivirus
-- **Google Safe Browsing** : Base de phishing/malware Google
-- **URLhaus** : Base de malwares abuse.ch
-- **URLScan.io** : Analyse comportementale
-- **Detecteur interne** : IP loggers et trackers
+Chaque URL est analysee par 4-5 services de securite independants:
+- **VirusTotal**: 70+ moteurs antivirus
+- **Google Safe Browsing**: Base de phishing/malware Google
+- **URLhaus**: Base de malwares abuse.ch
+- **URLScan.io**: Analyse comportementale
+- **Detecteur interne**: IP loggers et trackers
 
 Le niveau de menace affiche est le plus eleve parmi toutes les sources.
 
+### L'analyseur GitHub est-il fiable?
+
+L'analyseur GitHub est en version BETA. Il utilise l'analyse statique (sans executer le code) et peut avoir des faux positifs. Utilisez-le comme un outil d'aide a la decision, pas comme une garantie absolue de securite.
+
 ---
 
-## Besoin d'Aide ?
+## Besoin d'Aide?
 
-Si vous avez des questions ou rencontrez un probleme :
+Si vous avez des questions ou rencontrez un probleme:
 - Consultez notre FAQ complete
 - Contactez-nous via le formulaire de contact
 - Signalez les bugs via notre systeme de support
@@ -261,3 +305,4 @@ Si vous avez des questions ou rencontrez un probleme :
 ---
 
 *CyberConfiance - Votre securite numerique simplifiee*
+*Version 2.1 - Decembre 2025*

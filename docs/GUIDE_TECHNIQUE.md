@@ -2,17 +2,21 @@
 
 Ce document regroupe toute la documentation technique de la plateforme CyberConfiance, incluant l'architecture, les services d'analyse, les integrations API et les procedures de deploiement.
 
+**Version**: 2.1  
+**Derniere mise a jour**: Decembre 2025
+
 ---
 
 ## Table des Matieres
 
 1. [Architecture Generale](#1-architecture-generale)
-2. [Services d'Analyse](#2-services-danalyse)
-3. [Integrations API](#3-integrations-api)
-4. [Base de Donnees](#4-base-de-donnees)
-5. [Configuration et Deploiement](#5-configuration-et-deploiement)
-6. [Securite](#6-securite)
-7. [Maintenance](#7-maintenance)
+2. [Structure du Projet](#2-structure-du-projet)
+3. [Services d'Analyse](#3-services-danalyse)
+4. [Integrations API](#4-integrations-api)
+5. [Base de Donnees](#5-base-de-donnees)
+6. [Configuration et Deploiement](#6-configuration-et-deploiement)
+7. [Securite](#7-securite)
+8. [Maintenance](#8-maintenance)
 
 ---
 
@@ -20,119 +24,328 @@ Ce document regroupe toute la documentation technique de la plateforme CyberConf
 
 ### Vue d'ensemble
 
-CyberConfiance est une application Flask de sensibilisation a la cybersecurite avec des outils d'analyse de menaces.
+CyberConfiance est une application Flask de sensibilisation a la cybersecurite avec des outils d'analyse de menaces. L'application utilise une architecture modulaire avec separation claire entre les couches.
 
-### Structure du projet
+### Stack Technologique
 
-```
-cyberconfiance/
-├── main.py                 # Point d'entree de l'application
-├── __init__.py             # Factory de l'application Flask
-├── config.py               # Configuration de l'application
-├── check_env.py            # Verification des variables d'environnement
-├── init_db.py              # Initialisation et migration de la base de donnees
-│
-├── models/                 # Modeles de base de donnees SQLAlchemy
-│   └── __init__.py         # User, Rule, Scenario, QRCodeAnalysis, PromptAnalysis, etc.
-│
-├── routes/                 # Routes Flask (Blueprints)
-│   ├── main.py             # Routes principales
-│   ├── admin_panel.py      # Panneau d'administration
-│   ├── admin_requests.py   # Gestion des requetes
-│   └── request_forms.py    # Formulaires de demande
-│
-├── services/               # Services metier
-│   ├── security_analyzer.py        # Orchestrateur d'analyse multi-sources
-│   ├── qrcode_analyzer_service.py  # Analyse QR codes (anti-quishing)
-│   ├── prompt_analyzer_service.py  # Analyse prompts (anti-injection)
-│   ├── tracker_detector_service.py # Detection trackers et IP loggers
-│   ├── url_shortener_service.py    # Gestion URLs raccourcies
-│   ├── urlscan_service.py          # Integration URLScan.io
-│   ├── google_safe_browsing_service.py
-│   ├── urlhaus_service.py
-│   └── pdf_service.py              # Generation rapports PDF
-│
-├── templates/              # Templates Jinja2
-├── static/                 # Fichiers statiques (CSS, JS, images)
-├── data/                   # Donnees seed et fixtures
-└── docs/                   # Documentation
-```
+| Composant | Technologie |
+|-----------|-------------|
+| Backend | Python 3.12 + Flask 3.x |
+| ORM | SQLAlchemy + Flask-SQLAlchemy |
+| Base de donnees | PostgreSQL (Neon) |
+| Admin | Flask-Admin |
+| Auth | Flask-Login |
+| Forms | Flask-WTF |
+| i18n | Flask-Babel |
+| Rate Limiting | Flask-Limiter |
+| PDF | PyMuPDF (fitz) |
+| QR Code | OpenCV + pyzbar |
+| Production | Gunicorn |
 
-### Diagramme de flux des services
+### Diagramme d'Architecture
 
 ```
-                    +----------------------+
-                    |    Flask Application |
-                    +----------+-----------+
-                               |
-          +--------------------+--------------------+
-          |                    |                    |
-+---------v--------+  +--------v--------+  +-------v--------+
-| QRCodeAnalyzer   |  | SecurityAnalyzer|  | BreachAnalyzer |
-| Service          |  | Service         |  | Service        |
-+--------+---------+  +--------+--------+  +-------+--------+
-         |                     |                   |
-         v                     v                   v
-+------------------+  +------------------+  +---------------+
-| TrackerDetector  |  | Multi-API        |  | HIBP API      |
-| URLShortener     |  | Analysis Engine  |  | Integration   |
-| PatternAnalyzer  |  | (VT, GSB, etc.)  |  +---------------+
-+------------------+  +------------------+
+┌─────────────────────────────────────────────────────────────────────┐
+│                         CLIENT (Browser)                            │
+└─────────────────────────────────────────────────────────────────────┘
+                                   │
+                                   ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                         FLASK APPLICATION                           │
+│  ┌─────────────────────────────────────────────────────────────┐   │
+│  │                      Routes (Blueprints)                     │   │
+│  │  main.py │ pages.py │ outils.py │ auth.py │ admin_*.py      │   │
+│  └─────────────────────────────────────────────────────────────┘   │
+│                                   │                                  │
+│  ┌─────────────────────────────────────────────────────────────┐   │
+│  │                        SERVICES                              │   │
+│  │  ┌───────────┐ ┌───────────┐ ┌───────────┐ ┌───────────┐   │   │
+│  │  │  QRCode   │ │ Security  │ │  GitHub   │ │  Breach   │   │   │
+│  │  │ Analyzer  │ │ Analyzer  │ │ Analyzer  │ │ Analyzer  │   │   │
+│  │  └─────┬─────┘ └─────┬─────┘ └─────┬─────┘ └─────┬─────┘   │   │
+│  │        │             │             │             │          │   │
+│  │        ▼             ▼             ▼             ▼          │   │
+│  │  ┌─────────────────────────────────────────────────────┐   │   │
+│  │  │               API INTEGRATIONS                       │   │   │
+│  │  │  VirusTotal │ GSB │ URLhaus │ URLScan │ HIBP       │   │   │
+│  │  └─────────────────────────────────────────────────────┘   │   │
+│  └─────────────────────────────────────────────────────────────┘   │
+│                                   │                                  │
+│  ┌─────────────────────────────────────────────────────────────┐   │
+│  │                        MODELS                                │   │
+│  │  User │ Analysis │ Content │ Settings │ Logs │ Request      │   │
+│  └─────────────────────────────────────────────────────────────┘   │
+│                                   │                                  │
+└───────────────────────────────────│──────────────────────────────────┘
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                         PostgreSQL Database                         │
+└─────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 2. Services d'Analyse
+## 2. Structure du Projet
 
-### 2.1 QRCodeAnalyzerService
+### Arborescence Complete
 
-**Fichier:** `services/qrcode_analyzer_service.py`
+```
+cyberconfiance/
+│
+├── main.py                     # Point d'entree de l'application
+├── __init__.py                 # Factory Flask + configuration app
+├── config.py                   # Configuration (dev/prod)
+├── check_env.py                # Verification variables d'environnement
+├── init_db.py                  # Initialisation et migration DB
+│
+├── models/                     # Modeles SQLAlchemy (9 fichiers)
+│   ├── __init__.py             # Exports
+│   ├── base.py                 # Base declarative
+│   ├── user.py                 # User, AdminUser
+│   ├── analysis.py             # QRCodeAnalysis, SecurityAnalysis, etc.
+│   ├── content.py              # Rule, Scenario, Glossary, Tool, News, etc.
+│   ├── contact.py              # Contact, Newsletter
+│   ├── logs.py                 # ActivityLog, SecurityLog, ThreatLog
+│   ├── settings.py             # SiteSettings, SEOMetadata, PageContent
+│   └── request.py              # RequestSubmission
+│
+├── routes/                     # Routes Flask (11 fichiers)
+│   ├── __init__.py             # Exports blueprints
+│   ├── main.py                 # Routes principales (/, /about, etc.)
+│   ├── pages.py                # Pages statiques
+│   ├── content.py              # Contenu dynamique
+│   ├── outils.py               # Outils d'analyse
+│   ├── auth.py                 # Authentification
+│   ├── admin_panel.py          # Panel admin principal
+│   ├── admin_routes.py         # Routes admin
+│   ├── admin_requests.py       # Gestion requetes admin
+│   ├── request_forms.py        # Formulaires de demande
+│   └── admin/                  # Sous-module admin (5 fichiers)
+│       ├── __init__.py
+│       ├── dashboard.py
+│       ├── content.py
+│       ├── history.py
+│       └── settings.py
+│
+├── services/                   # Services metier (38 fichiers)
+│   ├── __init__.py
+│   ├── file_upload_service.py
+│   ├── qrcode_analyzer_service.py
+│   ├── request_submission_service.py
+│   │
+│   ├── github/                 # Analyseur GitHub (3 fichiers)
+│   │   ├── __init__.py
+│   │   ├── analyzer.py         # Service principal (1502 lignes)
+│   │   └── patterns.py         # Patterns de detection (500+ lignes)
+│   │
+│   ├── analyzers/              # Analyseurs modulaires (9 fichiers)
+│   │   ├── __init__.py
+│   │   ├── base_analyzer.py
+│   │   ├── security_analyzer.py
+│   │   ├── dependency_analyzer.py
+│   │   ├── architecture_analyzer.py
+│   │   ├── documentation_analyzer.py
+│   │   ├── performance_analyzer.py
+│   │   ├── git_analyzer.py
+│   │   └── ai_patterns_analyzer.py
+│   │
+│   ├── security/               # Services securite (8 fichiers)
+│   │   ├── __init__.py
+│   │   ├── analyzer.py         # Orchestrateur
+│   │   ├── virustotal.py
+│   │   ├── google_safe_browsing.py
+│   │   ├── urlhaus.py
+│   │   ├── urlscan.py
+│   │   ├── tracker_detector.py
+│   │   └── url_shortener.py
+│   │
+│   ├── qrcode/                 # Analyseur QR (4 fichiers)
+│   │   ├── __init__.py
+│   │   ├── analyzer.py
+│   │   ├── decoder.py
+│   │   └── patterns.py
+│   │
+│   ├── prompt/                 # Analyseur prompt (2 fichiers)
+│   │   ├── __init__.py
+│   │   └── analyzer.py
+│   │
+│   ├── breach/                 # Verification fuites (2 fichiers)
+│   │   ├── __init__.py
+│   │   └── hibp.py
+│   │
+│   ├── quiz/                   # Service quiz (2 fichiers)
+│   │   ├── __init__.py
+│   │   └── service.py
+│   │
+│   └── pdf/                    # Generation PDF (8 fichiers)
+│       ├── __init__.py
+│       ├── base.py
+│       ├── service.py
+│       ├── qrcode_report.py
+│       ├── security_report.py
+│       ├── breach_report.py
+│       ├── github_report.py
+│       └── quiz_report.py
+│
+├── templates/                  # Templates Jinja2 (68 fichiers)
+│   ├── base.html               # Template de base
+│   ├── index.html              # Page d'accueil
+│   ├── about.html, contact.html, glossary.html, etc.
+│   │
+│   ├── admin/                  # Templates admin (26 fichiers)
+│   │   ├── base.html
+│   │   ├── dashboard.html
+│   │   └── ...
+│   │
+│   ├── outils/                 # Templates outils (12 fichiers)
+│   │   ├── qrcode_analyzer.html
+│   │   ├── security_analyzer.html
+│   │   ├── github_analyzer.html
+│   │   ├── prompt_analyzer.html
+│   │   ├── breach_analyzer.html
+│   │   ├── quiz.html
+│   │   └── ...
+│   │
+│   ├── programmes/             # Templates programmes (6 fichiers)
+│   │   └── ...
+│   │
+│   └── services/               # Templates services (6 fichiers)
+│       └── ...
+│
+├── static/                     # Fichiers statiques
+│   ├── css/                    # Styles (3 fichiers)
+│   │   ├── style.css
+│   │   ├── theme-light.css
+│   │   └── theme-dark.css
+│   │
+│   ├── js/                     # JavaScript (4 fichiers)
+│   │   ├── main.js
+│   │   ├── quiz.js
+│   │   ├── theme-switcher.js
+│   │   └── theme-lang-switcher.js
+│   │
+│   └── img/                    # Images (4 fichiers)
+│       ├── logo.png
+│       ├── logo_dark.png
+│       ├── hero-bg.jpg
+│       └── og-default.png
+│
+├── utils/                      # Utilitaires (8 fichiers)
+│   ├── __init__.py
+│   ├── document_code_generator.py
+│   ├── hibp_checker.py
+│   ├── i18n.py
+│   ├── logging_utils.py
+│   ├── metadata_collector.py
+│   ├── security_utils.py
+│   └── seed_data.py
+│
+├── data/                       # Donnees seed (6 fichiers JSON)
+│   ├── rules_seed.json
+│   ├── scenarios_seed.json
+│   ├── glossary_seed.json
+│   ├── tools_seed.json
+│   ├── news_seed.json
+│   └── quiz_questions.json
+│
+├── migrations/                 # Scripts migration (6 fichiers)
+│   └── ...
+│
+├── docs/                       # Documentation (3 fichiers MD)
+│   ├── GITHUB_ANALYZER_TECHNICAL.md
+│   ├── GUIDE_TECHNIQUE.md
+│   └── GUIDE_UTILISATEUR.md
+│
+├── requirements.txt            # Dependances Python
+├── README.md                   # Documentation principale
+├── replit.md                   # Documentation Replit
+├── robots.txt                  # SEO
+├── babel.cfg                   # Configuration i18n
+└── deploy_vps.sh               # Script deploiement VPS
+```
+
+### Statistiques du Projet
+
+| Type | Nombre | Lignes (approx.) |
+|------|--------|------------------|
+| Fichiers Python | 42 | ~9,000 |
+| Templates HTML | 68 | ~8,000 |
+| Fichiers CSS | 3 | ~1,500 |
+| Fichiers JS | 4 | ~500 |
+| Fichiers JSON (data) | 6 | ~2,000 |
+| Documentation MD | 4 | ~1,500 |
+| **Total** | **127** | **~22,500** |
+
+---
+
+## 3. Services d'Analyse
+
+### 3.1 QRCodeAnalyzerService
+
+**Fichier:** `services/qrcode_analyzer_service.py` + `services/qrcode/`
 
 Service complet d'analyse de QR codes avec protection anti-quishing.
 
-#### Fonctionnalites
+#### Pipeline d'Analyse
 
-1. **Decodage du QR Code**
-   - Detecteur OpenCV QRCodeDetector (principal) avec 8 techniques de preprocessing
-   - Fallback pyzbar avec multiples methodes de traitement
-   - Formats supportes: PNG, JPEG, GIF, WebP, BMP
-
-2. **Analyse des URL**
-   - Detection de 100+ raccourcisseurs d'URL (bit.ly, goo.gl, t.co, etc.)
-   - Suivi complet de la chaine de redirections (HTTP 301, 302, 307, 308)
-   - Detection des redirections JavaScript (18+ patterns)
-   - Detection des meta refresh et redirections HTTP header
-
-3. **Detection des Trackers et IP Loggers**
-   - Base de donnees de 40+ services d'IP logging connus
-   - Detection des parametres de tracking (UTM, fbclid, gclid, etc.)
-   - Analyse de fingerprinting (canvas, WebGL, audio)
-   - Detection des pixels de tracking et iframes cachees
-
-#### Structure des Resultats
-
-```python
-{
-    'success': True,
-    'extracted_url': 'https://...',
-    'final_url': 'https://...',
-    'redirect_chain': [...],
-    'threat_level': 'critical|high|medium|low|safe',
-    'consolidated_summary': {
-        'ip_logger_detected': True/False,
-        'ip_logger_details': [...],
-        'trackers_detected': True/False,
-        'tracker_count': int,
-        'key_findings': [...],
-        'recommendations': [...],
-        'overall_verdict': 'critical|high|medium|low|safe'
-    }
-}
+```
+Image QR Code
+      │
+      ▼
+┌─────────────────────┐
+│ 1. DECODAGE         │ OpenCV QRCodeDetector (8 techniques preprocessing)
+│                     │ Fallback: pyzbar
+└─────────────────────┘
+      │
+      ▼
+┌─────────────────────┐
+│ 2. EXTRACTION URL   │ Validation format URL
+└─────────────────────┘
+      │
+      ▼
+┌─────────────────────┐
+│ 3. RESOLUTION       │ Suivi redirections (HTTP 301/302/307/308)
+│    REDIRECTIONS     │ Detection meta refresh, JS redirects
+└─────────────────────┘
+      │
+      ▼
+┌─────────────────────┐
+│ 4. DETECTION        │ 40+ services IP logger connus
+│    IP LOGGERS       │ Analyse patterns URL suspects
+└─────────────────────┘
+      │
+      ▼
+┌─────────────────────┐
+│ 5. DETECTION        │ 100+ raccourcisseurs d'URL
+│    TRACKERS         │ Parametres UTM, fbclid, gclid
+│                     │ Fingerprinting detection
+└─────────────────────┘
+      │
+      ▼
+┌─────────────────────┐
+│ 6. ANALYSE APIs     │ VirusTotal, Google Safe Browsing
+│    SECURITE         │ URLhaus, URLScan.io
+└─────────────────────┘
+      │
+      ▼
+┌─────────────────────┐
+│ 7. CONSOLIDATION    │ Score de risque global
+│    RESULTATS        │ Recommandations
+└─────────────────────┘
 ```
 
-### 2.2 SecurityAnalyzerService
+#### Domaines IP Logger detectes (40+)
 
-**Fichier:** `services/security_analyzer.py`
+```
+grabify.link, iplogger.org, 2no.co, blasze.tk, yip.su,
+ps3cfw.com, lovebird.guru, iptrackeronline.com, ipgrabber.ru,
+ipsniff.net, iptracker.link, iplogger.ru, iplogger.info,
+shorturl.at/danger, urlz.fr/tracker, ...
+```
+
+### 3.2 SecurityAnalyzerService
+
+**Fichier:** `services/security/analyzer.py`
 
 Orchestrateur principal coordonnant toutes les analyses de securite multi-sources.
 
@@ -154,114 +367,44 @@ Orchestrateur principal coordonnant toutes les analyses de securite multi-source
 | ip | Adresse IP | VirusTotal |
 | url | URL complete | Toutes les sources |
 
-#### Logique de Priorite
+### 3.3 GitHubCodeAnalyzerService
 
-1. Si VirusTotal detecte >= 5 moteurs positifs → `threat_level = 'critique'`
-2. Si Google Safe Browsing detecte une menace → `threat_level = 'eleve'`
-3. Si URLhaus trouve l'URL dans sa base → `threat_level = 'critique'`
-4. Agregation des resultats avec score de confiance
+**Fichier:** `services/github/analyzer.py`
 
-### 2.3 TrackerDetectorService
+Voir documentation complete: `docs/GITHUB_ANALYZER_TECHNICAL.md`
 
-**Fichier:** `services/tracker_detector_service.py`
+Resume:
+- Clone depots GitHub publics
+- Analyse 200+ patterns de vulnerabilites
+- Detecte 50+ langages et 30+ frameworks
+- Identifie patterns "vibecoding" IA
+- Score global sur 100
 
-Service de detection exhaustive des trackers, IP loggers et techniques de fingerprinting.
+### 3.4 PromptAnalyzerService
 
-#### Domaines IP Logger detectes
+**Fichier:** `services/prompt/analyzer.py`
 
-```
-grabify.link, grabify.org, grabify.icu
-iplogger.org, iplogger.com
-2no.co, blasze.tk, yip.su
-ps3cfw.com, lovebird.guru
-iptrackeronline.com, ipgrabber.ru
-... et 30+ autres services
-```
+Detection des injections de prompts et patterns dangereux.
 
-#### Domaines Tracker detectes
+#### Patterns detectes
 
-```
-doubleclick.net, google-analytics.com
-facebook.com/tr, analytics.twitter.com
-hotjar.com, mixpanel.com, amplitude.com
-segment.io, hubspot.com, intercom.io
-fullstory.com, logrocket.com, heap.io
-```
+- Tentatives d'injection de prompt
+- Code dangereux cache (eval, exec)
+- Techniques d'obfuscation
+- URLs/IPs suspectes dans le texte
+- Tentatives de jailbreak
 
-#### Indicateurs de Fingerprinting
+### 3.5 BreachAnalyzerService (HIBP)
 
-```
-fingerprintjs, fpjs.io
-canvas-fingerprint, webgl-fingerprint
-audio-fingerprint, font-fingerprint
-evercookie, supercookie
-```
+**Fichier:** `services/breach/hibp.py`
 
-#### Score de Menace
-
-| Score | Niveau | Description |
-|-------|--------|-------------|
-| 0-9 | Safe | Aucune menace detectee |
-| 10-29 | Low | Risque faible (parametres de tracking) |
-| 30-49 | Medium | Risque modere (trackers standard) |
-| 50-79 | High | Risque eleve (fingerprinting) |
-| 80+ | Critical | Danger (IP logger confirme) |
-
-### 2.4 URLShortenerService
-
-**Fichier:** `services/url_shortener_service.py`
-
-Service d'expansion et d'analyse des URLs raccourcies.
-
-#### Services detectes (100+)
-
-- **Generaux**: bit.ly, tinyurl.com, is.gd, cutt.ly, short.io
-- **Reseaux Sociaux**: t.co (Twitter), lnkd.in (LinkedIn), fb.me (Facebook)
-- **Medias**: youtu.be, spoti.fi, amzn.to
-- **Presse**: nyti.ms, wapo.st, cnn.it, bbc.in, reut.rs
-- **Monetises (Risque eleve)**: adf.ly, ouo.io, bc.vc, sh.st
-
-#### Niveaux de risque par service
-
-- **Tres faible**: amzn.to, youtu.be, spoti.fi (services officiels)
-- **Faible**: bit.ly, tinyurl.com (services populaires)
-- **Moyen**: is.gd, cutt.ly (services generiques)
-- **Eleve**: adf.ly, ouo.io (monetisation/pub)
-- **Critique**: domaines inconnus ou suspects
-
-### 2.5 PromptAnalyzerService
-
-**Fichier:** `services/prompt_analyzer_service.py`
-
-Service de detection des injections de prompts et patterns dangereux.
-
-#### Fonctionnalites
-
-- Detection des patterns d'injection de prompt
-- Analyse de code dangereux (eval, exec)
-- Detection d'obfuscation
-- Extraction et analyse des URLs/IPs dans le texte
-- Detection des tentatives de jailbreak
-
-### 2.6 PDFReportService
-
-**Fichier:** `services/pdf_service.py`
-
-Generation de rapports PDF forensiques.
-
-#### Structure des Rapports
-
-1. **Page de Couverture** - Logo, titre, date, QR code de verification
-2. **Resume Executif** - Verdict global, score de risque
-3. **Details de l'Analyse** - Chaine de redirection, problemes detectes
-4. **Sources de Verification** - Resultats par API (VT, GSB, URLhaus, URLScan)
-5. **Recommandations** - Actions a entreprendre, conseils de securite
+Integration Have I Been Pwned pour verification des fuites de donnees.
 
 ---
 
-## 3. Integrations API
+## 4. Integrations API
 
-### 3.1 VirusTotal API v3
+### 4.1 VirusTotal API v3
 
 **Variable:** `SECURITY_ANALYSIS_API_KEY`
 
@@ -271,98 +414,62 @@ Generation de rapports PDF forensiques.
 | Limite gratuite | 4 req/min, 500/jour |
 | Documentation | https://developers.virustotal.com/ |
 
-#### Endpoints utilises
-
 ```python
-# Analyse d'URL
+import vt
+client = vt.Client(api_key)
 url_id = vt.url_id(url)
 url_obj = client.get_object(f"/urls/{url_id}")
-
-# Analyse de domaine
-domain_obj = client.get_object(f"/domains/{domain}")
-
-# Analyse de fichier (hash)
-file_obj = client.get_object(f"/files/{file_hash}")
 ```
 
-### 3.2 Google Safe Browsing API v4
+### 4.2 Google Safe Browsing API v4
 
 **Variable:** `SECURITY_ANALYSIS_API_KEY_1`
 
 | Caracteristique | Valeur |
 |-----------------|--------|
 | Limite gratuite | 10,000 req/jour |
+| Types de menaces | MALWARE, SOCIAL_ENGINEERING, UNWANTED_SOFTWARE |
 | Documentation | https://developers.google.com/safe-browsing |
 
-#### Types de menaces detectees
-
-- `MALWARE` - Logiciels malveillants
-- `SOCIAL_ENGINEERING` - Phishing et ingenierie sociale
-- `UNWANTED_SOFTWARE` - Logiciels indesirables
-- `POTENTIALLY_HARMFUL_APPLICATION` - Applications dangereuses
-
-### 3.3 URLhaus API (abuse.ch)
+### 4.3 URLhaus API (abuse.ch)
 
 **Variable:** `SECURITY_ANALYSIS_API_KEY_2`
 
 | Caracteristique | Valeur |
 |-----------------|--------|
-| Limite | Illimitee |
+| Limite | Illimitee (pas de cle requise) |
+| Types | malware_download, phishing, cryptominer, trojan, botnet |
 | Documentation | https://urlhaus-api.abuse.ch/ |
 
-#### Types de menaces
-
-- `malware_download` - Telechargement de malware
-- `phishing` - Pages de phishing
-- `cryptominer` - Scripts de minage
-- `trojan` - Chevaux de Troie
-- `botnet` - Serveurs C&C de botnets
-
-### 3.4 URLScan.io API
+### 4.4 URLScan.io API
 
 **Variable:** `SECURITY_ANALYSIS_API_KEY_3`
 
 | Caracteristique | Valeur |
 |-----------------|--------|
-| Limite gratuite | 5K/jour |
+| Limite gratuite | 5,000/jour |
+| Fonctionnalites | Screenshots, trackers, brand detection |
 | Documentation | https://urlscan.io/docs/api/ |
 
-#### Donnees retournees
-
-```python
-{
-    'threat_score': int,           # Score 0-100
-    'is_malicious': bool,          # Verdict global
-    'brands_detected': list,       # Marques usurpees (1500+ marques)
-    'trackers_detected': list,     # Trackers trouves
-    'ip_logger_indicators': list,  # Indicateurs d'IP logging
-    'screenshot_url': str,         # URL de la capture d'ecran
-}
-```
-
-### 3.5 Have I Been Pwned API
+### 4.5 Have I Been Pwned API
 
 **Variable:** `HIBP_API_KEY`
 
 | Caracteristique | Valeur |
 |-----------------|--------|
 | Cout | ~$3.50/mois |
+| Fonctionnalites | Recherche fuites par email, details breaches |
 | Documentation | https://haveibeenpwned.com/API/v3 |
-
-#### Fonctionnalites
-
-- Recherche de fuites par email
-- Details des breaches
-- Types de donnees compromises
-- Recommandations personnalisees
 
 ---
 
-## 4. Base de Donnees
+## 5. Base de Donnees
 
 ### Modeles Principaux
 
-```
+#### Analyses
+
+```python
 QRCodeAnalysis
 ├── id, document_code
 ├── original_filename
@@ -376,60 +483,122 @@ QRCodeAnalysis
 ├── ip_address, user_agent
 └── created_at
 
-PromptAnalysis
-├── id, document_code
-├── prompt_text, prompt_length
-├── threat_level, threat_detected
-├── injection_detected
-├── code_detected
-├── obfuscation_detected
-├── dangerous_patterns (JSON)
-├── analysis_results (JSON)
-├── pdf_report, pdf_generated_at
-├── ip_address, user_agent
-└── created_at
-
 SecurityAnalysis
 ├── id
-├── analysis_type (file|url|domain)
+├── analysis_type (file|url|domain|ip)
 ├── input_value, input_type
 ├── threat_level, threat_detected
 ├── api_results (JSON)
-├── pdf_report, pdf_generated_at
+├── pdf_report
 └── created_at
 
 BreachAnalysis
 ├── id, document_code
-├── email
-├── breach_count, risk_level
+├── email, breach_count, risk_level
 ├── breaches (JSON)
-├── pdf_report, pdf_generated_at
-├── ip_address
+├── pdf_report
+└── created_at
+
+PromptAnalysis
+├── id, document_code
+├── prompt_text, prompt_length
+├── threat_level, injection_detected
+├── dangerous_patterns (JSON)
+├── analysis_results (JSON)
+└── created_at
+
+GitHubAnalysis
+├── id, document_code
+├── repo_url, repo_name, repo_owner
+├── branch, commit_hash
+├── overall_score, security_score, dependency_score
+├── architecture_score, performance_score, documentation_score
+├── risk_level
+├── security_findings (JSON)
+├── languages_detected (JSON)
+├── frameworks_detected (JSON)
+└── created_at
+
+QuizResult
+├── id, document_code
+├── score, category_scores (JSON)
+├── email, pdf_report
 └── created_at
 ```
 
-### Autres Tables
+#### Contenu
 
-- `users` - Utilisateurs et administrateurs
-- `rules` - Regles de sensibilisation
-- `scenarios` - Scenarios d'attaque
-- `glossary` - Termes du glossaire
-- `tools` - Outils de securite
-- `news` - Actualites
-- `contacts` - Messages de contact
-- `quiz_results` - Resultats de quiz
-- `attack_types` - Types d'attaques
-- `newsletter` - Abonnes newsletter
-- `activity_logs` - Journaux d'activite
-- `security_logs` - Journaux de securite
-- `threat_logs` - Journaux de menaces
-- `site_settings` - Parametres du site
-- `seo_metadata` - Metadonnees SEO
-- `request_submissions` - Soumissions de demandes
+```python
+User
+├── id, username, email, password_hash
+├── is_admin, is_active
+└── created_at
+
+Rule, Scenario, Glossary, Tool, AttackType, News
+├── id, title/name, description/content
+├── category/severity/icon
+├── is_active, order_index
+└── created_at, updated_at
+
+Contact
+├── id, name, email, subject, message
+├── is_read, is_archived
+└── created_at
+
+Newsletter
+├── id, email, is_active
+└── created_at
+
+RequestSubmission
+├── id, document_code
+├── request_type, status
+├── form_data (JSON)
+├── submitted_documents (JSON)
+└── created_at
+```
+
+#### Configuration
+
+```python
+SiteSettings
+├── id, key, value, category
+└── updated_at
+
+SEOMetadata
+├── id, page_path
+├── title, description, keywords
+├── og_title, og_description, og_image
+└── updated_at
+
+PageContent
+├── id, page_key, section_key
+├── title, content
+└── updated_at
+```
+
+#### Logs
+
+```python
+ActivityLog
+├── id, action, details
+├── ip_address, user_agent
+└── created_at
+
+SecurityLog
+├── id, event_type, severity
+├── details, ip_address
+└── created_at
+
+ThreatLog
+├── id, threat_type, threat_level
+├── source_url, detection_source
+├── details
+└── created_at
+```
 
 ---
 
-## 5. Configuration et Deploiement
+## 6. Configuration et Deploiement
 
 ### Variables d'Environnement
 
@@ -445,12 +614,19 @@ SECURITY_ANALYSIS_API_KEY=votre_cle_virustotal
 
 ```bash
 SECURITY_ANALYSIS_API_KEY_1=votre_cle_google_safe_browsing
-SECURITY_ANALYSIS_API_KEY_2=votre_cle_urlhaus
+SECURITY_ANALYSIS_API_KEY_2=votre_cle_urlhaus  # Optionnel (gratuit sans cle)
 SECURITY_ANALYSIS_API_KEY_3=votre_cle_urlscan
 HIBP_API_KEY=votre_cle_hibp
 FLASK_DEBUG=False
-SECRET_KEY=votre_cle_secrete_aleatoire
+SECRET_KEY=votre_cle_secrete_aleatoire_32_chars
 ```
+
+### Deploiement Replit
+
+L'application est configuree pour Replit avec:
+- Workflow `CyberConfiance` qui lance `python main.py`
+- Port 5000 expose automatiquement
+- PostgreSQL Neon integre
 
 ### Deploiement VPS (Linux)
 
@@ -458,41 +634,38 @@ SECRET_KEY=votre_cle_secrete_aleatoire
 
 - Ubuntu 22.04+ ou Debian 11+
 - Python 3.11+
-- PostgreSQL
+- PostgreSQL 14+
 - Nginx
 - Systemd
 
 #### Installation
 
 ```bash
-# 1. Installer les dependances
-sudo apt update
-sudo apt install -y python3.11 python3.11-venv python3-pip postgresql nginx
-
-# 2. Configurer PostgreSQL
-sudo -u postgres psql
-CREATE DATABASE cyberconfiance;
-CREATE USER cyberconf WITH PASSWORD 'votre_mot_de_passe';
-GRANT ALL PRIVILEGES ON DATABASE cyberconfiance TO cyberconf;
-\q
-
-# 3. Cloner et configurer
+# 1. Cloner et configurer
 cd /var/www
-sudo git clone https://github.com/votre-repo/cyberconfiance.git
+sudo git clone <repo_url> cyberconfiance
 cd cyberconfiance
-sudo python3.11 -m venv venv
+
+# 2. Environnement virtuel
+python3.11 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 
-# 4. Initialiser la base de donnees
+# 3. Configuration
+cp .env.example .env
+nano .env  # Editer les variables
+
+# 4. Base de donnees
 python init_db.py
+
+# 5. Demarrer
+gunicorn --bind=0.0.0.0:5000 --workers=4 main:app
 ```
 
-#### Configuration Systemd
-
-Creer `/etc/systemd/system/cyberconfiance.service`:
+#### Service Systemd
 
 ```ini
+# /etc/systemd/system/cyberconfiance.service
 [Unit]
 Description=CyberConfiance Web Application
 After=network.target postgresql.service
@@ -500,7 +673,6 @@ After=network.target postgresql.service
 [Service]
 Type=notify
 User=www-data
-Group=www-data
 WorkingDirectory=/var/www/cyberconfiance
 Environment="PATH=/var/www/cyberconfiance/venv/bin"
 EnvironmentFile=/var/www/cyberconfiance/.env
@@ -516,128 +688,68 @@ Restart=always
 WantedBy=multi-user.target
 ```
 
-#### Configuration Nginx
-
-```nginx
-server {
-    listen 443 ssl http2;
-    server_name votre-domaine.com;
-
-    ssl_certificate /etc/letsencrypt/live/votre-domaine.com/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/votre-domaine.com/privkey.pem;
-
-    location / {
-        proxy_pass http://127.0.0.1:5000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-
-    location /static {
-        alias /var/www/cyberconfiance/static;
-        expires 30d;
-    }
-}
-```
-
-### Deploiement Docker
-
-```dockerfile
-FROM python:3.11-slim
-
-WORKDIR /app
-
-RUN apt-get update && apt-get install -y \
-    postgresql-client libzbar0 \
-    && rm -rf /var/lib/apt/lists/*
-
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-COPY . .
-
-ENV FLASK_DEBUG=False
-ENV PORT=5000
-
-EXPOSE 5000
-
-CMD ["gunicorn", "--bind=0.0.0.0:5000", "--reuse-port", "--workers=2", "main:app"]
-```
-
 ---
 
-## 6. Securite
+## 7. Securite
 
 ### Pratiques Implementees
 
 1. **Pas d'execution de contenu**
-   - Les URLs sont analysees sans etre ouvertes dans un navigateur
-   - Les fichiers sont hashes sans etre executes
+   - URLs analysees sans ouverture navigateur
+   - Fichiers hashes sans execution
 
 2. **Protection SSRF**
-   - Validation des URLs avant requetes
-   - Blocage des adresses privees et localhost
-   - Protection contre le DNS rebinding
+   - Validation URLs avant requetes
+   - Blocage adresses privees/localhost
 
 3. **Rate Limiting**
-   - Protection contre les abus d'API
+   - Protection abus API
    - Limitation par IP
 
-4. **Validation des Entrees**
-   - Sanitization des URLs
-   - Verification des formats de fichier
-   - Limite de taille des uploads (10 MB)
+4. **Validation Entrees**
+   - Sanitization URLs
+   - Verification formats fichiers
+   - Limite uploads (10 MB)
 
-5. **Gestion des Secrets**
+5. **Gestion Secrets**
    - Variables d'environnement
-   - Jamais de cles en dur dans le code
+   - Jamais de cles en dur
 
-### Checklist de Securite Production
+6. **CSRF Protection**
+   - Flask-WTF CSRF actif
 
-- [ ] Changez le mot de passe admin par defaut
-- [ ] Configurez `ADMIN_PASSWORD` different de `admin123`
-- [ ] Verifiez que `FLASK_DEBUG=False` en production
-- [ ] Utilisez HTTPS (certificat SSL)
-- [ ] Configurez un firewall (UFW sur Ubuntu)
-- [ ] Mettez a jour regulierement les dependances
-- [ ] Activez les sauvegardes automatiques de la base
-- [ ] Configurez fail2ban
+### Checklist Production
+
+- [ ] Mot de passe admin change
+- [ ] `FLASK_DEBUG=False`
+- [ ] HTTPS (certificat SSL)
+- [ ] Firewall configure
+- [ ] Dependances a jour
+- [ ] Sauvegardes DB automatiques
+- [ ] fail2ban configure
 
 ---
 
-## 7. Maintenance
+## 8. Maintenance
 
 ### Verification au Demarrage
 
 Le script `check_env.py` verifie automatiquement:
-1. Presence des variables requises
-2. Etat des APIs de securite configurees
-3. Affichage du resume de configuration
+1. Variables requises presentes
+2. APIs de securite configurees
+3. Resume de configuration
 
-### Initialisation de la Base de Donnees
+### Commandes Utiles
 
 ```bash
-python init_db.py           # Initialisation normale
-python init_db.py --check   # Verification des modeles
-python init_db.py --reset   # Reinitialisation complete (DANGER!)
-python init_db.py --verify-libs  # Verification des bibliotheques
-```
+# Initialisation DB
+python init_db.py
 
-### Ajout de nouveaux IP Loggers/Trackers
+# Verification
+python init_db.py --check
 
-Modifier `services/tracker_detector_service.py`:
-
-```python
-self.ip_logger_domains = [
-    # ... domaines existants
-    'nouveau-ip-logger.com',
-]
-
-self.tracker_domains = [
-    # ... trackers existants
-    'nouveau-tracker.com',
-]
+# Reset (DANGER)
+python init_db.py --reset
 ```
 
 ### Sauvegardes PostgreSQL
@@ -647,61 +759,20 @@ self.tracker_domains = [
 DATE=$(date +%Y%m%d_%H%M%S)
 BACKUP_DIR="/var/backups/cyberconfiance"
 mkdir -p $BACKUP_DIR
-
 pg_dump cyberconfiance | gzip > $BACKUP_DIR/backup_$DATE.sql.gz
-
-# Garder seulement les 30 dernieres sauvegardes
 find $BACKUP_DIR -name "backup_*.sql.gz" -mtime +30 -delete
 ```
 
-### Mise a jour du code
+### Mise a jour
 
 ```bash
 cd /var/www/cyberconfiance
-sudo git pull origin main
+git pull origin main
 source venv/bin/activate
 pip install -r requirements.txt
 python init_db.py
 sudo systemctl restart cyberconfiance
 ```
-
----
-
----
-
-## 8. Analyseur de Code GitHub (BETA)
-
-Pour la documentation technique complete de l'analyseur GitHub, voir:
-**`docs/GITHUB_ANALYZER_TECHNICAL.md`**
-
-### Resume
-
-L'analyseur de code GitHub est un service d'analyse statique qui:
-
-1. Clone les depots GitHub publics
-2. Analyse 200+ patterns de vulnerabilites (OWASP Top 10)
-3. Detecte 50+ langages et 30+ frameworks
-4. Identifie les patterns "vibecoding" (code genere par IA non optimise)
-5. Evalue la qualite globale avec un score sur 100
-
-### Poids du score global
-
-| Categorie | Poids |
-|-----------|-------|
-| Securite | 35% |
-| Dependances | 15% |
-| Architecture | 15% |
-| Patterns IA Toxiques | 10% |
-| Performance | 10% |
-| Documentation | 10% |
-| Qualite Git | 5% |
-
-### Limitations actuelles (BETA)
-
-- Analyse statique uniquement (pas d'execution)
-- Timeout 180s pour le clonage
-- Fichiers > 1MB ignores
-- Regex-based (pas d'AST complet)
 
 ---
 
