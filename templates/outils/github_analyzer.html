@@ -223,7 +223,7 @@
                     Vulnérabilités de Sécurité ({{ results.security_findings|length }})
                 </h3>
                 <div class="issues-list">
-                    {% for finding in results.security_findings[:20] %}
+                    {% for finding in results.security_findings %}
                     <div class="issue-item severity-{{ finding.severity }}" style="padding: 15px; margin-bottom: 10px; background: rgba(239, 68, 68, 0.05); border-radius: 8px; border-left: 4px solid {% if finding.severity == 'critical' %}#ef4444{% elif finding.severity == 'high' %}#fb923c{% elif finding.severity == 'medium' %}#eab308{% else %}#3b82f6{% endif %};">
                         <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px;">
                             <div>
@@ -239,18 +239,19 @@
                             <code style="background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px;">{{ finding.file }}:{{ finding.line }}</code>
                         </div>
                         {% if finding.evidence %}
-                        <div style="margin-top: 8px; padding: 8px; background: rgba(0,0,0,0.3); border-radius: 4px; font-family: monospace; font-size: 0.8rem; color: #94a3b8; overflow-x: auto;">
-                            {{ finding.evidence[:100] }}{% if finding.evidence|length > 100 %}...{% endif %}
-                        </div>
+                        <div style="margin-top: 8px; padding: 10px; background: rgba(0,0,0,0.4); border-radius: 4px; font-family: 'Fira Code', 'Monaco', monospace; font-size: 0.85rem; color: #e2e8f0; overflow-x: auto; white-space: pre-wrap; word-break: break-all;">{{ finding.evidence }}</div>
+                        {% endif %}
+                        {% if finding.context %}
+                        <details style="margin-top: 8px;">
+                            <summary style="cursor: pointer; color: #64748b; font-size: 0.8rem;">Voir le contexte (lignes environnantes)</summary>
+                            <pre style="margin-top: 5px; padding: 10px; background: rgba(0,0,0,0.5); border-radius: 4px; font-size: 0.75rem; color: #94a3b8; overflow-x: auto;">{{ finding.context }}</pre>
+                        </details>
                         {% endif %}
                         <div style="margin-top: 8px; font-size: 0.8rem; color: #22c55e;">
                             <strong>Correction:</strong> {{ finding.remediation }}
                         </div>
                     </div>
                     {% endfor %}
-                    {% if results.security_findings|length > 20 %}
-                    <p style="text-align: center; color: #94a3b8; font-style: italic;">... et {{ results.security_findings|length - 20 }} autres vulnérabilités</p>
-                    {% endif %}
                 </div>
             </div>
             {% endif %}
@@ -264,18 +265,22 @@
                     Patterns IA Toxiques / Vibecoding ({{ results.toxic_ai_patterns|length }})
                 </h3>
                 <div class="issues-list">
-                    {% for finding in results.toxic_ai_patterns[:10] %}
+                    {% for finding in results.toxic_ai_patterns %}
                     <div class="issue-item" style="padding: 12px; margin-bottom: 8px; background: rgba(168, 85, 247, 0.05); border-radius: 8px; border-left: 3px solid #a855f7;">
-                        <strong style="color: #a855f7;">{{ finding.title }}</strong>
-                        <span style="margin-left: 10px; font-size: 0.8rem; color: #94a3b8;">{{ finding.file }}:{{ finding.line }}</span>
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px;">
+                            <strong style="color: #a855f7;">{{ finding.title }}</strong>
+                            <code style="font-size: 0.8rem; color: #94a3b8; background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px;">{{ finding.file }}:{{ finding.line }}</code>
+                        </div>
                         {% if finding.evidence %}
-                        <div style="margin-top: 5px; font-size: 0.8rem; color: #94a3b8; font-family: monospace;">{{ finding.evidence[:80] }}</div>
+                        <div style="margin-top: 8px; padding: 8px; background: rgba(0,0,0,0.4); border-radius: 4px; font-family: 'Fira Code', 'Monaco', monospace; font-size: 0.85rem; color: #e2e8f0; overflow-x: auto; white-space: pre-wrap;">{{ finding.evidence }}</div>
+                        {% endif %}
+                        {% if finding.remediation %}
+                        <div style="margin-top: 6px; font-size: 0.8rem; color: #22c55e;">
+                            <strong>Correction:</strong> {{ finding.remediation }}
+                        </div>
                         {% endif %}
                     </div>
                     {% endfor %}
-                    {% if results.toxic_ai_patterns|length > 10 %}
-                    <p style="text-align: center; color: #94a3b8; font-style: italic;">... et {{ results.toxic_ai_patterns|length - 10 }} autres patterns</p>
-                    {% endif %}
                 </div>
             </div>
             {% endif %}
@@ -289,10 +294,20 @@
                     Dépendances ({{ results.dependency_findings|length }})
                 </h3>
                 <div class="issues-list">
-                    {% for finding in results.dependency_findings[:10] %}
+                    {% for finding in results.dependency_findings %}
                     <div class="issue-item" style="padding: 12px; margin-bottom: 8px; background: rgba(251, 146, 60, 0.05); border-radius: 8px; border-left: 3px solid #fb923c;">
-                        <strong style="color: #fb923c;">{{ finding.title }}</strong>
-                        <span style="margin-left: 10px; font-size: 0.8rem; color: #94a3b8;">{{ finding.file }}</span>
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px;">
+                            <strong style="color: #fb923c;">{{ finding.title }}</strong>
+                            <code style="font-size: 0.8rem; color: #94a3b8; background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px;">{{ finding.file }}{% if finding.line %}:{{ finding.line }}{% endif %}</code>
+                        </div>
+                        {% if finding.evidence %}
+                        <div style="margin-top: 8px; padding: 8px; background: rgba(0,0,0,0.4); border-radius: 4px; font-family: monospace; font-size: 0.85rem; color: #e2e8f0; overflow-x: auto;">{{ finding.evidence }}</div>
+                        {% endif %}
+                        {% if finding.remediation %}
+                        <div style="margin-top: 6px; font-size: 0.8rem; color: #22c55e;">
+                            <strong>Correction:</strong> {{ finding.remediation }}
+                        </div>
+                        {% endif %}
                     </div>
                     {% endfor %}
                 </div>
@@ -330,10 +345,20 @@
                     Performance ({{ results.performance_findings|length }})
                 </h3>
                 <div class="issues-list">
-                    {% for finding in results.performance_findings[:10] %}
+                    {% for finding in results.performance_findings %}
                     <div class="issue-item" style="padding: 12px; margin-bottom: 8px; background: rgba(234, 179, 8, 0.05); border-radius: 8px; border-left: 3px solid #eab308;">
-                        <strong style="color: #eab308;">{{ finding.title }}</strong>
-                        <span style="margin-left: 10px; font-size: 0.8rem; color: #94a3b8;">{{ finding.file }}:{{ finding.line }}</span>
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px;">
+                            <strong style="color: #eab308;">{{ finding.title }}</strong>
+                            <code style="font-size: 0.8rem; color: #94a3b8; background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px;">{{ finding.file }}:{{ finding.line }}</code>
+                        </div>
+                        {% if finding.evidence %}
+                        <div style="margin-top: 8px; padding: 8px; background: rgba(0,0,0,0.4); border-radius: 4px; font-family: monospace; font-size: 0.85rem; color: #e2e8f0; overflow-x: auto;">{{ finding.evidence }}</div>
+                        {% endif %}
+                        {% if finding.remediation %}
+                        <div style="margin-top: 6px; font-size: 0.8rem; color: #22c55e;">
+                            <strong>Correction:</strong> {{ finding.remediation }}
+                        </div>
+                        {% endif %}
                     </div>
                     {% endfor %}
                 </div>
