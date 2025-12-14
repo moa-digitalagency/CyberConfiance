@@ -1433,17 +1433,15 @@ class PDFReportService:
         
         y_pos += 50
         
-        analysis_results = analysis.analysis_results or {}
-        
         findings_sections = [
-            ("PROBLEMES DE SECURITE", analysis_results.get('security_findings', []), self.danger_color),
-            ("PATTERNS IA TOXIQUES (VIBECODING)", analysis_results.get('toxic_ai_patterns', []), self.warning_color),
-            ("PROBLEMES DE PERFORMANCE", analysis_results.get('performance_findings', []), (251/255, 191/255, 36/255)),
-            ("PROBLEMES DE DEPENDANCES", analysis_results.get('dependency_findings', []), self.base_color),
-            ("ARCHITECTURE", analysis_results.get('architecture_findings', []), self.base_color),
-            ("HYGIENE GIT", analysis_results.get('git_hygiene_findings', []), self.base_color),
-            ("DOCUMENTATION", analysis_results.get('documentation_findings', []), self.base_color),
-            ("QUALITE DU CODE", analysis_results.get('code_quality_findings', []), self.warning_color),
+            ("PROBLEMES DE SECURITE", analysis.security_findings or [], self.danger_color),
+            ("PATTERNS IA TOXIQUES (VIBECODING)", analysis.toxic_ai_patterns or [], self.warning_color),
+            ("PROBLEMES DE PERFORMANCE", analysis.performance_findings or [], (251/255, 191/255, 36/255)),
+            ("PROBLEMES DE DEPENDANCES", analysis.dependency_findings or [], self.base_color),
+            ("ARCHITECTURE", analysis.architecture_findings or [], self.base_color),
+            ("HYGIENE GIT", analysis.git_hygiene_findings or [], self.base_color),
+            ("DOCUMENTATION", analysis.documentation_findings or [], self.base_color),
+            ("QUALITE DU CODE", analysis.code_quality_findings or [], self.warning_color),
         ]
         
         for section_title, findings, section_color in findings_sections:
@@ -1511,13 +1509,13 @@ class PDFReportService:
                         fontsize=12, fontname="helv", color=self.base_color)
         y_pos += 20
         
-        languages = analysis_results.get('languages_detected', {})
+        languages = analysis.languages_detected or {}
         if languages:
             lang_text = ", ".join([f"{lang}: {count}" for lang, count in list(languages.items())[:6]])
             page.insert_text((40, y_pos), f"Langages: {lang_text}", fontsize=9, color=(0.3, 0.3, 0.3))
             y_pos += 15
         
-        frameworks = analysis_results.get('frameworks_detected', [])
+        frameworks = analysis.frameworks_detected or []
         if frameworks:
             fw_text = ", ".join(frameworks[:6])
             page.insert_text((40, y_pos), f"Frameworks: {fw_text}", fontsize=9, color=(0.3, 0.3, 0.3))
