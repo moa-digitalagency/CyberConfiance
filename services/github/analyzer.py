@@ -41,7 +41,7 @@ from .patterns import (
     GIT_QUALITY_WEIGHT,
     DOCUMENTATION_WEIGHT,
 )
-from .translations import translate_security_message, translate_text, get_contextual_remediation
+from .translations import translate_security_message, translate_text, get_contextual_remediation, get_smart_remediation
 
 
 class GitHubCodeAnalyzerService:
@@ -444,21 +444,25 @@ class GitHubCodeAnalyzerService:
     
     def _post_process_findings(self):
         """
-        Post-traitement de tous les findings:
-        - Traduction des messages anglais restants
-        - Remplacement des rémediations génériques
+        Post-traitement ULTIME de tous les findings:
+        - Traduction complète FR
+        - Nettoyage textes anglais
+        - Rémediations intelligentes
         """
         for category in self.findings:
             for finding in self.findings[category]:
-                if finding.get('title'):
-                    finding['title'] = translate_text(finding['title'], aggressive=True)
+                original_title = finding.get('title', '')
+                translated_title = translate_text(original_title, deep_clean=True)
+                finding['title'] = translated_title
                 
-                remediation = finding.get('remediation', '')
-                if 'Semgrep' in remediation or 'documentation' in remediation.lower():
-                    issue_type = finding.get('type', 'default')
-                    finding['remediation'] = get_contextual_remediation(issue_type)
-                else:
-                    finding['remediation'] = translate_text(remediation, aggressive=True)
+                finding['remediation'] = get_smart_remediation(
+                    translated_title,
+                    finding.get('severity', 'medium'),
+                    finding.get('file', '')
+                )
+                
+                if 'evidence' in finding and isinstance(finding['evidence'], str):
+                    finding['evidence'] = translate_text(finding['evidence'], deep_clean=False)
     
     def _fetch_file_via_api(self, owner: str, repo: str, filepath: str, ref: str = "main") -> str:
         """
@@ -658,47 +662,89 @@ class GitHubCodeAnalyzerService:
                 pass
     
     def _analyze_all_files(self):
+        """Analyse tous les fichiers avec exclusions STRICTES."""
         if not self.temp_dir:
             return
-        excluded_dirs = {'.git', 'node_modules', '__pycache__', 'venv', 'env', 
-                        '.venv', 'vendor', 'dist', 'build', '.next', 'coverage',
-                        '.cache', '.pytest_cache', '.mypy_cache', 'target',
-                        'bower_components', '.nuxt', '.output', 'out',
-                        'docs', 'documentation', 'attached_assets', 'uploads',
-                        'static/uploads', 'media', 'tmp', 'temp', '.replit',
-                        'replit_zip_error_log.txt', '.local', 'migrations'}
-        excluded_extensions = {'.min.js', '.min.css', '.map', '.lock', '.svg', 
-                              '.png', '.jpg', '.jpeg', '.gif', '.ico', '.woff', 
-                              '.woff2', '.ttf', '.eot', '.otf', '.mp3', '.mp4',
-                              '.avi', '.mov', '.webm', '.pdf', '.zip', '.tar',
-                              '.gz', '.rar', '.7z', '.exe', '.dll', '.so',
-                              '.pyc', '.pyo', '.class', '.jar', '.war', '.md',
-                              '.log', '.txt'}
         
-        excluded_patterns = [
-            r'.*README.*',
-            r'.*CHANGELOG.*',
-            r'.*LICENSE.*',
-            r'.*CONTRIBUTING.*',
-            r'.*GUIDE.*',
-            r'.*attached_assets/.*',
+        excluded_dirs = {
+            '.git', 'node_modules', '__pycache__', 'venv', 'env', '.venv',
+            'vendor', 'dist', 'build', '.next', 'coverage', '.cache',
+            '.pytest_cache', '.mypy_cache', 'target', 'bower_components',
+            '.nuxt', '.output', 'out', '.tox', '.nox',
+            'docs', 'documentation', 'doc', 'wiki',
+            'attached_assets', 'uploads', 'static/uploads', 'media',
+            'assets', 'public/assets',
+            'tmp', 'temp', '.tmp', '.temp',
+            '.vscode', '.idea', '.vs', '.replit',
+            'migrations', 'alembic', 'locale', 'locales', 'i18n', 'translations',
+            '.local', 'replit_zip_error_log.txt',
+        }
+        
+        excluded_extensions = {
+            '.min.js', '.min.css', '.map',
+            '.lock', '.toml', '.ini', '.cfg', '.conf',
+            '.svg', '.png', '.jpg', '.jpeg', '.gif', '.ico', '.webp',
+            '.bmp', '.tiff', '.psd',
+            '.woff', '.woff2', '.ttf', '.eot', '.otf',
+            '.mp3', '.mp4', '.avi', '.mov', '.webm', '.mkv', '.flv',
+            '.pdf', '.zip', '.tar', '.gz', '.rar', '.7z', '.exe',
+            '.dll', '.so', '.dylib',
+            '.pyc', '.pyo', '.class', '.jar', '.war',
+            '.log',
+            '.md', '.rst', '.txt', '.adoc', '.org',
+        }
+        
+        excluded_filename_patterns = [
+            r'^init_db\.py$',
+            r'^init_demo_data\.py$',
+            r'^init_demo\.py$',
+            r'^seed\.py$',
+            r'^seed_data\.py$',
+            r'^demo_data\.py$',
+            r'.*_seed\.py$',
+            r'.*_demo\.py$',
+            r'^\d{3,}_.*\.py$',
+            r'^migration_.*\.py$',
+            r'.*_migration\.py$',
+            r'^test_.*\.py$',
+            r'.*_test\.py$',
+            r'^.*\.test\.js$',
+            r'^.*\.spec\.js$',
+            r'^\.env.*',
+            r'^config\.(dev|prod|test)\..*$',
+            r'^README.*',
+            r'^CHANGELOG.*',
+            r'^LICENSE.*',
+            r'^CONTRIBUTING.*',
+            r'^replit.*',
+            r'^\.replit.*',
             r'.*Amelioration.*',
-            r'.*replit.*',
             r'.*seed\.json$',
-            r'.*/migrations/.*',
         ]
+        
+        files_analyzed = 0
+        max_files = 500
         
         for root, dirs, files in os.walk(self.temp_dir):
             dirs[:] = [d for d in dirs if d not in excluded_dirs]
             
             for filename in files:
+                if files_analyzed >= max_files:
+                    break
+                
                 if any(filename.endswith(ext) for ext in excluded_extensions):
+                    continue
+                
+                if any(re.match(pattern, filename, re.IGNORECASE) for pattern in excluded_filename_patterns):
+                    continue
+                
+                if filename.startswith('.') and filename != '.gitignore':
                     continue
                 
                 filepath = os.path.join(root, filename)
                 relative_path = os.path.relpath(filepath, self.temp_dir)
                 
-                if any(re.match(pattern, relative_path, re.IGNORECASE) for pattern in excluded_patterns):
+                if any(excluded_dir in relative_path for excluded_dir in excluded_dirs):
                     continue
                 
                 _, ext = os.path.splitext(filename)
@@ -708,30 +754,26 @@ class GitHubCodeAnalyzerService:
                     self.stats['languages'][self.LANGUAGE_EXTENSIONS[ext_lower]] += 1
                 
                 self.stats['total_files'] += 1
+                files_analyzed += 1
                 
                 try:
                     file_size = os.path.getsize(filepath)
-                    if file_size > 1024 * 1024:
+                    if file_size > 1024 * 1024 or file_size < 10:
                         continue
                     
                     with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
                         content = f.read()
                     
+                    if len(content.strip()) < 20:
+                        continue
+                    
                     self.stats['total_lines'] += content.count('\n')
                     
                     file_hash = hashlib.md5(content.encode()).hexdigest()
                     if file_hash in self.file_hashes:
-                        self.findings['code_quality'].append({
-                            'type': 'duplicate_file',
-                            'severity': 'low',
-                            'title': f'Fichier dupliqué: {relative_path}',
-                            'file': relative_path,
-                            'line': 0,
-                            'evidence': f'Identique à {self.file_hashes[file_hash]}',
-                            'remediation': 'Considérez factoriser le code dupliqué'
-                        })
-                    else:
-                        self.file_hashes[file_hash] = relative_path
+                        continue
+                    
+                    self.file_hashes[file_hash] = relative_path
                     
                     self._scan_for_secrets(content, relative_path)
                     self._scan_sql_injection(content, relative_path)
