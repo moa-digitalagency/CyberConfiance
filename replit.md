@@ -38,6 +38,34 @@ I prefer that the agent adheres to existing architectural patterns and design de
 - **Database Schema Verification**: `init_db.py` ensures correct database setup.
 - **Error Handling**: Comprehensive error handling across routes and services.
 
+### Project Structure (Updated December 2025)
+
+#### Models (`models/`)
+Individual model files organized by domain:
+- `base.py` - Database instance import
+- `user.py` - User model
+- `content.py` - Article, Rule, Tool, Scenario, Resource, News, GlossaryTerm, AttackType
+- `contact.py` - Contact, Newsletter
+- `analysis.py` - BreachAnalysis, SecurityAnalysis, QRCodeAnalysis, PromptAnalysis, QuizResult, GitHubCodeAnalysis
+- `logs.py` - ActivityLog, SecurityLog, ThreatLog
+- `settings.py` - SiteSettings, SEOMetadata
+- `request.py` - RequestSubmission
+- `__init__.py` - Exports all models
+
+#### Services (`services/`)
+Organized by functionality:
+- `breach/` - HaveIBeenPwnedService
+- `security/` - SecurityAnalyzerService, GoogleSafeBrowsingService, URLhausService, URLScanService, URLShortenerService, TrackerDetectorService
+- `prompt/` - PromptAnalyzerService
+- `quiz/` - QuizService
+- `qrcode/` - QRCode analyzer
+- `github/` - GitHub code analyzer
+- `pdf/` - PDF generation
+- `analyzers/` - Code analyzers
+- `file_upload_service.py` - File upload handling
+- `request_submission_service.py` - Request submission handling
+- `__init__.py` - ContentService + re-exports from submodules
+
 ## External Dependencies
 - **Have I Been Pwned API**: For email breach detection.
 - **VirusTotal API (v3 REST)**: For URL and file reputation analysis.

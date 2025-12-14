@@ -4,7 +4,14 @@ import __init__ as app_module
 from services.breach import HaveIBeenPwnedService
 from services.quiz import QuizService
 from services.prompt import PromptAnalyzerService
-from services.security import SecurityAnalyzerService
+from services.security import (
+    SecurityAnalyzerService,
+    GoogleSafeBrowsingService,
+    URLhausService,
+    URLScanService,
+    URLShortenerService,
+    TrackerDetectorService
+)
 
 db = app_module.db
 
