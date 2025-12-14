@@ -93,12 +93,16 @@ class PDFReportService:
     def _get_risk_color(self, risk_level):
         """Retourne la couleur selon le niveau de risque"""
         risk_colors = {
+            'critical': self.danger_color,
             'critique': self.danger_color,
             'danger': self.danger_color,
-            'élevé': self.warning_color,
-            'warning': self.warning_color,
-            'moyen': self.warning_color,
-            'modéré': (251/255, 191/255, 36/255),
+            'high': (251/255, 146/255, 60/255),
+            'élevé': (251/255, 146/255, 60/255),
+            'warning': (251/255, 146/255, 60/255),
+            'medium': (234/255, 179/255, 8/255),
+            'moyen': (234/255, 179/255, 8/255),
+            'modéré': (234/255, 179/255, 8/255),
+            'low': self.success_color,
             'faible': self.success_color,
             'safe': self.success_color,
             'sûr': self.success_color

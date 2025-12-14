@@ -1021,7 +1021,16 @@ class GitHubCodeAnalyzerService:
     
     def _finalize_framework_detection(self):
         for framework, data in self.stats['frameworks'].items():
-            if data['score'] >= 4:
+            has_manifest_evidence = any(
+                'package.json' in e or 'requirements.txt' in e or 'Pipfile' in e or 
+                'composer.json' in e or 'Gemfile' in e or 'pom.xml' in e or
+                'Cargo.toml' in e or 'go.mod' in e
+                for e in data.get('evidence', [])
+            )
+            
+            if has_manifest_evidence and data['score'] >= 5:
+                self.stats['detected_frameworks'].add(framework)
+            elif data['score'] >= 8:
                 self.stats['detected_frameworks'].add(framework)
     
     def _get_framework_details(self):
@@ -1040,12 +1049,15 @@ class GitHubCodeAnalyzerService:
         return max(self.stats['languages'].items(), key=lambda x: x[1])[0]
     
     def _scan_for_secrets(self, content, filepath):
+        lines = content.split('\n')
         for pattern, description, severity in self.SECRET_PATTERNS:
             matches = re.finditer(pattern, content, re.IGNORECASE)
             for match in matches:
                 if self._is_false_positive_secret(match.group(0), filepath):
                     continue
                 line_num = content[:match.start()].count('\n') + 1
+                if 0 < line_num <= len(lines) and self._is_comment_line(lines[line_num - 1]):
+                    continue
                 self.findings['security'].append({
                     'type': 'secret_exposed',
                     'severity': severity,
@@ -1057,6 +1069,29 @@ class GitHubCodeAnalyzerService:
                     'owasp': 'A02:2021 - Cryptographic Failures',
                     'remediation': 'Supprimez le secret du code et utilisez des variables d\'environnement ou un gestionnaire de secrets'
                 })
+    
+    def _is_comment_line(self, line):
+        """Check if a line is a comment (should be excluded from analysis)"""
+        stripped = line.strip()
+        if not stripped:
+            return False
+        
+        if stripped.startswith('#') and not stripped.startswith('#!') and not stripped.startswith('#include') and not stripped.startswith('#define'):
+            return True
+        if stripped.startswith('//'):
+            return True
+        if stripped.startswith('/*') or stripped.startswith('*/'):
+            return True
+        if stripped.startswith('* ') and not any(c.isalnum() for c in stripped[2:5] if stripped[2:5]):
+            return True
+        if stripped.startswith('--') and not stripped.startswith('---'):
+            return True
+        if stripped.startswith('"""') or stripped.startswith("'''"):
+            return True
+        if stripped.startswith('<!--'):
+            return True
+        
+        return False
     
     def _is_false_positive_secret(self, match, filepath):
         false_positive_patterns = [
@@ -1094,10 +1129,13 @@ class GitHubCodeAnalyzerService:
         return False
     
     def _scan_sql_injection(self, content, filepath):
+        lines = content.split('\n')
         for pattern, description, severity in self.SQL_INJECTION_PATTERNS:
             matches = re.finditer(pattern, content, re.IGNORECASE | re.MULTILINE)
             for match in matches:
                 line_num = content[:match.start()].count('\n') + 1
+                if 0 < line_num <= len(lines) and self._is_comment_line(lines[line_num - 1]):
+                    continue
                 self.findings['security'].append({
                     'type': 'sql_injection',
                     'severity': severity,
@@ -1111,10 +1149,13 @@ class GitHubCodeAnalyzerService:
                 })
     
     def _scan_xss(self, content, filepath):
+        lines = content.split('\n')
         for pattern, description, severity in self.XSS_PATTERNS:
             matches = re.finditer(pattern, content, re.IGNORECASE)
             for match in matches:
                 line_num = content[:match.start()].count('\n') + 1
+                if 0 < line_num <= len(lines) and self._is_comment_line(lines[line_num - 1]):
+                    continue
                 self.findings['security'].append({
                     'type': 'xss',
                     'severity': severity,
@@ -1128,10 +1169,13 @@ class GitHubCodeAnalyzerService:
                 })
     
     def _scan_command_injection(self, content, filepath):
+        lines = content.split('\n')
         for pattern, description, severity in self.COMMAND_INJECTION_PATTERNS:
             matches = re.finditer(pattern, content, re.IGNORECASE)
             for match in matches:
                 line_num = content[:match.start()].count('\n') + 1
+                if 0 < line_num <= len(lines) and self._is_comment_line(lines[line_num - 1]):
+                    continue
                 self.findings['security'].append({
                     'type': 'command_injection',
                     'severity': severity,
@@ -1145,10 +1189,13 @@ class GitHubCodeAnalyzerService:
                 })
     
     def _scan_path_traversal(self, content, filepath):
+        lines = content.split('\n')
         for pattern, description, severity in self.PATH_TRAVERSAL_PATTERNS:
             matches = re.finditer(pattern, content, re.IGNORECASE)
             for match in matches:
                 line_num = content[:match.start()].count('\n') + 1
+                if 0 < line_num <= len(lines) and self._is_comment_line(lines[line_num - 1]):
+                    continue
                 self.findings['security'].append({
                     'type': 'path_traversal',
                     'severity': severity,
@@ -1162,10 +1209,13 @@ class GitHubCodeAnalyzerService:
                 })
     
     def _scan_insecure_deserialization(self, content, filepath):
+        lines = content.split('\n')
         for pattern, description, severity in self.INSECURE_DESERIALIZATION_PATTERNS:
             matches = re.finditer(pattern, content, re.IGNORECASE)
             for match in matches:
                 line_num = content[:match.start()].count('\n') + 1
+                if 0 < line_num <= len(lines) and self._is_comment_line(lines[line_num - 1]):
+                    continue
                 self.findings['security'].append({
                     'type': 'insecure_deserialization',
                     'severity': severity,
@@ -1179,10 +1229,13 @@ class GitHubCodeAnalyzerService:
                 })
     
     def _scan_insecure_config(self, content, filepath):
+        lines = content.split('\n')
         for pattern, description, severity in self.INSECURE_CONFIG_PATTERNS:
             matches = re.finditer(pattern, content, re.IGNORECASE)
             for match in matches:
                 line_num = content[:match.start()].count('\n') + 1
+                if 0 < line_num <= len(lines) and self._is_comment_line(lines[line_num - 1]):
+                    continue
                 self.findings['security'].append({
                     'type': 'insecure_config',
                     'severity': severity,
@@ -1196,10 +1249,13 @@ class GitHubCodeAnalyzerService:
                 })
     
     def _scan_ssrf(self, content, filepath):
+        lines = content.split('\n')
         for pattern, description, severity in self.SSRF_PATTERNS:
             matches = re.finditer(pattern, content, re.IGNORECASE)
             for match in matches:
                 line_num = content[:match.start()].count('\n') + 1
+                if 0 < line_num <= len(lines) and self._is_comment_line(lines[line_num - 1]):
+                    continue
                 self.findings['security'].append({
                     'type': 'ssrf',
                     'severity': severity,
@@ -1213,10 +1269,13 @@ class GitHubCodeAnalyzerService:
                 })
     
     def _scan_csrf(self, content, filepath):
+        lines = content.split('\n')
         for pattern, description, severity in self.CSRF_PATTERNS:
             matches = re.finditer(pattern, content, re.IGNORECASE)
             for match in matches:
                 line_num = content[:match.start()].count('\n') + 1
+                if 0 < line_num <= len(lines) and self._is_comment_line(lines[line_num - 1]):
+                    continue
                 self.findings['security'].append({
                     'type': 'csrf',
                     'severity': severity,
@@ -1230,10 +1289,13 @@ class GitHubCodeAnalyzerService:
                 })
     
     def _scan_authentication_issues(self, content, filepath):
+        lines = content.split('\n')
         for pattern, description, severity in self.AUTHENTICATION_PATTERNS:
             matches = re.finditer(pattern, content, re.IGNORECASE)
             for match in matches:
                 line_num = content[:match.start()].count('\n') + 1
+                if 0 < line_num <= len(lines) and self._is_comment_line(lines[line_num - 1]):
+                    continue
                 self.findings['security'].append({
                     'type': 'authentication_issue',
                     'severity': severity,
@@ -1247,12 +1309,15 @@ class GitHubCodeAnalyzerService:
                 })
     
     def _scan_hardcoded_values(self, content, filepath):
+        lines = content.split('\n')
         for pattern, description, severity in self.HARDCODED_VALUES_PATTERNS:
             matches = re.finditer(pattern, content, re.IGNORECASE)
             for match in matches:
                 if self._is_false_positive_secret(match.group(0), filepath):
                     continue
                 line_num = content[:match.start()].count('\n') + 1
+                if 0 < line_num <= len(lines) and self._is_comment_line(lines[line_num - 1]):
+                    continue
                 self.findings['security'].append({
                     'type': 'hardcoded_value',
                     'severity': severity,
@@ -1266,6 +1331,7 @@ class GitHubCodeAnalyzerService:
                 })
     
     def _scan_toxic_ai_patterns(self, content, filepath):
+        lines = content.split('\n')
         for pattern, description, severity in self.TOXIC_AI_PATTERNS_REGEX:
             matches = re.finditer(pattern, content, re.IGNORECASE)
             for match in matches:
@@ -1327,10 +1393,13 @@ class GitHubCodeAnalyzerService:
                 })
     
     def _scan_performance_issues(self, content, filepath):
+        lines = content.split('\n')
         for pattern, description, severity in self.PERFORMANCE_PATTERNS:
             matches = re.finditer(pattern, content, re.IGNORECASE)
             for match in matches:
                 line_num = content[:match.start()].count('\n') + 1
+                if 0 < line_num <= len(lines) and self._is_comment_line(lines[line_num - 1]):
+                    continue
                 self.findings['performance'].append({
                     'type': 'performance_issue',
                     'severity': severity,
@@ -1858,25 +1927,42 @@ class GitHubCodeAnalyzerService:
                             })
     
     def _calculate_scores(self):
-        def category_score(findings_list, max_penalty=100):
+        def category_score(findings_list, expected_max_issues=10):
+            """
+            Calculate a normalized score based on findings.
+            Uses a weighted approach where:
+            - Each finding's severity contributes to penalty
+            - Score is normalized against expected maximum issues for the category
+            - Returns a score from 0-100
+            """
             if not findings_list:
                 return 100
+            
+            severity_weights = {
+                'critical': 15,
+                'high': 10,
+                'medium': 5,
+                'low': 2,
+                'info': 1
+            }
             
             total_penalty = 0
             for finding in findings_list:
                 severity = finding.get('severity', 'info')
-                total_penalty += self.SEVERITY_SCORES.get(severity, 0)
+                total_penalty += severity_weights.get(severity, 1)
             
-            normalized = min(total_penalty, max_penalty)
-            return max(0, 100 - normalized)
+            max_expected_penalty = expected_max_issues * severity_weights['high']
+            normalized_penalty = min(total_penalty / max_expected_penalty, 1.0) * 100
+            
+            return max(0, round(100 - normalized_penalty, 1))
         
-        security_score = category_score(self.findings['security'], max_penalty=100)
-        deps_score = category_score(self.findings['dependencies'], max_penalty=60)
-        arch_score = category_score(self.findings['architecture'], max_penalty=50)
-        perf_score = category_score(self.findings['performance'], max_penalty=50)
-        git_score = category_score(self.findings['git_hygiene'], max_penalty=40)
-        doc_score = category_score(self.findings['documentation'], max_penalty=40)
-        toxic_score = category_score(self.findings['toxic_ai'], max_penalty=50)
+        security_score = category_score(self.findings['security'], expected_max_issues=8)
+        deps_score = category_score(self.findings['dependencies'], expected_max_issues=5)
+        arch_score = category_score(self.findings['architecture'], expected_max_issues=5)
+        perf_score = category_score(self.findings['performance'], expected_max_issues=5)
+        git_score = category_score(self.findings['git_hygiene'], expected_max_issues=4)
+        doc_score = category_score(self.findings['documentation'], expected_max_issues=4)
+        toxic_score = category_score(self.findings['toxic_ai'], expected_max_issues=5)
         
         overall_score = (
             security_score * self.SECURITY_WEIGHT +
@@ -1888,11 +1974,11 @@ class GitHubCodeAnalyzerService:
             doc_score * self.DOCUMENTATION_WEIGHT
         )
         
-        if overall_score >= 85:
+        if overall_score >= 80:
             risk_level = 'low'
-        elif overall_score >= 70:
+        elif overall_score >= 60:
             risk_level = 'medium'
-        elif overall_score >= 50:
+        elif overall_score >= 40:
             risk_level = 'high'
         else:
             risk_level = 'critical'

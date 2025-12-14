@@ -24,6 +24,29 @@ class BaseAnalyzer:
     def get_findings(self) -> List[Dict[str, Any]]:
         return self.findings
     
+    def _is_comment_line(self, line: str) -> bool:
+        """Check if a line is a comment (should be excluded from analysis)"""
+        stripped = line.strip()
+        if not stripped:
+            return False
+        
+        if stripped.startswith('#') and not stripped.startswith('#!') and not stripped.startswith('#include') and not stripped.startswith('#define'):
+            return True
+        if stripped.startswith('//'):
+            return True
+        if stripped.startswith('/*') or stripped.startswith('*/'):
+            return True
+        if stripped.startswith('* ') and not any(c.isalnum() for c in stripped[2:5] if stripped[2:5]):
+            return True
+        if stripped.startswith('--') and not stripped.startswith('---'):
+            return True
+        if stripped.startswith('"""') or stripped.startswith("'''"):
+            return True
+        if stripped.startswith('<!--'):
+            return True
+        
+        return False
+    
     def _scan_patterns(self, content: str, filepath: str, patterns: List[Tuple], finding_type: str) -> List[Dict[str, Any]]:
         findings = []
         lines = content.split('\n')
@@ -42,6 +65,8 @@ class BaseAnalyzer:
                     
                     if 0 < line_num <= len(lines):
                         full_line = lines[line_num - 1].strip()
+                        if self._is_comment_line(lines[line_num - 1]):
+                            continue
                     else:
                         full_line = match.group(0)
                     
