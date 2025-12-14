@@ -7,9 +7,11 @@ import tempfile
 import subprocess
 import time
 import hashlib
+import base64
 from datetime import datetime
 from urllib.parse import urlparse
-from collections import defaultdict
+from collections import defaultdict, Counter
+from typing import Dict, List, Optional
 import requests
 
 from .patterns import (
@@ -71,7 +73,10 @@ class GitHubCodeAnalyzerService:
     SENSITIVE_FILES_GIT = SENSITIVE_FILES_GIT
     VULNERABLE_PACKAGES = VULNERABLE_PACKAGES
     
-    def __init__(self):
+    def __init__(self, github_token: Optional[str] = None, use_semgrep: bool = True):
+        self.github_token = github_token
+        self.use_semgrep = use_semgrep
+        self.github_api_base = "https://api.github.com"
         self.temp_dir = None
         self.findings = {
             'security': [],
@@ -93,9 +98,23 @@ class GitHubCodeAnalyzerService:
             'requirements_txt': None,
         }
         self.file_hashes = {}
+        self.owner = None
+        self.repo_name = None
     
-    def analyze(self, repo_url, branch='main'):
+    def analyze(self, repo_url, branch='main', mode='full', github_token=None):
+        """
+        Analyse un dépôt GitHub avec différents modes.
+        
+        Args:
+            repo_url: URL du dépôt GitHub
+            branch: Branche à analyser (défaut: 'main')
+            mode: 'full' (clone+scan), 'quick' (API only), ou 'hybrid'
+            github_token: Token GitHub optionnel pour API Code Scanning
+        """
         start_time = time.time()
+        
+        if github_token:
+            self.github_token = github_token
         
         try:
             parsed = urlparse(repo_url)
@@ -114,71 +133,72 @@ class GitHubCodeAnalyzerService:
             
             owner = path_parts[0]
             repo_name = path_parts[1].replace('.git', '')
+            self.owner = owner
+            self.repo_name = repo_name
             
+            print(f"🔍 Analyse de {owner}/{repo_name} (branche: {branch}, mode: {mode})")
+            
+            # === PHASE 1: GitHub Code Scanning API (si token disponible) ===
+            if self.github_token:
+                print("  [1/6] Récupération des alertes GitHub Code Scanning...")
+                github_alerts = self._fetch_github_code_scanning_alerts(owner, repo_name)
+                if github_alerts:
+                    print(f"    ✅ {len(github_alerts)} alertes GitHub trouvées")
+                    self._integrate_github_alerts(github_alerts)
+                else:
+                    print("    ℹ️  Aucune alerte GitHub (Code Scanning non activé ou pas de token)")
+            
+            # === PHASE 2: Mode Quick (sans clonage) ===
+            if mode == 'quick':
+                print("  [Mode Quick] Scan rapide via API GitHub...")
+                self._quick_scan_without_clone(owner, repo_name, branch)
+                scores = self._calculate_scores()
+                duration = time.time() - start_time
+                return self._build_result(repo_url, repo_name, owner, branch, None, scores, duration, mode)
+            
+            # === PHASE 3: Clonage optimisé ===
+            print("  [2/6] Clonage optimisé du dépôt...")
             self.temp_dir = tempfile.mkdtemp(prefix='github_analysis_')
-            
-            clone_result = self._clone_repository(repo_url, branch)
+            clone_result = self._clone_repository_optimized(repo_url, branch)
             if clone_result.get('error'):
                 return clone_result
             
             commit_hash = self._get_commit_hash()
+            print(f"    ✅ Dépôt cloné (commit: {commit_hash})")
             
+            # === PHASE 4: Analyse Semgrep (AST) si disponible ===
+            if self.use_semgrep and mode in ['full', 'hybrid']:
+                print("  [3/6] Analyse Semgrep (AST-based)...")
+                semgrep_results = self._run_semgrep_analysis(self.temp_dir)
+                if semgrep_results:
+                    print(f"    ✅ Semgrep: {len(semgrep_results)} vulnérabilités détectées")
+                    self._integrate_semgrep_findings(semgrep_results)
+                else:
+                    print("    ℹ️  Semgrep: aucune vulnérabilité ou non disponible")
+            
+            # === PHASE 5: Scan traditionnel (regex) ===
+            print("  [4/6] Scan patterns regex...")
             self._load_package_manifests()
-            
             self._analyze_all_files()
+            print(f"    ✅ {self.stats['total_files']} fichiers analysés")
             
+            # === PHASE 6: Analyses complémentaires ===
+            print("  [5/6] Analyses complémentaires...")
             self._analyze_git_history()
-            
             self._analyze_dependencies()
-            
             self._analyze_architecture()
-            
             self._analyze_documentation()
-            
             self._finalize_framework_detection()
             
+            print("  [6/6] Calcul des scores...")
             scores = self._calculate_scores()
-            
             duration = time.time() - start_time
             
-            return {
-                'error': False,
-                'repo_url': repo_url,
-                'repo_name': repo_name,
-                'repo_owner': owner,
-                'branch': branch,
-                'commit_hash': commit_hash,
-                'overall_score': scores['overall'],
-                'security_score': scores['security'],
-                'dependency_score': scores['dependencies'],
-                'architecture_score': scores['architecture'],
-                'performance_score': scores['performance'],
-                'documentation_score': scores['documentation'],
-                'risk_level': scores['risk_level'],
-                'security_findings': self.findings['security'],
-                'dependency_findings': self.findings['dependencies'],
-                'architecture_findings': self.findings['architecture'],
-                'performance_findings': self.findings['performance'],
-                'git_hygiene_findings': self.findings['git_hygiene'],
-                'documentation_findings': self.findings['documentation'],
-                'toxic_ai_patterns': self.findings['toxic_ai'],
-                'code_quality_findings': self.findings['code_quality'],
-                'total_files_analyzed': self.stats['total_files'],
-                'total_lines_analyzed': self.stats['total_lines'],
-                'total_issues_found': sum(len(f) for f in self.findings.values()),
-                'critical_issues': self._count_by_severity('critical'),
-                'high_issues': self._count_by_severity('high'),
-                'medium_issues': self._count_by_severity('medium'),
-                'low_issues': self._count_by_severity('low'),
-                'languages_detected': dict(self.stats['languages']),
-                'primary_language': self._get_primary_language(),
-                'frameworks_detected': list(self.stats['detected_frameworks']),
-                'framework_details': self._get_framework_details(),
-                'analysis_duration': round(duration, 2),
-                'analysis_summary': self._generate_summary(scores),
-                'security_summary': self._generate_security_summary(),
-                'recommendations': self._generate_recommendations()
-            }
+            print(f"\n✨ Analyse terminée en {duration:.2f}s")
+            print(f"   Score global: {scores['overall']:.1f}/100")
+            print(f"   Niveau de risque: {scores['risk_level'].upper()}")
+            
+            return self._build_result(repo_url, repo_name, owner, branch, commit_hash, scores, duration, mode)
             
         except Exception as e:
             import traceback
@@ -190,30 +210,281 @@ class GitHubCodeAnalyzerService:
         finally:
             self._cleanup()
     
-    def _clone_repository(self, repo_url, branch):
+    def _build_result(self, repo_url, repo_name, owner, branch, commit_hash, scores, duration, mode):
+        """Construit le résultat de l'analyse."""
+        return {
+            'error': False,
+            'repo_url': repo_url,
+            'repo_name': repo_name,
+            'repo_owner': owner,
+            'branch': branch,
+            'commit_hash': commit_hash or 'N/A (mode quick)',
+            'analysis_mode': mode,
+            'overall_score': scores['overall'],
+            'security_score': scores['security'],
+            'dependency_score': scores['dependencies'],
+            'architecture_score': scores['architecture'],
+            'performance_score': scores['performance'],
+            'documentation_score': scores['documentation'],
+            'risk_level': scores['risk_level'],
+            'security_findings': self.findings['security'],
+            'dependency_findings': self.findings['dependencies'],
+            'architecture_findings': self.findings['architecture'],
+            'performance_findings': self.findings['performance'],
+            'git_hygiene_findings': self.findings['git_hygiene'],
+            'documentation_findings': self.findings['documentation'],
+            'toxic_ai_patterns': self.findings['toxic_ai'],
+            'code_quality_findings': self.findings['code_quality'],
+            'total_files_analyzed': self.stats['total_files'],
+            'total_lines_analyzed': self.stats['total_lines'],
+            'total_issues_found': sum(len(f) for f in self.findings.values()),
+            'critical_issues': self._count_by_severity('critical'),
+            'high_issues': self._count_by_severity('high'),
+            'medium_issues': self._count_by_severity('medium'),
+            'low_issues': self._count_by_severity('low'),
+            'languages_detected': dict(self.stats['languages']),
+            'primary_language': self._get_primary_language(),
+            'frameworks_detected': list(self.stats['detected_frameworks']),
+            'framework_details': self._get_framework_details(),
+            'analysis_duration': round(duration, 2),
+            'analysis_summary': self._generate_summary(scores),
+            'security_summary': self._generate_security_summary(),
+            'recommendations': self._generate_recommendations()
+        }
+    
+    # ============================================================
+    # NOUVELLES METHODES - APIs EXTERNES ET OPTIMISATIONS
+    # ============================================================
+    
+    def _fetch_github_code_scanning_alerts(self, owner: str, repo: str) -> List[Dict]:
+        """
+        Récupère les alertes via GitHub Code Scanning API (CodeQL).
+        Référence: https://docs.github.com/en/rest/code-scanning
+        """
+        if not self.github_token:
+            return []
+        
+        headers = {
+            "Authorization": f"Bearer {self.github_token}",
+            "Accept": "application/vnd.github+json",
+            "X-GitHub-Api-Version": "2022-11-28"
+        }
+        
+        url = f"{self.github_api_base}/repos/{owner}/{repo}/code-scanning/alerts"
+        params = {"state": "open", "per_page": 100}
+        
+        try:
+            response = requests.get(url, headers=headers, params=params, timeout=30)
+            if response.status_code == 200:
+                return response.json()
+            elif response.status_code == 404:
+                return []
+            else:
+                print(f"    ⚠️  GitHub Code Scanning API: {response.status_code}")
+                return []
+        except Exception as e:
+            print(f"    ⚠️  Erreur GitHub API: {e}")
+            return []
+    
+    def _integrate_github_alerts(self, alerts: List[Dict]):
+        """Intègre les alertes GitHub CodeQL dans les findings."""
+        severity_map = {
+            "error": "critical",
+            "warning": "high",
+            "note": "medium",
+            "none": "low"
+        }
+        
+        for alert in alerts:
+            rule = alert.get("rule", {})
+            location = alert.get("most_recent_instance", {}).get("location", {})
+            
+            finding = {
+                "type": "github_code_scanning",
+                "severity": severity_map.get(rule.get("security_severity_level", "none"), "medium"),
+                "title": rule.get("description", "Vulnérabilité détectée par GitHub CodeQL"),
+                "file": location.get("path", "unknown"),
+                "line": location.get("start_line", 0),
+                "evidence": alert.get("most_recent_instance", {}).get("message", {}).get("text", "")[:200],
+                "category": "GitHub CodeQL",
+                "cwe": rule.get("tags", []),
+                "owasp": "Détecté par CodeQL",
+                "remediation": rule.get("help_uri", "Voir la documentation GitHub"),
+                "github_alert_url": alert.get("html_url", ""),
+                "confidence": "HIGH"
+            }
+            
+            self.findings["security"].append(finding)
+    
+    def _run_semgrep_analysis(self, repo_path: str) -> List[Dict]:
+        """
+        Exécute Semgrep pour une analyse AST précise.
+        Semgrep est plus précis que regex car il comprend le contexte sémantique.
+        """
+        try:
+            result = subprocess.run(
+                ["which", "semgrep"],
+                capture_output=True,
+                text=True,
+                timeout=5
+            )
+            if result.returncode != 0:
+                return []
+            
+            result = subprocess.run(
+                [
+                    "semgrep",
+                    "scan",
+                    "--config=auto",
+                    "--json",
+                    "--timeout=300",
+                    "--max-memory=2000",
+                    "--quiet",
+                    repo_path
+                ],
+                capture_output=True,
+                text=True,
+                timeout=600
+            )
+            
+            if result.returncode in [0, 1]:
+                try:
+                    data = json.loads(result.stdout)
+                    return data.get("results", [])
+                except json.JSONDecodeError:
+                    return []
+            return []
+                
+        except subprocess.TimeoutExpired:
+            print("    ⚠️  Semgrep timeout")
+            return []
+        except FileNotFoundError:
+            return []
+        except Exception as e:
+            return []
+    
+    def _integrate_semgrep_findings(self, semgrep_results: List[Dict]):
+        """Intègre les résultats Semgrep dans les findings."""
+        severity_map = {
+            "ERROR": "critical",
+            "WARNING": "high",
+            "INFO": "medium"
+        }
+        
+        for result in semgrep_results:
+            extra = result.get("extra", {})
+            metadata = extra.get("metadata", {})
+            
+            finding = {
+                "type": "semgrep_sast",
+                "severity": severity_map.get(extra.get("severity", "INFO"), "medium"),
+                "title": extra.get("message", "Vulnérabilité Semgrep"),
+                "file": result.get("path", "unknown"),
+                "line": result.get("start", {}).get("line", 0),
+                "evidence": extra.get("lines", "")[:200],
+                "category": "Semgrep SAST (AST)",
+                "cwe": metadata.get("cwe", []),
+                "owasp": metadata.get("owasp", ""),
+                "remediation": metadata.get("fix", "Consultez la documentation Semgrep"),
+                "confidence": metadata.get("confidence", "MEDIUM"),
+                "rule_id": result.get("check_id", "")
+            }
+            
+            self.findings["security"].append(finding)
+    
+    def _fetch_file_via_api(self, owner: str, repo: str, filepath: str, ref: str = "main") -> str:
+        """
+        Récupère le contenu d'un fichier via l'API GitHub (sans clonage).
+        Utile pour le mode quick scan.
+        """
+        headers = {
+            "Accept": "application/vnd.github.v3+json"
+        }
+        if self.github_token:
+            headers["Authorization"] = f"Bearer {self.github_token}"
+        
+        url = f"{self.github_api_base}/repos/{owner}/{repo}/contents/{filepath}"
+        params = {"ref": ref}
+        
+        try:
+            response = requests.get(url, headers=headers, params=params, timeout=10)
+            if response.status_code == 200:
+                content_b64 = response.json().get("content", "")
+                return base64.b64decode(content_b64).decode('utf-8')
+            return ""
+        except Exception:
+            return ""
+    
+    def _quick_scan_without_clone(self, owner: str, repo: str, branch: str):
+        """
+        Scan rapide des fichiers critiques sans clonage complet.
+        Idéal pour des pré-scans ou des démos.
+        """
+        critical_files = [
+            ".env", ".env.local", ".env.production",
+            "config.py", "settings.py", "config.js", "config.json",
+            "package.json", "requirements.txt", ".gitignore",
+            "docker-compose.yml", "Dockerfile",
+            ".github/workflows/ci.yml", ".github/workflows/main.yml"
+        ]
+        
+        scanned = 0
+        for filename in critical_files:
+            content = self._fetch_file_via_api(owner, repo, filename, branch)
+            if content:
+                scanned += 1
+                self.stats['total_files'] += 1
+                self.stats['total_lines'] += content.count('\n')
+                
+                self._scan_for_secrets(content, filename)
+                self._scan_insecure_config(content, filename)
+                
+                if filename == 'package.json':
+                    try:
+                        self.stats['package_json'] = json.loads(content)
+                        self._analyze_npm_deps(content, filename)
+                    except:
+                        pass
+                elif filename == 'requirements.txt':
+                    self.stats['requirements_txt'] = content
+                    self._analyze_python_deps(content, filename)
+        
+        print(f"    ✅ {scanned} fichiers critiques analysés via API")
+    
+    def _clone_repository_optimized(self, repo_url, branch):
+        """Clonage optimisé: shallow + filter pour rapidité."""
         if not self.temp_dir:
             return {'error': True, 'message': 'Répertoire temporaire non initialisé'}
+        
         try:
             api_url = repo_url.replace('github.com', 'api.github.com/repos').rstrip('/')
             if api_url.endswith('.git'):
                 api_url = api_url[:-4]
             
             headers = {'Accept': 'application/vnd.github.v3+json'}
+            if self.github_token:
+                headers['Authorization'] = f'Bearer {self.github_token}'
             
             try:
                 response = requests.get(api_url, headers=headers, timeout=10)
                 if response.status_code == 404:
                     return {'error': True, 'message': 'Dépôt non trouvé ou privé'}
-                elif response.status_code != 200:
-                    pass
             except:
                 pass
             
             result = subprocess.run(
-                ['git', 'clone', '--depth', '100', '--single-branch', '-b', branch, repo_url, self.temp_dir],
+                [
+                    'git', 'clone',
+                    '--depth', '1',
+                    '--single-branch',
+                    '-b', branch,
+                    '--filter=blob:none',
+                    repo_url,
+                    self.temp_dir
+                ],
                 capture_output=True,
                 text=True,
-                timeout=180
+                timeout=60
             )
             
             if result.returncode != 0:
@@ -221,12 +492,69 @@ class GitHubCodeAnalyzerService:
                     return {'error': True, 'message': f'Branche "{branch}" non trouvée. Essayez "main" ou "master".'}
                 return {'error': True, 'message': f'Erreur de clonage: {result.stderr}'}
             
+            subprocess.run(
+                ['git', 'sparse-checkout', 'set', '--no-cone', '*', '!node_modules', '!vendor', '!.git'],
+                cwd=self.temp_dir,
+                capture_output=True,
+                timeout=10
+            )
+            
             return {'error': False}
             
         except subprocess.TimeoutExpired:
-            return {'error': True, 'message': 'Timeout lors du clonage (dépôt trop volumineux)'}
+            return {'error': True, 'message': 'Timeout (>60s), dépôt trop volumineux'}
         except Exception as e:
             return {'error': True, 'message': f'Erreur de clonage: {str(e)}'}
+    
+    def _calculate_entropy(self, text: str) -> float:
+        """Calcule l'entropie de Shannon d'une chaîne pour détecter les faux positifs."""
+        if len(text) < 8:
+            return 0
+        counter = Counter(text)
+        length = len(text)
+        return -sum((count/length) * math.log2(count/length) for count in counter.values())
+    
+    def _is_false_positive_advanced(self, match_text: str, filepath: str, line_content: str) -> bool:
+        """Détection améliorée des faux positifs avec analyse d'entropie et contexte."""
+        
+        if any(marker in line_content.strip()[:10] for marker in ['#', '//', '/*', '*', '"""', "'''"]):
+            return True
+        
+        test_indicators = ['test', 'spec', 'mock', 'fixture', 'example', 'sample', 'demo', 'readme', '__test__', '__tests__']
+        if any(indicator in filepath.lower() for indicator in test_indicators):
+            return True
+        
+        placeholders = [
+            'your_', 'my_', 'example_', 'sample_', 'test_', 'fake_',
+            'changeme', 'replace', 'insert', 'placeholder', 'xxx', 'yyy',
+            '0000', 'aaaa', '1111', '1234', 'abcd', 'password', 'secret_here',
+            'todo', 'fixme', 'hack', 'temp'
+        ]
+        if any(ph in match_text.lower() for ph in placeholders):
+            return True
+        
+        env_patterns = [
+            r'process\.env\.',
+            r'os\.environ',
+            r'getenv\s*\(',
+            r'ENV\[',
+            r'System\.getenv',
+            r'\$\{.*\}',
+            r'\{\{.*\}\}'
+        ]
+        for pattern in env_patterns:
+            if re.search(pattern, line_content):
+                return True
+        
+        entropy = self._calculate_entropy(match_text)
+        if entropy < 2.5:
+            return True
+        
+        return False
+    
+    def _clone_repository(self, repo_url, branch):
+        """Méthode legacy - redirige vers la version optimisée."""
+        return self._clone_repository_optimized(repo_url, branch)
     
     def _get_commit_hash(self):
         if not self.temp_dir:
@@ -447,11 +775,14 @@ class GitHubCodeAnalyzerService:
         for pattern, description, severity in self.SECRET_PATTERNS:
             matches = re.finditer(pattern, content, re.IGNORECASE)
             for match in matches:
-                if self._is_false_positive_secret(match.group(0), filepath):
-                    continue
                 line_num = content[:match.start()].count('\n') + 1
-                if 0 < line_num <= len(lines) and self._is_comment_line(lines[line_num - 1]):
+                line_content = lines[line_num - 1] if 0 < line_num <= len(lines) else ""
+                
+                if self._is_false_positive_secret(match.group(0), filepath, line_content):
                     continue
+                if self._is_comment_line(line_content):
+                    continue
+                    
                 self.findings['security'].append({
                     'type': 'secret_exposed',
                     'severity': severity,
@@ -486,7 +817,8 @@ class GitHubCodeAnalyzerService:
         
         return False
     
-    def _is_false_positive_secret(self, match, filepath):
+    def _is_false_positive_secret(self, match, filepath, line_content=""):
+        """Détection améliorée des faux positifs avec entropie."""
         false_positive_patterns = [
             r'example', r'placeholder', r'your[_-]?api[_-]?key', r'xxx+',
             r'test[_-]?key', r'fake[_-]?key', r'dummy', r'sample',
@@ -501,6 +833,7 @@ class GitHubCodeAnalyzerService:
             r'api_key_example', r'example_api_key', r'my_api_key',
             r'secret_here', r'add_your', r'enter_your', r'put_your',
             r'abc123', r'12345', r'password123', r'testpass',
+            r'\$\{', r'\{\{', r'%\w+%'
         ]
         match_lower = match.lower()
         for fp in false_positive_patterns:
@@ -511,13 +844,24 @@ class GitHubCodeAnalyzerService:
             'test', 'spec', 'mock', 'fixture', 'example', 'sample', 'doc',
             'readme', 'changelog', 'contributing', 'license', 'template',
             'demo', 'tutorial', 'guide', 'getting-started', 'quickstart',
-            '.example', '.sample', '.template', '.dist', '.default'
+            '.example', '.sample', '.template', '.dist', '.default',
+            '__test__', '__tests__', '__mocks__'
         ]
         if any(x in filepath.lower() for x in false_positive_files):
             return True
         
         if len(match) < 10 or all(c == match[0] for c in match if c.isalnum()):
             return True
+        
+        entropy = self._calculate_entropy(match)
+        if entropy < 2.5:
+            return True
+        
+        if line_content:
+            env_patterns = [r'process\.env', r'os\.environ', r'getenv', r'\$\{', r'\{\{']
+            for pattern in env_patterns:
+                if re.search(pattern, line_content):
+                    return True
         
         return False
     
