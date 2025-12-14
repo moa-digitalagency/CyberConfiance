@@ -971,11 +971,16 @@ class GitHubCodeAnalyzerService:
                     score += 3
                     evidence.append(f'Fichier caractéristique: {filename}')
                 
+                for config_file in detection.get('config_files', []):
+                    if filepath == config_file or filepath.endswith('/' + config_file):
+                        score += 4
+                        evidence.append(f'Fichier de configuration: {config_file}')
+                
                 for pattern in detection.get('patterns', []):
                     if re.search(pattern, content, re.IGNORECASE):
                         score += 2
                         evidence.append(f'Pattern détecté: {pattern[:30]}...')
-                        if score >= 4:
+                        if score >= 6:
                             break
                 
                 if self.stats.get('package_json'):
@@ -985,8 +990,30 @@ class GitHubCodeAnalyzerService:
                     }
                     for dep in detection.get('package_deps', []):
                         if dep in pkg_deps:
-                            score += 4
+                            score += 5
                             evidence.append(f'Dépendance package.json: {dep}')
+                
+                if self.stats.get('requirements_txt'):
+                    requirements_content = self.stats['requirements_txt'].lower()
+                    python_dep_map = {
+                        'Django': ['django'],
+                        'Flask': ['flask'],
+                        'FastAPI': ['fastapi'],
+                        'Pyramid': ['pyramid'],
+                        'Tornado': ['tornado'],
+                        'Celery': ['celery'],
+                        'SQLAlchemy': ['sqlalchemy'],
+                        'Pandas': ['pandas'],
+                        'NumPy': ['numpy'],
+                        'TensorFlow': ['tensorflow', 'tensorflow-gpu'],
+                        'PyTorch': ['torch', 'pytorch'],
+                        'Streamlit': ['streamlit'],
+                    }
+                    if framework_name in python_dep_map:
+                        for dep in python_dep_map[framework_name]:
+                            if dep in requirements_content:
+                                score += 5
+                                evidence.append(f'Dépendance requirements.txt: {dep}')
                 
                 if score > 0:
                     self.stats['frameworks'][framework_name]['score'] += score
@@ -1037,13 +1064,31 @@ class GitHubCodeAnalyzerService:
             r'test[_-]?key', r'fake[_-]?key', r'dummy', r'sample',
             r'<your', r'\[your', r'\{your', r'INSERT_', r'REPLACE_',
             r'process\.env', r'os\.environ', r'getenv', r'env\[',
+            r'config\[', r'settings\.', r'\.get\s*\(', r'environ\.get',
+            r'secret_key_here', r'your_secret', r'change_me', r'changeme',
+            r'todo', r'fixme', r'0{8,}', r'1{8,}', r'a{8,}', r'x{8,}',
+            r'demo', r'default', r'template', r'skeleton', r'scaffold',
+            r'\.env\.example', r'\.env\.sample', r'\.env\.template',
+            r'config\.example', r'config\.sample', r'config\.template',
+            r'api_key_example', r'example_api_key', r'my_api_key',
+            r'secret_here', r'add_your', r'enter_your', r'put_your',
+            r'abc123', r'12345', r'password123', r'testpass',
         ]
         match_lower = match.lower()
         for fp in false_positive_patterns:
             if re.search(fp, match_lower):
                 return True
         
-        if any(x in filepath.lower() for x in ['test', 'spec', 'mock', 'fixture', 'example', 'sample', 'doc']):
+        false_positive_files = [
+            'test', 'spec', 'mock', 'fixture', 'example', 'sample', 'doc',
+            'readme', 'changelog', 'contributing', 'license', 'template',
+            'demo', 'tutorial', 'guide', 'getting-started', 'quickstart',
+            '.example', '.sample', '.template', '.dist', '.default'
+        ]
+        if any(x in filepath.lower() for x in false_positive_files):
+            return True
+        
+        if len(match) < 10 or all(c == match[0] for c in match if c.isalnum()):
             return True
         
         return False
