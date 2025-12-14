@@ -210,7 +210,7 @@ class ContentService:
     
     @staticmethod
     def save_contact(name, email, subject, message):
-        contact = Contact(name=name, email=email, subject=subject, message=message)
+        contact = Contact(name=name, email=email, subject=subject, message=message)  # type: ignore
         db.session.add(contact)
         db.session.commit()
         return contact

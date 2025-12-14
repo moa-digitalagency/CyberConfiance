@@ -92,12 +92,17 @@
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle">Outils <span class="arrow">▼</span></a>
                         <ul class="dropdown-menu">
-                            <li><a href="{{ url_for('main.quiz') }}">Quiz de Securite</a></li>
                             <li><a href="{{ url_for('main.security_analyzer') }}">Analyseur de Securite</a></li>
                             <li><a href="{{ url_for('main.breach_analyzer') }}">Analyseur de Fuite d'Email</a></li>
                             <li><a href="{{ url_for('main.qrcode_analyzer') }}">Analyseur QR Code (Anti-Quishing)</a></li>
                             <li><a href="{{ url_for('main.prompt_analyzer') }}">Analyseur de Prompt (Anti-Injection)</a></li>
                             <li><a href="{{ url_for('main.github_analyzer') }}">Analyseur de Code GitHub</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle">Ressources <span class="arrow">▼</span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{{ url_for('main.quiz') }}">Quiz de Securite</a></li>
                             <li><a href="{{ url_for('content.rules') }}">20 Regles d'Or</a></li>
                             <li><a href="{{ url_for('content.scenarios') }}">Scenarios de Cybermenaces</a></li>
                             <li><a href="{{ url_for('content.glossary') }}">Glossaire</a></li>

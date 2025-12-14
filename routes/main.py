@@ -48,7 +48,7 @@ def contact():
                 incident_id = generate_incident_id()
                 
                 from models import ThreatLog
-                threat_log = ThreatLog(
+                threat_log = ThreatLog(  # type: ignore
                     incident_id=incident_id,
                     threat_type=f"contact_form_{threat_level}",
                     threat_details=f"Injection/menace detectee dans le formulaire de contact. "
@@ -247,7 +247,7 @@ def security_analyzer():
                     import json
                     sanitized_results = json.loads(json.dumps(results, default=str))
                     
-                    analysis_record = SecurityAnalysis(
+                    analysis_record = SecurityAnalysis(  # type: ignore
                         input_value=input_value,
                         input_type=input_type,
                         analysis_results=sanitized_results,
@@ -334,7 +334,7 @@ def quiz_submit_email():
     
     try:
         from models import QuizResult
-        quiz_result = QuizResult(
+        quiz_result = QuizResult(  # type: ignore
             email=email,
             overall_score=overall_score,
             category_scores=scores,
@@ -411,7 +411,7 @@ def newsletter():
                 db.session.commit()
                 flash('Votre inscription à la newsletter a été réactivée !', 'success')
         else:
-            newsletter_entry = Newsletter(
+            newsletter_entry = Newsletter(  # type: ignore
                 email=email,
                 ip_address=get_client_ip(request),
                 user_agent=request.headers.get('User-Agent', '')[:500]
@@ -472,7 +472,7 @@ def analyze_breach():
                 'email': email
             }
             
-            analysis = BreachAnalysis(
+            analysis = BreachAnalysis(  # type: ignore
                 email=email,
                 breach_count=result.get('count', 0),
                 risk_level=recommendations.get('level', 'unknown'),
@@ -539,7 +539,7 @@ def generate_breach_pdf(analysis_id):
     """Generate and download breach analysis PDF"""
     breach = BreachAnalysis.query.get_or_404(analysis_id)
     
-    user_ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()
+    user_ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()  # type: ignore
     
     if breach.pdf_report and breach.pdf_generated_at:
         pdf_bytes = breach.pdf_report
@@ -564,7 +564,7 @@ def generate_security_pdf(analysis_id):
     """Generate and download security analysis PDF"""
     analysis = SecurityAnalysis.query.get_or_404(analysis_id)
     
-    user_ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()
+    user_ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()  # type: ignore
     
     if analysis.pdf_report and analysis.pdf_generated_at:
         pdf_bytes = analysis.pdf_report
@@ -591,7 +591,7 @@ def generate_quiz_pdf(result_id):
     from services.quiz_service import QuizService
     quiz_result = QuizResult.query.get_or_404(result_id)
     
-    user_ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()
+    user_ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()  # type: ignore
     
     if quiz_result.pdf_report and quiz_result.pdf_generated_at:
         pdf_bytes = quiz_result.pdf_report
@@ -874,7 +874,7 @@ def qrcode_analyzer():
                 try:
                     threat_level = results.get('threat_level', 'safe')
                     
-                    qr_analysis = QRCodeAnalysis(
+                    qr_analysis = QRCodeAnalysis(  # type: ignore
                         original_filename=filename,
                         extracted_url=results.get('extracted_url'),
                         final_url=results.get('final_url'),
@@ -933,7 +933,7 @@ def prompt_analyzer():
             
             if results and results.get('success'):
                 try:
-                    prompt_analysis = PromptAnalysis(
+                    prompt_analysis = PromptAnalysis(  # type: ignore
                         prompt_text=prompt_text[:10000],
                         prompt_length=len(prompt_text),
                         threat_detected=results.get('threat_detected', False),
@@ -967,7 +967,7 @@ def prompt_analyzer():
 def generate_qrcode_pdf(analysis_id):
     analysis = QRCodeAnalysis.query.get_or_404(analysis_id)
     
-    user_ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()
+    user_ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()  # type: ignore
     
     if analysis.pdf_report and analysis.pdf_generated_at:
         pdf_bytes = analysis.pdf_report
@@ -1042,7 +1042,7 @@ def github_analyzer():
             
             if results and not results.get('error'):
                 try:
-                    github_analysis = GitHubCodeAnalysis(
+                    github_analysis = GitHubCodeAnalysis(  # type: ignore
                         repo_url=repo_url,
                         repo_name=results.get('repo_name'),
                         repo_owner=results.get('repo_owner'),
@@ -1092,7 +1092,7 @@ def github_analyzer():
 def generate_github_pdf(analysis_id):
     analysis = GitHubCodeAnalysis.query.get_or_404(analysis_id)
     
-    user_ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()
+    user_ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()  # type: ignore
     
     if analysis.pdf_report and analysis.pdf_generated_at:
         pdf_bytes = analysis.pdf_report
