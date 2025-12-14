@@ -1,0 +1,76 @@
+Fichier beaucoup trop long
+Ce fichier contient 1113 lignes, ce qui le rend difficile à maintenir
+routes/main.py
+Fichier beaucoup trop long
+Ce fichier contient 1502 lignes, ce qui le rend difficile à maintenir
+services/github/analyzer.py
+Fichier beaucoup trop long
+Ce fichier contient 1392 lignes, ce qui le rend difficile à maintenir
+services/qrcode/analyzer.py
+Fichier trop long
+Ce fichier contient 397 lignes, considérez le diviser
+init_db.py
+Fichier trop long
+Ce fichier contient 501 lignes, considérez le diviser
+models/__init__.py
+Fichier trop long
+Ce fichier contient 384 lignes, considérez le diviser
+routes/admin/content.py
+Fichier trop long
+Ce fichier contient 356 lignes, considérez le diviser
+routes/admin/history.py
+Fichier trop long
+Ce fichier contient 324 lignes, considérez le diviser
+routes/admin_routes.py
+Fichier trop long
+Ce fichier contient 850 lignes, considérez le diviser
+routes/outils.py
+Fichier trop long
+Ce fichier contient 686 lignes, considérez le diviser
+services/github/patterns.py
+Fichier trop long
+Ce fichier contient 366 lignes, considérez le diviser
+services/pdf/qrcode_report.py
+Fichier trop long
+Ce fichier contient 537 lignes, considérez le diviser
+services/pdf/security_report.py
+Fichier trop long
+Ce fichier contient 548 lignes, considérez le diviser
+services/prompt_analyzer_service.py
+Fichier trop long
+Ce fichier contient 692 lignes, considérez le diviser
+services/security_analyzer.py
+Fichier trop long
+Ce fichier contient 582 lignes, considérez le diviser
+services/tracker_detector_service.py
+Fichier trop long
+Ce fichier contient 412 lignes, considérez le diviser
+services/url_shortener_service.py
+Fichier trop long
+Ce fichier contient 308 lignes, considérez le diviser
+services/urlhaus_service.py
+Fichier trop long
+Ce fichier contient 322 lignes, considérez le diviser
+services/urlscan_service.py
+Fichier trop long
+Ce fichier contient 643 lignes, considérez le diviser
+utils/seed_data.py
+
+
+
+FIXME non résolu
+FIXME: ', 'FIXME non résolu (JS)', 'medium', "Corriger le problème ...
+services/analyzers/ai_patterns_analyzer.py:11
+FIXME non résolu
+FIXME: ', 'FIXME non résolu', 'medium', "Corriger le problème signa...
+services/analyzers/ai_patterns_analyzer.py:10
+FIXME non résolu
+FIXME: ', 'FIXME non résolu (JS)', 'medium'),
+services/github/patterns.py:215
+FIXME non résolu
+FIXME: ', 'FIXME non résolu', 'medium'),
+services/github/patterns.py:214
+Valeur placeholder détectée
+Placeholder "placeholder entre <>" trouvé
+clean = re.compile('<.*?>')
+__init__.py:68
