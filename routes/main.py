@@ -5,7 +5,7 @@ from services.security_analyzer import SecurityAnalyzerService
 from services.pdf import PDFReportService
 from services.qrcode_analyzer_service import QRCodeAnalyzerService
 from services.prompt_analyzer_service import PromptAnalyzerService
-from services.github_code_analyzer_service import GitHubCodeAnalyzerService
+from services.github.analyzer import GitHubCodeAnalyzerService
 from models import Contact, User, BreachAnalysis, SecurityAnalysis, QRCodeAnalysis, PromptAnalysis, GitHubCodeAnalysis
 from utils.document_code_generator import ensure_unique_code
 from utils.metadata_collector import get_client_ip
