@@ -17,7 +17,7 @@
         {% if rules %}
         <div class="rules-grid">
             {% for rule in rules %}
-            <a href="{{ url_for('main.rule_detail', rule_id=rule.id) }}" class="rule-card glass-card">
+            <a href="{{ url_for('content.rule_detail', rule_id=rule.id) }}" class="rule-card glass-card">
                 <div class="rule-number">{{ "{:02d}".format(loop.index) }}</div>
                 <h3>{{ rule.title }}</h3>
                 <p class="rule-description">{{ (rule.description|striptags)[:150] }}{% if (rule.description|striptags)|length > 150 %}...{% endif %}</p>

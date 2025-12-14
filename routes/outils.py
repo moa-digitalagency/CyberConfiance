@@ -1,85 +1,28 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for, session, jsonify, send_file, make_response
-from flask_login import login_required
+from flask import Blueprint, render_template, request, flash, redirect, url_for, session, send_file
 from services import ContentService, HaveIBeenPwnedService, QuizService
 from services.security_analyzer import SecurityAnalyzerService
 from services.pdf import PDFReportService
 from services.qrcode_analyzer_service import QRCodeAnalyzerService
 from services.prompt_analyzer_service import PromptAnalyzerService
 from services.github_code_analyzer_service import GitHubCodeAnalyzerService
-from models import Contact, User, BreachAnalysis, SecurityAnalysis, QRCodeAnalysis, PromptAnalysis, GitHubCodeAnalysis
+from models import BreachAnalysis, SecurityAnalysis, QRCodeAnalysis, PromptAnalysis, GitHubCodeAnalysis
 from utils.document_code_generator import ensure_unique_code
 from utils.metadata_collector import get_client_ip
 import __init__ as app_module
-import json
 import os
 import requests
 import io
 from datetime import datetime
 db = app_module.db
 
-bp = Blueprint('main', __name__)
+bp = Blueprint('outils', __name__)
 
-@bp.route('/')
-def index():
-    latest_news = ContentService.get_latest_news(limit=2)
-    resources = ContentService.get_all_resources()[:2]
-    return render_template('index.html', news=latest_news, resources=resources)
-
-@bp.route('/contact', methods=['GET', 'POST'])
-def contact():
-    if request.method == 'POST':
-        name = request.form.get('name')
-        email = request.form.get('email')
-        subject = request.form.get('subject')
-        message = request.form.get('message')
-        
-        if name and email and subject and message:
-            from services.prompt_analyzer_service import PromptAnalyzerService
-            from utils.metadata_collector import collect_request_metadata, generate_incident_id
-            from flask import session
-            
-            prompt_analyzer = PromptAnalyzerService()
-            combined_text = f"{name}\n{subject}\n{message}"
-            analysis = prompt_analyzer.analyze_prompt(combined_text, analyze_urls=True)
-            
-            if analysis.get('threat_detected'):
-                threat_level = analysis.get('threat_level', 'unknown')
-                metadata = collect_request_metadata()
-                incident_id = generate_incident_id()
-                
-                from models import ThreatLog
-                threat_log = ThreatLog(
-                    incident_id=incident_id,
-                    threat_type=f"contact_form_{threat_level}",
-                    threat_details=f"Injection/menace detectee dans le formulaire de contact. "
-                                  f"Injection: {analysis.get('injection_detected')}, "
-                                  f"Code: {analysis.get('code_detected')}, "
-                                  f"Obfuscation: {analysis.get('obfuscation_detected')}",
-                    ip_address=metadata['ip_address'],
-                    user_agent=metadata['user_agent'],
-                    platform=metadata['platform'],
-                    device_type=metadata['device_type'],
-                    vpn_detected=metadata['vpn_detected'],
-                    metadata_json=metadata
-                )
-                db.session.add(threat_log)
-                db.session.commit()
-                
-                session['threat_incident_id'] = incident_id
-                return redirect(url_for('request_forms.security_threat', incident_id=incident_id))
-            
-            ContentService.save_contact(name, email, subject, message)
-            flash('Votre message a été envoyé avec succès!', 'success')
-            return redirect(url_for('main.contact'))
-        else:
-            flash('Veuillez remplir tous les champs.', 'error')
-    
-    return render_template('contact.html')
 
 @bp.route('/outils/types-attaques')
 def attack_types():
     all_attacks = ContentService.get_all_attack_types()
     return render_template('outils/attack_types.html', attacks=all_attacks)
+
 
 @bp.route('/outils/analyseur-liens', methods=['GET', 'POST'])
 def link_analyzer():
@@ -93,7 +36,7 @@ def link_analyzer():
         
         if not url:
             flash('Veuillez fournir une URL à analyser.', 'error')
-            return redirect(url_for('main.link_analyzer'))
+            return redirect(url_for('outils.link_analyzer'))
         
         if not url.startswith('http://') and not url.startswith('https://'):
             url = 'https://' + url
@@ -149,7 +92,7 @@ def link_analyzer():
         
         if not is_safe_url(url):
             flash('Cette URL n\'est pas autorisée pour des raisons de sécurité.', 'error')
-            return redirect(url_for('main.link_analyzer'))
+            return redirect(url_for('outils.link_analyzer'))
         
         try:
             analyzed_url = url
@@ -200,13 +143,14 @@ def link_analyzer():
                                  
         except Exception as e:
             flash(f'Erreur lors de l\'analyse: {str(e)}', 'error')
-            return redirect(url_for('main.link_analyzer'))
+            return redirect(url_for('outils.link_analyzer'))
     
     return render_template('outils/link_analyzer.html',
                          analyzed_url=analyzed_url,
                          redirects=redirects,
                          final_url=final_url,
                          redirect_count=redirect_count)
+
 
 @bp.route('/outils/analyseur-securite', methods=['GET', 'POST'])
 def security_analyzer():
@@ -224,7 +168,7 @@ def security_analyzer():
             
             if not input_value and not uploaded_file:
                 flash('Veuillez fournir une valeur à analyser.', 'error')
-                return redirect(url_for('main.security_analyzer'))
+                return redirect(url_for('outils.security_analyzer'))
             
             if input_value or uploaded_file:
                 analyzer = SecurityAnalyzerService()
@@ -273,6 +217,7 @@ def security_analyzer():
                          results=results, 
                          analysis_id=analysis_id)
 
+
 @bp.route('/quiz', methods=['GET', 'POST'])
 def quiz():
     if request.method == 'POST':
@@ -298,18 +243,19 @@ def quiz():
     quiz_data = QuizService.load_quiz_data()
     return render_template('outils/quiz.html', quiz_data=quiz_data)
 
+
 @bp.route('/quiz/submit-email', methods=['POST'])
 def quiz_submit_email():
     email = request.form.get('email')
     
     if not email:
         flash('Veuillez fournir une adresse email.', 'error')
-        return redirect(url_for('main.quiz'))
+        return redirect(url_for('outils.quiz'))
     
     quiz_data = session.get('quiz_data', {})
     if not quiz_data:
         flash('Session expirée. Veuillez reprendre le quiz.', 'error')
-        return redirect(url_for('main.quiz'))
+        return redirect(url_for('outils.quiz'))
     
     scores = quiz_data.get('scores', {})
     overall_score = quiz_data.get('overall_score', 50)
@@ -349,12 +295,13 @@ def quiz_submit_email():
         
         session.pop('quiz_data', None)
         
-        return redirect(url_for('main.quiz_result_detail', result_id=quiz_result.id))
+        return redirect(url_for('outils.quiz_result_detail', result_id=quiz_result.id))
     except Exception as e:
         print(f"Erreur lors de l'enregistrement du résultat: {str(e)}")
         db.session.rollback()
         flash('Une erreur est survenue lors de l\'enregistrement de vos résultats.', 'error')
-        return redirect(url_for('main.quiz'))
+        return redirect(url_for('outils.quiz'))
+
 
 @bp.route('/quiz/results/<int:result_id>')
 def quiz_result_detail(result_id):
@@ -384,47 +331,13 @@ def quiz_result_detail(result_id):
                          hibp_recommendations=hibp_recommendations,
                          data_scenarios=data_scenarios)
 
+
 @bp.route('/quiz/all-results')
 def quiz_all_results():
     from models import QuizResult
     all_results = QuizResult.query.order_by(QuizResult.created_at.desc()).all()
     return render_template('outils/quiz_all_results.html', results=all_results)
 
-@bp.route('/newsletter', methods=['POST'])
-def newsletter():
-    email = request.form.get('email')
-    
-    if not email:
-        flash('Veuillez fournir une adresse email.', 'error')
-        return redirect(url_for('main.index'))
-    
-    try:
-        from models import Newsletter
-        existing = Newsletter.query.filter_by(email=email).first()
-        
-        if existing:
-            if existing.subscribed:
-                flash('Vous êtes déjà inscrit à notre newsletter !', 'info')
-            else:
-                existing.subscribed = True
-                existing.unsubscribed_at = None
-                db.session.commit()
-                flash('Votre inscription à la newsletter a été réactivée !', 'success')
-        else:
-            newsletter_entry = Newsletter(
-                email=email,
-                ip_address=get_client_ip(request),
-                user_agent=request.headers.get('User-Agent', '')[:500]
-            )
-            db.session.add(newsletter_entry)
-            db.session.commit()
-            flash('Merci pour votre inscription à notre newsletter !', 'success')
-    except Exception as e:
-        print(f"Erreur lors de l'inscription newsletter: {str(e)}")
-        db.session.rollback()
-        flash('Une erreur est survenue. Veuillez réessayer.', 'error')
-    
-    return redirect(url_for('main.index'))
 
 @bp.route('/analyze-breach', methods=['POST'])
 def analyze_breach():
@@ -502,41 +415,9 @@ def analyze_breach():
         flash('Erreur critique lors de l\'analyse. Veuillez réessayer.', 'error')
         return redirect(url_for('main.index'))
 
-@bp.route('/set-language', methods=['POST'])
-@bp.route('/set-language/<lang>')
-def set_language(lang=None):
-    """Set user's preferred language"""
-    from urllib.parse import urlparse
-    
-    if request.method == 'POST' and request.is_json:
-        data = request.get_json()
-        lang = data.get('language', 'fr')
-        
-        if lang in ['en', 'fr']:
-            session['language'] = lang
-            session.permanent = True
-            return jsonify({'success': True, 'language': lang})
-        
-        return jsonify({'success': False, 'error': 'Invalid language'}), 400
-    
-    if lang and lang in ['en', 'fr']:
-        session['language'] = lang
-        session.permanent = True
-    
-    referrer = request.referrer
-    if referrer:
-        referrer_host = urlparse(referrer).netloc
-        current_host = request.host
-        
-        if referrer_host and referrer_host == current_host:
-            return redirect(referrer)
-    
-    return redirect(url_for('main.index'))
-
 
 @bp.route("/generate-breach-pdf/<int:analysis_id>")
 def generate_breach_pdf(analysis_id):
-    """Generate and download breach analysis PDF"""
     breach = BreachAnalysis.query.get_or_404(analysis_id)
     
     user_ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()
@@ -559,9 +440,9 @@ def generate_breach_pdf(analysis_id):
         download_name=f"rapport_fuite_{breach.email}_{breach.id}.pdf"
     )
 
+
 @bp.route("/generate-security-pdf/<int:analysis_id>")
 def generate_security_pdf(analysis_id):
-    """Generate and download security analysis PDF"""
     analysis = SecurityAnalysis.query.get_or_404(analysis_id)
     
     user_ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()
@@ -584,9 +465,9 @@ def generate_security_pdf(analysis_id):
         download_name=f"rapport_securite_{analysis.input_type}_{analysis.id}.pdf"
     )
 
+
 @bp.route("/generate-quiz-pdf/<int:result_id>")
 def generate_quiz_pdf(result_id):
-    """Generate and download quiz results PDF"""
     from models import QuizResult
     from services.quiz_service import QuizService
     quiz_result = QuizResult.query.get_or_404(result_id)
@@ -613,9 +494,9 @@ def generate_quiz_pdf(result_id):
         download_name=f"rapport_quiz_{quiz_result.email}_{quiz_result.id}.pdf"
     )
 
+
 @bp.route("/export-breach-pdf/<int:breach_id>")
 def export_breach_pdf(breach_id):
-    """Export breach analysis as PDF (legacy route)"""
     from services.pdf import PDFReportService
     from models import BreachAnalysis
     
@@ -639,9 +520,9 @@ def export_breach_pdf(breach_id):
         download_name=f"rapport_fuite_{breach.email}_{breach.id}.pdf"
     )
 
+
 @bp.route("/export-security-pdf/<int:analysis_id>")
 def export_security_pdf(analysis_id):
-    """Export security analysis as PDF"""
     from services.pdf import PDFReportService
     from models import SecurityAnalysis, BreachAnalysis
     
@@ -664,149 +545,6 @@ def export_security_pdf(analysis_id):
         as_attachment=True,
         download_name=f"rapport_securite_{analysis.input_type}_{analysis.id}.pdf"
     )
-
-@bp.route('/robots.txt')
-def robots():
-    """Generate dynamic robots.txt for search engines and AI crawlers"""
-    domain = request.host_url.rstrip('/')
-    
-    robots_content = f"""# Robots.txt pour CyberConfiance
-# Plateforme de sensibilisation à la cybersécurité
-
-User-agent: *
-# Pages publiques accessibles
-Allow: /
-Allow: /static/
-Allow: /outils/
-Allow: /ressources/
-Allow: /apropos
-Allow: /contact
-
-# Pages administratives - BLOCAGE COMPLET
-Disallow: /my4dm1n/
-Disallow: /admin/
-Disallow: /login
-Disallow: /logout
-
-# Formulaires de soumission - BLOCAGE (protection des utilisateurs)
-Disallow: /request/
-Disallow: /submit
-
-# APIs et endpoints internes
-Disallow: /api/
-Disallow: /_/
-
-# Fichiers sensibles
-Disallow: /*.json$
-Disallow: /*.sql$
-Disallow: /*.db$
-
-# Bots IA - Autoriser l'indexation du contenu éducatif uniquement
-User-agent: GPTBot
-User-agent: ChatGPT-User
-User-agent: CCBot
-User-agent: anthropic-ai
-User-agent: Claude-Web
-User-agent: Google-Extended
-Allow: /
-Allow: /outils/
-Allow: /ressources/
-Disallow: /my4dm1n/
-Disallow: /request/
-Disallow: /admin/
-
-# Crawlers agressifs - BLOCAGE
-User-agent: AhrefsBot
-User-agent: SemrushBot
-User-agent: MJ12bot
-User-agent: DotBot
-Disallow: /
-
-# Sitemap
-Sitemap: {domain}/sitemap.xml
-"""
-    
-    response = make_response(robots_content)
-    response.headers['Content-Type'] = 'text/plain'
-    return response
-
-@bp.route('/sitemap.xml')
-def sitemap():
-    """Generate dynamic XML sitemap for SEO"""
-    from models import News, Rule, Tool, AttackType
-    
-    domain = request.host_url.rstrip('/')
-    
-    pages = []
-    
-    static_routes = [
-        ('main.index', '1.0', 'daily'),
-        ('pages.about', '0.5', 'monthly'),
-        ('content.rules', '0.8', 'weekly'),
-        ('content.scenarios', '0.8', 'weekly'),
-        ('content.tools', '0.8', 'weekly'),
-        ('content.glossary', '0.7', 'weekly'),
-        ('content.resources', '0.7', 'weekly'),
-        ('content.news', '0.9', 'daily'),
-        ('main.contact', '0.6', 'monthly'),
-        ('main.quiz', '0.9', 'weekly'),
-        ('main.breach_analyzer', '0.9', 'weekly'),
-        ('main.security_analyzer', '0.9', 'weekly'),
-        ('main.attack_types', '0.8', 'weekly'),
-        ('pages.osint_methodology', '0.7', 'monthly'),
-    ]
-    
-    for route, priority, changefreq in static_routes:
-        try:
-            pages.append({
-                'loc': domain + url_for(route),
-                'priority': priority,
-                'changefreq': changefreq,
-                'lastmod': datetime.utcnow().strftime('%Y-%m-%d')
-            })
-        except:
-            pass
-    
-    try:
-        news_items = News.query.order_by(News.created_at.desc()).limit(50).all()
-        for item in news_items:
-            pages.append({
-                'loc': domain + url_for('content.news_detail', news_id=item.id),
-                'priority': '0.7',
-                'changefreq': 'monthly',
-                'lastmod': item.created_at.strftime('%Y-%m-%d')
-            })
-    except:
-        pass
-    
-    try:
-        rules = Rule.query.all()
-        for rule in rules:
-            pages.append({
-                'loc': domain + url_for('content.rule_detail', rule_id=rule.id),
-                'priority': '0.6',
-                'changefreq': 'monthly',
-                'lastmod': datetime.utcnow().strftime('%Y-%m-%d')
-            })
-    except:
-        pass
-    
-    sitemap_xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
-    sitemap_xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-    
-    for page in pages:
-        sitemap_xml += '  <url>\n'
-        sitemap_xml += f'    <loc>{page["loc"]}</loc>\n'
-        sitemap_xml += f'    <lastmod>{page["lastmod"]}</lastmod>\n'
-        sitemap_xml += f'    <changefreq>{page["changefreq"]}</changefreq>\n'
-        sitemap_xml += f'    <priority>{page["priority"]}</priority>\n'
-        sitemap_xml += '  </url>\n'
-    
-    sitemap_xml += '</urlset>'
-    
-    response = make_response(sitemap_xml)
-    response.headers['Content-Type'] = 'application/xml'
-    return response
 
 
 @bp.route('/outils/analyseur-qrcode', methods=['GET', 'POST'])
@@ -836,30 +574,30 @@ def qrcode_analyzer():
                     
                     if len(image_data) > 10 * 1024 * 1024:
                         flash('L\'image capturee est trop volumineuse. Taille maximale: 10 MB.', 'error')
-                        return redirect(url_for('main.qrcode_analyzer'))
+                        return redirect(url_for('outils.qrcode_analyzer'))
                 except Exception as e:
                     flash(f'Erreur lors du traitement de l\'image capturee: {str(e)}', 'error')
-                    return redirect(url_for('main.qrcode_analyzer'))
+                    return redirect(url_for('outils.qrcode_analyzer'))
             else:
                 uploaded_file = request.files.get('qrcode_image')
                 
                 if not uploaded_file or not uploaded_file.filename:
                     flash('Veuillez capturer ou selectionner une image contenant un QR code.', 'error')
-                    return redirect(url_for('main.qrcode_analyzer'))
+                    return redirect(url_for('outils.qrcode_analyzer'))
                 
                 allowed_extensions = {'png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp'}
                 file_ext = uploaded_file.filename.rsplit('.', 1)[-1].lower() if '.' in uploaded_file.filename else ''
                 
                 if file_ext not in allowed_extensions:
                     flash('Format d\'image non supporte. Utilisez PNG, JPG, GIF, BMP ou WebP.', 'error')
-                    return redirect(url_for('main.qrcode_analyzer'))
+                    return redirect(url_for('outils.qrcode_analyzer'))
                 
                 image_data = uploaded_file.read()
                 filename = uploaded_file.filename
                 
                 if len(image_data) > 10 * 1024 * 1024:
                     flash('L\'image est trop volumineuse. Taille maximale: 10 MB.', 'error')
-                    return redirect(url_for('main.qrcode_analyzer'))
+                    return redirect(url_for('outils.qrcode_analyzer'))
             
             analyzer = QRCodeAnalyzerService()
             try:
@@ -900,7 +638,7 @@ def qrcode_analyzer():
             
         except Exception as e:
             flash(f'Erreur lors de l\'analyse: {str(e)}', 'error')
-            return redirect(url_for('main.qrcode_analyzer'))
+            return redirect(url_for('outils.qrcode_analyzer'))
     
     return render_template('outils/qrcode_analyzer.html', results=results, analysis_id=analysis_id)
 
@@ -916,11 +654,11 @@ def prompt_analyzer():
             
             if not prompt_text:
                 flash('Veuillez entrer un texte à analyser.', 'error')
-                return redirect(url_for('main.prompt_analyzer'))
+                return redirect(url_for('outils.prompt_analyzer'))
             
             if len(prompt_text) > 50000:
                 flash('Le texte est trop long. Taille maximale: 50 000 caractères.', 'error')
-                return redirect(url_for('main.prompt_analyzer'))
+                return redirect(url_for('outils.prompt_analyzer'))
             
             analyzer = PromptAnalyzerService()
             try:
@@ -958,7 +696,7 @@ def prompt_analyzer():
             
         except Exception as e:
             flash(f'Erreur lors de l\'analyse: {str(e)}', 'error')
-            return redirect(url_for('main.prompt_analyzer'))
+            return redirect(url_for('outils.prompt_analyzer'))
     
     return render_template('outils/prompt_analyzer.html', results=results, analysis_id=analysis_id)
 
@@ -1013,9 +751,8 @@ def generate_prompt_pdf(analysis_id):
 
 @bp.route('/outils/analyseur-fuite', methods=['GET', 'POST'])
 def breach_analyzer():
-    """Redirect to the main breach analysis page with the preferred presentation"""
     if request.method == 'POST':
-        return redirect(url_for('main.analyze_breach'), code=307)
+        return redirect(url_for('outils.analyze_breach'), code=307)
     return render_template('outils/breach_analyzer.html', results=None, analysis_id=None)
 
 
@@ -1031,11 +768,11 @@ def github_analyzer():
             
             if not repo_url:
                 flash('Veuillez entrer une URL de depot GitHub.', 'error')
-                return redirect(url_for('main.github_analyzer'))
+                return redirect(url_for('outils.github_analyzer'))
             
             if 'github.com' not in repo_url:
                 flash('Seuls les depots GitHub sont supportes.', 'error')
-                return redirect(url_for('main.github_analyzer'))
+                return redirect(url_for('outils.github_analyzer'))
             
             analyzer = GitHubCodeAnalyzerService()
             results = analyzer.analyze(repo_url, branch)
@@ -1083,7 +820,7 @@ def github_analyzer():
             
         except Exception as e:
             flash(f'Erreur lors de l\'analyse: {str(e)}', 'error')
-            return redirect(url_for('main.github_analyzer'))
+            return redirect(url_for('outils.github_analyzer'))
     
     return render_template('outils/github_analyzer.html', results=results, analysis_id=analysis_id)
 

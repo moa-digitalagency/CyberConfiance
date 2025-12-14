@@ -143,7 +143,7 @@
                         <h4 class="links-group-title">Règles d'or</h4>
                         <div class="badge-container">
                             {% for rule_id in tool.get_related_rule_ids() %}
-                            <a href="{{ url_for('main.rule_detail', rule_id=rule_id) }}" class="badge-link">Règle {{ rule_id }}</a>
+                            <a href="{{ url_for('content.rule_detail', rule_id=rule_id) }}" class="badge-link">Règle {{ rule_id }}</a>
                             {% endfor %}
                         </div>
                     </div>
@@ -154,7 +154,7 @@
                         <h4 class="links-group-title">Scénarios</h4>
                         <div class="badge-container">
                             {% for scenario_id in tool.get_related_scenario_ids() %}
-                            <a href="{{ url_for('main.scenarios') }}#scenario-{{ scenario_id }}" class="badge-link badge-scenario">Scénario {{ scenario_id }}</a>
+                            <a href="{{ url_for('content.scenarios') }}#scenario-{{ scenario_id }}" class="badge-link badge-scenario">Scénario {{ scenario_id }}</a>
                             {% endfor %}
                         </div>
                     </div>

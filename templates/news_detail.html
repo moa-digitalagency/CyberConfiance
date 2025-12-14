@@ -6,7 +6,7 @@
 <section class="page-header-modern">
     <div class="container">
         <div class="header-content-left">
-            <a href="{{ url_for('main.news') }}" class="back-link">← Retour au blog</a>
+            <a href="{{ url_for('content.news') }}" class="back-link">← Retour au blog</a>
             <h1 class="article-title">{{ article.title }}</h1>
             <div class="article-meta">
                 {% if article.published_date %}
@@ -40,7 +40,7 @@
         </article>
         
         <div class="article-navigation">
-            <a href="{{ url_for('main.news') }}" class="btn-secondary">
+            <a href="{{ url_for('content.news') }}" class="btn-secondary">
                 ← Retour au blog
             </a>
         </div>

@@ -180,7 +180,7 @@
                         <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; margin-bottom: 1rem;">
                             Les principes essentiels de sécurité numérique à connaître et appliquer
                         </p>
-                        <a href="{{ url_for('main.rules') }}" style="color: rgba(59, 130, 246, 1); font-size: 0.9rem; text-decoration: none;">Consulter →</a>
+                        <a href="{{ url_for('content.rules') }}" style="color: rgba(59, 130, 246, 1); font-size: 0.9rem; text-decoration: none;">Consulter →</a>
                     </div>
                 </div>
             </div>
@@ -197,7 +197,7 @@
                         <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; margin-bottom: 1rem;">
                             Découvrez les principales cybermenaces et comment vous protéger
                         </p>
-                        <a href="{{ url_for('main.scenarios') }}" style="color: rgba(34, 197, 94, 1); font-size: 0.9rem; text-decoration: none;">Explorer →</a>
+                        <a href="{{ url_for('content.scenarios') }}" style="color: rgba(34, 197, 94, 1); font-size: 0.9rem; text-decoration: none;">Explorer →</a>
                     </div>
                 </div>
             </div>
@@ -216,7 +216,7 @@
                         <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; margin-bottom: 1rem;">
                             Catalogue complet d'outils pour protéger votre vie numérique
                         </p>
-                        <a href="{{ url_for('main.tools') }}" style="color: rgba(251, 191, 36, 1); font-size: 0.9rem; text-decoration: none;">Voir les outils →</a>
+                        <a href="{{ url_for('content.tools') }}" style="color: rgba(251, 191, 36, 1); font-size: 0.9rem; text-decoration: none;">Voir les outils →</a>
                     </div>
                 </div>
             </div>
@@ -441,13 +441,13 @@
                 </div>
                 <h3>{{ item.title }}</h3>
                 <p>{{ item.content[:150] }}...</p>
-                <a href="{{ url_for('main.news_detail', news_id=item.id) }}" class="read-more">Lire la suite →</a>
+                <a href="{{ url_for('content.news_detail', news_id=item.id) }}" class="read-more">Lire la suite →</a>
             </div>
             {% endfor %}
         </div>
         
         <div style="text-align: center; margin-top: 2.5rem;">
-            <a href="{{ url_for('main.news') }}" class="btn btn-primary" style="display: inline-block; padding: 0.875rem 2rem; font-size: 1rem;">Voir plus d'actualités →</a>
+            <a href="{{ url_for('content.news') }}" class="btn btn-primary" style="display: inline-block; padding: 0.875rem 2rem; font-size: 1rem;">Voir plus d'actualités →</a>
         </div>
     </div>
 </section>

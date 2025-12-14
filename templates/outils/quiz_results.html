@@ -69,7 +69,7 @@
                 <h3 style="font-size: 1.2rem;">Règles d'Or Recommandées</h3>
                 <div class="rules-grid" style="gap: 1rem;">
                     {% for rule in recommendations.priority_rules %}
-                    <a href="{{ url_for('main.rule_detail', rule_id=rule.id) }}" class="rule-card" style="padding: 1.2rem;">
+                    <a href="{{ url_for('content.rule_detail', rule_id=rule.id) }}" class="rule-card" style="padding: 1.2rem;">
                         <div class="rule-number" style="font-size: 1.8rem;">Règle {{ rule.order }}</div>
                         <h4 style="font-size: 0.95rem;">{{ rule.title|striptags }}</h4>
                         <p style="font-size: 0.85rem;">{{ rule.description|striptags|truncate(100) }}</p>
@@ -106,7 +106,7 @@
                     {% endfor %}
                 </div>
                 <p class="tools-link">
-                    <a href="{{ url_for('main.tools') }}">Voir tous les outils →</a>
+                    <a href="{{ url_for('content.tools') }}">Voir tous les outils →</a>
                 </p>
             </div>
             {% endif %}
@@ -198,7 +198,7 @@
                 Télécharger le rapport PDF
             </a>
             <a href="{{ url_for('main.quiz') }}" class="btn-secondary">Refaire le quiz</a>
-            <a href="{{ url_for('main.rules') }}" class="btn-primary">Consulter les 20 Règles d'Or</a>
+            <a href="{{ url_for('content.rules') }}" class="btn-primary">Consulter les 20 Règles d'Or</a>
         </div>
     </div>
 </section>

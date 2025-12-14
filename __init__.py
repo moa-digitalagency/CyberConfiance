@@ -50,7 +50,7 @@ def create_app(config_class=Config):
     csrf.init_app(app)
     limiter.init_app(app)
     babel.init_app(app, locale_selector=get_locale)
-    login_manager.login_view = 'main.login'
+    login_manager.login_view = 'auth.login'
     login_manager.login_message = 'Veuillez vous connecter pour accéder à cette page.'
     
     @login_manager.user_loader
@@ -143,8 +143,11 @@ def create_app(config_class=Config):
         db.session.rollback()
         return render_template('error_500.html'), 500
     
-    from routes import main, admin_routes, admin_panel, request_forms, admin_requests
+    from routes import main, admin_routes, admin_panel, request_forms, admin_requests, pages, content, auth
     app.register_blueprint(main.bp)
+    app.register_blueprint(pages.bp)
+    app.register_blueprint(content.bp)
+    app.register_blueprint(auth.bp)
     app.register_blueprint(admin_routes.bp)
     app.register_blueprint(admin_panel.bp)
     app.register_blueprint(request_forms.bp)

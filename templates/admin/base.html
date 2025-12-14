@@ -801,7 +801,7 @@
                     <div class="admin-user-role">ADMIN</div>
                     <div class="admin-user-email">{{ current_user.email }}</div>
                 </div>
-                <a href="{{ url_for('main.logout') }}" class="admin-logout-btn">Déconnexion</a>
+                <a href="{{ url_for('auth.logout') }}" class="admin-logout-btn">Déconnexion</a>
             </div>
             {% endif %}
             

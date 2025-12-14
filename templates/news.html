@@ -19,13 +19,13 @@
             <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; justify-content: center;">
                 <span style="color: var(--text-secondary); font-weight: 500;">Filtrer par catégorie:</span>
                 <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-                    <a href="{{ url_for('main.news') }}" 
+                    <a href="{{ url_for('content.news') }}" 
                        class="category-btn {% if not selected_category or selected_category == 'Toutes' %}active{% endif %}"
                        style="padding: 0.5rem 1.25rem; border-radius: 20px; text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: all 0.3s ease; {% if not selected_category or selected_category == 'Toutes' %}background: rgba(59, 130, 246, 0.2); border: 1px solid rgba(59, 130, 246, 0.5); color: var(--accent-blue);{% else %}background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text-secondary);{% endif %}">
                         Toutes
                     </a>
                     {% for cat in categories %}
-                    <a href="{{ url_for('main.news', category=cat) }}" 
+                    <a href="{{ url_for('content.news', category=cat) }}" 
                        class="category-btn {% if selected_category == cat %}active{% endif %}"
                        style="padding: 0.5rem 1.25rem; border-radius: 20px; text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: all 0.3s ease; {% if selected_category == cat %}background: rgba(59, 130, 246, 0.2); border: 1px solid rgba(59, 130, 246, 0.5); color: var(--accent-blue);{% else %}background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text-secondary);{% endif %}">
                         {{ cat }}
@@ -60,7 +60,7 @@
                         {{ item.content }}
                     {% endif %}
                 </div>
-                <a href="{{ url_for('main.news_detail', news_id=item.id) }}" class="blog-read-more">
+                <a href="{{ url_for('content.news_detail', news_id=item.id) }}" class="blog-read-more">
                     Lire la suite
                     <span class="arrow">→</span>
                 </a>
