@@ -161,103 +161,12 @@
 
 <section class="section tools-section" style="padding: 4rem 0;">
     <div class="container">
-        <h2 class="section-title" style="text-align: center;">Outils Essentiels</h2>
+        <h2 class="section-title" style="text-align: center;">Nos Outils d'Analyse</h2>
         <p class="section-subtitle" style="text-align: center; max-width: 700px; margin: 0 auto 3rem;">
-            Des ressources pratiques pour renforcer votre sécurité numérique au quotidien
+            Des outils professionnels pour analyser et detecter les menaces numeriques
         </p>
         
         <div class="tools-grid-homepage">
-            <div class="tool-card glass-card" style="padding: 2rem; border-radius: 12px; border-left: 3px solid rgba(59, 130, 246, 0.5); transition: all 0.3s ease;">
-                <div style="display: flex; align-items: flex-start; gap: 1rem;">
-                    <div style="flex-shrink: 0; width: 48px; height: 48px; background: rgba(59, 130, 246, 0.15); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(59, 130, 246, 1)" stroke-width="2">
-                            <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/>
-                            <path d="M12 6v6l4 2"/>
-                        </svg>
-                    </div>
-                    <div style="flex: 1;">
-                        <h4 style="font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--text-primary);">Règles d'Or</h4>
-                        <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; margin-bottom: 1rem;">
-                            Les principes essentiels de sécurité numérique à connaître et appliquer
-                        </p>
-                        <a href="{{ url_for('content.rules') }}" style="color: rgba(59, 130, 246, 1); font-size: 0.9rem; text-decoration: none;">Consulter →</a>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="tool-card glass-card" style="padding: 2rem; border-radius: 12px; border-left: 3px solid rgba(34, 197, 94, 0.5); transition: all 0.3s ease;">
-                <div style="display: flex; align-items: flex-start; gap: 1rem;">
-                    <div style="flex-shrink: 0; width: 48px; height: 48px; background: rgba(34, 197, 94, 0.15); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(34, 197, 94, 1)" stroke-width="2">
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                        </svg>
-                    </div>
-                    <div style="flex: 1;">
-                        <h4 style="font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--text-primary);">Scénarios de Menaces</h4>
-                        <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; margin-bottom: 1rem;">
-                            Découvrez les principales cybermenaces et comment vous protéger
-                        </p>
-                        <a href="{{ url_for('content.scenarios') }}" style="color: rgba(34, 197, 94, 1); font-size: 0.9rem; text-decoration: none;">Explorer →</a>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="tool-card glass-card" style="padding: 2rem; border-radius: 12px; border-left: 3px solid rgba(251, 191, 36, 0.5); transition: all 0.3s ease;">
-                <div style="display: flex; align-items: flex-start; gap: 1rem;">
-                    <div style="flex-shrink: 0; width: 48px; height: 48px; background: rgba(251, 191, 36, 0.15); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(251, 191, 36, 1)" stroke-width="2">
-                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-                            <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
-                            <line x1="12" y1="22.08" x2="12" y2="12"/>
-                        </svg>
-                    </div>
-                    <div style="flex: 1;">
-                        <h4 style="font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--text-primary);">Outils de Sécurité</h4>
-                        <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; margin-bottom: 1rem;">
-                            Catalogue complet d'outils pour protéger votre vie numérique
-                        </p>
-                        <a href="{{ url_for('content.tools') }}" style="color: rgba(251, 191, 36, 1); font-size: 0.9rem; text-decoration: none;">Voir les outils →</a>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="tool-card glass-card" style="padding: 2rem; border-radius: 12px; border-left: 3px solid rgba(168, 85, 247, 0.5); transition: all 0.3s ease;">
-                <div style="display: flex; align-items: flex-start; gap: 1rem;">
-                    <div style="flex-shrink: 0; width: 48px; height: 48px; background: rgba(168, 85, 247, 0.15); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(168, 85, 247, 1)" stroke-width="2">
-                            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-                            <path d="M2 17l10 5 10-5M2 12l10 5 10-5"/>
-                        </svg>
-                    </div>
-                    <div style="flex: 1;">
-                        <h4 style="font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--text-primary);">Types d'Attaques</h4>
-                        <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; margin-bottom: 1rem;">
-                            Apprenez à reconnaître et prévenir les différents types d'attaques
-                        </p>
-                        <a href="{{ url_for('main.attack_types') }}" style="color: rgba(168, 85, 247, 1); font-size: 0.9rem; text-decoration: none;">Découvrir →</a>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="tool-card glass-card" style="padding: 2rem; border-radius: 12px; border-left: 3px solid rgba(236, 72, 153, 0.5); transition: all 0.3s ease;">
-                <div style="display: flex; align-items: flex-start; gap: 1rem;">
-                    <div style="flex-shrink: 0; width: 48px; height: 48px; background: rgba(236, 72, 153, 0.15); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(236, 72, 153, 1)" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"/>
-                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
-                            <line x1="12" y1="17" x2="12.01" y2="17"/>
-                        </svg>
-                    </div>
-                    <div style="flex: 1;">
-                        <h4 style="font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--text-primary);">Quiz Sécurité Numérique</h4>
-                        <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; margin-bottom: 1rem;">
-                            Testez vos connaissances en sécurité numérique et recevez des recommandations personnalisées
-                        </p>
-                        <a href="{{ url_for('main.quiz') }}" style="color: rgba(236, 72, 153, 1); font-size: 0.9rem; text-decoration: none;">Commencer le quiz →</a>
-                    </div>
-                </div>
-            </div>
-            
             <div class="tool-card glass-card" style="padding: 2rem; border-radius: 12px; border-left: 3px solid rgba(245, 158, 11, 0.5); transition: all 0.3s ease;">
                 <div style="display: flex; align-items: flex-start; gap: 1rem;">
                     <div style="flex-shrink: 0; width: 48px; height: 48px; background: rgba(245, 158, 11, 0.15); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
@@ -268,11 +177,11 @@
                         </svg>
                     </div>
                     <div style="flex: 1;">
-                        <h4 style="font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--text-primary);">Analyse Securite</h4>
+                        <h4 style="font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--text-primary);">Analyseur de Securite</h4>
                         <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; margin-bottom: 1rem;">
                             Analysez des fichiers, URLs et hash pour detecter les menaces potentielles
                         </p>
-                        <a href="{{ url_for('main.security_analyzer') }}" style="color: rgba(245, 158, 11, 1); font-size: 0.9rem; text-decoration: none;">Analyser</a>
+                        <a href="{{ url_for('main.security_analyzer') }}" style="color: rgba(245, 158, 11, 1); font-size: 0.9rem; text-decoration: none;">Analyser →</a>
                     </div>
                 </div>
             </div>
@@ -290,7 +199,7 @@
                         <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; margin-bottom: 1rem;">
                             Verifiez si votre email a ete compromis dans des fuites de donnees
                         </p>
-                        <a href="{{ url_for('main.breach_analyzer') }}" style="color: rgba(14, 165, 233, 1); font-size: 0.9rem; text-decoration: none;">Verifier mon email</a>
+                        <a href="{{ url_for('main.breach_analyzer') }}" style="color: rgba(14, 165, 233, 1); font-size: 0.9rem; text-decoration: none;">Verifier →</a>
                     </div>
                 </div>
             </div>
@@ -308,9 +217,9 @@
                     <div style="flex: 1;">
                         <h4 style="font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--text-primary);">Analyseur QR Code (Anti-Quishing)</h4>
                         <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; margin-bottom: 1rem;">
-                            Analysez les QR codes pour detecter les tentatives de phishing avant de les scanner
+                            Analysez les QR codes pour detecter les tentatives de phishing
                         </p>
-                        <a href="{{ url_for('main.qrcode_analyzer') }}" style="color: rgba(239, 68, 68, 1); font-size: 0.9rem; text-decoration: none;">Analyser QR Code</a>
+                        <a href="{{ url_for('main.qrcode_analyzer') }}" style="color: rgba(239, 68, 68, 1); font-size: 0.9rem; text-decoration: none;">Analyser →</a>
                     </div>
                 </div>
             </div>
@@ -326,9 +235,26 @@
                     <div style="flex: 1;">
                         <h4 style="font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--text-primary);">Analyseur de Prompt (Anti-Injection)</h4>
                         <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; margin-bottom: 1rem;">
-                            Detectez les tentatives d'injection de prompt et le code malveillant cache
+                            Detectez les tentatives d'injection de prompt et le code malveillant
                         </p>
-                        <a href="{{ url_for('main.prompt_analyzer') }}" style="color: rgba(139, 92, 246, 1); font-size: 0.9rem; text-decoration: none;">Analyser Prompt</a>
+                        <a href="{{ url_for('main.prompt_analyzer') }}" style="color: rgba(139, 92, 246, 1); font-size: 0.9rem; text-decoration: none;">Analyser →</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tool-card glass-card" style="padding: 2rem; border-radius: 12px; border-left: 3px solid rgba(34, 197, 94, 0.5); transition: all 0.3s ease;">
+                <div style="display: flex; align-items: flex-start; gap: 1rem;">
+                    <div style="flex-shrink: 0; width: 48px; height: 48px; background: rgba(34, 197, 94, 0.15); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(34, 197, 94, 1)" stroke-width="2">
+                            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+                        </svg>
+                    </div>
+                    <div style="flex: 1;">
+                        <h4 style="font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--text-primary);">Analyseur de Code GitHub</h4>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; margin-bottom: 1rem;">
+                            Analysez les depots GitHub pour detecter les vulnerabilites de securite
+                        </p>
+                        <a href="{{ url_for('main.github_analyzer') }}" style="color: rgba(34, 197, 94, 1); font-size: 0.9rem; text-decoration: none;">Analyser →</a>
                     </div>
                 </div>
             </div>
