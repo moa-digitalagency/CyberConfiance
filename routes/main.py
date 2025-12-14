@@ -1,10 +1,10 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, session, jsonify, send_file, make_response
 from flask_login import login_required
 from services import ContentService, HaveIBeenPwnedService, QuizService
-from services.security_analyzer import SecurityAnalyzerService
+from services.security import SecurityAnalyzerService
 from services.pdf import PDFReportService
-from services.qrcode_analyzer_service import QRCodeAnalyzerService
-from services.prompt_analyzer_service import PromptAnalyzerService
+from services.qrcode import QRCodeAnalyzerService
+from services.prompt import PromptAnalyzerService
 from services.github.analyzer import GitHubCodeAnalyzerService
 from models import Contact, User, BreachAnalysis, SecurityAnalysis, QRCodeAnalysis, PromptAnalysis, GitHubCodeAnalysis
 from utils.document_code_generator import ensure_unique_code
@@ -34,7 +34,7 @@ def contact():
         message = request.form.get('message')
         
         if name and email and subject and message:
-            from services.prompt_analyzer_service import PromptAnalyzerService
+            from services.prompt import PromptAnalyzerService
             from utils.metadata_collector import collect_request_metadata, generate_incident_id
             from flask import session
             
@@ -588,7 +588,7 @@ def generate_security_pdf(analysis_id):
 def generate_quiz_pdf(result_id):
     """Generate and download quiz results PDF"""
     from models import QuizResult
-    from services.quiz_service import QuizService
+    from services.quiz import QuizService
     quiz_result = QuizResult.query.get_or_404(result_id)
     
     user_ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()  # type: ignore

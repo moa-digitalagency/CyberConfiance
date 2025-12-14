@@ -1,10 +1,10 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, session, send_file
 from services import ContentService, HaveIBeenPwnedService, QuizService
-from services.security_analyzer import SecurityAnalyzerService
+from services.security import SecurityAnalyzerService
 from services.pdf import PDFReportService
-from services.qrcode_analyzer_service import QRCodeAnalyzerService
-from services.prompt_analyzer_service import PromptAnalyzerService
-from services.github_code_analyzer_service import GitHubCodeAnalyzerService
+from services.qrcode import QRCodeAnalyzerService
+from services.prompt import PromptAnalyzerService
+from services.github.analyzer import GitHubCodeAnalyzerService
 from models import BreachAnalysis, SecurityAnalysis, QRCodeAnalysis, PromptAnalysis, GitHubCodeAnalysis
 from utils.document_code_generator import ensure_unique_code
 from utils.metadata_collector import get_client_ip
@@ -469,7 +469,7 @@ def generate_security_pdf(analysis_id):
 @bp.route("/generate-quiz-pdf/<int:result_id>")
 def generate_quiz_pdf(result_id):
     from models import QuizResult
-    from services.quiz_service import QuizService
+    from services.quiz import QuizService
     quiz_result = QuizResult.query.get_or_404(result_id)
     
     user_ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()

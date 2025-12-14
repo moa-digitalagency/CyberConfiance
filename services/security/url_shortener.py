@@ -318,7 +318,7 @@ class URLShortenerService:
         }
         
         if not security_analyzer:
-            from services.security_analyzer import SecurityAnalyzerService
+            from services.security.analyzer import SecurityAnalyzerService
             security_analyzer = SecurityAnalyzerService()
         
         threat_levels_priority = {'sûr': 0, 'inconnu': 1, 'modéré': 2, 'élevé': 3, 'critique': 4}

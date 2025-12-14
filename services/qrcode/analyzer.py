@@ -4,8 +4,8 @@ import requests
 from urllib.parse import urlparse, urljoin, parse_qs, unquote
 from bs4 import BeautifulSoup
 
-from services.url_shortener_service import URLShortenerService
-from services.tracker_detector_service import TrackerDetectorService
+from services.security.url_shortener import URLShortenerService
+from services.security.tracker_detector import TrackerDetectorService
 from services.qrcode.decoder import decode_qr_from_image
 from services.qrcode.patterns import (
     phishing_keywords,
@@ -869,7 +869,7 @@ class QRCodeAnalyzerService:
     
     def _get_security_analyzer(self):
         if self._security_analyzer is None:
-            from services.security_analyzer import SecurityAnalyzerService
+            from services.security.analyzer import SecurityAnalyzerService
             self._security_analyzer = SecurityAnalyzerService()
         return self._security_analyzer
     

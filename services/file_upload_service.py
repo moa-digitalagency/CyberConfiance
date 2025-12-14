@@ -3,7 +3,7 @@ import hashlib
 import tempfile
 import filetype
 from werkzeug.utils import secure_filename
-from services.security_analyzer import SecurityAnalyzerService
+from services.security import SecurityAnalyzerService
 
 MAX_FILE_SIZE = 200 * 1024 * 1024
 

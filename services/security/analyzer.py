@@ -4,11 +4,11 @@ import hashlib
 import re
 from datetime import datetime
 from urllib.parse import urlparse
-from services.google_safe_browsing_service import GoogleSafeBrowsingService
-from services.urlhaus_service import URLhausService
-from services.url_shortener_service import URLShortenerService
-from services.urlscan_service import URLScanService
-from services.tracker_detector_service import TrackerDetectorService
+from services.security.google_safe_browsing import GoogleSafeBrowsingService
+from services.security.urlhaus import URLhausService
+from services.security.url_shortener import URLShortenerService
+from services.security.urlscan import URLScanService
+from services.security.tracker_detector import TrackerDetectorService
 
 class SecurityAnalyzerService:
     """Service for analyzing security threats using multiple sources"""

@@ -99,7 +99,7 @@ class PromptAnalyzerService:
     
     def _get_security_analyzer(self):
         if self._security_analyzer is None:
-            from services.security_analyzer import SecurityAnalyzerService
+            from services.security.analyzer import SecurityAnalyzerService
             self._security_analyzer = SecurityAnalyzerService()
         return self._security_analyzer
     

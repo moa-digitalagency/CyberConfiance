@@ -1,5 +1,5 @@
 from models import RequestSubmission, db
-from services.security_analyzer import SecurityAnalyzerService
+from services.security import SecurityAnalyzerService
 from services.file_upload_service import FileUploadService
 from utils.document_code_generator import ensure_unique_code
 from flask import request
