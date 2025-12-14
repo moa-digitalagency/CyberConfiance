@@ -667,4 +667,42 @@ sudo systemctl restart cyberconfiance
 
 ---
 
-*Documentation CyberConfiance v2.0 - Novembre 2025*
+---
+
+## 8. Analyseur de Code GitHub (BETA)
+
+Pour la documentation technique complete de l'analyseur GitHub, voir:
+**`docs/GITHUB_ANALYZER_TECHNICAL.md`**
+
+### Resume
+
+L'analyseur de code GitHub est un service d'analyse statique qui:
+
+1. Clone les depots GitHub publics
+2. Analyse 200+ patterns de vulnerabilites (OWASP Top 10)
+3. Detecte 50+ langages et 30+ frameworks
+4. Identifie les patterns "vibecoding" (code genere par IA non optimise)
+5. Evalue la qualite globale avec un score sur 100
+
+### Poids du score global
+
+| Categorie | Poids |
+|-----------|-------|
+| Securite | 35% |
+| Dependances | 15% |
+| Architecture | 15% |
+| Patterns IA Toxiques | 10% |
+| Performance | 10% |
+| Documentation | 10% |
+| Qualite Git | 5% |
+
+### Limitations actuelles (BETA)
+
+- Analyse statique uniquement (pas d'execution)
+- Timeout 180s pour le clonage
+- Fichiers > 1MB ignores
+- Regex-based (pas d'AST complet)
+
+---
+
+*Documentation CyberConfiance v2.1 - Decembre 2025*

@@ -3,6 +3,9 @@
 ## Overview
 CyberConfiance is a production-ready Flask-based cybersecurity awareness training platform. It offers a comprehensive suite of analysis tools, including email breach checking, security analysis for various digital assets, and novel anti-quishing (QR code analysis) and anti-injection (prompt analysis) capabilities. The platform features an interactive quiz, personalized recommendations, and an admin panel for managing user requests and site settings. It ensures data persistence through a robust database schema and is fully compatible with VPS deployments. The core vision is to empower users with tools and knowledge to enhance their digital security posture against evolving cyber threats.
 
+**Version**: 2.1 (December 2025)
+**Status**: Production-ready with GitHub Analyzer in BETA
+
 ## User Preferences
 I prefer that the agent adheres to existing architectural patterns and design decisions. Major changes to the system design or core functionalities should be proposed and discussed before implementation. I value clear, concise communication and detailed explanations for complex changes. When introducing new features or making significant modifications, the agent should prioritize security hardening and ensure robust error handling. I also prefer an iterative development approach, with regular updates on progress and potential issues.
 
@@ -29,7 +32,7 @@ I prefer that the agent adheres to existing architectural patterns and design de
 - **Security Analysis (Multi-Source)**: Provides analysis for URLs, files, domains, IPs, and hashes. Includes URL shortener detection and expansion, and uses multiple security APIs (VirusTotal, Google Safe Browsing, URLhaus, URLScan.io) and an internal TrackerDetector.
 - **QR Code Analyzer (Anti-Quishing)**: Decodes QR codes from images or real-time camera feeds. Features comprehensive multi-protocol redirect detection (HTTP, Meta refresh, JavaScript, HTTP header, URL parameter, iframe), multi-API security analysis, and tracker/IP logger detection. Hardened with SSRF protection and DNS rebinding prevention.
 - **Prompt Analyzer (Anti-Injection)**: Detects prompt injection patterns, dangerous code, obfuscation, and jailbreak attempts using pattern matching and AST analysis. Extracts and analyzes URLs, IPs, and domains embedded in prompts.
-- **GitHub Code Analyzer**: Analyzes public GitHub repositories for security vulnerabilities and code quality issues. Features advanced language and framework detection, OWASP Top 10 aligned security scanning (secret detection, SQLi, XSS, command injection, path traversal, insecure deserialization, SSRF/CSRF, auth issues, insecure config), vulnerable dependencies database, toxic AI pattern detection, performance issue detection, architecture analysis, Git hygiene analysis, and documentation checks.
+- **GitHub Code Analyzer (BETA)**: Analyzes public GitHub repositories for security vulnerabilities and code quality issues. Features advanced language and framework detection (50+ languages, 30+ frameworks), OWASP Top 10 aligned security scanning (200+ patterns including secret detection, SQLi, XSS, command injection, path traversal, insecure deserialization, SSRF/CSRF, auth issues, insecure config), vulnerable dependencies database, toxic AI pattern detection ("vibecoding"), performance issue detection, architecture analysis, Git hygiene analysis, and documentation checks. See `docs/GITHUB_ANALYZER_TECHNICAL.md` for detailed algorithm documentation.
 - **Admin Panel Enhancements**: Detailed history views for all analyses, formatted display of results, extensive site settings, and improved SEO Metadata editing.
 
 ### System Design Choices
