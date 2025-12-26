@@ -1,5 +1,20 @@
 # CyberConfiance - Cybersecurity Awareness Platform
 
+## Documentation
+
+Complete documentation is available in the `docs/` folder:
+
+| Document | Description |
+|----------|-------------|
+| [README.md](docs/README.md) | Main overview and quick start |
+| [ARCHITECTURE.md](docs/ARCHITECTURE.md) | Technical architecture details |
+| [SERVICES.md](docs/SERVICES.md) | Analysis services documentation |
+| [API_INTEGRATIONS.md](docs/API_INTEGRATIONS.md) | External API integrations |
+| [ADMINISTRATION.md](docs/ADMINISTRATION.md) | Admin panel guide |
+| [GUIDE_UTILISATEUR.md](docs/GUIDE_UTILISATEUR.md) | End-user guide (French) |
+| [GUIDE_TECHNIQUE.md](docs/GUIDE_TECHNIQUE.md) | Technical reference (French) |
+| [GITHUB_ANALYZER_TECHNICAL.md](docs/GITHUB_ANALYZER_TECHNICAL.md) | GitHub analyzer deep-dive |
+
 ## Overview
 CyberConfiance is a production-ready Flask-based cybersecurity awareness training platform. It offers a comprehensive suite of analysis tools, including email breach checking, security analysis for various digital assets, and novel anti-quishing (QR code analysis) and anti-injection (prompt analysis) capabilities. The platform features an interactive quiz, personalized recommendations, and an admin panel for managing user requests and site settings. It ensures data persistence through a robust database schema and is fully compatible with VPS deployments. The core vision is to empower users with tools and knowledge to enhance their digital security posture against evolving cyber threats.
 
