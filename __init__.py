@@ -1,3 +1,14 @@
+"""
+CyberConfiance
+By MOA Digital Agency LLC
+Developed by: Aisance KALONJI
+Contact: moa@myoneart.com
+www.myoneart.com
+
+Factory Flask et configuration de l'application.
+Initialise les extensions, les blueprints et les gestionnaires d'erreurs.
+"""
+
 from flask import Flask, redirect, url_for, session, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_admin import Admin, AdminIndexView, expose

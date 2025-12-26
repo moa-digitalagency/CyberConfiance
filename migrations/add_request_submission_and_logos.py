@@ -1,7 +1,14 @@
 #!/usr/bin/env python3
 """
-Migration: Add RequestSubmission table and logo settings
+CyberConfiance
+By MOA Digital Agency LLC
+Developed by: Aisance KALONJI
+Contact: moa@myoneart.com
+www.myoneart.com
+
+Migration: Ajout table RequestSubmission et parametres de logo.
 """
+
 import sys
 sys.path.insert(0, '/home/runner/workspace')
 

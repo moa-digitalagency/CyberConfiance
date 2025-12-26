@@ -1,3 +1,13 @@
+"""
+CyberConfiance
+By MOA Digital Agency LLC
+Developed by: Aisance KALONJI
+Contact: moa@myoneart.com
+www.myoneart.com
+
+Orchestrateur de rapports PDF forensiques.
+"""
+
 from services.pdf.base import PDFReportBase
 from services.pdf.breach_report import BreachReportMixin
 from services.pdf.security_report import SecurityReportMixin

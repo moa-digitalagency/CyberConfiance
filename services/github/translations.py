@@ -1,6 +1,11 @@
 """
-Traductions françaises ULTRA-COMPLÈTES pour CyberConfiance Analyzer.
-Version finale optimisée - Décembre 2025
+CyberConfiance
+By MOA Digital Agency LLC
+Developed by: Aisance KALONJI
+Contact: moa@myoneart.com
+www.myoneart.com
+
+Traductions francaises pour l'analyseur GitHub.
 """
 
 import re

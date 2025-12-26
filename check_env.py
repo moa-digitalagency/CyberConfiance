@@ -1,9 +1,15 @@
 #!/usr/bin/env python3
 """
-Script de vérification des variables d'environnement requises.
-Ce script s'exécute au démarrage pour s'assurer que toutes les variables
-d'environnement critiques sont configurées avant le lancement de l'application.
+CyberConfiance
+By MOA Digital Agency LLC
+Developed by: Aisance KALONJI
+Contact: moa@myoneart.com
+www.myoneart.com
+
+Verification des variables d'environnement requises au demarrage.
+S'assure que toutes les variables critiques sont configurees.
 """
+
 import os
 import sys
 

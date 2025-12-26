@@ -1,3 +1,13 @@
+"""
+CyberConfiance
+By MOA Digital Agency LLC
+Developed by: Aisance KALONJI
+Contact: moa@myoneart.com
+www.myoneart.com
+
+Routes des pages statiques: a propos, services, programmes.
+"""
+
 from flask import Blueprint, render_template
 
 bp = Blueprint('pages', __name__)

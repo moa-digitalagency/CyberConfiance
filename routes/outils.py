@@ -1,3 +1,13 @@
+"""
+CyberConfiance
+By MOA Digital Agency LLC
+Developed by: Aisance KALONJI
+Contact: moa@myoneart.com
+www.myoneart.com
+
+Routes des outils d'analyse: liens, QR codes, prompts, GitHub, fuites email.
+"""
+
 from flask import Blueprint, render_template, request, flash, redirect, url_for, session, send_file
 from services import ContentService, HaveIBeenPwnedService, QuizService
 from services.security import SecurityAnalyzerService

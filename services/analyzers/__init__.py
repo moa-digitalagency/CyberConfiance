@@ -1,3 +1,13 @@
+"""
+CyberConfiance
+By MOA Digital Agency LLC
+Developed by: Aisance KALONJI
+Contact: moa@myoneart.com
+www.myoneart.com
+
+Exports des analyseurs de code pour l'auditeur GitHub.
+"""
+
 from .base_analyzer import BaseAnalyzer
 from .security_analyzer import SecurityAnalyzer
 from .ai_patterns_analyzer import AIPatternAnalyzer

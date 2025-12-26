@@ -1,3 +1,14 @@
+"""
+CyberConfiance
+By MOA Digital Agency LLC
+Developed by: Aisance KALONJI
+Contact: moa@myoneart.com
+www.myoneart.com
+
+Configuration de l'application Flask.
+Charge les variables d'environnement et definit les parametres.
+"""
+
 import os
 from dotenv import load_dotenv
 

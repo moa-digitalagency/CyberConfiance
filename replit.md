@@ -1,5 +1,15 @@
 # CyberConfiance - Cybersecurity Awareness Platform
 
+---
+
+**CyberConfiance**  
+By MOA Digital Agency LLC  
+Developed by: Aisance KALONJI  
+Contact: moa@myoneart.com  
+Website: www.myoneart.com
+
+---
+
 ## Documentation
 
 Complete documentation is available in the `docs/` folder:

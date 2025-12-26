@@ -1,7 +1,14 @@
 #!/usr/bin/env python3
 """
-Schema Migration: Add consultation and OSINT investigation fields to RequestSubmission
+CyberConfiance
+By MOA Digital Agency LLC
+Developed by: Aisance KALONJI
+Contact: moa@myoneart.com
+www.myoneart.com
+
+Migration: Ajout champs consultation et investigation OSINT a RequestSubmission.
 """
+
 import sys
 sys.path.insert(0, '/home/runner/workspace')
 

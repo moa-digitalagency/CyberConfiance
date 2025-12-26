@@ -1,3 +1,13 @@
+"""
+CyberConfiance
+By MOA Digital Agency LLC
+Developed by: Aisance KALONJI
+Contact: moa@myoneart.com
+www.myoneart.com
+
+Generateur de codes uniques pour les documents et QR codes de verification.
+"""
+
 import secrets
 import string
 import qrcode

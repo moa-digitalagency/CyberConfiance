@@ -1,3 +1,13 @@
+"""
+CyberConfiance
+By MOA Digital Agency LLC
+Developed by: Aisance KALONJI
+Contact: moa@myoneart.com
+www.myoneart.com
+
+Modeles de journalisation: ActivityLog, SecurityLog, ThreatLog.
+"""
+
 from datetime import datetime
 from models.base import db
 

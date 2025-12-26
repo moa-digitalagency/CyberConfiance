@@ -1,4 +1,13 @@
-// Theme Switcher
+/**
+ * CyberConfiance
+ * By MOA Digital Agency LLC
+ * Developed by: Aisance KALONJI
+ * Contact: moa@myoneart.com
+ * www.myoneart.com
+ * 
+ * Gestionnaire de theme (clair/sombre) et de langue (FR/EN).
+ */
+
 const initTheme = () => {
     const savedTheme = localStorage.getItem('theme');
     // Default to 'dark' without browser detection

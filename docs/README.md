@@ -1,5 +1,15 @@
 # CyberConfiance - Plateforme de Sensibilisation et Protection Cyber
 
+---
+
+**CyberConfiance**  
+By MOA Digital Agency LLC  
+Developed by: Aisance KALONJI  
+Contact: moa@myoneart.com  
+Website: www.myoneart.com
+
+---
+
 ## Presentation
 
 CyberConfiance est une plateforme web de sensibilisation a la cybersecurite destinee au grand public, aux entreprises et aux institutions. Elle propose des outils d'analyse de menaces, du contenu educatif et des services de consultation specialises.

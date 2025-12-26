@@ -1,3 +1,13 @@
+/**
+ * CyberConfiance
+ * By MOA Digital Agency LLC
+ * Developed by: Aisance KALONJI
+ * Contact: moa@myoneart.com
+ * www.myoneart.com
+ * 
+ * Quiz interactif de cybersecurite avec navigation et validation.
+ */
+
 let currentQuestionIndex = 1;
 const totalQuestions = document.querySelectorAll('.question-card').length;
 

@@ -1,3 +1,13 @@
+"""
+CyberConfiance
+By MOA Digital Agency LLC
+Developed by: Aisance KALONJI
+Contact: moa@myoneart.com
+www.myoneart.com
+
+Service de traitement des demandes utilisateurs avec scan de securite.
+"""
+
 from models import RequestSubmission, db
 from services.security import SecurityAnalyzerService
 from services.file_upload_service import FileUploadService

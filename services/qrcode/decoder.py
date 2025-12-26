@@ -1,3 +1,13 @@
+"""
+CyberConfiance
+By MOA Digital Agency LLC
+Developed by: Aisance KALONJI
+Contact: moa@myoneart.com
+www.myoneart.com
+
+Decodeur multi-techniques QR avec support pyzbar.
+"""
+
 import io
 from ctypes import cdll
 import ctypes.util

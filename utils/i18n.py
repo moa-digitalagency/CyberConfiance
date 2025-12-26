@@ -1,3 +1,13 @@
+"""
+CyberConfiance
+By MOA Digital Agency LLC
+Developed by: Aisance KALONJI
+Contact: moa@myoneart.com
+www.myoneart.com
+
+Configuration de l'internationalisation avec Flask-Babel.
+"""
+
 from flask import session, request
 from flask_babel import Babel
 

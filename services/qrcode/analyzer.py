@@ -1,3 +1,13 @@
+"""
+CyberConfiance
+By MOA Digital Agency LLC
+Developed by: Aisance KALONJI
+Contact: moa@myoneart.com
+www.myoneart.com
+
+Analyseur QR code anti-quishing avec detection de menaces.
+"""
+
 import os
 import re
 import requests

@@ -1,3 +1,13 @@
+"""
+CyberConfiance
+By MOA Digital Agency LLC
+Developed by: Aisance KALONJI
+Contact: moa@myoneart.com
+www.myoneart.com
+
+Dashboard admin avec statistiques et visualisations.
+"""
+
 from flask import render_template, request, redirect, url_for, flash, jsonify
 from models import (db, User, ActivityLog, SecurityLog, QuizResult, SecurityAnalysis, BreachAnalysis)
 from utils.logging_utils import log_activity

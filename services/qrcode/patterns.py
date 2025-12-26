@@ -1,3 +1,13 @@
+"""
+CyberConfiance
+By MOA Digital Agency LLC
+Developed by: Aisance KALONJI
+Contact: moa@myoneart.com
+www.myoneart.com
+
+Patterns de detection pour l'analyseur QR code.
+"""
+
 phishing_keywords = [
     'login', 'signin', 'verify', 'account', 'secure', 'update',
     'confirm', 'password', 'banking', 'paypal', 'amazon', 'microsoft',

@@ -1,3 +1,13 @@
+"""
+CyberConfiance
+By MOA Digital Agency LLC
+Developed by: Aisance KALONJI
+Contact: moa@myoneart.com
+www.myoneart.com
+
+Detecteur de patterns de code genere par IA (vibecoding).
+"""
+
 from typing import List, Dict, Any
 from .base_analyzer import BaseAnalyzer
 

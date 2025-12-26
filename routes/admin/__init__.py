@@ -1,3 +1,13 @@
+"""
+CyberConfiance
+By MOA Digital Agency LLC
+Developed by: Aisance KALONJI
+Contact: moa@myoneart.com
+www.myoneart.com
+
+Blueprint admin avec decorateurs d'autorisation.
+"""
+
 from flask import Blueprint, redirect, url_for, request, flash
 from flask_login import login_required, current_user
 from functools import wraps

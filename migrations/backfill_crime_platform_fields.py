@@ -1,8 +1,14 @@
 #!/usr/bin/env python3
 """
-Data Migration: Extract crime_type, platform, and platform_identifier from existing descriptions
-and populate the new dedicated columns
+CyberConfiance
+By MOA Digital Agency LLC
+Developed by: Aisance KALONJI
+Contact: moa@myoneart.com
+www.myoneart.com
+
+Migration de donnees: Extraction de crime_type, platform, platform_identifier depuis les descriptions existantes.
 """
+
 import sys
 import re
 sys.path.insert(0, '/home/runner/workspace')

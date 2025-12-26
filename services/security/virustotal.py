@@ -1,3 +1,13 @@
+"""
+CyberConfiance
+By MOA Digital Agency LLC
+Developed by: Aisance KALONJI
+Contact: moa@myoneart.com
+www.myoneart.com
+
+Client API VirusTotal pour analyse de menaces.
+"""
+
 import os
 import vt
 import hashlib

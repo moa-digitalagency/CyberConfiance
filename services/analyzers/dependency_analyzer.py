@@ -1,3 +1,13 @@
+"""
+CyberConfiance
+By MOA Digital Agency LLC
+Developed by: Aisance KALONJI
+Contact: moa@myoneart.com
+www.myoneart.com
+
+Analyseur de dependances vulnerables.
+"""
+
 import re
 import json
 from typing import List, Dict, Any, Optional

@@ -1,3 +1,13 @@
+"""
+CyberConfiance
+By MOA Digital Agency LLC
+Developed by: Aisance KALONJI
+Contact: moa@myoneart.com
+www.myoneart.com
+
+Service de telechargement securise de fichiers avec scan VirusTotal.
+"""
+
 import os
 import hashlib
 import tempfile

@@ -1,7 +1,14 @@
 #!/usr/bin/env python3
 """
-Migration: Add document_code column to BreachAnalysis, SecurityAnalysis, and QuizResult tables
+CyberConfiance
+By MOA Digital Agency LLC
+Developed by: Aisance KALONJI
+Contact: moa@myoneart.com
+www.myoneart.com
+
+Migration: Ajout colonne document_code aux tables BreachAnalysis, SecurityAnalysis, QuizResult.
 """
+
 import sys
 sys.path.insert(0, '/home/runner/workspace')
 

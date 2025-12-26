@@ -1,3 +1,13 @@
+"""
+CyberConfiance
+By MOA Digital Agency LLC
+Developed by: Aisance KALONJI
+Contact: moa@myoneart.com
+www.myoneart.com
+
+Orchestrateur multi-source d'analyse de securite.
+"""
+
 import vt
 import os
 import hashlib

@@ -1,3 +1,13 @@
+"""
+CyberConfiance
+By MOA Digital Agency LLC
+Developed by: Aisance KALONJI
+Contact: moa@myoneart.com
+www.myoneart.com
+
+Configuration Flask-Admin: vues personnalisees pour les modeles.
+"""
+
 from flask import Blueprint, render_template, redirect, url_for
 from flask_admin.contrib.sqla import ModelView
 from flask_login import current_user

@@ -1,3 +1,13 @@
+"""
+CyberConfiance
+By MOA Digital Agency LLC
+Developed by: Aisance KALONJI
+Contact: moa@myoneart.com
+www.myoneart.com
+
+Exports des services de securite.
+"""
+
 from services.security.analyzer import SecurityAnalyzerService
 from services.security.google_safe_browsing import GoogleSafeBrowsingService
 from services.security.urlhaus import URLhausService

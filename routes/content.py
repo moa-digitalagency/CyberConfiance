@@ -1,3 +1,13 @@
+"""
+CyberConfiance
+By MOA Digital Agency LLC
+Developed by: Aisance KALONJI
+Contact: moa@myoneart.com
+www.myoneart.com
+
+Routes du contenu educatif: regles, scenarios, outils, glossaire.
+"""
+
 from flask import Blueprint, render_template, request
 from services import ContentService
 import __init__ as app_module

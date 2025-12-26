@@ -1,3 +1,13 @@
+"""
+CyberConfiance
+By MOA Digital Agency LLC
+Developed by: Aisance KALONJI
+Contact: moa@myoneart.com
+www.myoneart.com
+
+Modele RequestSubmission pour les demandes de service utilisateur.
+"""
+
 from datetime import datetime
 from models.base import db
 

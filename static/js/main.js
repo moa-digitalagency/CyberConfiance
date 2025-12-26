@@ -1,3 +1,13 @@
+/**
+ * CyberConfiance
+ * By MOA Digital Agency LLC
+ * Developed by: Aisance KALONJI
+ * Contact: moa@myoneart.com
+ * www.myoneart.com
+ * 
+ * Script principal: animations, menu mobile, dropdowns.
+ */
+
 document.addEventListener('DOMContentLoaded', function() {
     console.log('CyberConfiance loaded!');
     

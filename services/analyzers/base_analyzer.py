@@ -1,3 +1,13 @@
+"""
+CyberConfiance
+By MOA Digital Agency LLC
+Developed by: Aisance KALONJI
+Contact: moa@myoneart.com
+www.myoneart.com
+
+Classe de base pour les analyseurs de code.
+"""
+
 import re
 from typing import List, Dict, Any, Tuple
 

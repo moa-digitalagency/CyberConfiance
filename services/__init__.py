@@ -1,3 +1,14 @@
+"""
+CyberConfiance
+By MOA Digital Agency LLC
+Developed by: Aisance KALONJI
+Contact: moa@myoneart.com
+www.myoneart.com
+
+Services metier de l'application.
+ContentService et re-exports des services d'analyse.
+"""
+
 from models import Article, Rule, Tool, Scenario, Resource, News, Contact, GlossaryTerm, AttackType
 import __init__ as app_module
 

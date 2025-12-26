@@ -1,3 +1,13 @@
+"""
+CyberConfiance
+By MOA Digital Agency LLC
+Developed by: Aisance KALONJI
+Contact: moa@myoneart.com
+www.myoneart.com
+
+Client API URLhaus (abuse.ch) pour detection de malware.
+"""
+
 import os
 import requests
 from typing import Dict, Optional

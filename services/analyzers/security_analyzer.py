@@ -1,3 +1,13 @@
+"""
+CyberConfiance
+By MOA Digital Agency LLC
+Developed by: Aisance KALONJI
+Contact: moa@myoneart.com
+www.myoneart.com
+
+Analyseur de vulnerabilites de securite OWASP.
+"""
+
 from typing import List, Dict, Any
 from .base_analyzer import BaseAnalyzer
 

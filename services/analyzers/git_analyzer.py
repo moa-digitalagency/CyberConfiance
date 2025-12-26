@@ -1,3 +1,13 @@
+"""
+CyberConfiance
+By MOA Digital Agency LLC
+Developed by: Aisance KALONJI
+Contact: moa@myoneart.com
+www.myoneart.com
+
+Analyseur d'hygiene Git.
+"""
+
 import subprocess
 import re
 from typing import List, Dict, Any

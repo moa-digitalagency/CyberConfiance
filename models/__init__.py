@@ -1,3 +1,13 @@
+"""
+CyberConfiance
+By MOA Digital Agency LLC
+Developed by: Aisance KALONJI
+Contact: moa@myoneart.com
+www.myoneart.com
+
+Exports de tous les modeles de donnees SQLAlchemy.
+"""
+
 from models.base import db
 from models.user import User
 from models.content import Article, Rule, Tool, Scenario, Resource, News, GlossaryTerm, AttackType

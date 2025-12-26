@@ -1,3 +1,13 @@
+"""
+CyberConfiance
+By MOA Digital Agency LLC
+Developed by: Aisance KALONJI
+Contact: moa@myoneart.com
+www.myoneart.com
+
+Point d'entree principal de l'application Flask.
+"""
+
 from __init__ import create_app
 import os
 from check_env import check_environment_variables

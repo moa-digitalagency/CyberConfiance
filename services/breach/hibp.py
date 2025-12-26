@@ -1,3 +1,13 @@
+"""
+CyberConfiance
+By MOA Digital Agency LLC
+Developed by: Aisance KALONJI
+Contact: moa@myoneart.com
+www.myoneart.com
+
+Client API Have I Been Pwned pour detection de fuites.
+"""
+
 import os
 import requests
 from urllib.parse import quote

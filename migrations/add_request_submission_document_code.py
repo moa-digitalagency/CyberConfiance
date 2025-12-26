@@ -1,7 +1,14 @@
 #!/usr/bin/env python3
 """
-Migration: Add document_code, pdf_report, and pdf_generated_at columns to RequestSubmission table
+CyberConfiance
+By MOA Digital Agency LLC
+Developed by: Aisance KALONJI
+Contact: moa@myoneart.com
+www.myoneart.com
+
+Migration: Ajout colonnes document_code, pdf_report, pdf_generated_at a RequestSubmission.
 """
+
 import sys
 sys.path.insert(0, '/home/runner/workspace')
 

@@ -1,7 +1,14 @@
 #!/usr/bin/env python3
 """
-Migration: Add crime_type, platform, and platform_identifier columns to request_submissions table
+CyberConfiance
+By MOA Digital Agency LLC
+Developed by: Aisance KALONJI
+Contact: moa@myoneart.com
+www.myoneart.com
+
+Migration: Ajout colonnes crime_type, platform, platform_identifier a request_submissions.
 """
+
 import sys
 sys.path.insert(0, '/home/runner/workspace')
 

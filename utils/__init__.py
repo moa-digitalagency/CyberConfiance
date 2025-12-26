@@ -1,3 +1,13 @@
+"""
+CyberConfiance
+By MOA Digital Agency LLC
+Developed by: Aisance KALONJI
+Contact: moa@myoneart.com
+www.myoneart.com
+
+Utilitaires communs: logging et formatage.
+"""
+
 import logging
 from datetime import datetime
 

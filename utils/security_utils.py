@@ -1,3 +1,13 @@
+"""
+CyberConfiance
+By MOA Digital Agency LLC
+Developed by: Aisance KALONJI
+Contact: moa@myoneart.com
+www.myoneart.com
+
+Utilitaires de securite: validation d'entrees et detection de menaces.
+"""
+
 import re
 from flask import request
 from utils.logging_utils import log_security_event

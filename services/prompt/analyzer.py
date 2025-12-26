@@ -1,3 +1,13 @@
+"""
+CyberConfiance
+By MOA Digital Agency LLC
+Developed by: Aisance KALONJI
+Contact: moa@myoneart.com
+www.myoneart.com
+
+Analyseur de prompts anti-injection avec detection de patterns malveillants.
+"""
+
 import re
 import ast
 import unicodedata

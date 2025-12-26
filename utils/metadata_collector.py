@@ -1,4 +1,13 @@
-"""Utility for collecting request metadata"""
+"""
+CyberConfiance
+By MOA Digital Agency LLC
+Developed by: Aisance KALONJI
+Contact: moa@myoneart.com
+www.myoneart.com
+
+Collecteur de metadonnees de requete pour l'audit et la securite.
+"""
+
 from flask import request
 from user_agents import parse
 import uuid

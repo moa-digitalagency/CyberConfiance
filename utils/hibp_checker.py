@@ -1,7 +1,14 @@
 """
-Module pour vérifier les mots de passe et emails compromis via Have I Been Pwned API.
+CyberConfiance
+By MOA Digital Agency LLC
+Developed by: Aisance KALONJI
+Contact: moa@myoneart.com
+www.myoneart.com
+
+Module pour verifier les mots de passe et emails compromis via Have I Been Pwned API.
 Documentation: https://haveibeenpwned.com/API/v3
 """
+
 import hashlib
 import os
 import requests

@@ -1,13 +1,19 @@
 #!/usr/bin/env python3
 """
-Database initialization and seeding script
-Runs migrations and seeds data from JSON files
+CyberConfiance
+By MOA Digital Agency LLC
+Developed by: Aisance KALONJI
+Contact: moa@myoneart.com
+www.myoneart.com
+
+Initialisation et seeding de la base de donnees.
+Execute les migrations et charge les donnees depuis les fichiers JSON.
 
 Usage:
-    python init_db.py           # Full initialization
-    python init_db.py --reset   # Drop all tables and reinitialize (DANGER!)
-    python init_db.py --check   # Verify all models are loaded
-    python init_db.py --verify-libs  # Verify all libraries are available
+    python init_db.py           # Initialisation complete
+    python init_db.py --reset   # Reinitialisation (ATTENTION!)
+    python init_db.py --check   # Verification des modeles
+    python init_db.py --verify-libs  # Verification des librairies
 """
 
 import os

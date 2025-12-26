@@ -1,3 +1,13 @@
+"""
+CyberConfiance
+By MOA Digital Agency LLC
+Developed by: Aisance KALONJI
+Contact: moa@myoneart.com
+www.myoneart.com
+
+Routes de gestion des demandes utilisateurs (admin).
+"""
+
 from flask import Blueprint, render_template, request, send_file, abort
 from models import RequestSubmission, db
 from routes.admin_panel import admin_required

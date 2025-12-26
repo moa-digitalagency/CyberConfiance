@@ -1,3 +1,13 @@
+"""
+CyberConfiance
+By MOA Digital Agency LLC
+Developed by: Aisance KALONJI
+Contact: moa@myoneart.com
+www.myoneart.com
+
+Modeles de contenu: Article, Rule, Tool, Scenario, Resource, News, GlossaryTerm, AttackType.
+"""
+
 from datetime import datetime
 from models.base import db
 

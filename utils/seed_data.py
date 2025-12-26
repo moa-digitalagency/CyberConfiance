@@ -1,3 +1,13 @@
+"""
+CyberConfiance
+By MOA Digital Agency LLC
+Developed by: Aisance KALONJI
+Contact: moa@myoneart.com
+www.myoneart.com
+
+Chargement des donnees initiales depuis les fichiers JSON.
+"""
+
 import json
 import os
 from pathlib import Path

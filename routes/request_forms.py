@@ -1,3 +1,13 @@
+"""
+CyberConfiance
+By MOA Digital Agency LLC
+Developed by: Aisance KALONJI
+Contact: moa@myoneart.com
+www.myoneart.com
+
+Routes des formulaires de demandes: fact-checking, OSINT, cyberconsultation, signalement.
+"""
+
 from flask import Blueprint, render_template, request, flash, redirect, url_for, session
 from services.request_submission_service import RequestSubmissionService
 from utils.logging_utils import log_activity
