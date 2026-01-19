@@ -97,24 +97,26 @@
                         <span>Localisation GPS</span>
                     </div>
                     <div class="block-content">
-                        {% if analysis.gps_data.get('GPSLatitude') %}
-                        <div class="block-row">
-                            <span class="row-label">Latitude:</span>
-                            <span class="row-value">{{ analysis.gps_data.get('GPSLatitude') }}</span>
-                        </div>
-                        {% endif %}
-                        {% if analysis.gps_data.get('GPSLongitude') %}
-                        <div class="block-row">
-                            <span class="row-label">Longitude:</span>
-                            <span class="row-value">{{ analysis.gps_data.get('GPSLongitude') }}</span>
-                        </div>
-                        {% endif %}
-                        {% if analysis.gps_data.get('GPSAltitude') %}
-                        <div class="block-row">
-                            <span class="row-label">Altitude:</span>
-                            <span class="row-value">{{ analysis.gps_data.get('GPSAltitude') }}</span>
-                        </div>
-                        {% endif %}
+                        {% for key, value in analysis.gps_data.items() %}
+                            {% if 'latitude' in key.lower() and 'ref' not in key.lower() %}
+                            <div class="block-row">
+                                <span class="row-label">Latitude:</span>
+                                <span class="row-value">{{ value }}</span>
+                            </div>
+                            {% endif %}
+                            {% if 'longitude' in key.lower() and 'ref' not in key.lower() %}
+                            <div class="block-row">
+                                <span class="row-label">Longitude:</span>
+                                <span class="row-value">{{ value }}</span>
+                            </div>
+                            {% endif %}
+                            {% if 'altitude' in key.lower() %}
+                            <div class="block-row">
+                                <span class="row-label">Altitude:</span>
+                                <span class="row-value">{{ value }}</span>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
                     </div>
                 </div>
                 {% endif %}
@@ -129,30 +131,32 @@
                         <span>Appareil</span>
                     </div>
                     <div class="block-content">
-                        {% if analysis.camera_info.get('Make') %}
-                        <div class="block-row">
-                            <span class="row-label">Marque:</span>
-                            <span class="row-value">{{ analysis.camera_info.get('Make') }}</span>
-                        </div>
-                        {% endif %}
-                        {% if analysis.camera_info.get('Model') %}
-                        <div class="block-row">
-                            <span class="row-label">Modele:</span>
-                            <span class="row-value">{{ analysis.camera_info.get('Model') }}</span>
-                        </div>
-                        {% endif %}
-                        {% if analysis.camera_info.get('SerialNumber') or analysis.camera_info.get('InternalSerialNumber') %}
-                        <div class="block-row">
-                            <span class="row-label">N Serie:</span>
-                            <span class="row-value">{{ analysis.camera_info.get('SerialNumber') or analysis.camera_info.get('InternalSerialNumber') }}</span>
-                        </div>
-                        {% endif %}
-                        {% if analysis.camera_info.get('LensModel') %}
-                        <div class="block-row">
-                            <span class="row-label">Objectif:</span>
-                            <span class="row-value">{{ analysis.camera_info.get('LensModel') }}</span>
-                        </div>
-                        {% endif %}
+                        {% for key, value in analysis.camera_info.items() %}
+                            {% if key == 'Marque' or key == 'Make' %}
+                            <div class="block-row">
+                                <span class="row-label">Marque:</span>
+                                <span class="row-value">{{ value }}</span>
+                            </div>
+                            {% endif %}
+                            {% if key == 'Modele' or key == 'Model' %}
+                            <div class="block-row">
+                                <span class="row-label">Modele:</span>
+                                <span class="row-value">{{ value }}</span>
+                            </div>
+                            {% endif %}
+                            {% if 'serie' in key.lower() or 'serial' in key.lower() %}
+                            <div class="block-row">
+                                <span class="row-label">N Serie:</span>
+                                <span class="row-value">{{ value }}</span>
+                            </div>
+                            {% endif %}
+                            {% if 'objectif' in key.lower() or 'lens' in key.lower() %}
+                            <div class="block-row">
+                                <span class="row-label">Objectif:</span>
+                                <span class="row-value">{{ value }}</span>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
                     </div>
                 </div>
                 {% endif %}
@@ -167,28 +171,24 @@
                         <span>Dates</span>
                     </div>
                     <div class="block-content">
-                        {% if analysis.datetime_info.get('DateTimeOriginal') %}
-                        <div class="block-row">
-                            <span class="row-label">Creation:</span>
-                            <span class="row-value">{{ analysis.datetime_info.get('DateTimeOriginal') }}</span>
-                        </div>
-                        {% elif analysis.datetime_info.get('CreateDate') %}
-                        <div class="block-row">
-                            <span class="row-label">Creation:</span>
-                            <span class="row-value">{{ analysis.datetime_info.get('CreateDate') }}</span>
-                        </div>
-                        {% endif %}
-                        {% if analysis.datetime_info.get('ModifyDate') %}
-                        <div class="block-row">
-                            <span class="row-label">Modification:</span>
-                            <span class="row-value">{{ analysis.datetime_info.get('ModifyDate') }}</span>
-                        </div>
-                        {% elif analysis.datetime_info.get('DateTime') %}
-                        <div class="block-row">
-                            <span class="row-label">Modification:</span>
-                            <span class="row-value">{{ analysis.datetime_info.get('DateTime') }}</span>
-                        </div>
-                        {% endif %}
+                        {% set creation_shown = namespace(value=false) %}
+                        {% set modif_shown = namespace(value=false) %}
+                        {% for key, value in analysis.datetime_info.items() %}
+                            {% if not creation_shown.value and ('original' in key.lower() or 'prise' in key.lower() or 'create' in key.lower()) %}
+                            <div class="block-row">
+                                <span class="row-label">Creation:</span>
+                                <span class="row-value">{{ value }}</span>
+                            </div>
+                            {% set creation_shown.value = true %}
+                            {% endif %}
+                            {% if not modif_shown.value and ('modif' in key.lower() or 'modify' in key.lower()) %}
+                            <div class="block-row">
+                                <span class="row-label">Modification:</span>
+                                <span class="row-value">{{ value }}</span>
+                            </div>
+                            {% set modif_shown.value = true %}
+                            {% endif %}
+                        {% endfor %}
                     </div>
                 </div>
                 {% endif %}
@@ -203,30 +203,32 @@
                         <span>Auteur</span>
                     </div>
                     <div class="block-content">
-                        {% if analysis.author_info.get('Artist') %}
-                        <div class="block-row">
-                            <span class="row-label">Artiste:</span>
-                            <span class="row-value">{{ analysis.author_info.get('Artist') }}</span>
-                        </div>
-                        {% endif %}
-                        {% if analysis.author_info.get('Author') %}
-                        <div class="block-row">
-                            <span class="row-label">Auteur:</span>
-                            <span class="row-value">{{ analysis.author_info.get('Author') }}</span>
-                        </div>
-                        {% endif %}
-                        {% if analysis.author_info.get('Creator') %}
-                        <div class="block-row">
-                            <span class="row-label">Createur:</span>
-                            <span class="row-value">{{ analysis.author_info.get('Creator') }}</span>
-                        </div>
-                        {% endif %}
-                        {% if analysis.author_info.get('Copyright') %}
-                        <div class="block-row">
-                            <span class="row-label">Copyright:</span>
-                            <span class="row-value">{{ analysis.author_info.get('Copyright') }}</span>
-                        </div>
-                        {% endif %}
+                        {% for key, value in analysis.author_info.items() %}
+                            {% if 'artiste' in key.lower() or 'artist' in key.lower() %}
+                            <div class="block-row">
+                                <span class="row-label">Artiste:</span>
+                                <span class="row-value">{{ value }}</span>
+                            </div>
+                            {% endif %}
+                            {% if 'auteur' in key.lower() or 'author' in key.lower() %}
+                            <div class="block-row">
+                                <span class="row-label">Auteur:</span>
+                                <span class="row-value">{{ value }}</span>
+                            </div>
+                            {% endif %}
+                            {% if 'createur' in key.lower() or 'creator' in key.lower() %}
+                            <div class="block-row">
+                                <span class="row-label">Createur:</span>
+                                <span class="row-value">{{ value }}</span>
+                            </div>
+                            {% endif %}
+                            {% if 'copyright' in key.lower() or 'droits' in key.lower() %}
+                            <div class="block-row">
+                                <span class="row-label">Copyright:</span>
+                                <span class="row-value">{{ value }}</span>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
                     </div>
                 </div>
                 {% endif %}
@@ -242,24 +244,26 @@
                         <span>Logiciels</span>
                     </div>
                     <div class="block-content">
-                        {% if analysis.software_info.get('Software') %}
-                        <div class="block-row">
-                            <span class="row-label">Logiciel:</span>
-                            <span class="row-value">{{ analysis.software_info.get('Software') }}</span>
-                        </div>
-                        {% endif %}
-                        {% if analysis.software_info.get('CreatorTool') %}
-                        <div class="block-row">
-                            <span class="row-label">Outil:</span>
-                            <span class="row-value">{{ analysis.software_info.get('CreatorTool') }}</span>
-                        </div>
-                        {% endif %}
-                        {% if analysis.software_info.get('HistorySoftwareAgent') %}
-                        <div class="block-row">
-                            <span class="row-label">Historique:</span>
-                            <span class="row-value">{{ analysis.software_info.get('HistorySoftwareAgent') }}</span>
-                        </div>
-                        {% endif %}
+                        {% for key, value in analysis.software_info.items() %}
+                            {% if 'logiciel' in key.lower() or 'software' in key.lower() %}
+                            <div class="block-row">
+                                <span class="row-label">Logiciel:</span>
+                                <span class="row-value">{{ value }}</span>
+                            </div>
+                            {% endif %}
+                            {% if 'outil' in key.lower() or 'tool' in key.lower() %}
+                            <div class="block-row">
+                                <span class="row-label">Outil:</span>
+                                <span class="row-value">{{ value }}</span>
+                            </div>
+                            {% endif %}
+                            {% if 'program' in key.lower() or 'application' in key.lower() %}
+                            <div class="block-row">
+                                <span class="row-label">Application:</span>
+                                <span class="row-value">{{ value }}</span>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
                     </div>
                 </div>
                 {% endif %}
@@ -460,11 +464,12 @@
                     other=[]
                 ) %}
                 {% for key, value in analysis.metadata_found.items() %}
-                    {% if key in ['ImageWidth', 'ImageHeight', 'ImageSize', 'Megapixels', 'ColorSpace', 'ColorType', 'BitDepth', 'Orientation', 'XResolution', 'YResolution', 'ResolutionUnit', 'Compression', 'PhotometricInterpretation', 'SamplesPerPixel', 'BitsPerSample'] %}
+                    {% set key_lower = key.lower() %}
+                    {% if 'width' in key_lower or 'height' in key_lower or 'largeur' in key_lower or 'hauteur' in key_lower or 'resolution' in key_lower or 'megapixel' in key_lower or 'colorspace' in key_lower or 'orientation' in key_lower or 'compression' in key_lower %}
                         {% set _ = categorized.image.append((key, value)) %}
-                    {% elif key in ['FileSize', 'FileType', 'FileTypeExtension', 'MIMEType', 'FileName', 'Directory', 'FileModifyDate', 'FileAccessDate', 'FileInodeChangeDate', 'FilePermissions'] %}
+                    {% elif 'filesize' in key_lower or 'filetype' in key_lower or 'mimetype' in key_lower or 'filename' in key_lower or 'directory' in key_lower or 'permission' in key_lower or 'taille' in key_lower %}
                         {% set _ = categorized.file.append((key, value)) %}
-                    {% elif key in ['ExifVersion', 'FlashpixVersion', 'ExifImageWidth', 'ExifImageHeight', 'ExifByteOrder', 'Encoding', 'EncodingProcess', 'JFIFVersion', 'ProfileVersion', 'ProfileClass', 'ProfileCreator', 'ProfileDateTime', 'PrimaryPlatform', 'CMM Type', 'DeviceModel', 'DeviceManufacturer', 'RenderingIntent', 'ConnectionSpaceIlluminant', 'ProfileCopyright', 'MediaWhitePoint', 'MediaBlackPoint', 'RedMatrixColumn', 'GreenMatrixColumn', 'BlueMatrixColumn', 'RedTRC', 'GreenTRC', 'BlueTRC', 'YCbCrSubSampling', 'YCbCrPositioning'] %}
+                    {% elif 'exif' in key_lower or 'profile' in key_lower or 'encoding' in key_lower or 'jfif' in key_lower or 'ycbcr' in key_lower or 'icc' in key_lower %}
                         {% set _ = categorized.technical.append((key, value)) %}
                     {% else %}
                         {% set _ = categorized.other.append((key, value)) %}
