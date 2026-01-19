@@ -30,6 +30,98 @@ class MetadataAnalyzerService:
     SUPPORTED_VIDEO_EXTENSIONS = {'.mp4', '.mov', '.avi', '.mkv', '.wmv', '.flv', '.webm', '.m4v', '.3gp'}
     SUPPORTED_AUDIO_EXTENSIONS = {'.mp3', '.wav', '.flac', '.aac', '.ogg', '.wma', '.m4a'}
     
+    METADATA_TRANSLATIONS = {
+        'Make': 'Marque',
+        'Model': 'Modele',
+        'Software': 'Logiciel',
+        'DateTime': 'Date et Heure',
+        'DateTimeOriginal': 'Date de Prise de Vue',
+        'DateTimeDigitized': 'Date de Numerisation',
+        'Artist': 'Artiste',
+        'Author': 'Auteur',
+        'Creator': 'Createur',
+        'Copyright': 'Droits d\'Auteur',
+        'OwnerName': 'Nom du Proprietaire',
+        'CameraOwnerName': 'Proprietaire de l\'Appareil',
+        'GPSLatitude': 'Latitude GPS',
+        'GPSLongitude': 'Longitude GPS',
+        'GPSAltitude': 'Altitude GPS',
+        'GPSLatitudeRef': 'Reference Latitude',
+        'GPSLongitudeRef': 'Reference Longitude',
+        'ExposureTime': 'Temps d\'Exposition',
+        'FNumber': 'Ouverture (f/)',
+        'ISOSpeedRatings': 'Sensibilite ISO',
+        'FocalLength': 'Longueur Focale',
+        'FocalLengthIn35mmFilm': 'Focale Equivalente 35mm',
+        'Flash': 'Flash',
+        'WhiteBalance': 'Balance des Blancs',
+        'ExposureMode': 'Mode d\'Exposition',
+        'MeteringMode': 'Mode de Mesure',
+        'Orientation': 'Orientation',
+        'ResolutionUnit': 'Unite de Resolution',
+        'XResolution': 'Resolution Horizontale',
+        'YResolution': 'Resolution Verticale',
+        'ImageWidth': 'Largeur de l\'Image',
+        'ImageHeight': 'Hauteur de l\'Image',
+        'ImageLength': 'Longueur de l\'Image',
+        'BitsPerSample': 'Bits par Echantillon',
+        'ColorSpace': 'Espace Colorimetrique',
+        'Compression': 'Compression',
+        'LensModel': 'Modele d\'Objectif',
+        'LensMake': 'Marque d\'Objectif',
+        'CameraSerialNumber': 'Numero de Serie',
+        'BodySerialNumber': 'Numero de Serie du Boitier',
+        'ShutterSpeedValue': 'Vitesse d\'Obturation',
+        'ApertureValue': 'Valeur d\'Ouverture',
+        'BrightnessValue': 'Luminosite',
+        'ExposureBiasValue': 'Correction d\'Exposition',
+        'MaxApertureValue': 'Ouverture Maximale',
+        'SubjectDistance': 'Distance du Sujet',
+        'LightSource': 'Source de Lumiere',
+        'SceneType': 'Type de Scene',
+        'DigitalZoomRatio': 'Zoom Numerique',
+        'Contrast': 'Contraste',
+        'Saturation': 'Saturation',
+        'Sharpness': 'Nettete',
+        'ImageDescription': 'Description de l\'Image',
+        'UserComment': 'Commentaire Utilisateur',
+        'ExifVersion': 'Version EXIF',
+        'ComponentsConfiguration': 'Configuration des Composants',
+        'FlashpixVersion': 'Version Flashpix',
+        'PixelXDimension': 'Dimension X en Pixels',
+        'PixelYDimension': 'Dimension Y en Pixels',
+        'CreateDate': 'Date de Creation',
+        'ModifyDate': 'Date de Modification',
+        'FileSize': 'Taille du Fichier',
+        'FileType': 'Type de Fichier',
+        'MIMEType': 'Type MIME',
+        'Duration': 'Duree',
+        'BitRate': 'Debit Binaire',
+        'AudioBitRate': 'Debit Audio',
+        'VideoBitRate': 'Debit Video',
+        'FrameRate': 'Images par Seconde',
+        'VideoCodec': 'Codec Video',
+        'AudioCodec': 'Codec Audio',
+        'SampleRate': 'Frequence d\'Echantillonnage',
+        'Channels': 'Canaux Audio',
+        'Title': 'Titre',
+        'Album': 'Album',
+        'Genre': 'Genre',
+        'Year': 'Annee',
+        'Track': 'Piste',
+        'Comment': 'Commentaire',
+        'Encoder': 'Encodeur',
+        'EncodedBy': 'Encode Par',
+        'Location': 'Localisation',
+        'City': 'Ville',
+        'Country': 'Pays',
+        'State': 'Etat/Province',
+        'Width': 'Largeur',
+        'Height': 'Hauteur',
+        'Bit Depth': 'Profondeur de Bits',
+        'Sample Rate': 'Frequence d\'Echantillonnage',
+    }
+    
     SENSITIVE_TAGS = {
         'gps': ['GPSLatitude', 'GPSLongitude', 'GPSAltitude', 'GPS GPSLatitude', 'GPS GPSLongitude', 
                 'GPSLatitudeRef', 'GPSLongitudeRef', 'GPS GPSLatitudeRef', 'GPS GPSLongitudeRef',
@@ -406,16 +498,47 @@ class MetadataAnalyzerService:
         return sensitive_data, privacy_risk
     
     @classmethod
+    def _translate_key(cls, key):
+        clean_key = key
+        for prefix in ['EXIF ', 'Image ', 'PIL_', 'ExifTool_', 'FFprobe_', 'Audio_', 'GPS ']:
+            if clean_key.startswith(prefix):
+                clean_key = clean_key[len(prefix):]
+                break
+        
+        if clean_key in cls.METADATA_TRANSLATIONS:
+            return cls.METADATA_TRANSLATIONS[clean_key]
+        
+        words = []
+        current_word = []
+        for char in clean_key:
+            if char.isupper() and current_word:
+                words.append(''.join(current_word))
+                current_word = [char]
+            elif char in ('_', '-', ' '):
+                if current_word:
+                    words.append(''.join(current_word))
+                    current_word = []
+            else:
+                current_word.append(char)
+        if current_word:
+            words.append(''.join(current_word))
+        
+        return ' '.join(word.capitalize() for word in words if word)
+    
+    @classmethod
     def _extract_gps_data(cls, metadata):
         gps_data = {}
         
         for key, value in metadata.items():
             key_lower = key.lower()
             if 'gps' in key_lower or 'latitude' in key_lower or 'longitude' in key_lower:
-                gps_data[key] = value
+                translated_key = cls._translate_key(key)
+                gps_data[translated_key] = value
         
         if 'GPSInfo' in metadata and isinstance(metadata['GPSInfo'], dict):
-            gps_data.update(metadata['GPSInfo'])
+            for k, v in metadata['GPSInfo'].items():
+                translated_key = cls._translate_key(k)
+                gps_data[translated_key] = v
         
         return gps_data if gps_data else None
     
@@ -429,7 +552,8 @@ class MetadataAnalyzerService:
         for key, value in metadata.items():
             key_lower = key.lower()
             if any(ck in key_lower for ck in camera_keys):
-                camera_info[key] = value
+                translated_key = cls._translate_key(key)
+                camera_info[translated_key] = value
         
         return camera_info if camera_info else None
     
@@ -442,7 +566,8 @@ class MetadataAnalyzerService:
         for key, value in metadata.items():
             key_lower = key.lower()
             if any(sk in key_lower for sk in software_keys):
-                software_info[key] = value
+                translated_key = cls._translate_key(key)
+                software_info[translated_key] = value
         
         return software_info if software_info else None
     
@@ -455,7 +580,8 @@ class MetadataAnalyzerService:
         for key, value in metadata.items():
             key_lower = key.lower()
             if any(dk in key_lower for dk in datetime_keys):
-                datetime_info[key] = value
+                translated_key = cls._translate_key(key)
+                datetime_info[translated_key] = value
         
         return datetime_info if datetime_info else None
     
@@ -468,7 +594,8 @@ class MetadataAnalyzerService:
         for key, value in metadata.items():
             key_lower = key.lower()
             if any(ak in key_lower for ak in author_keys):
-                author_info[key] = value
+                translated_key = cls._translate_key(key)
+                author_info[translated_key] = value
         
         return author_info if author_info else None
     
@@ -486,22 +613,25 @@ class MetadataAnalyzerService:
         }
         
         for key, value in metadata.items():
+            translated_key = cls._translate_key(key)
+            
             if key.startswith('_'):
-                categories['Informations Fichier'][key.lstrip('_')] = value
+                display_key = cls._translate_key(key.lstrip('_'))
+                categories['Informations Fichier'][display_key] = value
             elif any(k in key.lower() for k in ['gps', 'latitude', 'longitude', 'location', 'city', 'country']):
-                categories['GPS/Localisation'][key] = value
+                categories['GPS/Localisation'][translated_key] = value
             elif any(k in key.lower() for k in ['make', 'model', 'lens', 'camera', 'exposure', 'aperture', 'iso', 'focal']):
-                categories['Appareil Photo/Camera'][key] = value
+                categories['Appareil Photo/Camera'][translated_key] = value
             elif any(k in key.lower() for k in ['date', 'time', 'created', 'modified']):
-                categories['Dates et Heures'][key] = value
+                categories['Dates et Heures'][translated_key] = value
             elif any(k in key.lower() for k in ['author', 'artist', 'creator', 'owner', 'copyright']):
-                categories['Auteur/Copyright'][key] = value
+                categories['Auteur/Copyright'][translated_key] = value
             elif any(k in key.lower() for k in ['software', 'tool', 'program', 'application', 'encoder']):
-                categories['Logiciel'][key] = value
+                categories['Logiciel'][translated_key] = value
             elif any(k in key.lower() for k in ['width', 'height', 'resolution', 'dimension', 'codec', 'format', 'bitrate']):
-                categories['Informations Image/Video'][key] = value
+                categories['Informations Image/Video'][translated_key] = value
             else:
-                categories['Autres'][key] = value
+                categories['Autres'][translated_key] = value
         
         return {k: v for k, v in categories.items() if v}
     

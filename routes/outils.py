@@ -901,6 +901,8 @@ def metadata_analyzer():
                 
                 if results.get('success'):
                     try:
+                        clean_data, clean_filename = MetadataAnalyzerService.remove_metadata(file_data, filename)
+                        
                         metadata_analysis = MetadataAnalysis(
                             original_filename=filename,
                             file_type=results.get('file_type'),
@@ -915,6 +917,8 @@ def metadata_analyzer():
                             software_info=results.get('software_info'),
                             datetime_info=results.get('datetime_info'),
                             author_info=results.get('author_info'),
+                            cleaned_file=clean_data if clean_data else None,
+                            cleaned_filename=clean_filename if clean_data else None,
                             document_code=ensure_unique_code(MetadataAnalysis, 'MDA'),
                             ip_address=get_client_ip(request),
                             user_agent=request.headers.get('User-Agent', '')[:500]
@@ -929,6 +933,10 @@ def metadata_analyzer():
                     flash(results.get('error', 'Erreur lors de l\'analyse'), 'error')
                     
             elif action == 'clean':
+                clean_analysis_id = request.form.get('analysis_id')
+                if clean_analysis_id:
+                    return redirect(url_for('outils.metadata_download_clean', analysis_id=clean_analysis_id))
+                
                 clean_data, clean_filename = MetadataAnalyzerService.remove_metadata(file_data, filename)
                 
                 if clean_data:
@@ -1004,3 +1012,36 @@ def metadata_analysis_pdf(analysis_id):
         traceback.print_exc()
         flash('Erreur lors de la generation du rapport PDF.', 'error')
         return redirect(url_for('outils.metadata_analyzer'))
+
+
+@bp.route('/outils/analyseur-metadonnee/<int:analysis_id>/telecharger')
+def metadata_download_clean(analysis_id):
+    analysis = MetadataAnalysis.query.get_or_404(analysis_id)
+    
+    if analysis.cleaned_file:
+        filename = analysis.original_filename or 'fichier'
+        base, ext = os.path.splitext(filename)
+        clean_filename = f"{base}_nettoye{ext}"
+        
+        mime_types = {
+            '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg',
+            '.png': 'image/png', '.gif': 'image/gif',
+            '.webp': 'image/webp', '.tiff': 'image/tiff', '.tif': 'image/tiff',
+            '.mp4': 'video/mp4', '.mov': 'video/quicktime',
+            '.avi': 'video/x-msvideo', '.mkv': 'video/x-matroska',
+            '.mp3': 'audio/mpeg', '.wav': 'audio/wav',
+            '.flac': 'audio/flac', '.m4a': 'audio/mp4'
+        }
+        mime_type = mime_types.get(ext.lower(), 'application/octet-stream')
+        
+        return Response(
+            analysis.cleaned_file,
+            mimetype=mime_type,
+            headers={
+                'Content-Disposition': f'attachment; filename="{clean_filename}"',
+                'Content-Length': len(analysis.cleaned_file)
+            }
+        )
+    
+    flash('Le fichier nettoye n\'est plus disponible. Veuillez refaire une analyse.', 'warning')
+    return redirect(url_for('outils.metadata_analyzer'))
