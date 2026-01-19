@@ -171,7 +171,8 @@ def verify_models_loaded():
         RequestSubmission, Contact, QuizResult, BreachAnalysis,
         SecurityAnalysis, AttackType, Newsletter, ActivityLog,
         ThreatLog, SiteSettings, SEOMetadata, Article, Resource,
-        SecurityLog, QRCodeAnalysis, PromptAnalysis
+        SecurityLog, QRCodeAnalysis, PromptAnalysis, GitHubCodeAnalysis,
+        MetadataAnalysis
     )
     
     required_tables = [
@@ -179,7 +180,8 @@ def verify_models_loaded():
         'request_submissions', 'contacts', 'quiz_results', 'breach_analyses',
         'security_analyses', 'attack_types', 'newsletter', 'activity_logs',
         'threat_logs', 'site_settings', 'seo_metadata', 'articles', 'resources',
-        'security_logs', 'qrcode_analyses', 'prompt_analyses'
+        'security_logs', 'qrcode_analyses', 'prompt_analyses', 'github_code_analyses',
+        'metadata_analyses'
     ]
     
     registered_tables = [table.name for table in db.metadata.sorted_tables]
@@ -210,6 +212,8 @@ def verify_table_columns():
         'quiz_results': ['id', 'email', 'overall_score', 'pdf_report', 'pdf_generated_at', 'document_code'],
         'qrcode_analyses': ['id', 'extracted_url', 'final_url', 'threat_level', 'pdf_report', 'pdf_generated_at', 'document_code', 'ip_address'],
         'prompt_analyses': ['id', 'prompt_text', 'threat_level', 'threat_detected', 'pdf_report', 'pdf_generated_at', 'document_code', 'ip_address'],
+        'github_code_analyses': ['id', 'repo_url', 'repo_name', 'overall_score', 'pdf_report', 'pdf_generated_at', 'document_code', 'ip_address'],
+        'metadata_analyses': ['id', 'original_filename', 'file_type', 'metadata_count', 'original_file', 'cleaned_file', 'pdf_report', 'pdf_generated_at', 'document_code', 'ip_address'],
     }
     
     all_valid = True
@@ -253,6 +257,80 @@ def check_vps_compatibility():
         print(f"⚠️  PostgreSQL transaction check failed: {e}")
         db.session.rollback()
         return False
+
+
+def run_migrations():
+    """Run database migrations to add missing columns for existing VPS installations"""
+    print("\n[MIGRATIONS] Checking for missing columns...")
+    
+    from sqlalchemy import text, inspect
+    
+    migrations = [
+        # MetadataAnalysis table - new columns
+        ("metadata_analyses", "original_file", "ALTER TABLE metadata_analyses ADD COLUMN IF NOT EXISTS original_file BYTEA"),
+        ("metadata_analyses", "cleaned_file", "ALTER TABLE metadata_analyses ADD COLUMN IF NOT EXISTS cleaned_file BYTEA"),
+        ("metadata_analyses", "cleaned_filename", "ALTER TABLE metadata_analyses ADD COLUMN IF NOT EXISTS cleaned_filename VARCHAR(500)"),
+        ("metadata_analyses", "pdf_report", "ALTER TABLE metadata_analyses ADD COLUMN IF NOT EXISTS pdf_report BYTEA"),
+        ("metadata_analyses", "pdf_generated_at", "ALTER TABLE metadata_analyses ADD COLUMN IF NOT EXISTS pdf_generated_at TIMESTAMP"),
+        ("metadata_analyses", "document_code", "ALTER TABLE metadata_analyses ADD COLUMN IF NOT EXISTS document_code VARCHAR(20)"),
+        ("metadata_analyses", "gps_data", "ALTER TABLE metadata_analyses ADD COLUMN IF NOT EXISTS gps_data JSON"),
+        ("metadata_analyses", "camera_info", "ALTER TABLE metadata_analyses ADD COLUMN IF NOT EXISTS camera_info JSON"),
+        ("metadata_analyses", "software_info", "ALTER TABLE metadata_analyses ADD COLUMN IF NOT EXISTS software_info JSON"),
+        ("metadata_analyses", "datetime_info", "ALTER TABLE metadata_analyses ADD COLUMN IF NOT EXISTS datetime_info JSON"),
+        ("metadata_analyses", "author_info", "ALTER TABLE metadata_analyses ADD COLUMN IF NOT EXISTS author_info JSON"),
+        
+        # GitHubCodeAnalysis table - pdf columns
+        ("github_code_analyses", "pdf_report", "ALTER TABLE github_code_analyses ADD COLUMN IF NOT EXISTS pdf_report BYTEA"),
+        ("github_code_analyses", "pdf_generated_at", "ALTER TABLE github_code_analyses ADD COLUMN IF NOT EXISTS pdf_generated_at TIMESTAMP"),
+        
+        # BreachAnalysis - pdf columns
+        ("breach_analyses", "pdf_report", "ALTER TABLE breach_analyses ADD COLUMN IF NOT EXISTS pdf_report BYTEA"),
+        ("breach_analyses", "pdf_generated_at", "ALTER TABLE breach_analyses ADD COLUMN IF NOT EXISTS pdf_generated_at TIMESTAMP"),
+        
+        # SecurityAnalysis - pdf columns
+        ("security_analyses", "pdf_report", "ALTER TABLE security_analyses ADD COLUMN IF NOT EXISTS pdf_report BYTEA"),
+        ("security_analyses", "pdf_generated_at", "ALTER TABLE security_analyses ADD COLUMN IF NOT EXISTS pdf_generated_at TIMESTAMP"),
+        
+        # QuizResult - pdf columns
+        ("quiz_results", "pdf_report", "ALTER TABLE quiz_results ADD COLUMN IF NOT EXISTS pdf_report BYTEA"),
+        ("quiz_results", "pdf_generated_at", "ALTER TABLE quiz_results ADD COLUMN IF NOT EXISTS pdf_generated_at TIMESTAMP"),
+        
+        # QRCodeAnalysis - pdf columns
+        ("qrcode_analyses", "pdf_report", "ALTER TABLE qrcode_analyses ADD COLUMN IF NOT EXISTS pdf_report BYTEA"),
+        ("qrcode_analyses", "pdf_generated_at", "ALTER TABLE qrcode_analyses ADD COLUMN IF NOT EXISTS pdf_generated_at TIMESTAMP"),
+        
+        # PromptAnalysis - pdf columns
+        ("prompt_analyses", "pdf_report", "ALTER TABLE prompt_analyses ADD COLUMN IF NOT EXISTS pdf_report BYTEA"),
+        ("prompt_analyses", "pdf_generated_at", "ALTER TABLE prompt_analyses ADD COLUMN IF NOT EXISTS pdf_generated_at TIMESTAMP"),
+    ]
+    
+    inspector = inspect(db.engine)
+    existing_tables = inspector.get_table_names()
+    
+    migrations_run = 0
+    
+    for table_name, column_name, sql in migrations:
+        if table_name not in existing_tables:
+            continue
+        
+        existing_cols = {col['name'] for col in inspector.get_columns(table_name)}
+        
+        if column_name not in existing_cols:
+            try:
+                db.session.execute(text(sql))
+                db.session.commit()
+                print(f"  ✓ Added column {table_name}.{column_name}")
+                migrations_run += 1
+            except Exception as e:
+                db.session.rollback()
+                print(f"  ⚠️  Failed to add {table_name}.{column_name}: {e}")
+    
+    if migrations_run == 0:
+        print("  ✓ All columns already present - no migrations needed")
+    else:
+        print(f"  ✓ {migrations_run} migration(s) completed successfully")
+    
+    return True
 
 def init_database(reset=False, verify_libs=True):
     """Initialize database and seed data
@@ -301,7 +379,7 @@ def init_database(reset=False, verify_libs=True):
                 print("\n⚠️  Some models may be missing - continuing anyway...")
             
             # Create all tables
-            print("\n[1/3] Creating database tables...")
+            print("\n[1/4] Creating database tables...")
             try:
                 db.create_all()
                 db.session.commit()
@@ -309,6 +387,14 @@ def init_database(reset=False, verify_libs=True):
                 print(f"[ERROR] Error creating tables: {e}")
                 db.session.rollback()
                 raise
+            
+            # Run migrations for existing installations
+            print("\n[2/4] Running migrations...")
+            try:
+                run_migrations()
+            except Exception as e:
+                print(f"[ERROR] Error running migrations: {e}")
+                db.session.rollback()
             
             # Verify all columns are created
             try:
@@ -325,7 +411,7 @@ def init_database(reset=False, verify_libs=True):
             print(f"   Tables: {', '.join(created_tables)}")
             
             # Initialize sample data (users, basic content)
-            print("\n[2/3] Initializing sample data...")
+            print("\n[3/4] Initializing sample data...")
             try:
                 from __init__ import initialize_data
                 initialize_data()
@@ -337,7 +423,7 @@ def init_database(reset=False, verify_libs=True):
                 raise
             
             # Seed all data from JSON files
-            print("\n[3/3] Seeding database with content...")
+            print("\n[4/4] Seeding database with content...")
             try:
                 seed_all_data(db)
                 db.session.commit()
