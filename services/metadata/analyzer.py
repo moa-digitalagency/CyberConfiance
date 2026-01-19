@@ -642,91 +642,100 @@ class MetadataAnalyzerService:
         if not file_type:
             return None, "Type de fichier non supporte"
         
+        tmp_in_path = None
+        tmp_out_path = None
+        
         try:
             with tempfile.NamedTemporaryFile(suffix=os.path.splitext(filename)[1], delete=False) as tmp_in:
                 tmp_in.write(file_data)
                 tmp_in_path = tmp_in.name
             
             base, ext = os.path.splitext(filename)
-            clean_filename = f"{base}_clean{ext}"
+            clean_filename = f"{base}_nettoye{ext}"
             
-            with tempfile.NamedTemporaryFile(suffix=ext, delete=False) as tmp_out:
-                tmp_out_path = tmp_out.name
+            tmp_out_path = tempfile.mktemp(suffix=ext)
             
             try:
-                if file_type == 'image':
+                result = subprocess.run(
+                    ['exiftool', '-all=', '-o', tmp_out_path, tmp_in_path],
+                    capture_output=True, text=True, timeout=120
+                )
+                
+                if result.returncode == 0 and os.path.exists(tmp_out_path) and os.path.getsize(tmp_out_path) > 0:
+                    with open(tmp_out_path, 'rb') as f:
+                        clean_data = f.read()
+                    
+                    os.unlink(tmp_in_path)
+                    os.unlink(tmp_out_path)
+                    return clean_data, clean_filename
+                
+                if file_type == 'image' and ext.lower() not in ['.heic', '.heif']:
+                    try:
+                        img = Image.open(io.BytesIO(file_data))
+                        clean_img = Image.new(img.mode, img.size)
+                        clean_img.paste(img)
+                        
+                        output = io.BytesIO()
+                        if ext.lower() in ['.jpg', '.jpeg']:
+                            clean_img.save(output, format='JPEG', quality=95)
+                        elif ext.lower() == '.png':
+                            clean_img.save(output, format='PNG')
+                        elif ext.lower() == '.gif':
+                            clean_img.save(output, format='GIF')
+                        elif ext.lower() == '.webp':
+                            clean_img.save(output, format='WEBP', quality=95)
+                        else:
+                            clean_img.save(output, format=img.format or 'JPEG')
+                        
+                        os.unlink(tmp_in_path)
+                        if os.path.exists(tmp_out_path):
+                            os.unlink(tmp_out_path)
+                        
+                        return output.getvalue(), clean_filename
+                    except Exception:
+                        pass
+                
+                elif file_type == 'video':
                     result = subprocess.run(
-                        ['exiftool', '-all=', '-overwrite_original', '-o', tmp_out_path, tmp_in_path],
-                        capture_output=True, text=True, timeout=60
+                        ['ffmpeg', '-i', tmp_in_path, '-map_metadata', '-1', 
+                         '-c:v', 'copy', '-c:a', 'copy', '-y', tmp_out_path],
+                        capture_output=True, text=True, timeout=300
                     )
-                    
-                    if result.returncode != 0:
-                        try:
-                            img = Image.open(io.BytesIO(file_data))
-                            
-                            clean_img = Image.new(img.mode, img.size)
-                            clean_img.paste(img)
-                            
-                            output = io.BytesIO()
-                            if ext.lower() in ['.jpg', '.jpeg']:
-                                clean_img.save(output, format='JPEG', quality=95)
-                            elif ext.lower() == '.png':
-                                clean_img.save(output, format='PNG')
-                            elif ext.lower() == '.gif':
-                                clean_img.save(output, format='GIF')
-                            elif ext.lower() == '.webp':
-                                clean_img.save(output, format='WEBP', quality=95)
-                            else:
-                                clean_img.save(output, format=img.format or 'JPEG')
-                            
-                            os.unlink(tmp_in_path)
-                            try:
-                                os.unlink(tmp_out_path)
-                            except:
-                                pass
-                            
-                            return output.getvalue(), clean_filename
-                        except Exception as pil_error:
-                            raise Exception(f"Erreur PIL: {pil_error}")
-                    
-                else:
+                    if result.returncode == 0 and os.path.exists(tmp_out_path):
+                        with open(tmp_out_path, 'rb') as f:
+                            clean_data = f.read()
+                        os.unlink(tmp_in_path)
+                        os.unlink(tmp_out_path)
+                        return clean_data, clean_filename
+                        
+                elif file_type == 'audio':
                     result = subprocess.run(
-                        ['exiftool', '-all=', '-overwrite_original', '-o', tmp_out_path, tmp_in_path],
+                        ['ffmpeg', '-i', tmp_in_path, '-map_metadata', '-1',
+                         '-c:a', 'copy', '-y', tmp_out_path],
                         capture_output=True, text=True, timeout=120
                     )
-                    
-                    if result.returncode != 0:
-                        if file_type == 'video':
-                            result = subprocess.run(
-                                ['ffmpeg', '-i', tmp_in_path, '-map_metadata', '-1', 
-                                 '-c:v', 'copy', '-c:a', 'copy', '-y', tmp_out_path],
-                                capture_output=True, text=True, timeout=300
-                            )
-                        elif file_type == 'audio':
-                            result = subprocess.run(
-                                ['ffmpeg', '-i', tmp_in_path, '-map_metadata', '-1',
-                                 '-c:a', 'copy', '-y', tmp_out_path],
-                                capture_output=True, text=True, timeout=120
-                            )
+                    if result.returncode == 0 and os.path.exists(tmp_out_path):
+                        with open(tmp_out_path, 'rb') as f:
+                            clean_data = f.read()
+                        os.unlink(tmp_in_path)
+                        os.unlink(tmp_out_path)
+                        return clean_data, clean_filename
                 
-                with open(tmp_out_path, 'rb') as f:
-                    clean_data = f.read()
-                
-                os.unlink(tmp_in_path)
-                os.unlink(tmp_out_path)
-                
-                return clean_data, clean_filename
+                raise Exception("Impossible de nettoyer les metadonnees avec les outils disponibles")
                 
             except Exception as e:
-                try:
-                    os.unlink(tmp_in_path)
-                except:
-                    pass
-                try:
-                    os.unlink(tmp_out_path)
-                except:
-                    pass
                 raise e
                 
         except Exception as e:
             return None, f"Erreur lors de la suppression des metadonnees: {str(e)}"
+        finally:
+            if tmp_in_path and os.path.exists(tmp_in_path):
+                try:
+                    os.unlink(tmp_in_path)
+                except:
+                    pass
+            if tmp_out_path and os.path.exists(tmp_out_path):
+                try:
+                    os.unlink(tmp_out_path)
+                except:
+                    pass
