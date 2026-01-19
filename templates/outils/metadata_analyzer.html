@@ -49,32 +49,34 @@
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                 <input type="hidden" name="action" value="analyze" id="formAction"/>
                 
-                <div class="form-group file-upload-area" id="dropZone">
-                    <input type="file" name="file" id="fileInput" class="file-input" 
-                           accept="image/*,video/*,audio/*,.jpg,.jpeg,.png,.gif,.webp,.tiff,.tif,.bmp,.heic,.heif,.mp4,.mov,.avi,.mkv,.wmv,.flv,.webm,.m4v,.3gp,.mp3,.wav,.flac,.aac,.ogg,.wma,.m4a">
-                    <label for="fileInput" class="file-label">
-                        <div class="upload-icon">
-                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                <polyline points="17 8 12 3 7 8"/>
-                                <line x1="12" y1="3" x2="12" y2="15"/>
-                            </svg>
+                <div class="upload-zone-wrapper">
+                    <div class="file-upload-area" id="dropZone">
+                        <input type="file" name="file" id="fileInput" class="file-input" 
+                               accept="image/*,video/*,audio/*,.jpg,.jpeg,.png,.gif,.webp,.tiff,.tif,.bmp,.heic,.heif,.mp4,.mov,.avi,.mkv,.wmv,.flv,.webm,.m4v,.3gp,.mp3,.wav,.flac,.aac,.ogg,.wma,.m4a">
+                        <label for="fileInput" class="file-label">
+                            <div class="upload-icon">
+                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                    <polyline points="17 8 12 3 7 8"/>
+                                    <line x1="12" y1="3" x2="12" y2="15"/>
+                                </svg>
+                            </div>
+                            <span class="upload-text">Glissez-deposez un fichier ou cliquez pour selectionner</span>
+                            <span class="upload-hint">Images: JPG, PNG, GIF, WebP, TIFF, HEIC | Videos: MP4, MOV, AVI, MKV | Audio: MP3, WAV, FLAC</span>
+                            <span class="upload-limit">Taille maximale: 200 Mo</span>
+                        </label>
+                        <div id="filePreview" class="file-preview" style="display: none;">
+                            <div class="preview-content">
+                                <span class="file-name" id="fileName"></span>
+                                <span class="file-size" id="fileSize"></span>
+                            </div>
+                            <button type="button" class="remove-file" id="removeFile">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="18" y1="6" x2="6" y2="18"/>
+                                    <line x1="6" y1="6" x2="18" y2="18"/>
+                                </svg>
+                            </button>
                         </div>
-                        <span class="upload-text">Glissez-deposez un fichier ou cliquez pour selectionner</span>
-                        <span class="upload-hint">Images: JPG, PNG, GIF, WebP, TIFF, HEIC | Videos: MP4, MOV, AVI, MKV | Audio: MP3, WAV, FLAC</span>
-                        <span class="upload-limit">Taille maximale: 200 Mo</span>
-                    </label>
-                    <div id="filePreview" class="file-preview" style="display: none;">
-                        <div class="preview-content">
-                            <span class="file-name" id="fileName"></span>
-                            <span class="file-size" id="fileSize"></span>
-                        </div>
-                        <button type="button" class="remove-file" id="removeFile">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <line x1="18" y1="6" x2="6" y2="18"/>
-                                <line x1="6" y1="6" x2="18" y2="18"/>
-                            </svg>
-                        </button>
                     </div>
                 </div>
 
@@ -131,10 +133,18 @@
 </section>
 
 <style>
+.upload-zone-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin: 30px 0;
+}
+
 .file-upload-area {
     border: 4px dashed #4facfe;
     border-radius: 20px;
-    padding: 60px 40px;
+    padding: 50px 60px;
     text-align: center;
     transition: all 0.3s ease;
     cursor: pointer;
@@ -142,6 +152,8 @@
     box-shadow: 0 8px 32px rgba(79, 172, 254, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
     position: relative;
     overflow: hidden;
+    width: 100%;
+    max-width: 700px;
 }
 
 .file-upload-area::before {

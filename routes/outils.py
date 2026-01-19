@@ -919,7 +919,7 @@ def metadata_analyzer():
                             author_info=results.get('author_info'),
                             cleaned_file=clean_data if clean_data else None,
                             cleaned_filename=clean_filename if clean_data else None,
-                            document_code=ensure_unique_code(MetadataAnalysis, 'MDA'),
+                            document_code=ensure_unique_code(MetadataAnalysis),
                             ip_address=get_client_ip(request),
                             user_agent=request.headers.get('User-Agent', '')[:500]
                         )
