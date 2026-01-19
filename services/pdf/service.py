@@ -14,6 +14,7 @@ from services.pdf.security_report import SecurityReportMixin
 from services.pdf.qrcode_report import QRCodeReportMixin
 from services.pdf.github_report import GitHubReportMixin
 from services.pdf.quiz_report import QuizReportMixin
+from services.pdf.metadata_report import MetadataReportMixin
 
 
 class PDFReportService(
@@ -22,7 +23,8 @@ class PDFReportService(
     SecurityReportMixin,
     QRCodeReportMixin,
     GitHubReportMixin,
-    QuizReportMixin
+    QuizReportMixin,
+    MetadataReportMixin
 ):
     """Service pour générer des rapports PDF forensiques professionnels
     
@@ -33,5 +35,6 @@ class PDFReportService(
     - QRCodeReportMixin: generate_qrcode_analysis_report
     - GitHubReportMixin: generate_github_analysis_report
     - QuizReportMixin: generate_quiz_report
+    - MetadataReportMixin: generate_metadata_analysis_report
     """
     pass

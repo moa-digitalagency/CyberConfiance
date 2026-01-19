@@ -961,3 +961,46 @@ def metadata_analyzer():
             return redirect(url_for('outils.metadata_analyzer'))
     
     return render_template('outils/metadata_analyzer.html', results=results, analysis_id=analysis_id)
+
+
+@bp.route('/outils/analyseur-metadonnee/<int:analysis_id>/pdf')
+def metadata_analysis_pdf(analysis_id):
+    from services.pdf import PDFReportService
+    from datetime import datetime
+    
+    analysis = MetadataAnalysis.query.get_or_404(analysis_id)
+    
+    if analysis.pdf_report:
+        return Response(
+            analysis.pdf_report,
+            mimetype='application/pdf',
+            headers={
+                'Content-Disposition': f'attachment; filename="rapport_metadonnees_{analysis.id}.pdf"',
+                'Content-Length': len(analysis.pdf_report)
+            }
+        )
+    
+    pdf_service = PDFReportService()
+    ip_address = get_client_ip(request)
+    
+    try:
+        pdf_bytes = pdf_service.generate_metadata_analysis_report(analysis, ip_address)
+        
+        analysis.pdf_report = pdf_bytes
+        analysis.pdf_generated_at = datetime.utcnow()
+        db.session.commit()
+        
+        return Response(
+            pdf_bytes,
+            mimetype='application/pdf',
+            headers={
+                'Content-Disposition': f'attachment; filename="rapport_metadonnees_{analysis.id}.pdf"',
+                'Content-Length': len(pdf_bytes)
+            }
+        )
+    except Exception as e:
+        print(f"[ERROR] Failed to generate metadata PDF: {e}")
+        import traceback
+        traceback.print_exc()
+        flash('Erreur lors de la generation du rapport PDF.', 'error')
+        return redirect(url_for('outils.metadata_analyzer'))

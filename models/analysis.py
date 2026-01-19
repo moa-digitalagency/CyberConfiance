@@ -208,7 +208,79 @@ class MetadataAnalysis(db.Model):
     document_code = db.Column(db.String(20), unique=True, index=True)
     ip_address = db.Column(db.String(50))
     user_agent = db.Column(db.String(500))
+    pdf_report = db.Column(db.LargeBinary)
+    pdf_generated_at = db.Column(db.DateTime)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    @property
+    def filename(self):
+        return self.original_filename
+    
+    @property
+    def privacy_risk(self):
+        return self.privacy_risk_level
+    
+    @property
+    def has_gps_data(self):
+        return bool(self.gps_data)
+    
+    @property
+    def has_camera_info(self):
+        return bool(self.camera_info)
+    
+    @property
+    def has_software_info(self):
+        return bool(self.software_info)
+    
+    @property
+    def has_datetime_info(self):
+        return bool(self.datetime_info)
+    
+    @property
+    def has_author_info(self):
+        return bool(self.author_info)
+    
+    @property
+    def analysis_results(self):
+        return {
+            'metadata': self.metadata_found or {},
+            'categories': self._categorize_metadata(),
+            'sensitive_data': self.sensitive_data_found or []
+        }
+    
+    def _categorize_metadata(self):
+        metadata = self.metadata_found or {}
+        categories = {
+            'Informations Fichier': {},
+            'Informations Image/Video': {},
+            'Appareil Photo/Camera': {},
+            'GPS/Localisation': {},
+            'Dates et Heures': {},
+            'Auteur/Copyright': {},
+            'Logiciel': {},
+            'Autres': {}
+        }
+        
+        for key, value in metadata.items():
+            key_lower = key.lower()
+            if key.startswith('_'):
+                categories['Informations Fichier'][key.lstrip('_')] = value
+            elif any(k in key_lower for k in ['gps', 'latitude', 'longitude', 'location', 'city', 'country']):
+                categories['GPS/Localisation'][key] = value
+            elif any(k in key_lower for k in ['make', 'model', 'lens', 'camera', 'exposure', 'aperture', 'iso', 'focal']):
+                categories['Appareil Photo/Camera'][key] = value
+            elif any(k in key_lower for k in ['date', 'time', 'created', 'modified']):
+                categories['Dates et Heures'][key] = value
+            elif any(k in key_lower for k in ['author', 'artist', 'creator', 'owner', 'copyright']):
+                categories['Auteur/Copyright'][key] = value
+            elif any(k in key_lower for k in ['software', 'tool', 'program', 'application', 'encoder']):
+                categories['Logiciel'][key] = value
+            elif any(k in key_lower for k in ['width', 'height', 'resolution', 'dimension', 'codec', 'format', 'bitrate']):
+                categories['Informations Image/Video'][key] = value
+            else:
+                categories['Autres'][key] = value
+        
+        return {k: v for k, v in categories.items() if v}
     
     def __repr__(self):
         return f'<MetadataAnalysis {self.original_filename} - {self.metadata_count} metadata>'
