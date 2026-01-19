@@ -54,72 +54,215 @@
                 </div>
             </div>
 
-            <div class="info-blocks">
-                <div class="info-block">
-                    <span class="block-label">Fichier</span>
-                    <span class="block-value">{{ analysis.original_filename }}</span>
+            <div class="summary-grid">
+                <div class="summary-block">
+                    <div class="block-header">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
+                            <polyline points="13 2 13 9 20 9"/>
+                        </svg>
+                        <span>Fichier</span>
+                    </div>
+                    <div class="block-content">
+                        <div class="block-row">
+                            <span class="row-label">Nom:</span>
+                            <span class="row-value">{{ analysis.original_filename }}</span>
+                        </div>
+                        {% if analysis.file_size %}
+                        <div class="block-row">
+                            <span class="row-label">Taille:</span>
+                            <span class="row-value">
+                                {% if analysis.file_size >= 1048576 %}
+                                    {{ "%.2f"|format(analysis.file_size / 1048576) }} Mo
+                                {% else %}
+                                    {{ "%.2f"|format(analysis.file_size / 1024) }} Ko
+                                {% endif %}
+                            </span>
+                        </div>
+                        {% endif %}
+                        <div class="block-row">
+                            <span class="row-label">Metadonnees:</span>
+                            <span class="row-value">{{ analysis.metadata_count or 0 }} trouvees</span>
+                        </div>
+                    </div>
                 </div>
-                
+
                 {% if analysis.gps_data %}
-                <div class="info-block alert">
-                    <span class="block-label">Localisation GPS</span>
-                    <span class="block-value">Detectee</span>
-                </div>
-                {% endif %}
-                
-                {% if analysis.datetime_info %}
-                <div class="info-block">
-                    <span class="block-label">Date/Heure</span>
-                    <span class="block-value">
-                        {% if analysis.datetime_info.get('DateTimeOriginal') %}
-                            {{ analysis.datetime_info.get('DateTimeOriginal') }}
-                        {% elif analysis.datetime_info.get('DateTime') %}
-                            {{ analysis.datetime_info.get('DateTime') }}
-                        {% elif analysis.datetime_info.get('CreateDate') %}
-                            {{ analysis.datetime_info.get('CreateDate') }}
-                        {% else %}
-                            Detectee
+                <div class="summary-block danger">
+                    <div class="block-header">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                            <circle cx="12" cy="10" r="3"/>
+                        </svg>
+                        <span>Localisation GPS</span>
+                    </div>
+                    <div class="block-content">
+                        {% if analysis.gps_data.get('GPSLatitude') %}
+                        <div class="block-row">
+                            <span class="row-label">Latitude:</span>
+                            <span class="row-value">{{ analysis.gps_data.get('GPSLatitude') }}</span>
+                        </div>
                         {% endif %}
-                    </span>
+                        {% if analysis.gps_data.get('GPSLongitude') %}
+                        <div class="block-row">
+                            <span class="row-label">Longitude:</span>
+                            <span class="row-value">{{ analysis.gps_data.get('GPSLongitude') }}</span>
+                        </div>
+                        {% endif %}
+                        {% if analysis.gps_data.get('GPSAltitude') %}
+                        <div class="block-row">
+                            <span class="row-label">Altitude:</span>
+                            <span class="row-value">{{ analysis.gps_data.get('GPSAltitude') }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
                 </div>
                 {% endif %}
-                
+
                 {% if analysis.camera_info %}
-                <div class="info-block">
-                    <span class="block-label">Appareil</span>
-                    <span class="block-value">
+                <div class="summary-block">
+                    <div class="block-header">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                            <circle cx="12" cy="13" r="4"/>
+                        </svg>
+                        <span>Appareil</span>
+                    </div>
+                    <div class="block-content">
+                        {% if analysis.camera_info.get('Make') %}
+                        <div class="block-row">
+                            <span class="row-label">Marque:</span>
+                            <span class="row-value">{{ analysis.camera_info.get('Make') }}</span>
+                        </div>
+                        {% endif %}
                         {% if analysis.camera_info.get('Model') %}
-                            {{ analysis.camera_info.get('Model') }}
-                        {% elif analysis.camera_info.get('Make') %}
-                            {{ analysis.camera_info.get('Make') }}
-                        {% else %}
-                            Detecte
+                        <div class="block-row">
+                            <span class="row-label">Modele:</span>
+                            <span class="row-value">{{ analysis.camera_info.get('Model') }}</span>
+                        </div>
                         {% endif %}
-                    </span>
+                        {% if analysis.camera_info.get('SerialNumber') or analysis.camera_info.get('InternalSerialNumber') %}
+                        <div class="block-row">
+                            <span class="row-label">N Serie:</span>
+                            <span class="row-value">{{ analysis.camera_info.get('SerialNumber') or analysis.camera_info.get('InternalSerialNumber') }}</span>
+                        </div>
+                        {% endif %}
+                        {% if analysis.camera_info.get('LensModel') %}
+                        <div class="block-row">
+                            <span class="row-label">Objectif:</span>
+                            <span class="row-value">{{ analysis.camera_info.get('LensModel') }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
                 </div>
                 {% endif %}
-                
+
+                {% if analysis.datetime_info %}
+                <div class="summary-block">
+                    <div class="block-header">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                        <span>Dates</span>
+                    </div>
+                    <div class="block-content">
+                        {% if analysis.datetime_info.get('DateTimeOriginal') %}
+                        <div class="block-row">
+                            <span class="row-label">Creation:</span>
+                            <span class="row-value">{{ analysis.datetime_info.get('DateTimeOriginal') }}</span>
+                        </div>
+                        {% elif analysis.datetime_info.get('CreateDate') %}
+                        <div class="block-row">
+                            <span class="row-label">Creation:</span>
+                            <span class="row-value">{{ analysis.datetime_info.get('CreateDate') }}</span>
+                        </div>
+                        {% endif %}
+                        {% if analysis.datetime_info.get('ModifyDate') %}
+                        <div class="block-row">
+                            <span class="row-label">Modification:</span>
+                            <span class="row-value">{{ analysis.datetime_info.get('ModifyDate') }}</span>
+                        </div>
+                        {% elif analysis.datetime_info.get('DateTime') %}
+                        <div class="block-row">
+                            <span class="row-label">Modification:</span>
+                            <span class="row-value">{{ analysis.datetime_info.get('DateTime') }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+
                 {% if analysis.author_info %}
-                <div class="info-block">
-                    <span class="block-label">Auteur</span>
-                    <span class="block-value">
+                <div class="summary-block">
+                    <div class="block-header">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                        <span>Auteur</span>
+                    </div>
+                    <div class="block-content">
                         {% if analysis.author_info.get('Artist') %}
-                            {{ analysis.author_info.get('Artist') }}
-                        {% elif analysis.author_info.get('Author') %}
-                            {{ analysis.author_info.get('Author') }}
-                        {% elif analysis.author_info.get('Creator') %}
-                            {{ analysis.author_info.get('Creator') }}
-                        {% else %}
-                            Detecte
+                        <div class="block-row">
+                            <span class="row-label">Artiste:</span>
+                            <span class="row-value">{{ analysis.author_info.get('Artist') }}</span>
+                        </div>
                         {% endif %}
-                    </span>
+                        {% if analysis.author_info.get('Author') %}
+                        <div class="block-row">
+                            <span class="row-label">Auteur:</span>
+                            <span class="row-value">{{ analysis.author_info.get('Author') }}</span>
+                        </div>
+                        {% endif %}
+                        {% if analysis.author_info.get('Creator') %}
+                        <div class="block-row">
+                            <span class="row-label">Createur:</span>
+                            <span class="row-value">{{ analysis.author_info.get('Creator') }}</span>
+                        </div>
+                        {% endif %}
+                        {% if analysis.author_info.get('Copyright') %}
+                        <div class="block-row">
+                            <span class="row-label">Copyright:</span>
+                            <span class="row-value">{{ analysis.author_info.get('Copyright') }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
                 </div>
                 {% endif %}
-                
-                <div class="info-block">
-                    <span class="block-label">Metadonnees</span>
-                    <span class="block-value">{{ analysis.metadata_count or 0 }} trouvees</span>
+
+                {% if analysis.software_info %}
+                <div class="summary-block">
+                    <div class="block-header">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                            <line x1="8" y1="21" x2="16" y2="21"/>
+                            <line x1="12" y1="17" x2="12" y2="21"/>
+                        </svg>
+                        <span>Logiciels</span>
+                    </div>
+                    <div class="block-content">
+                        {% if analysis.software_info.get('Software') %}
+                        <div class="block-row">
+                            <span class="row-label">Logiciel:</span>
+                            <span class="row-value">{{ analysis.software_info.get('Software') }}</span>
+                        </div>
+                        {% endif %}
+                        {% if analysis.software_info.get('CreatorTool') %}
+                        <div class="block-row">
+                            <span class="row-label">Outil:</span>
+                            <span class="row-value">{{ analysis.software_info.get('CreatorTool') }}</span>
+                        </div>
+                        {% endif %}
+                        {% if analysis.software_info.get('HistorySoftwareAgent') %}
+                        <div class="block-row">
+                            <span class="row-label">Historique:</span>
+                            <span class="row-value">{{ analysis.software_info.get('HistorySoftwareAgent') }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
                 </div>
+                {% endif %}
             </div>
 
             <div class="actions-section">
@@ -164,7 +307,7 @@
                     <line x1="12" y1="16" x2="12" y2="12"/>
                     <line x1="12" y1="8" x2="12.01" y2="8"/>
                 </svg>
-                Details des Metadonnees par Categorie
+                Toutes les Metadonnees par Categorie
             </h3>
 
             <div class="accordion-container">
@@ -514,47 +657,69 @@
     font-size: 1.1rem;
 }
 
-.info-blocks {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
     margin-bottom: 25px;
 }
 
-.info-block {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    padding: 12px 18px;
+.summary-block {
     background: var(--bg-tertiary);
-    border-radius: 10px;
+    border-radius: 12px;
     border: 1px solid var(--border-color);
-    min-width: 120px;
+    overflow: hidden;
 }
 
-.info-block.alert {
+.summary-block.danger {
+    border-color: rgba(239, 68, 68, 0.4);
+    background: rgba(239, 68, 68, 0.05);
+}
+
+.summary-block.danger .block-header {
     background: rgba(239, 68, 68, 0.1);
-    border-color: rgba(239, 68, 68, 0.3);
-}
-
-.info-block.alert .block-value {
     color: #ef4444;
+}
+
+.block-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    background: rgba(var(--primary-rgb), 0.05);
+    border-bottom: 1px solid var(--border-color);
     font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--primary-color);
 }
 
-.block-label {
-    font-size: 0.75rem;
+.block-content {
+    padding: 12px 16px;
+}
+
+.block-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 6px 0;
+    font-size: 0.85rem;
+}
+
+.block-row:not(:last-child) {
+    border-bottom: 1px dashed var(--border-color);
+}
+
+.row-label {
     color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    flex-shrink: 0;
 }
 
-.block-value {
-    font-size: 0.95rem;
+.row-value {
     color: var(--text-primary);
-    font-weight: 500;
+    text-align: right;
     word-break: break-word;
-    max-width: 200px;
+    font-weight: 500;
 }
 
 .actions-section {
@@ -728,16 +893,8 @@
 }
 
 @media (max-width: 768px) {
-    .info-blocks {
-        flex-direction: column;
-    }
-    
-    .info-block {
-        min-width: 100%;
-    }
-    
-    .block-value {
-        max-width: none;
+    .summary-grid {
+        grid-template-columns: 1fr;
     }
     
     .actions-section {
