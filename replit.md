@@ -28,7 +28,7 @@ Complete documentation is available in the `docs/` folder:
 ## Overview
 CyberConfiance is a production-ready Flask-based cybersecurity awareness training platform. It offers a comprehensive suite of analysis tools, including email breach checking, security analysis for various digital assets, and novel anti-quishing (QR code analysis) and anti-injection (prompt analysis) capabilities. The platform features an interactive quiz, personalized recommendations, and an admin panel for managing user requests and site settings. It ensures data persistence through a robust database schema and is fully compatible with VPS deployments. The core vision is to empower users with tools and knowledge to enhance their digital security posture against evolving cyber threats.
 
-**Version**: 2.1 (December 2025)
+**Version**: 2.2 (January 2026)
 **Status**: Production-ready with GitHub Analyzer in BETA
 
 ## User Preferences
@@ -58,6 +58,7 @@ I prefer that the agent adheres to existing architectural patterns and design de
 - **QR Code Analyzer (Anti-Quishing)**: Decodes QR codes from images or real-time camera feeds. Features comprehensive multi-protocol redirect detection (HTTP, Meta refresh, JavaScript, HTTP header, URL parameter, iframe), multi-API security analysis, and tracker/IP logger detection. Hardened with SSRF protection and DNS rebinding prevention.
 - **Prompt Analyzer (Anti-Injection)**: Detects prompt injection patterns, dangerous code, obfuscation, and jailbreak attempts using pattern matching and AST analysis. Extracts and analyzes URLs, IPs, and domains embedded in prompts.
 - **GitHub Code Analyzer (BETA)**: Analyzes public GitHub repositories for security vulnerabilities and code quality issues. Features advanced language and framework detection (50+ languages, 30+ frameworks), OWASP Top 10 aligned security scanning (200+ patterns including secret detection, SQLi, XSS, command injection, path traversal, insecure deserialization, SSRF/CSRF, auth issues, insecure config), vulnerable dependencies database, toxic AI pattern detection ("vibecoding"), performance issue detection, architecture analysis, Git hygiene analysis, and documentation checks. See `docs/GITHUB_ANALYZER_TECHNICAL.md` for detailed algorithm documentation.
+- **Metadata Analyzer**: Analyzes and removes metadata from images, videos, and audio files. Supports JPEG, PNG, GIF, WebP, TIFF, HEIC, MP4, MOV, AVI, MKV, MP3, WAV, FLAC. Features privacy risk assessment, GPS/location data detection, camera/device info extraction, author/copyright detection, and downloadable cleaned files with all metadata stripped. Route: `/outils/analyseur-metadonnee`.
 - **Admin Panel Enhancements**: Detailed history views for all analyses, formatted display of results, extensive site settings, and improved SEO Metadata editing.
 
 ### System Design Choices

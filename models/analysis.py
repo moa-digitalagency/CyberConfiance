@@ -180,3 +180,35 @@ class GitHubCodeAnalysis(db.Model):
     
     def __repr__(self):
         return f'<GitHubCodeAnalysis {self.repo_name} - Score: {self.overall_score}>'
+
+
+class MetadataAnalysis(db.Model):
+    __tablename__ = 'metadata_analyses'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    original_filename = db.Column(db.String(500), nullable=False)
+    file_type = db.Column(db.String(50))
+    file_size = db.Column(db.Integer)
+    mime_type = db.Column(db.String(100))
+    
+    metadata_found = db.Column(db.JSON)
+    metadata_count = db.Column(db.Integer, default=0)
+    privacy_risk_level = db.Column(db.String(20))
+    sensitive_data_found = db.Column(db.JSON)
+    
+    gps_data = db.Column(db.JSON)
+    camera_info = db.Column(db.JSON)
+    software_info = db.Column(db.JSON)
+    datetime_info = db.Column(db.JSON)
+    author_info = db.Column(db.JSON)
+    
+    cleaned_file = db.Column(db.LargeBinary)
+    cleaned_filename = db.Column(db.String(500))
+    
+    document_code = db.Column(db.String(20), unique=True, index=True)
+    ip_address = db.Column(db.String(50))
+    user_agent = db.Column(db.String(500))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    def __repr__(self):
+        return f'<MetadataAnalysis {self.original_filename} - {self.metadata_count} metadata>'

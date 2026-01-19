@@ -23,6 +23,7 @@ from services.security import (
     URLShortenerService,
     TrackerDetectorService
 )
+from services.metadata import MetadataAnalyzerService
 
 db = app_module.db
 

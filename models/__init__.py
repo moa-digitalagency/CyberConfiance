@@ -14,7 +14,7 @@ from models.content import Article, Rule, Tool, Scenario, Resource, News, Glossa
 from models.contact import Contact, Newsletter
 from models.analysis import (
     BreachAnalysis, SecurityAnalysis, QRCodeAnalysis, 
-    PromptAnalysis, QuizResult, GitHubCodeAnalysis
+    PromptAnalysis, QuizResult, GitHubCodeAnalysis, MetadataAnalysis
 )
 from models.logs import ActivityLog, SecurityLog, ThreatLog
 from models.settings import SiteSettings, SEOMetadata
@@ -25,7 +25,7 @@ __all__ = [
     'User',
     'Article', 'Rule', 'Tool', 'Scenario', 'Resource', 'News', 'GlossaryTerm', 'AttackType',
     'Contact', 'Newsletter',
-    'BreachAnalysis', 'SecurityAnalysis', 'QRCodeAnalysis', 'PromptAnalysis', 'QuizResult', 'GitHubCodeAnalysis',
+    'BreachAnalysis', 'SecurityAnalysis', 'QRCodeAnalysis', 'PromptAnalysis', 'QuizResult', 'GitHubCodeAnalysis', 'MetadataAnalysis',
     'ActivityLog', 'SecurityLog', 'ThreatLog',
     'SiteSettings', 'SEOMetadata',
     'RequestSubmission'

@@ -145,6 +145,14 @@ def create_app(config_class=Config):
         from flask import render_template
         return render_template('error_404.html'), 404
     
+    @app.errorhandler(413)
+    def handle_file_too_large(e):
+        from flask import flash, redirect, request, url_for
+        flash('Le fichier est trop volumineux. Taille maximale: 200 Mo.', 'error')
+        if request.referrer:
+            return redirect(request.referrer)
+        return redirect(url_for('main.index'))
+    
     @app.errorhandler(500)
     def handle_internal_error(e):
         from flask import render_template
@@ -154,7 +162,7 @@ def create_app(config_class=Config):
         db.session.rollback()
         return render_template('error_500.html'), 500
     
-    from routes import main, admin_routes, admin_panel, request_forms, admin_requests, pages, content, auth
+    from routes import main, admin_routes, admin_panel, request_forms, admin_requests, pages, content, auth, outils
     app.register_blueprint(main.bp)
     app.register_blueprint(pages.bp)
     app.register_blueprint(content.bp)
@@ -163,6 +171,7 @@ def create_app(config_class=Config):
     app.register_blueprint(admin_panel.bp)
     app.register_blueprint(request_forms.bp)
     app.register_blueprint(admin_requests.bp)
+    app.register_blueprint(outils.bp)
     
     with app.app_context():
         db.create_all()

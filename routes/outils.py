@@ -8,14 +8,15 @@ www.myoneart.com
 Routes des outils d'analyse: liens, QR codes, prompts, GitHub, fuites email.
 """
 
-from flask import Blueprint, render_template, request, flash, redirect, url_for, session, send_file
+from flask import Blueprint, render_template, request, flash, redirect, url_for, session, send_file, Response
 from services import ContentService, HaveIBeenPwnedService, QuizService
 from services.security import SecurityAnalyzerService
 from services.pdf import PDFReportService
 from services.qrcode import QRCodeAnalyzerService
 from services.prompt import PromptAnalyzerService
 from services.github.analyzer import GitHubCodeAnalyzerService
-from models import BreachAnalysis, SecurityAnalysis, QRCodeAnalysis, PromptAnalysis, GitHubCodeAnalysis
+from services.metadata import MetadataAnalyzerService
+from models import BreachAnalysis, SecurityAnalysis, QRCodeAnalysis, PromptAnalysis, GitHubCodeAnalysis, MetadataAnalysis
 from utils.document_code_generator import ensure_unique_code
 from utils.metadata_collector import get_client_ip
 import __init__ as app_module
@@ -860,3 +861,103 @@ def generate_github_pdf(analysis_id):
         as_attachment=True,
         download_name=f"rapport_github_{analysis.repo_name}_{analysis.id}.pdf"
     )
+
+
+@bp.route('/outils/analyseur-metadonnee', methods=['GET', 'POST'])
+def metadata_analyzer():
+    results = None
+    analysis_id = None
+    
+    MAX_FILE_SIZE = 200 * 1024 * 1024
+    
+    if request.method == 'POST':
+        action = request.form.get('action', 'analyze')
+        
+        if 'file' not in request.files:
+            flash('Veuillez selectionner un fichier a analyser.', 'error')
+            return redirect(url_for('outils.metadata_analyzer'))
+        
+        file = request.files['file']
+        
+        if file.filename == '':
+            flash('Aucun fichier selectionne.', 'error')
+            return redirect(url_for('outils.metadata_analyzer'))
+        
+        try:
+            file_data = file.read()
+            filename = file.filename
+            
+            if len(file_data) > MAX_FILE_SIZE:
+                flash('Le fichier est trop volumineux. Taille maximale: 200 Mo.', 'error')
+                return redirect(url_for('outils.metadata_analyzer'))
+            
+            file_type = MetadataAnalyzerService.get_file_type(filename)
+            if not file_type:
+                flash('Type de fichier non supporte. Formats acceptes: Images (JPG, PNG, GIF, WebP, TIFF, HEIC), Videos (MP4, MOV, AVI, MKV), Audio (MP3, WAV, FLAC).', 'error')
+                return redirect(url_for('outils.metadata_analyzer'))
+            
+            if action == 'analyze':
+                results = MetadataAnalyzerService.analyze_file(file_data, filename)
+                
+                if results.get('success'):
+                    try:
+                        metadata_analysis = MetadataAnalysis(
+                            original_filename=filename,
+                            file_type=results.get('file_type'),
+                            file_size=results.get('file_size'),
+                            mime_type=file.content_type,
+                            metadata_found=results.get('metadata'),
+                            metadata_count=results.get('metadata_count', 0),
+                            privacy_risk_level=results.get('privacy_risk'),
+                            sensitive_data_found=results.get('sensitive_data'),
+                            gps_data=results.get('gps_data'),
+                            camera_info=results.get('camera_info'),
+                            software_info=results.get('software_info'),
+                            datetime_info=results.get('datetime_info'),
+                            author_info=results.get('author_info'),
+                            document_code=ensure_unique_code(MetadataAnalysis, 'MDA'),
+                            ip_address=get_client_ip(request),
+                            user_agent=request.headers.get('User-Agent', '')[:500]
+                        )
+                        db.session.add(metadata_analysis)
+                        db.session.commit()
+                        analysis_id = metadata_analysis.id
+                    except Exception as e:
+                        db.session.rollback()
+                        print(f"[ERROR] Failed to save metadata analysis: {e}")
+                else:
+                    flash(results.get('error', 'Erreur lors de l\'analyse'), 'error')
+                    
+            elif action == 'clean':
+                clean_data, clean_filename = MetadataAnalyzerService.remove_metadata(file_data, filename)
+                
+                if clean_data:
+                    file_ext = os.path.splitext(filename)[1].lower()
+                    mime_types = {
+                        '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg',
+                        '.png': 'image/png', '.gif': 'image/gif',
+                        '.webp': 'image/webp', '.tiff': 'image/tiff', '.tif': 'image/tiff',
+                        '.mp4': 'video/mp4', '.mov': 'video/quicktime',
+                        '.avi': 'video/x-msvideo', '.mkv': 'video/x-matroska',
+                        '.mp3': 'audio/mpeg', '.wav': 'audio/wav',
+                        '.flac': 'audio/flac', '.m4a': 'audio/mp4'
+                    }
+                    mime_type = mime_types.get(file_ext, 'application/octet-stream')
+                    
+                    return Response(
+                        clean_data,
+                        mimetype=mime_type,
+                        headers={
+                            'Content-Disposition': f'attachment; filename="{clean_filename}"',
+                            'Content-Length': len(clean_data)
+                        }
+                    )
+                else:
+                    flash(f'Erreur: {clean_filename}', 'error')
+                    return redirect(url_for('outils.metadata_analyzer'))
+                    
+        except Exception as e:
+            flash(f'Erreur lors du traitement: {str(e)}', 'error')
+            return redirect(url_for('outils.metadata_analyzer'))
+    
+    return render_template('outils/metadata_analyzer.html', results=results, analysis_id=analysis_id)
