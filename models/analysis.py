@@ -202,6 +202,7 @@ class MetadataAnalysis(db.Model):
     datetime_info = db.Column(db.JSON)
     author_info = db.Column(db.JSON)
     
+    original_file = db.Column(db.LargeBinary)
     cleaned_file = db.Column(db.LargeBinary)
     cleaned_filename = db.Column(db.String(500))
     

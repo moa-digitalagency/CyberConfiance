@@ -917,6 +917,7 @@ def metadata_analyzer():
                             software_info=results.get('software_info'),
                             datetime_info=results.get('datetime_info'),
                             author_info=results.get('author_info'),
+                            original_file=file_data,
                             cleaned_file=clean_data if clean_data else None,
                             cleaned_filename=clean_filename if clean_data else None,
                             document_code=ensure_unique_code(MetadataAnalysis),
@@ -1019,22 +1020,22 @@ def metadata_analysis_pdf(analysis_id):
 def metadata_download_clean(analysis_id):
     analysis = MetadataAnalysis.query.get_or_404(analysis_id)
     
+    filename = analysis.original_filename or 'fichier'
+    base, ext = os.path.splitext(filename)
+    clean_filename = f"{base}_nettoye{ext}"
+    
+    mime_types = {
+        '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg',
+        '.png': 'image/png', '.gif': 'image/gif',
+        '.webp': 'image/webp', '.tiff': 'image/tiff', '.tif': 'image/tiff',
+        '.mp4': 'video/mp4', '.mov': 'video/quicktime',
+        '.avi': 'video/x-msvideo', '.mkv': 'video/x-matroska',
+        '.mp3': 'audio/mpeg', '.wav': 'audio/wav',
+        '.flac': 'audio/flac', '.m4a': 'audio/mp4'
+    }
+    mime_type = mime_types.get(ext.lower(), 'application/octet-stream')
+    
     if analysis.cleaned_file:
-        filename = analysis.original_filename or 'fichier'
-        base, ext = os.path.splitext(filename)
-        clean_filename = f"{base}_nettoye{ext}"
-        
-        mime_types = {
-            '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg',
-            '.png': 'image/png', '.gif': 'image/gif',
-            '.webp': 'image/webp', '.tiff': 'image/tiff', '.tif': 'image/tiff',
-            '.mp4': 'video/mp4', '.mov': 'video/quicktime',
-            '.avi': 'video/x-msvideo', '.mkv': 'video/x-matroska',
-            '.mp3': 'audio/mpeg', '.wav': 'audio/wav',
-            '.flac': 'audio/flac', '.m4a': 'audio/mp4'
-        }
-        mime_type = mime_types.get(ext.lower(), 'application/octet-stream')
-        
         return Response(
             analysis.cleaned_file,
             mimetype=mime_type,
@@ -1044,7 +1045,26 @@ def metadata_download_clean(analysis_id):
             }
         )
     
-    flash('Le fichier nettoye n\'est plus disponible. Veuillez refaire une analyse.', 'warning')
+    if analysis.original_file:
+        try:
+            clean_data, _ = MetadataAnalyzerService.remove_metadata(analysis.original_file, filename)
+            if clean_data:
+                analysis.cleaned_file = clean_data
+                analysis.cleaned_filename = clean_filename
+                db.session.commit()
+                
+                return Response(
+                    clean_data,
+                    mimetype=mime_type,
+                    headers={
+                        'Content-Disposition': f'attachment; filename="{clean_filename}"',
+                        'Content-Length': len(clean_data)
+                    }
+                )
+        except Exception as e:
+            print(f"[ERROR] Failed to clean metadata on-the-fly: {e}")
+    
+    flash('Le fichier original n\'est plus disponible. Veuillez refaire une analyse.', 'warning')
     return redirect(url_for('outils.metadata_analyzer'))
 
 
