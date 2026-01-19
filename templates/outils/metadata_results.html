@@ -1,0 +1,762 @@
+{% extends "base.html" %}
+
+{% block title %}Résultats d'Analyse - {{ analysis.original_filename }} | CyberConfiance{% endblock %}
+
+{% block content %}
+<div class="metadata-results-page">
+    <div class="results-container">
+        <div class="results-header-section">
+            <h1 class="page-title">Résultats de l'<span class="highlight">Analyse</span></h1>
+            <p class="subtitle">Analyse des métadonnées de votre fichier</p>
+        </div>
+        
+        <div class="action-buttons-top">
+            <a href="{{ url_for('outils.metadata_analyzer') }}" class="btn-action btn-primary">
+                <i class="fas fa-redo"></i>
+                Nouvelle Analyse
+            </a>
+            <a href="{{ url_for('outils.metadata_download_clean', analysis_id=analysis.id) }}" class="btn-action btn-success">
+                <i class="fas fa-eraser"></i>
+                Supprimer Métadonnées et Télécharger
+            </a>
+            <a href="{{ url_for('outils.metadata_analysis_pdf_summary', analysis_id=analysis.id) }}" class="btn-action btn-warning">
+                <i class="fas fa-file-pdf"></i>
+                Rapport Résumé PDF
+            </a>
+            <a href="{{ url_for('outils.metadata_analysis_pdf_complete', analysis_id=analysis.id) }}" class="btn-action btn-danger">
+                <i class="fas fa-file-alt"></i>
+                Rapport Complet PDF
+            </a>
+        </div>
+        
+        <div class="important-info-section">
+            <div class="info-card file-info">
+                <div class="card-header">
+                    <i class="fas fa-file"></i>
+                    <h3>Fichier Analysé</h3>
+                </div>
+                <div class="card-content">
+                    <div class="info-row">
+                        <span class="label">Nom:</span>
+                        <span class="value">{{ analysis.original_filename }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Type:</span>
+                        <span class="value file-type-badge">
+                            {% if analysis.file_type == 'image' %}
+                                <i class="fas fa-image"></i> Image
+                            {% elif analysis.file_type == 'video' %}
+                                <i class="fas fa-video"></i> Vidéo
+                            {% elif analysis.file_type == 'audio' %}
+                                <i class="fas fa-music"></i> Audio
+                            {% else %}
+                                {{ analysis.file_type }}
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Taille:</span>
+                        <span class="value">
+                            {% if analysis.file_size %}
+                                {% if analysis.file_size >= 1048576 %}
+                                    {{ "%.2f"|format(analysis.file_size / 1048576) }} Mo
+                                {% else %}
+                                    {{ "%.2f"|format(analysis.file_size / 1024) }} Ko
+                                {% endif %}
+                            {% else %}
+                                Non disponible
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Métadonnées:</span>
+                        <span class="value metadata-count">{{ analysis.metadata_count or 0 }} détectées</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="info-card risk-card risk-{{ analysis.privacy_risk_level or 'low' }}">
+                <div class="card-header">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3>Niveau de Risque</h3>
+                </div>
+                <div class="card-content">
+                    <div class="risk-indicator">
+                        {% if analysis.privacy_risk_level == 'critical' %}
+                            <div class="risk-badge critical">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                CRITIQUE
+                            </div>
+                            <p class="risk-description">Données très sensibles détectées. Supprimez les métadonnées avant tout partage.</p>
+                        {% elif analysis.privacy_risk_level == 'high' %}
+                            <div class="risk-badge high">
+                                <i class="fas fa-exclamation-circle"></i>
+                                ÉLEVÉ
+                            </div>
+                            <p class="risk-description">Informations personnelles détectées. Recommandation: nettoyer le fichier.</p>
+                        {% elif analysis.privacy_risk_level == 'medium' %}
+                            <div class="risk-badge medium">
+                                <i class="fas fa-info-circle"></i>
+                                MODÉRÉ
+                            </div>
+                            <p class="risk-description">Quelques métadonnées présentes. Vérifiez avant de partager.</p>
+                        {% else %}
+                            <div class="risk-badge low">
+                                <i class="fas fa-check-circle"></i>
+                                FAIBLE
+                            </div>
+                            <p class="risk-description">Peu de métadonnées sensibles détectées.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        {% if analysis.gps_data %}
+        <div class="alert-block alert-danger">
+            <div class="alert-icon">
+                <i class="fas fa-map-marker-alt"></i>
+            </div>
+            <div class="alert-content">
+                <h4>Données GPS Détectées</h4>
+                <p>Ce fichier contient des coordonnées GPS qui peuvent révéler votre localisation exacte.</p>
+                <div class="gps-details">
+                    {% for key, value in analysis.gps_data.items() %}
+                        <span class="gps-item"><strong>{{ key }}:</strong> {{ value }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if analysis.camera_info %}
+        <div class="alert-block alert-warning">
+            <div class="alert-icon">
+                <i class="fas fa-camera"></i>
+            </div>
+            <div class="alert-content">
+                <h4>Informations Appareil Détectées</h4>
+                <div class="camera-details">
+                    {% for key, value in analysis.camera_info.items() %}
+                        <span class="camera-item"><strong>{{ key }}:</strong> {{ value }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if analysis.author_info %}
+        <div class="alert-block alert-info">
+            <div class="alert-icon">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="alert-content">
+                <h4>Informations Auteur/Copyright</h4>
+                <div class="author-details">
+                    {% for key, value in analysis.author_info.items() %}
+                        <span class="author-item"><strong>{{ key }}:</strong> {{ value }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if analysis.datetime_info %}
+        <div class="info-block">
+            <div class="block-header">
+                <i class="fas fa-calendar-alt"></i>
+                <h4>Dates et Heures</h4>
+            </div>
+            <div class="block-content">
+                {% for key, value in analysis.datetime_info.items() %}
+                    <div class="data-row">
+                        <span class="data-label">{{ key }}</span>
+                        <span class="data-value">{{ value }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if analysis.software_info %}
+        <div class="info-block">
+            <div class="block-header">
+                <i class="fas fa-laptop"></i>
+                <h4>Logiciels Utilisés</h4>
+            </div>
+            <div class="block-content">
+                {% for key, value in analysis.software_info.items() %}
+                    <div class="data-row">
+                        <span class="data-label">{{ key }}</span>
+                        <span class="data-value">{{ value }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if analysis.metadata_found %}
+        <div class="all-metadata-section">
+            <div class="section-header">
+                <i class="fas fa-database"></i>
+                <h3>Toutes les Métadonnées</h3>
+                <span class="count-badge">{{ analysis.metadata_count or 0 }}</span>
+            </div>
+            
+            <div class="metadata-table">
+                {% for key, value in analysis.metadata_found.items() %}
+                    <div class="metadata-row">
+                        <span class="metadata-key">{{ key }}</span>
+                        <span class="metadata-value">{{ value }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <div class="action-buttons-bottom">
+            <a href="{{ url_for('outils.metadata_analyzer') }}" class="btn-action btn-primary btn-large">
+                <i class="fas fa-redo"></i>
+                Nouvelle Analyse
+            </a>
+            <a href="{{ url_for('outils.metadata_download_clean', analysis_id=analysis.id) }}" class="btn-action btn-success btn-large">
+                <i class="fas fa-eraser"></i>
+                Supprimer Métadonnées et Télécharger
+            </a>
+            <a href="{{ url_for('outils.metadata_analysis_pdf_summary', analysis_id=analysis.id) }}" class="btn-action btn-warning btn-large">
+                <i class="fas fa-file-pdf"></i>
+                Rapport Résumé PDF
+            </a>
+            <a href="{{ url_for('outils.metadata_analysis_pdf_complete', analysis_id=analysis.id) }}" class="btn-action btn-danger btn-large">
+                <i class="fas fa-file-alt"></i>
+                Rapport Complet PDF
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+:root {
+    --primary-color: #4facfe;
+    --success-color: #48bb78;
+    --warning-color: #f6ad55;
+    --danger-color: #fc8181;
+    --info-color: #63b3ed;
+    --bg-dark: #0a0a1a;
+    --bg-card: rgba(20, 20, 40, 0.8);
+    --border-color: rgba(79, 172, 254, 0.2);
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.7);
+}
+
+.metadata-results-page {
+    min-height: 100vh;
+    padding: 40px 20px;
+    background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3a 100%);
+}
+
+.results-container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.results-header-section {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.page-title {
+    font-size: 2.5rem;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+}
+
+.page-title .highlight {
+    color: var(--primary-color);
+}
+
+.subtitle {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+}
+
+.action-buttons-top,
+.action-buttons-bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 40px;
+}
+
+.action-buttons-bottom {
+    margin-top: 40px;
+    padding-top: 30px;
+    border-top: 1px solid var(--border-color);
+}
+
+.btn-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.btn-action.btn-large {
+    padding: 15px 30px;
+    font-size: 1.05rem;
+}
+
+.btn-action i {
+    font-size: 1.1em;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #00f2fe 100%);
+    color: #000;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(79, 172, 254, 0.4);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, var(--success-color) 0%, #38a169 100%);
+    color: #fff;
+}
+
+.btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(72, 187, 120, 0.4);
+}
+
+.btn-warning {
+    background: linear-gradient(135deg, var(--warning-color) 0%, #dd6b20 100%);
+    color: #fff;
+}
+
+.btn-warning:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(246, 173, 85, 0.4);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, var(--danger-color) 0%, #c53030 100%);
+    color: #fff;
+}
+
+.btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(252, 129, 129, 0.4);
+}
+
+.important-info-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+    margin-bottom: 30px;
+}
+
+.info-card {
+    background: var(--bg-card);
+    border-radius: 15px;
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 20px;
+    background: rgba(79, 172, 254, 0.1);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.card-header i {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+}
+
+.card-header h3 {
+    font-size: 1.2rem;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.card-content {
+    padding: 20px;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.info-row:last-child {
+    border-bottom: none;
+}
+
+.info-row .label {
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.info-row .value {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.file-type-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 12px;
+    background: rgba(79, 172, 254, 0.2);
+    border-radius: 20px;
+    color: var(--primary-color);
+}
+
+.metadata-count {
+    color: var(--primary-color);
+}
+
+.risk-card.risk-critical .card-header {
+    background: rgba(252, 129, 129, 0.2);
+}
+
+.risk-card.risk-critical .card-header i {
+    color: var(--danger-color);
+}
+
+.risk-card.risk-high .card-header {
+    background: rgba(246, 173, 85, 0.2);
+}
+
+.risk-card.risk-high .card-header i {
+    color: var(--warning-color);
+}
+
+.risk-card.risk-medium .card-header {
+    background: rgba(99, 179, 237, 0.2);
+}
+
+.risk-card.risk-medium .card-header i {
+    color: var(--info-color);
+}
+
+.risk-card.risk-low .card-header {
+    background: rgba(72, 187, 120, 0.2);
+}
+
+.risk-card.risk-low .card-header i {
+    color: var(--success-color);
+}
+
+.risk-indicator {
+    text-align: center;
+}
+
+.risk-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 24px;
+    border-radius: 25px;
+    font-weight: 700;
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+}
+
+.risk-badge.critical {
+    background: rgba(252, 129, 129, 0.3);
+    color: var(--danger-color);
+    border: 2px solid var(--danger-color);
+}
+
+.risk-badge.high {
+    background: rgba(246, 173, 85, 0.3);
+    color: var(--warning-color);
+    border: 2px solid var(--warning-color);
+}
+
+.risk-badge.medium {
+    background: rgba(99, 179, 237, 0.3);
+    color: var(--info-color);
+    border: 2px solid var(--info-color);
+}
+
+.risk-badge.low {
+    background: rgba(72, 187, 120, 0.3);
+    color: var(--success-color);
+    border: 2px solid var(--success-color);
+}
+
+.risk-description {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin: 0;
+}
+
+.alert-block {
+    display: flex;
+    gap: 20px;
+    padding: 25px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    border: 1px solid;
+}
+
+.alert-danger {
+    background: rgba(252, 129, 129, 0.1);
+    border-color: var(--danger-color);
+}
+
+.alert-warning {
+    background: rgba(246, 173, 85, 0.1);
+    border-color: var(--warning-color);
+}
+
+.alert-info {
+    background: rgba(99, 179, 237, 0.1);
+    border-color: var(--info-color);
+}
+
+.alert-icon {
+    flex-shrink: 0;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.alert-danger .alert-icon {
+    background: rgba(252, 129, 129, 0.2);
+    color: var(--danger-color);
+}
+
+.alert-warning .alert-icon {
+    background: rgba(246, 173, 85, 0.2);
+    color: var(--warning-color);
+}
+
+.alert-info .alert-icon {
+    background: rgba(99, 179, 237, 0.2);
+    color: var(--info-color);
+}
+
+.alert-icon i {
+    font-size: 1.5rem;
+}
+
+.alert-content h4 {
+    color: var(--text-primary);
+    margin: 0 0 10px 0;
+    font-size: 1.1rem;
+}
+
+.alert-content p {
+    color: var(--text-secondary);
+    margin: 0 0 15px 0;
+}
+
+.gps-details,
+.camera-details,
+.author-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.gps-item,
+.camera-item,
+.author-item {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 8px 15px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+}
+
+.gps-item strong,
+.camera-item strong,
+.author-item strong {
+    color: var(--text-secondary);
+}
+
+.info-block {
+    background: var(--bg-card);
+    border-radius: 15px;
+    border: 1px solid var(--border-color);
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.block-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 20px;
+    background: rgba(79, 172, 254, 0.1);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.block-header i {
+    font-size: 1.2rem;
+    color: var(--primary-color);
+}
+
+.block-header h4 {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 1.1rem;
+}
+
+.block-content {
+    padding: 20px;
+}
+
+.data-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.data-row:last-child {
+    border-bottom: none;
+}
+
+.data-label {
+    color: var(--text-secondary);
+}
+
+.data-value {
+    color: var(--text-primary);
+    font-weight: 500;
+    text-align: right;
+    max-width: 60%;
+    word-break: break-word;
+}
+
+.all-metadata-section {
+    background: var(--bg-card);
+    border-radius: 15px;
+    border: 1px solid var(--border-color);
+    margin-top: 30px;
+    overflow: hidden;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 20px;
+    background: rgba(79, 172, 254, 0.1);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.section-header i {
+    font-size: 1.3rem;
+    color: var(--primary-color);
+}
+
+.section-header h3 {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 1.2rem;
+    flex-grow: 1;
+}
+
+.count-badge {
+    background: var(--primary-color);
+    color: #000;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.metadata-table {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.metadata-row {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 20px;
+    padding: 15px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    transition: background 0.2s ease;
+}
+
+.metadata-row:hover {
+    background: rgba(79, 172, 254, 0.05);
+}
+
+.metadata-row:last-child {
+    border-bottom: none;
+}
+
+.metadata-key {
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.metadata-value {
+    color: var(--text-primary);
+    word-break: break-word;
+}
+
+@media (max-width: 768px) {
+    .important-info-section {
+        grid-template-columns: 1fr;
+    }
+    
+    .action-buttons-top,
+    .action-buttons-bottom {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .btn-action {
+        justify-content: center;
+    }
+    
+    .alert-block {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .alert-icon {
+        align-self: center;
+    }
+    
+    .gps-details,
+    .camera-details,
+    .author-details {
+        justify-content: center;
+    }
+    
+    .metadata-row {
+        grid-template-columns: 1fr;
+        gap: 5px;
+    }
+    
+    .page-title {
+        font-size: 2rem;
+    }
+}
+</style>
+{% endblock %}

@@ -14,21 +14,31 @@ import fitz
 class MetadataReportMixin:
     """Mixin for metadata analysis PDF report generation"""
     
-    def generate_metadata_analysis_report(self, analysis, ip_address):
+    def generate_metadata_analysis_report(self, analysis, ip_address, report_type='complete'):
         """
         Genere un rapport PDF pour l'analyse de metadonnees
         Format identique aux autres rapports forensiques
+        
+        Args:
+            analysis: MetadataAnalysis object
+            ip_address: IP address of the requester
+            report_type: 'summary' pour rapport resume, 'complete' pour rapport complet
         """
         doc = fitz.open()
         page = doc.new_page(width=595, height=842)
         
         y_pos = 90
         
-        page.insert_text((30, y_pos), "RAPPORT D'ANALYSE DE METADONNEES", 
-                        fontsize=18, fontname="helv", color=self.base_color)
+        if report_type == 'summary':
+            page.insert_text((30, y_pos), "RAPPORT RESUME - ANALYSE DE METADONNEES", 
+                            fontsize=18, fontname="helv", color=self.base_color)
+        else:
+            page.insert_text((30, y_pos), "RAPPORT COMPLET - ANALYSE DE METADONNEES", 
+                            fontsize=18, fontname="helv", color=self.base_color)
         y_pos += 30
         
-        page.insert_text((30, y_pos), "Type de rapport: Analyse forensique des metadonnees", 
+        report_type_label = "Rapport resume" if report_type == 'summary' else "Rapport complet forensique"
+        page.insert_text((30, y_pos), f"Type de rapport: {report_type_label}", 
                         fontsize=10, color=(0.3, 0.3, 0.3))
         y_pos += 15
         page.insert_text((30, y_pos), f"ID du rapport: #{analysis.id}", 
@@ -153,49 +163,50 @@ class MetadataReportMixin:
                             fontsize=9, color=(0.3, 0.3, 0.3))
             y_pos += 35
         
-        analysis_results = analysis.analysis_results or {}
-        metadata = analysis_results.get('metadata', {})
-        categories = analysis_results.get('categories', {})
-        
-        if categories:
-            for category_name, category_data in categories.items():
-                if not category_data:
-                    continue
-                
-                needed_height = 60 + (len(category_data) * 18)
-                if y_pos > self.max_y - min(needed_height, 200):
-                    page = doc.new_page(width=595, height=842)
-                    y_pos = 90
-                
-                page.draw_line((30, y_pos), (565, y_pos), color=self.base_color, width=1)
-                y_pos += 20
-                
-                page.insert_text((30, y_pos), category_name.upper(), 
-                                fontsize=12, fontname="helv", color=self.base_color)
-                y_pos += 20
-                
-                items_on_page = 0
-                for key, value in category_data.items():
-                    if y_pos > self.max_y - 30:
+        if report_type == 'complete':
+            analysis_results = analysis.analysis_results or {}
+            metadata = analysis_results.get('metadata', {})
+            categories = analysis_results.get('categories', {})
+            
+            if categories:
+                for category_name, category_data in categories.items():
+                    if not category_data:
+                        continue
+                    
+                    needed_height = 60 + (len(category_data) * 18)
+                    if y_pos > self.max_y - min(needed_height, 200):
                         page = doc.new_page(width=595, height=842)
                         y_pos = 90
-                        items_on_page = 0
                     
-                    display_key = key.replace('ExifTool_', '').replace('PIL_', '').replace('FFprobe_', '').replace('Audio_', '').replace('Mutagen_', '')
+                    page.draw_line((30, y_pos), (565, y_pos), color=self.base_color, width=1)
+                    y_pos += 20
                     
-                    str_value = str(value)
-                    if len(str_value) > 80:
-                        str_value = str_value[:77] + "..."
+                    page.insert_text((30, y_pos), category_name.upper(), 
+                                    fontsize=12, fontname="helv", color=self.base_color)
+                    y_pos += 20
                     
-                    page.insert_text((40, y_pos), f"{display_key}:", fontsize=9, fontname="helv", color=(0.3, 0.3, 0.3))
-                    page.insert_text((200, y_pos), str_value, fontsize=9, color=(0.2, 0.2, 0.2))
-                    y_pos += 15
-                    items_on_page += 1
+                    items_on_page = 0
+                    for key, value in category_data.items():
+                        if y_pos > self.max_y - 30:
+                            page = doc.new_page(width=595, height=842)
+                            y_pos = 90
+                            items_on_page = 0
+                        
+                        display_key = key.replace('ExifTool_', '').replace('PIL_', '').replace('FFprobe_', '').replace('Audio_', '').replace('Mutagen_', '')
+                        
+                        str_value = str(value)
+                        if len(str_value) > 80:
+                            str_value = str_value[:77] + "..."
+                        
+                        page.insert_text((40, y_pos), f"{display_key}:", fontsize=9, fontname="helv", color=(0.3, 0.3, 0.3))
+                        page.insert_text((200, y_pos), str_value, fontsize=9, color=(0.2, 0.2, 0.2))
+                        y_pos += 15
+                        items_on_page += 1
+                        
+                        if items_on_page >= 30:
+                            break
                     
-                    if items_on_page >= 30:
-                        break
-                
-                y_pos += 10
+                    y_pos += 10
         
         if y_pos > self.max_y - 120:
             page = doc.new_page(width=595, height=842)

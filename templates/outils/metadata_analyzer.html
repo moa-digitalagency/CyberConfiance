@@ -21,7 +21,6 @@
 
 <section class="analyzer-container">
     <div class="container">
-        {% if not results %}
         <div class="analyzer-card">
             <h2>Analyse des Metadonnees</h2>
             <p class="analyzer-description">
@@ -128,260 +127,46 @@
                 </div>
             </div>
         </div>
-
-        {% else %}
-        
-        <div class="results-container">
-            <div class="results-header">
-                <h2>Resultats de l'Analyse</h2>
-                <div class="file-info-badge">
-                    <span class="file-type-badge {{ results.file_type }}">{{ results.file_type|upper }}</span>
-                    <span class="file-name-badge">{{ results.filename }}</span>
-                </div>
-            </div>
-
-            <div class="privacy-summary">
-                <div class="privacy-score {% if results.privacy_risk == 'high' %}high{% elif results.privacy_risk == 'medium' %}medium{% else %}low{% endif %}">
-                    <div class="score-icon">
-                        {% if results.privacy_risk == 'high' %}
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                            <line x1="12" y1="9" x2="12" y2="13"/>
-                            <line x1="12" y1="17" x2="12.01" y2="17"/>
-                        </svg>
-                        {% elif results.privacy_risk == 'medium' %}
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"/>
-                            <line x1="12" y1="8" x2="12" y2="12"/>
-                            <line x1="12" y1="16" x2="12.01" y2="16"/>
-                        </svg>
-                        {% else %}
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                            <polyline points="22 4 12 14.01 9 11.01"/>
-                        </svg>
-                        {% endif %}
-                    </div>
-                    <div class="score-details">
-                        <span class="score-label">Niveau de Risque Vie Privee</span>
-                        <span class="score-value">
-                            {% if results.privacy_risk == 'high' %}ELEVE{% elif results.privacy_risk == 'medium' %}MOYEN{% else %}FAIBLE{% endif %}
-                        </span>
-                        <span class="score-count">{{ results.metadata_count }} metadonnees detectees</span>
-                    </div>
-                </div>
-            </div>
-
-            {% if results.sensitive_data %}
-            <div class="sensitive-data-section">
-                <h3>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                    </svg>
-                    Donnees Sensibles Detectees
-                </h3>
-                <div class="sensitive-tags">
-                    {% for item in results.sensitive_data %}
-                    <span class="sensitive-tag {{ item.risk }}">
-                        <span class="tag-type">{{ item.type }}</span>
-                        <span class="tag-name">{{ item.tag }}</span>
-                    </span>
-                    {% endfor %}
-                </div>
-            </div>
-            {% endif %}
-
-            {% if results.gps_data %}
-            <div class="metadata-section gps-section">
-                <h3>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                        <circle cx="12" cy="10" r="3"/>
-                    </svg>
-                    Donnees GPS / Localisation
-                </h3>
-                <div class="metadata-grid">
-                    {% for key, value in results.gps_data.items() %}
-                    <div class="metadata-item">
-                        <span class="meta-key">{{ key }}</span>
-                        <span class="meta-value">{{ value }}</span>
-                    </div>
-                    {% endfor %}
-                </div>
-                <div class="warning-note">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                        <line x1="12" y1="9" x2="12" y2="13"/>
-                        <line x1="12" y1="17" x2="12.01" y2="17"/>
-                    </svg>
-                    Ces donnees peuvent reveler votre position exacte au moment de la prise!
-                </div>
-            </div>
-            {% endif %}
-
-            {% if results.camera_info %}
-            <div class="metadata-section">
-                <h3>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-                        <circle cx="12" cy="13" r="4"/>
-                    </svg>
-                    Informations Appareil
-                </h3>
-                <div class="metadata-grid">
-                    {% for key, value in results.camera_info.items() %}
-                    <div class="metadata-item">
-                        <span class="meta-key">{{ key }}</span>
-                        <span class="meta-value">{{ value }}</span>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-            {% endif %}
-
-            {% if results.datetime_info %}
-            <div class="metadata-section">
-                <h3>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"/>
-                        <polyline points="12 6 12 12 16 14"/>
-                    </svg>
-                    Dates et Heures
-                </h3>
-                <div class="metadata-grid">
-                    {% for key, value in results.datetime_info.items() %}
-                    <div class="metadata-item">
-                        <span class="meta-key">{{ key }}</span>
-                        <span class="meta-value">{{ value }}</span>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-            {% endif %}
-
-            {% if results.author_info %}
-            <div class="metadata-section">
-                <h3>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                        <circle cx="12" cy="7" r="4"/>
-                    </svg>
-                    Auteur / Copyright
-                </h3>
-                <div class="metadata-grid">
-                    {% for key, value in results.author_info.items() %}
-                    <div class="metadata-item">
-                        <span class="meta-key">{{ key }}</span>
-                        <span class="meta-value">{{ value }}</span>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-            {% endif %}
-
-            {% if results.software_info %}
-            <div class="metadata-section">
-                <h3>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
-                        <line x1="8" y1="21" x2="16" y2="21"/>
-                        <line x1="12" y1="17" x2="12" y2="21"/>
-                    </svg>
-                    Logiciel
-                </h3>
-                <div class="metadata-grid">
-                    {% for key, value in results.software_info.items() %}
-                    <div class="metadata-item">
-                        <span class="meta-key">{{ key }}</span>
-                        <span class="meta-value">{{ value }}</span>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-            {% endif %}
-
-            {% if results.categories %}
-            <div class="all-metadata-section">
-                <h3>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="8" y1="6" x2="21" y2="6"/>
-                        <line x1="8" y1="12" x2="21" y2="12"/>
-                        <line x1="8" y1="18" x2="21" y2="18"/>
-                        <line x1="3" y1="6" x2="3.01" y2="6"/>
-                        <line x1="3" y1="12" x2="3.01" y2="12"/>
-                        <line x1="3" y1="18" x2="3.01" y2="18"/>
-                    </svg>
-                    Toutes les Metadonnees ({{ results.metadata_count }})
-                </h3>
-                
-                <div class="metadata-accordion">
-                    {% for category, items in results.categories.items() %}
-                    <div class="accordion-item">
-                        <button type="button" class="accordion-header" onclick="toggleAccordion(this)">
-                            <span>{{ category }} ({{ items|length }})</span>
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="6 9 12 15 18 9"/>
-                            </svg>
-                        </button>
-                        <div class="accordion-content">
-                            <div class="metadata-table">
-                                {% for key, value in items.items() %}
-                                <div class="table-row">
-                                    <div class="table-key">{{ key }}</div>
-                                    <div class="table-value">{{ value }}</div>
-                                </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-            {% endif %}
-
-            <div class="results-actions">
-                {% if analysis_id %}
-                <a href="{{ url_for('outils.metadata_download_clean', analysis_id=analysis_id) }}" class="btn-success btn-large">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                        <polyline points="7 10 12 15 17 10"/>
-                        <line x1="12" y1="15" x2="12" y2="3"/>
-                    </svg>
-                    Telecharger le Fichier Nettoye
-                </a>
-                <a href="{{ url_for('outils.metadata_analysis_pdf', analysis_id=analysis_id) }}" class="btn-primary btn-large" target="_blank">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                        <polyline points="14 2 14 8 20 8"/>
-                        <line x1="16" y1="13" x2="8" y2="13"/>
-                        <line x1="16" y1="17" x2="8" y2="17"/>
-                    </svg>
-                    Telecharger le Rapport PDF
-                </a>
-                {% endif %}
-                <a href="{{ url_for('outils.metadata_analyzer') }}" class="btn-secondary btn-large">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
-                        <path d="M3 3v5h5"/>
-                    </svg>
-                    Nouvelle Analyse
-                </a>
-            </div>
-        </div>
-        {% endif %}
     </div>
 </section>
 
 <style>
 .file-upload-area {
-    border: 3px dashed var(--primary-color);
-    border-radius: 16px;
-    padding: 50px 30px;
+    border: 4px dashed #4facfe;
+    border-radius: 20px;
+    padding: 60px 40px;
     text-align: center;
     transition: all 0.3s ease;
     cursor: pointer;
-    background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.05) 0%, rgba(var(--primary-rgb), 0.1) 100%);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(135deg, rgba(79, 172, 254, 0.1) 0%, rgba(0, 242, 254, 0.15) 100%);
+    box-shadow: 0 8px 32px rgba(79, 172, 254, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.file-upload-area::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent 30%, rgba(79, 172, 254, 0.1) 50%, transparent 70%);
+    animation: shimmer 3s infinite;
+    pointer-events: none;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+.file-upload-area:hover,
+.file-upload-area.dragover {
+    border-color: #00f2fe;
+    background: linear-gradient(135deg, rgba(79, 172, 254, 0.2) 0%, rgba(0, 242, 254, 0.25) 100%);
+    box-shadow: 0 12px 40px rgba(79, 172, 254, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transform: translateY(-3px);
 }
 
 .form-actions-centered {
@@ -411,12 +196,6 @@
     box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
 }
 
-.file-upload-area:hover,
-.file-upload-area.dragover {
-    border-color: var(--primary-color);
-    background: rgba(var(--primary-rgb), 0.05);
-}
-
 .file-input {
     display: none;
 }
@@ -425,29 +204,50 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 12px;
+    gap: 20px;
     cursor: pointer;
+    position: relative;
+    z-index: 1;
 }
 
 .upload-icon {
-    color: var(--primary-color);
-    opacity: 0.8;
+    color: #4facfe;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(79, 172, 254, 0.2) 0%, rgba(0, 242, 254, 0.2) 100%);
+    border-radius: 50%;
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(79, 172, 254, 0.3);
+}
+
+.upload-icon svg {
+    width: 48px;
+    height: 48px;
 }
 
 .upload-text {
-    font-size: 1.1rem;
-    font-weight: 500;
-    color: var(--text-primary);
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #ffffff;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 .upload-hint {
-    font-size: 0.85rem;
-    color: var(--text-secondary);
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.8);
+    background: rgba(79, 172, 254, 0.15);
+    padding: 10px 20px;
+    border-radius: 25px;
+    border: 1px solid rgba(79, 172, 254, 0.3);
 }
 
 .upload-limit {
-    font-size: 0.8rem;
-    color: var(--text-muted);
+    font-size: 0.95rem;
+    color: #4facfe;
+    font-weight: 600;
 }
 
 .file-preview {

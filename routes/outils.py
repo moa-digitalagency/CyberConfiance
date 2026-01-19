@@ -926,6 +926,7 @@ def metadata_analyzer():
                         db.session.add(metadata_analysis)
                         db.session.commit()
                         analysis_id = metadata_analysis.id
+                        return redirect(url_for('outils.metadata_results', analysis_id=analysis_id))
                     except Exception as e:
                         db.session.rollback()
                         print(f"[ERROR] Failed to save metadata analysis: {e}")
@@ -1045,3 +1046,81 @@ def metadata_download_clean(analysis_id):
     
     flash('Le fichier nettoye n\'est plus disponible. Veuillez refaire une analyse.', 'warning')
     return redirect(url_for('outils.metadata_analyzer'))
+
+
+@bp.route('/outils/analyseur-metadonnee/<int:analysis_id>/resultats')
+def metadata_results(analysis_id):
+    analysis = MetadataAnalysis.query.get_or_404(analysis_id)
+    return render_template('outils/metadata_results.html', analysis=analysis)
+
+
+@bp.route('/outils/analyseur-metadonnee/<int:analysis_id>/pdf-resume')
+def metadata_analysis_pdf_summary(analysis_id):
+    from services.pdf import PDFReportService
+    from datetime import datetime
+    
+    analysis = MetadataAnalysis.query.get_or_404(analysis_id)
+    
+    pdf_service = PDFReportService()
+    ip_address = get_client_ip(request)
+    
+    try:
+        pdf_bytes = pdf_service.generate_metadata_analysis_report(analysis, ip_address, report_type='summary')
+        
+        return Response(
+            pdf_bytes,
+            mimetype='application/pdf',
+            headers={
+                'Content-Disposition': f'attachment; filename="rapport_resume_metadonnees_{analysis.id}.pdf"',
+                'Content-Length': len(pdf_bytes)
+            }
+        )
+    except Exception as e:
+        print(f"[ERROR] Failed to generate metadata summary PDF: {e}")
+        import traceback
+        traceback.print_exc()
+        flash('Erreur lors de la generation du rapport PDF.', 'error')
+        return redirect(url_for('outils.metadata_results', analysis_id=analysis_id))
+
+
+@bp.route('/outils/analyseur-metadonnee/<int:analysis_id>/pdf-complet')
+def metadata_analysis_pdf_complete(analysis_id):
+    from services.pdf import PDFReportService
+    from datetime import datetime
+    
+    analysis = MetadataAnalysis.query.get_or_404(analysis_id)
+    
+    if analysis.pdf_report:
+        return Response(
+            analysis.pdf_report,
+            mimetype='application/pdf',
+            headers={
+                'Content-Disposition': f'attachment; filename="rapport_complet_metadonnees_{analysis.id}.pdf"',
+                'Content-Length': len(analysis.pdf_report)
+            }
+        )
+    
+    pdf_service = PDFReportService()
+    ip_address = get_client_ip(request)
+    
+    try:
+        pdf_bytes = pdf_service.generate_metadata_analysis_report(analysis, ip_address, report_type='complete')
+        
+        analysis.pdf_report = pdf_bytes
+        analysis.pdf_generated_at = datetime.utcnow()
+        db.session.commit()
+        
+        return Response(
+            pdf_bytes,
+            mimetype='application/pdf',
+            headers={
+                'Content-Disposition': f'attachment; filename="rapport_complet_metadonnees_{analysis.id}.pdf"',
+                'Content-Length': len(pdf_bytes)
+            }
+        )
+    except Exception as e:
+        print(f"[ERROR] Failed to generate metadata complete PDF: {e}")
+        import traceback
+        traceback.print_exc()
+        flash('Erreur lors de la generation du rapport PDF.', 'error')
+        return redirect(url_for('outils.metadata_results', analysis_id=analysis_id))
