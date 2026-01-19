@@ -4,7 +4,7 @@ expertMode = true
 
 [nix]
 channel = "stable-25_05"
-packages = ["file", "freetype", "gumbo", "harfbuzz", "jbig2dec", "lcms2", "libGL", "libimagequant", "libjpeg", "libjpeg_turbo", "libtiff", "libwebp", "libxcrypt", "mupdf", "openjpeg", "swig", "tcl", "tk", "xcbuild", "zbar", "zlib"]
+packages = ["file", "freetype", "gumbo", "harfbuzz", "jbig2dec", "lcms2", "libGL", "libimagequant", "libjpeg", "libjpeg_turbo", "libtiff", "libwebp", "libxcrypt", "mupdf", "openjpeg", "swig", "tcl", "tk", "xcbuild", "zbar", "zlib", "ffmpeg", "exiftool"]
 
 [workflows]
 runButton = "Project"
