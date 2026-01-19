@@ -95,73 +95,139 @@ class MetadataReportMixin:
         page.insert_text((40, y_pos), risk_text, fontsize=14, fontname="helv", color=risk_color)
         y_pos += 40
         
-        if analysis.has_gps_data:
-            if y_pos > self.max_y - 100:
+        if analysis.has_gps_data and analysis.gps_data:
+            gps_lines = []
+            for key, value in analysis.gps_data.items():
+                key_lower = key.lower()
+                if 'latitude' in key_lower and 'ref' not in key_lower:
+                    gps_lines.append(f"Latitude: {value}")
+                elif 'longitude' in key_lower and 'ref' not in key_lower:
+                    gps_lines.append(f"Longitude: {value}")
+                elif 'altitude' in key_lower:
+                    gps_lines.append(f"Altitude: {value}")
+            
+            box_height = 50 + (len(gps_lines) * 15)
+            if y_pos > self.max_y - box_height - 20:
                 page = doc.new_page(width=595, height=842)
                 y_pos = 90
             
-            page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + 60), color=self.danger_color, fill=self.danger_color, fill_opacity=0.1)
+            page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + box_height), color=self.danger_color, fill=self.danger_color, fill_opacity=0.1)
             y_pos += 15
-            page.insert_text((40, y_pos), "DONNEES GPS DETECTEES", fontsize=12, fontname="helv", color=self.danger_color)
+            page.insert_text((40, y_pos), "LOCALISATION GPS", fontsize=12, fontname="helv", color=self.danger_color)
             y_pos += 20
-            page.insert_text((40, y_pos), "Ce fichier contient des coordonnees GPS qui peuvent reveler votre localisation exacte.", 
-                            fontsize=9, color=(0.3, 0.3, 0.3))
+            for line in gps_lines:
+                page.insert_text((50, y_pos), line, fontsize=10, color=(0.3, 0.3, 0.3))
+                y_pos += 15
             y_pos += 15
-            page.insert_text((40, y_pos), "Recommendation: Utilisez la version nettoyee avant de partager ce fichier.", 
-                            fontsize=9, color=self.warning_color)
-            y_pos += 35
         
-        if analysis.has_camera_info:
-            if y_pos > self.max_y - 80:
+        if analysis.has_camera_info and analysis.camera_info:
+            camera_lines = []
+            for key, value in analysis.camera_info.items():
+                key_lower = key.lower()
+                if key == 'Marque' or key == 'Make' or 'marque' in key_lower:
+                    camera_lines.append(f"Marque: {value}")
+                elif key == 'Modele' or key == 'Model' or 'modele' in key_lower or 'model' in key_lower:
+                    camera_lines.append(f"Modele: {value}")
+                elif 'serie' in key_lower or 'serial' in key_lower:
+                    camera_lines.append(f"N Serie: {value}")
+                elif 'objectif' in key_lower or 'lens' in key_lower:
+                    camera_lines.append(f"Objectif: {value}")
+            
+            box_height = 50 + (len(camera_lines) * 15)
+            if y_pos > self.max_y - box_height - 20:
                 page = doc.new_page(width=595, height=842)
                 y_pos = 90
             
-            page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + 45), color=self.warning_color, fill=self.warning_color, fill_opacity=0.1)
+            page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + box_height), color=self.warning_color, fill=self.warning_color, fill_opacity=0.1)
             y_pos += 15
-            page.insert_text((40, y_pos), "INFORMATIONS APPAREIL DETECTEES", fontsize=12, fontname="helv", color=self.warning_color)
+            page.insert_text((40, y_pos), "APPAREIL", fontsize=12, fontname="helv", color=self.warning_color)
             y_pos += 20
-            page.insert_text((40, y_pos), "Ce fichier contient des informations sur l'appareil utilise (marque, modele, numero de serie).", 
-                            fontsize=9, color=(0.3, 0.3, 0.3))
-            y_pos += 35
+            for line in camera_lines:
+                page.insert_text((50, y_pos), line, fontsize=10, color=(0.3, 0.3, 0.3))
+                y_pos += 15
+            y_pos += 15
         
-        if analysis.has_author_info:
-            if y_pos > self.max_y - 80:
-                page = doc.new_page(width=595, height=842)
-                y_pos = 90
+        if analysis.has_datetime_info and analysis.datetime_info:
+            date_lines = []
+            creation_found = False
+            modif_found = False
+            for key, value in analysis.datetime_info.items():
+                key_lower = key.lower()
+                if not creation_found and ('original' in key_lower or 'prise' in key_lower or 'create' in key_lower):
+                    date_lines.append(f"Creation: {value}")
+                    creation_found = True
+                elif not modif_found and ('modif' in key_lower or 'modify' in key_lower):
+                    date_lines.append(f"Modification: {value}")
+                    modif_found = True
             
-            page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + 45), color=self.warning_color, fill=self.warning_color, fill_opacity=0.1)
-            y_pos += 15
-            page.insert_text((40, y_pos), "INFORMATIONS AUTEUR/COPYRIGHT DETECTEES", fontsize=12, fontname="helv", color=self.warning_color)
-            y_pos += 20
-            page.insert_text((40, y_pos), "Ce fichier contient des informations sur l'auteur ou les droits d'auteur.", 
-                            fontsize=9, color=(0.3, 0.3, 0.3))
-            y_pos += 35
+            if date_lines:
+                box_height = 50 + (len(date_lines) * 15)
+                if y_pos > self.max_y - box_height - 20:
+                    page = doc.new_page(width=595, height=842)
+                    y_pos = 90
+                
+                page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + box_height), color=self.base_color, fill=self.base_color, fill_opacity=0.1)
+                y_pos += 15
+                page.insert_text((40, y_pos), "DATES", fontsize=12, fontname="helv", color=self.base_color)
+                y_pos += 20
+                for line in date_lines:
+                    page.insert_text((50, y_pos), line, fontsize=10, color=(0.3, 0.3, 0.3))
+                    y_pos += 15
+                y_pos += 15
         
-        if analysis.has_datetime_info:
-            if y_pos > self.max_y - 80:
-                page = doc.new_page(width=595, height=842)
-                y_pos = 90
+        if analysis.has_author_info and analysis.author_info:
+            author_lines = []
+            for key, value in analysis.author_info.items():
+                key_lower = key.lower()
+                if 'artiste' in key_lower or 'artist' in key_lower:
+                    author_lines.append(f"Artiste: {value}")
+                elif 'auteur' in key_lower or 'author' in key_lower:
+                    author_lines.append(f"Auteur: {value}")
+                elif 'createur' in key_lower or 'creator' in key_lower:
+                    author_lines.append(f"Createur: {value}")
+                elif 'copyright' in key_lower or 'droits' in key_lower:
+                    author_lines.append(f"Copyright: {value}")
             
-            page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + 45), color=self.base_color, fill=self.base_color, fill_opacity=0.1)
-            y_pos += 15
-            page.insert_text((40, y_pos), "INFORMATIONS DATE/HEURE DETECTEES", fontsize=12, fontname="helv", color=self.base_color)
-            y_pos += 20
-            page.insert_text((40, y_pos), "Ce fichier contient des dates et heures de creation ou modification.", 
-                            fontsize=9, color=(0.3, 0.3, 0.3))
-            y_pos += 35
+            if author_lines:
+                box_height = 50 + (len(author_lines) * 15)
+                if y_pos > self.max_y - box_height - 20:
+                    page = doc.new_page(width=595, height=842)
+                    y_pos = 90
+                
+                page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + box_height), color=self.warning_color, fill=self.warning_color, fill_opacity=0.1)
+                y_pos += 15
+                page.insert_text((40, y_pos), "AUTEUR", fontsize=12, fontname="helv", color=self.warning_color)
+                y_pos += 20
+                for line in author_lines:
+                    page.insert_text((50, y_pos), line, fontsize=10, color=(0.3, 0.3, 0.3))
+                    y_pos += 15
+                y_pos += 15
         
-        if analysis.has_software_info:
-            if y_pos > self.max_y - 80:
-                page = doc.new_page(width=595, height=842)
-                y_pos = 90
+        if analysis.has_software_info and analysis.software_info:
+            software_lines = []
+            for key, value in analysis.software_info.items():
+                key_lower = key.lower()
+                if 'logiciel' in key_lower or 'software' in key_lower:
+                    software_lines.append(f"Logiciel: {value}")
+                elif 'outil' in key_lower or 'tool' in key_lower:
+                    software_lines.append(f"Outil: {value}")
+                elif 'program' in key_lower or 'application' in key_lower:
+                    software_lines.append(f"Application: {value}")
             
-            page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + 45), color=self.base_color, fill=self.base_color, fill_opacity=0.1)
-            y_pos += 15
-            page.insert_text((40, y_pos), "INFORMATIONS LOGICIEL DETECTEES", fontsize=12, fontname="helv", color=self.base_color)
-            y_pos += 20
-            page.insert_text((40, y_pos), "Ce fichier contient des informations sur les logiciels utilises pour le creer ou le modifier.", 
-                            fontsize=9, color=(0.3, 0.3, 0.3))
-            y_pos += 35
+            if software_lines:
+                box_height = 50 + (len(software_lines) * 15)
+                if y_pos > self.max_y - box_height - 20:
+                    page = doc.new_page(width=595, height=842)
+                    y_pos = 90
+                
+                page.draw_rect(fitz.Rect(30, y_pos, 565, y_pos + box_height), color=self.base_color, fill=self.base_color, fill_opacity=0.1)
+                y_pos += 15
+                page.insert_text((40, y_pos), "LOGICIELS", fontsize=12, fontname="helv", color=self.base_color)
+                y_pos += 20
+                for line in software_lines:
+                    page.insert_text((50, y_pos), line, fontsize=10, color=(0.3, 0.3, 0.3))
+                    y_pos += 15
+                y_pos += 15
         
         if report_type == 'complete':
             analysis_results = analysis.analysis_results or {}
