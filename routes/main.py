@@ -680,17 +680,38 @@ def robots():
     """Generate dynamic robots.txt for search engines and AI crawlers"""
     domain = request.host_url.rstrip('/')
     
-    robots_content = f"""# Robots.txt pour CyberConfiance
-# Plateforme de sensibilisation à la cybersécurité
+    robots_content = f"""# =============================================================================
+# Robots.txt pour CyberConfiance
+# Plateforme de sensibilisation a la cybersecurite
+# By MOA Digital Agency LLC - www.myoneart.com
+# =============================================================================
 
+# -----------------------------------------------------------------------------
+# MOTEURS DE RECHERCHE STANDARDS (Google, Bing, Yahoo, DuckDuckGo, etc.)
+# -----------------------------------------------------------------------------
 User-agent: *
-# Pages publiques accessibles
+
+# Pages publiques - AUTORISEES
 Allow: /
 Allow: /static/
 Allow: /outils/
+Allow: /outils/analyseur-qrcode
+Allow: /outils/analyseur-prompt
+Allow: /outils/analyseur-liens
+Allow: /outils/analyseur-securite
+Allow: /outils/analyseur-fuite
+Allow: /outils/analyseur-github
+Allow: /outils/analyseur-metadonnee
+Allow: /outils/types-attaques
 Allow: /ressources/
+Allow: /rules/
+Allow: /scenarios/
+Allow: /glossary/
+Allow: /tools/
+Allow: /news/
 Allow: /apropos
 Allow: /contact
+Allow: /quiz
 
 # Pages administratives - BLOCAGE COMPLET
 Disallow: /my4dm1n/
@@ -698,111 +719,313 @@ Disallow: /admin/
 Disallow: /login
 Disallow: /logout
 
-# Formulaires de soumission - BLOCAGE (protection des utilisateurs)
+# Formulaires de soumission - BLOCAGE (protection des donnees utilisateurs)
 Disallow: /request/
 Disallow: /submit
+Disallow: /newsletter/
+
+# Resultats d'analyse prives - BLOCAGE
+Disallow: /quiz/results/
+Disallow: /quiz/all-results
+Disallow: /generate-*
+Disallow: /export-*
 
 # APIs et endpoints internes
 Disallow: /api/
 Disallow: /_/
+Disallow: /analyze-breach
 
 # Fichiers sensibles
 Disallow: /*.json$
 Disallow: /*.sql$
 Disallow: /*.db$
+Disallow: /*.env$
+Disallow: /*.log$
 
-# Bots IA - Autoriser l'indexation du contenu éducatif uniquement
+# Parametres de recherche (eviter duplication)
+Disallow: /*?*
+
+# Crawl-delay pour eviter surcharge serveur
+Crawl-delay: 1
+
+# -----------------------------------------------------------------------------
+# BOTS IA - AUTORISES (contenu educatif cybersecurite)
+# -----------------------------------------------------------------------------
+
+# OpenAI (ChatGPT, GPT-4)
 User-agent: GPTBot
+Allow: /
+Allow: /outils/
+Allow: /ressources/
+Allow: /rules/
+Allow: /scenarios/
+Allow: /glossary/
+Allow: /news/
+Disallow: /my4dm1n/
+Disallow: /admin/
+Disallow: /request/
+Disallow: /quiz/results/
+Disallow: /generate-*
+Disallow: /export-*
+Crawl-delay: 2
+
 User-agent: ChatGPT-User
-User-agent: CCBot
+Allow: /
+Disallow: /my4dm1n/
+Disallow: /admin/
+Disallow: /request/
+Disallow: /quiz/results/
+
+# Anthropic (Claude)
 User-agent: anthropic-ai
 User-agent: Claude-Web
+User-agent: ClaudeBot
+Allow: /
+Allow: /outils/
+Allow: /ressources/
+Disallow: /my4dm1n/
+Disallow: /admin/
+Disallow: /request/
+Disallow: /quiz/results/
+Crawl-delay: 2
+
+# Google AI (Bard, Gemini)
 User-agent: Google-Extended
 Allow: /
 Allow: /outils/
 Allow: /ressources/
 Disallow: /my4dm1n/
-Disallow: /request/
 Disallow: /admin/
+Disallow: /request/
+Disallow: /quiz/results/
+Crawl-delay: 2
 
-# Crawlers agressifs - BLOCAGE
+# Perplexity AI
+User-agent: PerplexityBot
+Allow: /
+Allow: /outils/
+Allow: /ressources/
+Disallow: /my4dm1n/
+Disallow: /admin/
+Disallow: /request/
+Disallow: /quiz/results/
+Crawl-delay: 2
+
+# Cohere AI
+User-agent: cohere-ai
+Allow: /
+Allow: /outils/
+Allow: /ressources/
+Disallow: /my4dm1n/
+Disallow: /admin/
+Disallow: /request/
+Crawl-delay: 2
+
+# Meta AI
+User-agent: FacebookBot
+User-agent: meta-externalagent
+Allow: /
+Allow: /outils/
+Disallow: /my4dm1n/
+Disallow: /admin/
+Disallow: /request/
+Disallow: /quiz/results/
+Crawl-delay: 2
+
+# Microsoft Copilot / Bing AI
+User-agent: Bingbot
+Allow: /
+Allow: /outils/
+Disallow: /my4dm1n/
+Disallow: /admin/
+Disallow: /request/
+Crawl-delay: 1
+
+# Common Crawl (utilise par plusieurs IA)
+User-agent: CCBot
+Allow: /
+Allow: /outils/
+Allow: /ressources/
+Disallow: /my4dm1n/
+Disallow: /admin/
+Disallow: /request/
+Disallow: /quiz/results/
+Crawl-delay: 5
+
+# You.com
+User-agent: YouBot
+Allow: /
+Allow: /outils/
+Disallow: /my4dm1n/
+Disallow: /admin/
+Disallow: /request/
+Crawl-delay: 2
+
+# -----------------------------------------------------------------------------
+# CRAWLERS SEO AGRESSIFS - BLOCAGE COMPLET
+# -----------------------------------------------------------------------------
 User-agent: AhrefsBot
+Disallow: /
+
 User-agent: SemrushBot
+Disallow: /
+
 User-agent: MJ12bot
+Disallow: /
+
 User-agent: DotBot
 Disallow: /
 
-# Sitemap
+User-agent: BLEXBot
+Disallow: /
+
+User-agent: DataForSeoBot
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+User-agent: PetalBot
+Disallow: /
+
+User-agent: SeznamBot
+Disallow: /
+
+# -----------------------------------------------------------------------------
+# SCRAPERS MALVEILLANTS - BLOCAGE
+# -----------------------------------------------------------------------------
+User-agent: MegaIndex.ru
+Disallow: /
+
+User-agent: Sogou
+Disallow: /
+
+User-agent: Yandex
+Disallow: /
+
+User-agent: Baidu
+Disallow: /
+
+# -----------------------------------------------------------------------------
+# SITEMAP
+# -----------------------------------------------------------------------------
 Sitemap: {domain}/sitemap.xml
 """
     
     response = make_response(robots_content)
-    response.headers['Content-Type'] = 'text/plain'
+    response.headers['Content-Type'] = 'text/plain; charset=utf-8'
+    response.headers['Cache-Control'] = 'public, max-age=86400'
     return response
 
 @bp.route('/sitemap.xml')
 def sitemap():
-    """Generate dynamic XML sitemap for SEO"""
-    from models import News, Rule, Tool, AttackType
+    """Generate dynamic XML sitemap for SEO - CyberConfiance"""
+    from models import News, Rule, Tool, AttackType, Scenario, GlossaryTerm
     
     domain = request.host_url.rstrip('/')
+    today = datetime.utcnow().strftime('%Y-%m-%d')
     
     pages = []
     
-    static_routes = [
-        ('main.index', '1.0', 'daily'),
-        ('pages.about', '0.5', 'monthly'),
-        ('content.rules', '0.8', 'weekly'),
-        ('content.scenarios', '0.8', 'weekly'),
-        ('content.tools', '0.8', 'weekly'),
-        ('content.glossary', '0.7', 'weekly'),
-        ('content.resources', '0.7', 'weekly'),
-        ('content.news', '0.9', 'daily'),
-        ('main.contact', '0.6', 'monthly'),
-        ('main.quiz', '0.9', 'weekly'),
-        ('main.breach_analyzer', '0.9', 'weekly'),
-        ('main.security_analyzer', '0.9', 'weekly'),
-        ('main.attack_types', '0.8', 'weekly'),
-        ('pages.osint_methodology', '0.7', 'monthly'),
+    # Pages principales avec priorite elevee
+    main_routes = [
+        ('/', '1.0', 'daily', 'Accueil'),
+        ('/apropos', '0.6', 'monthly', 'A propos'),
+        ('/contact', '0.6', 'monthly', 'Contact'),
     ]
     
-    for route, priority, changefreq in static_routes:
-        try:
-            pages.append({
-                'loc': domain + url_for(route),
-                'priority': priority,
-                'changefreq': changefreq,
-                'lastmod': datetime.utcnow().strftime('%Y-%m-%d')
-            })
-        except:
-            pass
+    # Outils d'analyse - priorite tres elevee (produits phares)
+    tools_routes = [
+        ('/outils/analyseur-qrcode', '1.0', 'weekly', 'Analyseur QR Code Anti-Quishing'),
+        ('/outils/analyseur-prompt', '1.0', 'weekly', 'Analyseur Prompt Anti-Injection'),
+        ('/outils/analyseur-liens', '0.9', 'weekly', 'Analyseur de Liens'),
+        ('/outils/analyseur-securite', '0.9', 'weekly', 'Analyseur de Securite'),
+        ('/outils/analyseur-fuite', '0.9', 'weekly', 'Analyseur de Fuites Email'),
+        ('/outils/analyseur-github', '0.9', 'weekly', 'Analyseur GitHub Code'),
+        ('/outils/analyseur-metadonnee', '0.9', 'weekly', 'Analyseur de Metadonnees'),
+        ('/outils/types-attaques', '0.8', 'weekly', 'Types d Attaques'),
+        ('/quiz', '0.9', 'weekly', 'Quiz Cybersecurite'),
+    ]
     
+    # Pages de contenu educatif
+    content_routes = [
+        ('/rules', '0.8', 'weekly', 'Regles de Securite'),
+        ('/scenarios', '0.8', 'weekly', 'Scenarios d Attaque'),
+        ('/tools', '0.8', 'weekly', 'Outils Recommandes'),
+        ('/glossary', '0.7', 'weekly', 'Glossaire Cybersecurite'),
+        ('/resources', '0.7', 'weekly', 'Ressources'),
+        ('/news', '0.9', 'daily', 'Actualites Cybersecurite'),
+    ]
+    
+    # Ajouter les routes principales
+    for path, priority, changefreq, title in main_routes + tools_routes + content_routes:
+        pages.append({
+            'loc': domain + path,
+            'priority': priority,
+            'changefreq': changefreq,
+            'lastmod': today
+        })
+    
+    # Ajouter les actualites dynamiques
     try:
-        news_items = News.query.order_by(News.created_at.desc()).limit(50).all()
+        news_items = News.query.filter_by(is_published=True).order_by(News.created_at.desc()).limit(100).all()
         for item in news_items:
             pages.append({
-                'loc': domain + url_for('content.news_detail', news_id=item.id),
+                'loc': f"{domain}/news/{item.id}",
                 'priority': '0.7',
                 'changefreq': 'monthly',
-                'lastmod': item.created_at.strftime('%Y-%m-%d')
+                'lastmod': item.created_at.strftime('%Y-%m-%d') if item.created_at else today
             })
-    except:
+    except Exception:
         pass
     
+    # Ajouter les regles de securite
     try:
         rules = Rule.query.all()
         for rule in rules:
             pages.append({
-                'loc': domain + url_for('content.rule_detail', rule_id=rule.id),
+                'loc': f"{domain}/rules/{rule.id}",
                 'priority': '0.6',
                 'changefreq': 'monthly',
-                'lastmod': datetime.utcnow().strftime('%Y-%m-%d')
+                'lastmod': today
             })
-    except:
+    except Exception:
         pass
     
+    # Ajouter les scenarios
+    try:
+        scenarios = Scenario.query.all()
+        for scenario in scenarios:
+            pages.append({
+                'loc': f"{domain}/scenarios/{scenario.id}",
+                'priority': '0.6',
+                'changefreq': 'monthly',
+                'lastmod': today
+            })
+    except Exception:
+        pass
+    
+    # Ajouter les types d'attaque
+    try:
+        attack_types = AttackType.query.all()
+        for attack in attack_types:
+            pages.append({
+                'loc': f"{domain}/outils/types-attaques/{attack.id}",
+                'priority': '0.6',
+                'changefreq': 'monthly',
+                'lastmod': today
+            })
+    except Exception:
+        pass
+    
+    # Generer le XML
     sitemap_xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
-    sitemap_xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+    sitemap_xml += '<!-- Sitemap CyberConfiance - By MOA Digital Agency LLC -->\n'
+    sitemap_xml += '<!-- www.myoneart.com -->\n'
+    sitemap_xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"\n'
+    sitemap_xml += '        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"\n'
+    sitemap_xml += '        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9\n'
+    sitemap_xml += '                            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">\n'
     
     for page in pages:
         sitemap_xml += '  <url>\n'
@@ -815,7 +1038,8 @@ def sitemap():
     sitemap_xml += '</urlset>'
     
     response = make_response(sitemap_xml)
-    response.headers['Content-Type'] = 'application/xml'
+    response.headers['Content-Type'] = 'application/xml; charset=utf-8'
+    response.headers['Cache-Control'] = 'public, max-age=3600'
     return response
 
 
