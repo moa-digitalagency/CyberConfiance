@@ -19,6 +19,9 @@ from services.security.urlhaus import URLhausService
 from services.security.url_shortener import URLShortenerService
 from services.security.urlscan import URLScanService
 from services.security.tracker_detector import TrackerDetectorService
+from utils.logger import get_logger
+
+logger = get_logger(__name__)
 
 class SecurityAnalyzerService:
     """Service for analyzing security threats using multiple sources"""
@@ -209,7 +212,7 @@ class SecurityAnalyzerService:
         
         is_shortened, shortener_service = self.url_shortener.is_shortened_url(url)
         if is_shortened:
-            print(f"[INFO] URL raccourcie detectee: {url} (service: {shortener_service})")
+            logger.info(f"URL raccourcie detectee: {url} (service: {shortener_service})")
             expansion = self.url_shortener.expand_url(url)
             shortener_info['is_shortened'] = True
             shortener_info['shortener_service'] = shortener_service
@@ -222,7 +225,7 @@ class SecurityAnalyzerService:
             shortener_info['expansion_error'] = expansion.get('expansion_error')
             
             if shortener_info['final_url'] != url:
-                print(f"[INFO] URL finale apres expansion: {shortener_info['final_url']}")
+                logger.info(f"URL finale apres expansion: {shortener_info['final_url']}")
         
         url_to_analyze = shortener_info['final_url'] if is_shortened else url
         
@@ -238,14 +241,14 @@ class SecurityAnalyzerService:
             try:
                 return self.google_safe_browsing.check_url(url_to_analyze)
             except Exception as e:
-                print(f"[ERROR] Google Safe Browsing check failed: {e}")
+                logger.error(f"Google Safe Browsing check failed: {e}")
                 return {'error': True, 'source': 'google_safe_browsing', 'message': str(e)}
         
         def check_urlhaus():
             try:
                 return self.urlhaus.check_url(url_to_analyze)
             except Exception as e:
-                print(f"[ERROR] URLhaus check failed: {e}")
+                logger.error(f"URLhaus check failed: {e}")
                 return {'error': True, 'source': 'urlhaus', 'message': str(e)}
         
         def check_urlscan():
@@ -254,7 +257,7 @@ class SecurityAnalyzerService:
                     return self.urlscan.scan_url(url_to_analyze)
                 return {'error': True, 'source': 'urlscan', 'message': 'URLScan.io non configuré'}
             except Exception as e:
-                print(f"[ERROR] URLScan check failed: {e}")
+                logger.error(f"URLScan check failed: {e}")
                 return {'error': True, 'source': 'urlscan', 'message': str(e)}
         
         def check_tracker_detector():
@@ -265,11 +268,11 @@ class SecurityAnalyzerService:
                     result['chain_analysis'] = chain_analysis
                 return result
             except Exception as e:
-                print(f"[ERROR] Tracker detector check failed: {e}")
+                logger.error(f"Tracker detector check failed: {e}")
                 return {'error': True, 'source': 'tracker_detector', 'message': str(e)}
         
         multi_source_results['tracker_detector'] = check_tracker_detector()
-        print(f"[INFO] tracker_detector result: is_ip_logger={multi_source_results['tracker_detector'].get('is_ip_logger', False)}")
+        logger.info(f"tracker_detector result: is_ip_logger={multi_source_results['tracker_detector'].get('is_ip_logger', False)}")
         
         with ThreadPoolExecutor(max_workers=3) as executor:
             futures = {
@@ -282,11 +285,11 @@ class SecurityAnalyzerService:
                 try:
                     multi_source_results[source] = future.result()
                     if source == 'urlscan':
-                        print(f"[INFO] {source} result: threat_score={multi_source_results[source].get('threat_score', 0)}")
+                        logger.info(f"{source} result: threat_score={multi_source_results[source].get('threat_score', 0)}")
                     else:
-                        print(f"[INFO] {source} result: threat_detected={multi_source_results[source].get('threat_detected', False)}")
+                        logger.info(f"{source} result: threat_detected={multi_source_results[source].get('threat_detected', False)}")
                 except Exception as e:
-                    print(f"[ERROR] {source} future failed: {e}")
+                    logger.error(f"{source} future failed: {e}")
                     multi_source_results[source] = {'error': True, 'source': source, 'message': str(e)}
         
         try:
@@ -297,14 +300,14 @@ class SecurityAnalyzerService:
             try:
                 url_obj = client.get_object(f"/urls/{url_id}")
                 stats = url_obj.last_analysis_stats
-                print(f"[INFO] URL found in VirusTotal database: {url_to_analyze}")
+                logger.info(f"URL found in VirusTotal database: {url_to_analyze}")
             except vt.APIError as e:
                 if 'NotFoundError' in str(e):
-                    print(f"[INFO] URL not in VirusTotal database, submitting for scan: {url_to_analyze}")
+                    logger.info(f"URL not in VirusTotal database, submitting for scan: {url_to_analyze}")
                     try:
                         analysis = client.scan_url(url_to_analyze)
                         analysis_id = analysis.id
-                        print(f"[INFO] URL scan submitted, analysis ID: {analysis_id}")
+                        logger.info(f"URL scan submitted, analysis ID: {analysis_id}")
                         
                         max_attempts = 12
                         for attempt in range(max_attempts):
@@ -312,17 +315,17 @@ class SecurityAnalyzerService:
                             try:
                                 analysis_obj = client.get_object(f"/analyses/{analysis_id}")
                                 status = analysis_obj.status
-                                print(f"[INFO] Analysis status (attempt {attempt+1}): {status}")
+                                logger.info(f"Analysis status (attempt {attempt+1}): {status}")
                                 
                                 if status == "completed":
                                     url_obj = client.get_object(f"/urls/{url_id}")
                                     stats = url_obj.last_analysis_stats
                                     break
                             except Exception as poll_error:
-                                print(f"[WARN] Polling error: {str(poll_error)}")
+                                logger.warning(f"Polling error: {str(poll_error)}")
                                 continue
                     except Exception as scan_error:
-                        print(f"[ERROR] VirusTotal URL scan failed: {str(scan_error)}")
+                        logger.error(f"VirusTotal URL scan failed: {str(scan_error)}")
                 else:
                     raise e
             
@@ -356,7 +359,7 @@ class SecurityAnalyzerService:
                 }
             
         except Exception as e:
-            print(f"[ERROR] VirusTotal analysis failed: {e}")
+            logger.error(f"VirusTotal analysis failed: {e}")
             multi_source_results['virustotal'] = {
                 'error': True,
                 'source': 'virustotal',

@@ -12,6 +12,9 @@ import io
 from ctypes import cdll
 import ctypes.util
 from PIL import Image
+from utils.logger import get_logger
+
+logger = get_logger(__name__)
 
 ZBAR_LIB_PATH = "/nix/store/lcjf0hd46s7b16vr94q3bcas7yg05c3c-zbar-0.23.93-lib/lib/libzbar.so.0"
 
@@ -32,7 +35,7 @@ except (ImportError, OSError) as e:
     PYZBAR_AVAILABLE = False
     def pyzbar_decode(image):
         return None
-    print(f"Warning: pyzbar not available: {e}")
+    logger.warning(f"pyzbar not available: {e}")
 
 
 def decode_qr_from_image(image_data):
@@ -124,7 +127,7 @@ def _decode_with_opencv(pil_image):
         
         return None
     except Exception as e:
-        print(f"OpenCV QR detection failed: {e}")
+        logger.error(f"OpenCV QR detection failed: {e}")
         return None
 
 
@@ -189,5 +192,5 @@ def _decode_with_pyzbar(pil_image):
         
         return None
     except Exception as e:
-        print(f"Pyzbar detection failed: {e}")
+        logger.error(f"Pyzbar detection failed: {e}")
         return None

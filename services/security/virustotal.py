@@ -13,6 +13,9 @@ import vt
 import hashlib
 import re
 from typing import Dict, List, Optional, Tuple
+from utils.logger import get_logger
+
+logger = get_logger(__name__)
 
 class VirusTotalService:
     def __init__(self):
@@ -22,7 +25,7 @@ class VirusTotalService:
             try:
                 self.client = vt.Client(self.api_key)
             except Exception as e:
-                print(f"Security analysis client initialization failed: {e}")
+                logger.error(f"Security analysis client initialization failed: {e}")
     
     def is_available(self) -> bool:
         return self.client is not None

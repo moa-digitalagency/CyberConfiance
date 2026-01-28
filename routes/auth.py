@@ -10,6 +10,7 @@ Routes d'authentification: login, logout.
 
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_user, logout_user, login_required
+from datetime import datetime
 from models import User
 import __init__ as app_module
 
@@ -35,7 +36,7 @@ def login():
         
         if user and user.check_password(password):
             login_user(user)
-            user.last_login = __import__('datetime').datetime.utcnow()
+            user.last_login = datetime.utcnow()
             db.session.commit()
             flash('Connexion réussie!', 'success')
             next_page = request.form.get('next') or request.args.get('next')

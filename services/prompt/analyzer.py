@@ -12,6 +12,9 @@ import re
 import ast
 import unicodedata
 from urllib.parse import urlparse
+from utils.logger import get_logger
+
+logger = get_logger(__name__)
 
 class PromptAnalyzerService:
     
@@ -183,7 +186,7 @@ class PromptAnalyzerService:
             security_analyzer = self._get_security_analyzer()
             
             for url in urls[:max_urls]:
-                print(f"[Prompt] Analyse de securite pour URL: {url}")
+                logger.info(f"Analyse de securite pour URL: {url}")
                 analysis = security_analyzer.analyze(url, 'url')
                 
                 if not analysis.get('error'):
@@ -203,7 +206,7 @@ class PromptAnalyzerService:
                         'message': analysis.get('message', 'Erreur lors de l\'analyse')
                     })
         except Exception as e:
-            print(f"[Prompt] Erreur analyse securite: {e}")
+            logger.error(f"Erreur analyse securite: {e}")
             for url in urls[:max_urls]:
                 results.append({
                     'url': url,

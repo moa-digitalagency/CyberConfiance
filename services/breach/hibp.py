@@ -11,6 +11,9 @@ Client API Have I Been Pwned pour detection de fuites.
 import os
 import requests
 from urllib.parse import quote
+from utils.logger import get_logger
+
+logger = get_logger(__name__)
 
 
 class HaveIBeenPwnedService:
@@ -22,7 +25,7 @@ class HaveIBeenPwnedService:
         """
         api_key = os.environ.get('HIBP_API_KEY')
         if not api_key:
-            print("[!] HIBP_API_KEY non configurée - Service d'analyse de fuites indisponible")
+            logger.warning("HIBP_API_KEY non configurée - Service d'analyse de fuites indisponible")
             return {'error': 'Service temporairement indisponible', 'breaches': [], 'count': 0}
         
         encoded_email = quote(email, safe='')
@@ -51,20 +54,20 @@ class HaveIBeenPwnedService:
                     'email': email
                 }
             elif response.status_code == 401:
-                print(f"[X] HIBP API: Clé API invalide (401)")
+                logger.error(f"HIBP API: Clé API invalide (401)")
                 return {'error': 'Service temporairement indisponible', 'breaches': [], 'count': 0}
             elif response.status_code == 429:
-                print(f"[!] HIBP API: Limite de requêtes atteinte (429)")
+                logger.warning(f"HIBP API: Limite de requêtes atteinte (429)")
                 return {'error': 'Service temporairement surchargé, veuillez réessayer dans quelques instants', 'breaches': [], 'count': 0}
             else:
-                print(f"[X] HIBP API: Erreur {response.status_code}")
+                logger.error(f"HIBP API: Erreur {response.status_code}")
                 return {'error': 'Service temporairement indisponible', 'breaches': [], 'count': 0}
                 
         except requests.exceptions.Timeout:
-            print(f"[!] HIBP API: Délai d'attente dépassé")
+            logger.warning(f"HIBP API: Délai d'attente dépassé")
             return {'error': 'Le service met trop de temps à répondre, veuillez réessayer', 'breaches': [], 'count': 0}
         except requests.exceptions.RequestException as e:
-            print(f"[X] HIBP API: Erreur de connexion - {str(e)}")
+            logger.error(f"HIBP API: Erreur de connexion - {str(e)}")
             return {'error': 'Service temporairement indisponible', 'breaches': [], 'count': 0}
     
     @staticmethod

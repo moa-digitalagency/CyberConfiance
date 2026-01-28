@@ -52,6 +52,9 @@ from .patterns import (
     DOCUMENTATION_WEIGHT,
 )
 from .translations import translate_security_message, translate_text, get_contextual_remediation, get_smart_remediation
+from utils.logger import get_logger
+
+logger = get_logger(__name__)
 
 
 class GitHubCodeAnalyzerService:
@@ -147,54 +150,54 @@ class GitHubCodeAnalyzerService:
             self.owner = owner
             self.repo_name = repo_name
             
-            print(f"🔍 Analyse de {owner}/{repo_name} (branche: {branch}, mode: {mode})")
+            logger.info(f"Analyse de {owner}/{repo_name} (branche: {branch}, mode: {mode})")
             
             # === PHASE 1: GitHub Code Scanning API (si token disponible) ===
             if self.github_token:
-                print("  [1/6] Récupération des alertes GitHub Code Scanning...")
+                logger.info("[1/6] Récupération des alertes GitHub Code Scanning...")
                 github_alerts = self._fetch_github_code_scanning_alerts(owner, repo_name)
                 if github_alerts:
-                    print(f"    ✅ {len(github_alerts)} alertes GitHub trouvées")
+                    logger.info(f"✅ {len(github_alerts)} alertes GitHub trouvées")
                     self._integrate_github_alerts(github_alerts)
                 else:
-                    print("    ℹ️  Aucune alerte GitHub (Code Scanning non activé ou pas de token)")
+                    logger.info("ℹ️  Aucune alerte GitHub (Code Scanning non activé ou pas de token)")
             
             # === PHASE 2: Mode Quick (sans clonage) ===
             if mode == 'quick':
-                print("  [Mode Quick] Scan rapide via API GitHub...")
+                logger.info("[Mode Quick] Scan rapide via API GitHub...")
                 self._quick_scan_without_clone(owner, repo_name, branch)
                 scores = self._calculate_scores()
                 duration = time.time() - start_time
                 return self._build_result(repo_url, repo_name, owner, branch, None, scores, duration, mode)
             
             # === PHASE 3: Clonage optimisé ===
-            print("  [2/6] Clonage optimisé du dépôt...")
+            logger.info("[2/6] Clonage optimisé du dépôt...")
             self.temp_dir = tempfile.mkdtemp(prefix='github_analysis_')
             clone_result = self._clone_repository_optimized(repo_url, branch)
             if clone_result.get('error'):
                 return clone_result
             
             commit_hash = self._get_commit_hash()
-            print(f"    ✅ Dépôt cloné (commit: {commit_hash})")
+            logger.info(f"✅ Dépôt cloné (commit: {commit_hash})")
             
             # === PHASE 4: Analyse Semgrep (AST) si disponible ===
             if self.use_semgrep and mode in ['full', 'hybrid']:
-                print("  [3/6] Analyse Semgrep (AST-based)...")
+                logger.info("[3/6] Analyse Semgrep (AST-based)...")
                 semgrep_results = self._run_semgrep_analysis(self.temp_dir)
                 if semgrep_results:
-                    print(f"    ✅ Semgrep: {len(semgrep_results)} vulnérabilités détectées")
+                    logger.info(f"✅ Semgrep: {len(semgrep_results)} vulnérabilités détectées")
                     self._integrate_semgrep_findings(semgrep_results)
                 else:
-                    print("    ℹ️  Semgrep: aucune vulnérabilité ou non disponible")
+                    logger.info("ℹ️  Semgrep: aucune vulnérabilité ou non disponible")
             
             # === PHASE 5: Scan traditionnel (regex) ===
-            print("  [4/6] Scan patterns regex...")
+            logger.info("[4/6] Scan patterns regex...")
             self._load_package_manifests()
             self._analyze_all_files()
-            print(f"    ✅ {self.stats['total_files']} fichiers analysés")
+            logger.info(f"✅ {self.stats['total_files']} fichiers analysés")
             
             # === PHASE 6: Analyses complémentaires ===
-            print("  [5/6] Analyses complémentaires...")
+            logger.info("[5/6] Analyses complémentaires...")
             self._analyze_git_history()
             self._analyze_dependencies()
             self._analyze_architecture()
@@ -204,13 +207,13 @@ class GitHubCodeAnalyzerService:
             self._post_process_findings()
             self._deduplicate_findings()
             
-            print("  [6/6] Calcul des scores...")
+            logger.info("[6/6] Calcul des scores...")
             scores = self._calculate_scores()
             duration = time.time() - start_time
             
-            print(f"\n✨ Analyse terminée en {duration:.2f}s")
-            print(f"   Score global: {scores['overall']:.1f}/100")
-            print(f"   Niveau de risque: {scores['risk_level'].upper()}")
+            logger.info(f"Analyse terminée en {duration:.2f}s")
+            logger.info(f"Score global: {scores['overall']:.1f}/100")
+            logger.info(f"Niveau de risque: {scores['risk_level'].upper()}")
             
             return self._build_result(repo_url, repo_name, owner, branch, commit_hash, scores, duration, mode)
             
@@ -296,10 +299,10 @@ class GitHubCodeAnalyzerService:
             elif response.status_code == 404:
                 return []
             else:
-                print(f"    ⚠️  GitHub Code Scanning API: {response.status_code}")
+                logger.warning(f"GitHub Code Scanning API: {response.status_code}")
                 return []
         except Exception as e:
-            print(f"    ⚠️  Erreur GitHub API: {e}")
+            logger.error(f"Erreur GitHub API: {e}")
             return []
     
     def _integrate_github_alerts(self, alerts: List[Dict]):
@@ -389,7 +392,7 @@ class GitHubCodeAnalyzerService:
             return []
                 
         except subprocess.TimeoutExpired:
-            print("    ⚠️  Semgrep timeout")
+            logger.warning("Semgrep timeout")
             return []
         except FileNotFoundError:
             return []
@@ -559,7 +562,7 @@ class GitHubCodeAnalyzerService:
                     self.stats['requirements_txt'] = content
                     self._analyze_python_deps(content, filename)
         
-        print(f"    ✅ {scanned} fichiers critiques analysés via API")
+        logger.info(f"✅ {scanned} fichiers critiques analysés via API")
     
     def _clone_repository_optimized(self, repo_url, branch):
         """Clonage optimisé: shallow + filter pour rapidité."""
