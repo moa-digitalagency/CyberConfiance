@@ -19,12 +19,15 @@ from services.github.analyzer import GitHubCodeAnalyzerService
 from models import Contact, User, BreachAnalysis, SecurityAnalysis, QRCodeAnalysis, PromptAnalysis, GitHubCodeAnalysis
 from utils.document_code_generator import ensure_unique_code
 from utils.metadata_collector import get_client_ip
+from utils.logger import get_logger
 import __init__ as app_module
 import json
 import os
 import requests
 import io
 from datetime import datetime
+
+logger = get_logger(__name__)
 db = app_module.db
 
 bp = Blueprint('main', __name__)
@@ -273,10 +276,10 @@ def security_analyzer():
                     db.session.commit()
                     analysis_id = analysis_record.id
                 except Exception as e:
-                    print(f"[ERROR] Error saving security analysis: {str(e)}")
+                    logger.error(f"Error saving security analysis: {str(e)}")
                     db.session.rollback()
         except Exception as e:
-            print(f"[ERROR] Critical error in security_analyzer: {str(e)}")
+            logger.error(f"Critical error in security_analyzer: {str(e)}")
             db.session.rollback()
     
     return render_template('outils/security_analyzer.html', 
@@ -361,7 +364,7 @@ def quiz_submit_email():
         
         return redirect(url_for('main.quiz_result_detail', result_id=quiz_result.id))
     except Exception as e:
-        print(f"Erreur lors de l'enregistrement du résultat: {str(e)}")
+        logger.error(f"Erreur lors de l'enregistrement du résultat: {str(e)}")
         db.session.rollback()
         flash('Une erreur est survenue lors de l\'enregistrement de vos résultats.', 'error')
         return redirect(url_for('main.quiz'))
@@ -369,9 +372,9 @@ def quiz_submit_email():
 @bp.route('/quiz/results/<int:result_id>')
 def quiz_result_detail(result_id):
     from models import QuizResult
-    print(f"[DEBUG] Loading QuizResult ID={result_id}")
+    logger.debug(f"Loading QuizResult ID={result_id}")
     quiz_result = QuizResult.query.get_or_404(result_id)
-    print(f"[OK] QuizResult loaded: email={quiz_result.email}")
+    logger.info(f"QuizResult loaded: email={quiz_result.email}")
     
     recommendations = QuizService.get_recommendations(
         quiz_result.overall_score,
@@ -430,7 +433,7 @@ def newsletter():
             db.session.commit()
             flash('Merci pour votre inscription à notre newsletter !', 'success')
     except Exception as e:
-        print(f"Erreur lors de l'inscription newsletter: {str(e)}")
+        logger.error(f"Erreur lors de l'inscription newsletter: {str(e)}")
         db.session.rollback()
         flash('Une erreur est survenue. Veuillez réessayer.', 'error')
     
@@ -448,7 +451,7 @@ def analyze_breach():
         result = HaveIBeenPwnedService.check_email_breach(email)
         
         if result.get('error'):
-            print(f"[!] Analyse de fuite échouée pour {email}: {result['error']}")
+            logger.error(f"Analyse de fuite échouée pour {email}: {result['error']}")
             
             recommendations = {
                 'level': 'error',
@@ -495,9 +498,9 @@ def analyze_breach():
             db.session.add(analysis)
             db.session.commit()
             analysis_id = analysis.id
-            print(f"[OK] Analyse enregistrée: {email} - {result.get('count', 0)} breach(es) - ID: {analysis_id}")
+            logger.info(f"Analyse enregistrée: {email} - {result.get('count', 0)} breach(es) - ID: {analysis_id}")
         except Exception as e:
-            print(f"[!] Erreur lors de l'enregistrement de l'analyse: {str(e)}")
+            logger.error(f"Erreur lors de l'enregistrement de l'analyse: {str(e)}")
             db.session.rollback()
         
         return render_template('breach_analysis.html', 
@@ -507,7 +510,7 @@ def analyze_breach():
                              data_scenarios=data_scenarios,
                              analysis_id=analysis_id)
     except Exception as e:
-        print(f"[ERROR] Critical error in analyze_breach: {str(e)}")
+        logger.error(f"Critical error in analyze_breach: {str(e)}")
         db.session.rollback()
         flash('Erreur critique lors de l\'analyse. Veuillez réessayer.', 'error')
         return redirect(url_for('main.index'))
@@ -1130,7 +1133,7 @@ def qrcode_analyzer():
                     analysis_id = qr_analysis.id
                 except Exception as e:
                     db.session.rollback()
-                    print(f"[ERROR] Failed to save QR analysis: {e}")
+                    logger.error(f"Failed to save QR analysis: {e}")
             
         except Exception as e:
             flash(f'Erreur lors de l\'analyse: {str(e)}', 'error')
@@ -1188,7 +1191,7 @@ def prompt_analyzer():
                     analysis_id = prompt_analysis.id
                 except Exception as e:
                     db.session.rollback()
-                    print(f"[ERROR] Failed to save prompt analysis: {e}")
+                    logger.error(f"Failed to save prompt analysis: {e}")
             
         except Exception as e:
             flash(f'Erreur lors de l\'analyse: {str(e)}', 'error')
@@ -1316,7 +1319,7 @@ def github_analyzer():
                     analysis_id = github_analysis.id
                 except Exception as e:
                     db.session.rollback()
-                    print(f"[ERROR] Failed to save GitHub analysis: {e}")
+                    logger.error(f"Failed to save GitHub analysis: {e}")
             
         except Exception as e:
             flash(f'Erreur lors de l\'analyse: {str(e)}', 'error')

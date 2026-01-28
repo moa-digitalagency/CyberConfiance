@@ -17,6 +17,7 @@ from bs4 import BeautifulSoup
 from services.security.url_shortener import URLShortenerService
 from services.security.tracker_detector import TrackerDetectorService
 from services.qrcode.decoder import decode_qr_from_image
+from utils.logger import get_logger
 from services.qrcode.patterns import (
     phishing_keywords,
     suspicious_tlds,
@@ -26,6 +27,8 @@ from services.qrcode.patterns import (
     link_redirect_patterns,
     dangerous_patterns,
 )
+
+logger = get_logger(__name__)
 
 
 class QRCodeAnalyzerService:
@@ -934,7 +937,7 @@ class QRCodeAnalyzerService:
         
         is_shortened, shortener_service = self.url_shortener.is_shortened_url(url)
         if is_shortened:
-            print(f"[QR] URL raccourcie detectee: {url} (service: {shortener_service})")
+            logger.info(f"URL raccourcie detectee: {url} (service: {shortener_service})")
             result['url_shortener'] = {
                 'detected': True,
                 'service': shortener_service,
@@ -1046,7 +1049,7 @@ class QRCodeAnalyzerService:
             security_analyzer = self._get_security_analyzer()
             url_to_analyze = result['final_url'] if result['final_url'] else url
             
-            print(f"[QR] Analyse multi-API de l'URL: {url_to_analyze}")
+            logger.info(f"Analyse multi-API de l'URL: {url_to_analyze}")
             multi_api_result = security_analyzer.analyze(url_to_analyze, 'url')
             
             if not multi_api_result.get('error'):
@@ -1079,7 +1082,7 @@ class QRCodeAnalyzerService:
                         })
                 
                 if url != url_to_analyze:
-                    print(f"[QR] Analyse multi-API de l'URL originale: {url}")
+                    logger.info(f"Analyse multi-API de l'URL originale: {url}")
                     original_api_result = security_analyzer.analyze(url, 'url')
                     if not original_api_result.get('error') and original_api_result.get('threat_detected'):
                         result['multi_api_analysis']['original_url_threat'] = True
@@ -1094,7 +1097,7 @@ class QRCodeAnalyzerService:
                     'message': multi_api_result.get('message', 'Erreur lors de l\'analyse multi-API')
                 }
         except Exception as e:
-            print(f"[QR] Erreur analyse multi-API: {e}")
+            logger.error(f"Erreur analyse multi-API: {e}")
             result['multi_api_analysis'] = {
                 'error': True,
                 'message': str(e)[:100]
