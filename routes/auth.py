@@ -10,6 +10,7 @@ Routes d'authentification: login, logout.
 
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_user, logout_user, login_required
+from urllib.parse import urlparse, urljoin
 from datetime import datetime
 from models import User
 import __init__ as app_module
@@ -17,6 +18,12 @@ import __init__ as app_module
 db = app_module.db
 
 bp = Blueprint('auth', __name__)
+
+def is_safe_url(target):
+    ref_url = urlparse(request.host_url)
+    test_url = urlparse(urljoin(request.host_url, target))
+    return test_url.scheme in ('http', 'https') and \
+           ref_url.netloc == test_url.netloc
 
 @bp.route('/admin')
 @bp.route('/admin/')
@@ -40,6 +47,10 @@ def login():
             db.session.commit()
             flash('Connexion réussie!', 'success')
             next_page = request.form.get('next') or request.args.get('next')
+
+            if not next_page or not is_safe_url(next_page):
+                next_page = None
+
             if user.role == 'admin':
                 return redirect(next_page or url_for('admin_panel.dashboard'))
             return redirect(next_page or url_for('main.index'))
