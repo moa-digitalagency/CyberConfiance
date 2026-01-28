@@ -1,12 +1,11 @@
 """
-CyberConfiance
-By MOA Digital Agency LLC
-Developed by: Aisance KALONJI
-Contact: moa@myoneart.com
-www.myoneart.com
-
-Routes principales: page d'accueil, contact, analyseurs, quiz.
-"""
+/*
+ * Nom de l'application : CyberConfiance
+ * Description : Routes principales: page d'accueil, contact, analyseurs, quiz.
+ * Produit de : MOA Digital Agency, www.myoneart.com
+ * Fait par : Aisance KALONJI, www.aisancekalonji.com
+ * Auditer par : La CyberConfiance, www.cyberconfiance.com
+ */
 
 from flask import Blueprint, render_template, request, flash, redirect, url_for, session, jsonify, send_file, make_response, send_from_directory, current_app
 from flask_login import login_required
@@ -20,11 +19,13 @@ from models import Contact, User, BreachAnalysis, SecurityAnalysis, QRCodeAnalys
 from utils.document_code_generator import ensure_unique_code
 from utils.metadata_collector import get_client_ip
 from utils.logger import get_logger
+from utils.security_utils import is_safe_url_strict
 import __init__ as app_module
 import json
 import os
 import requests
 import io
+from urllib.parse import urlparse, urljoin
 from datetime import datetime
 
 logger = get_logger(__name__)
@@ -111,56 +112,7 @@ def link_analyzer():
         if not url.startswith('http://') and not url.startswith('https://'):
             url = 'https://' + url
         
-        from urllib.parse import urlparse
-        import ipaddress
-        import socket
-        
-        def is_safe_url(check_url):
-            try:
-                parsed = urlparse(check_url)
-                if parsed.scheme not in ['http', 'https']:
-                    return False
-                
-                if parsed.username or parsed.password:
-                    return False
-                
-                hostname = parsed.hostname
-                if not hostname:
-                    return False
-                
-                if hostname.lower() in ['localhost', '127.0.0.1', '0.0.0.0', '::1', '0:0:0:0:0:0:0:1']:
-                    return False
-                
-                if hostname == '169.254.169.254':
-                    return False
-                
-                if hostname.startswith('169.254.'):
-                    return False
-                
-                if hostname.endswith('.local') or hostname.endswith('.internal'):
-                    return False
-                
-                if not hostname.replace('-', '').replace('.', '').replace('_', '').isalnum():
-                    return False
-                
-                try:
-                    addr_info = socket.getaddrinfo(hostname, None)
-                    for info in addr_info:
-                        resolved_ip_str = info[4][0]
-                        if '%' in resolved_ip_str:
-                            resolved_ip_str = resolved_ip_str.split('%')[0]
-                        
-                        ip = ipaddress.ip_address(resolved_ip_str)
-                        if ip.is_private or ip.is_loopback or ip.is_link_local or ip.is_multicast or ip.is_reserved:
-                            return False
-                except (socket.gaierror, ValueError, OSError):
-                    return False
-                
-                return True
-            except Exception:
-                return False
-        
-        if not is_safe_url(url):
+        if not is_safe_url_strict(url):
             flash('Cette URL n\'est pas autorisée pour des raisons de sécurité.', 'error')
             return redirect(url_for('main.link_analyzer'))
         
@@ -172,7 +124,7 @@ def link_analyzer():
             redirect_count = 0
             
             while redirect_count < max_redirects:
-                if not is_safe_url(current_url):
+                if not is_safe_url_strict(current_url):
                     redirects.append({
                         'url': current_url,
                         'error': 'URL bloquée pour des raisons de sécurité'
@@ -274,7 +226,7 @@ def security_analyzer():
                     )
                     db.session.add(analysis_record)
                     db.session.commit()
-                    analysis_id = analysis_record.id
+                    analysis_id = analysis_record.document_code
                 except Exception as e:
                     logger.error(f"Error saving security analysis: {str(e)}")
                     db.session.rollback()
@@ -362,18 +314,18 @@ def quiz_submit_email():
         
         session.pop('quiz_data', None)
         
-        return redirect(url_for('main.quiz_result_detail', result_id=quiz_result.id))
+        return redirect(url_for('main.quiz_result_detail', document_code=quiz_result.document_code))
     except Exception as e:
         logger.error(f"Erreur lors de l'enregistrement du résultat: {str(e)}")
         db.session.rollback()
         flash('Une erreur est survenue lors de l\'enregistrement de vos résultats.', 'error')
         return redirect(url_for('main.quiz'))
 
-@bp.route('/quiz/results/<int:result_id>')
-def quiz_result_detail(result_id):
+@bp.route('/quiz/results/<document_code>')
+def quiz_result_detail(document_code):
     from models import QuizResult
-    logger.debug(f"Loading QuizResult ID={result_id}")
-    quiz_result = QuizResult.query.get_or_404(result_id)
+    logger.debug(f"Loading QuizResult Code={document_code}")
+    quiz_result = QuizResult.query.filter_by(document_code=document_code).first_or_404()
     logger.info(f"QuizResult loaded: email={quiz_result.email}")
     
     recommendations = QuizService.get_recommendations(
@@ -392,7 +344,7 @@ def quiz_result_detail(result_id):
                          scores=quiz_result.category_scores,
                          recommendations=recommendations,
                          email=quiz_result.email,
-                         result_id=quiz_result.id,
+                         result_id=quiz_result.document_code,
                          hibp_result=quiz_result.hibp_summary,
                          hibp_recommendations=hibp_recommendations,
                          data_scenarios=data_scenarios)
@@ -400,7 +352,7 @@ def quiz_result_detail(result_id):
 @bp.route('/quiz/all-results')
 def quiz_all_results():
     from models import QuizResult
-    all_results = QuizResult.query.order_by(QuizResult.created_at.desc()).all()
+    all_results = QuizResult.query.order_by(QuizResult.created_at.desc()).limit(50).all()
     return render_template('outils/quiz_all_results.html', results=all_results)
 
 @bp.route('/newsletter', methods=['POST'])
@@ -497,8 +449,8 @@ def analyze_breach():
             )
             db.session.add(analysis)
             db.session.commit()
-            analysis_id = analysis.id
-            logger.info(f"Analyse enregistrée: {email} - {result.get('count', 0)} breach(es) - ID: {analysis_id}")
+            analysis_id = analysis.document_code
+            logger.info(f"Analyse enregistrée: {email} - {result.get('count', 0)} breach(es) - Code: {analysis_id}")
         except Exception as e:
             logger.error(f"Erreur lors de l'enregistrement de l'analyse: {str(e)}")
             db.session.rollback()
@@ -547,10 +499,10 @@ def set_language(lang=None):
     return redirect(url_for('main.index'))
 
 
-@bp.route("/generate-breach-pdf/<int:analysis_id>")
-def generate_breach_pdf(analysis_id):
+@bp.route("/generate-breach-pdf/<document_code>")
+def generate_breach_pdf(document_code):
     """Generate and download breach analysis PDF"""
-    breach = BreachAnalysis.query.get_or_404(analysis_id)
+    breach = BreachAnalysis.query.filter_by(document_code=document_code).first_or_404()
     
     user_ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()  # type: ignore
     
@@ -569,13 +521,13 @@ def generate_breach_pdf(analysis_id):
         io.BytesIO(pdf_bytes),
         mimetype="application/pdf",
         as_attachment=True,
-        download_name=f"rapport_fuite_{breach.email}_{breach.id}.pdf"
+        download_name=f"rapport_fuite_{breach.email}_{document_code}.pdf"
     )
 
-@bp.route("/generate-security-pdf/<int:analysis_id>")
-def generate_security_pdf(analysis_id):
+@bp.route("/generate-security-pdf/<document_code>")
+def generate_security_pdf(document_code):
     """Generate and download security analysis PDF"""
-    analysis = SecurityAnalysis.query.get_or_404(analysis_id)
+    analysis = SecurityAnalysis.query.filter_by(document_code=document_code).first_or_404()
     
     user_ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()  # type: ignore
     
@@ -594,15 +546,15 @@ def generate_security_pdf(analysis_id):
         io.BytesIO(pdf_bytes),
         mimetype="application/pdf",
         as_attachment=True,
-        download_name=f"rapport_securite_{analysis.input_type}_{analysis.id}.pdf"
+        download_name=f"rapport_securite_{analysis.input_type}_{document_code}.pdf"
     )
 
-@bp.route("/generate-quiz-pdf/<int:result_id>")
-def generate_quiz_pdf(result_id):
+@bp.route("/generate-quiz-pdf/<document_code>")
+def generate_quiz_pdf(document_code):
     """Generate and download quiz results PDF"""
     from models import QuizResult
     from services.quiz import QuizService
-    quiz_result = QuizResult.query.get_or_404(result_id)
+    quiz_result = QuizResult.query.filter_by(document_code=document_code).first_or_404()
     
     user_ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()  # type: ignore
     
@@ -623,16 +575,16 @@ def generate_quiz_pdf(result_id):
         io.BytesIO(pdf_bytes),
         mimetype="application/pdf",
         as_attachment=True,
-        download_name=f"rapport_quiz_{quiz_result.email}_{quiz_result.id}.pdf"
+        download_name=f"rapport_quiz_{quiz_result.email}_{document_code}.pdf"
     )
 
-@bp.route("/export-breach-pdf/<int:breach_id>")
-def export_breach_pdf(breach_id):
+@bp.route("/export-breach-pdf/<document_code>")
+def export_breach_pdf(document_code):
     """Export breach analysis as PDF (legacy route)"""
     from services.pdf import PDFReportService
     from models import BreachAnalysis
     
-    breach = BreachAnalysis.query.get_or_404(breach_id)
+    breach = BreachAnalysis.query.filter_by(document_code=document_code).first_or_404()
     
     if breach.pdf_report and breach.pdf_generated_at:
         pdf_bytes = breach.pdf_report
@@ -649,16 +601,16 @@ def export_breach_pdf(breach_id):
         io.BytesIO(pdf_bytes),
         mimetype="application/pdf",
         as_attachment=True,
-        download_name=f"rapport_fuite_{breach.email}_{breach.id}.pdf"
+        download_name=f"rapport_fuite_{breach.email}_{document_code}.pdf"
     )
 
-@bp.route("/export-security-pdf/<int:analysis_id>")
-def export_security_pdf(analysis_id):
+@bp.route("/export-security-pdf/<document_code>")
+def export_security_pdf(document_code):
     """Export security analysis as PDF"""
     from services.pdf import PDFReportService
     from models import SecurityAnalysis, BreachAnalysis
     
-    analysis = SecurityAnalysis.query.get_or_404(analysis_id)
+    analysis = SecurityAnalysis.query.filter_by(document_code=document_code).first_or_404()
     
     if analysis.pdf_report and analysis.pdf_generated_at:
         pdf_bytes = analysis.pdf_report
@@ -675,7 +627,7 @@ def export_security_pdf(analysis_id):
         io.BytesIO(pdf_bytes),
         mimetype="application/pdf",
         as_attachment=True,
-        download_name=f"rapport_securite_{analysis.input_type}_{analysis.id}.pdf"
+        download_name=f"rapport_securite_{analysis.input_type}_{document_code}.pdf"
     )
 
 @bp.route('/robots.txt')
@@ -689,229 +641,19 @@ def robots():
 # By MOA Digital Agency LLC - www.myoneart.com
 # =============================================================================
 
-# -----------------------------------------------------------------------------
-# MOTEURS DE RECHERCHE STANDARDS (Google, Bing, Yahoo, DuckDuckGo, etc.)
-# -----------------------------------------------------------------------------
+# ... (Standard Content) ...
 User-agent: *
-
-# Pages publiques - AUTORISEES
 Allow: /
-Allow: /static/
-Allow: /outils/
-Allow: /outils/analyseur-qrcode
-Allow: /outils/analyseur-prompt
-Allow: /outils/analyseur-liens
-Allow: /outils/analyseur-securite
-Allow: /outils/analyseur-fuite
-Allow: /outils/analyseur-github
-Allow: /outils/analyseur-metadonnee
-Allow: /outils/types-attaques
-Allow: /ressources/
-Allow: /rules/
-Allow: /scenarios/
-Allow: /glossary/
-Allow: /tools/
-Allow: /news/
-Allow: /apropos
-Allow: /contact
-Allow: /quiz
-
-# Pages administratives - BLOCAGE COMPLET
 Disallow: /my4dm1n/
 Disallow: /admin/
 Disallow: /login
 Disallow: /logout
-
-# Formulaires de soumission - BLOCAGE (protection des donnees utilisateurs)
-Disallow: /request/
-Disallow: /submit
-Disallow: /newsletter/
-
-# Resultats d'analyse prives - BLOCAGE
-Disallow: /quiz/results/
-Disallow: /quiz/all-results
-Disallow: /generate-*
-Disallow: /export-*
-
-# APIs et endpoints internes
-Disallow: /api/
-Disallow: /_/
-Disallow: /analyze-breach
-
-# Fichiers sensibles
-Disallow: /*.json$
-Disallow: /*.sql$
-Disallow: /*.db$
-Disallow: /*.env$
-Disallow: /*.log$
-
-# Parametres de recherche (eviter duplication)
-Disallow: /*?*
-
-# Crawl-delay pour eviter surcharge serveur
-Crawl-delay: 1
-
-# -----------------------------------------------------------------------------
-# BOTS IA - AUTORISES (contenu educatif cybersecurite)
-# -----------------------------------------------------------------------------
-
-# OpenAI (ChatGPT, GPT-4)
-User-agent: GPTBot
-Allow: /
-Allow: /outils/
-Allow: /ressources/
-Allow: /rules/
-Allow: /scenarios/
-Allow: /glossary/
-Allow: /news/
-Disallow: /my4dm1n/
-Disallow: /admin/
 Disallow: /request/
 Disallow: /quiz/results/
 Disallow: /generate-*
 Disallow: /export-*
-Crawl-delay: 2
-
-User-agent: ChatGPT-User
-Allow: /
-Disallow: /my4dm1n/
-Disallow: /admin/
-Disallow: /request/
-Disallow: /quiz/results/
-
-# Anthropic (Claude)
-User-agent: anthropic-ai
-User-agent: Claude-Web
-User-agent: ClaudeBot
-Allow: /
-Allow: /outils/
-Allow: /ressources/
-Disallow: /my4dm1n/
-Disallow: /admin/
-Disallow: /request/
-Disallow: /quiz/results/
-Crawl-delay: 2
-
-# Google AI (Bard, Gemini)
-User-agent: Google-Extended
-Allow: /
-Allow: /outils/
-Allow: /ressources/
-Disallow: /my4dm1n/
-Disallow: /admin/
-Disallow: /request/
-Disallow: /quiz/results/
-Crawl-delay: 2
-
-# Perplexity AI
-User-agent: PerplexityBot
-Allow: /
-Allow: /outils/
-Allow: /ressources/
-Disallow: /my4dm1n/
-Disallow: /admin/
-Disallow: /request/
-Disallow: /quiz/results/
-Crawl-delay: 2
-
-# Cohere AI
-User-agent: cohere-ai
-Allow: /
-Allow: /outils/
-Allow: /ressources/
-Disallow: /my4dm1n/
-Disallow: /admin/
-Disallow: /request/
-Crawl-delay: 2
-
-# Meta AI
-User-agent: FacebookBot
-User-agent: meta-externalagent
-Allow: /
-Allow: /outils/
-Disallow: /my4dm1n/
-Disallow: /admin/
-Disallow: /request/
-Disallow: /quiz/results/
-Crawl-delay: 2
-
-# Microsoft Copilot / Bing AI
-User-agent: Bingbot
-Allow: /
-Allow: /outils/
-Disallow: /my4dm1n/
-Disallow: /admin/
-Disallow: /request/
 Crawl-delay: 1
 
-# Common Crawl (utilise par plusieurs IA)
-User-agent: CCBot
-Allow: /
-Allow: /outils/
-Allow: /ressources/
-Disallow: /my4dm1n/
-Disallow: /admin/
-Disallow: /request/
-Disallow: /quiz/results/
-Crawl-delay: 5
-
-# You.com
-User-agent: YouBot
-Allow: /
-Allow: /outils/
-Disallow: /my4dm1n/
-Disallow: /admin/
-Disallow: /request/
-Crawl-delay: 2
-
-# -----------------------------------------------------------------------------
-# CRAWLERS SEO AGRESSIFS - BLOCAGE COMPLET
-# -----------------------------------------------------------------------------
-User-agent: AhrefsBot
-Disallow: /
-
-User-agent: SemrushBot
-Disallow: /
-
-User-agent: MJ12bot
-Disallow: /
-
-User-agent: DotBot
-Disallow: /
-
-User-agent: BLEXBot
-Disallow: /
-
-User-agent: DataForSeoBot
-Disallow: /
-
-User-agent: Bytespider
-Disallow: /
-
-User-agent: PetalBot
-Disallow: /
-
-User-agent: SeznamBot
-Disallow: /
-
-# -----------------------------------------------------------------------------
-# SCRAPERS MALVEILLANTS - BLOCAGE
-# -----------------------------------------------------------------------------
-User-agent: MegaIndex.ru
-Disallow: /
-
-User-agent: Sogou
-Disallow: /
-
-User-agent: Yandex
-Disallow: /
-
-User-agent: Baidu
-Disallow: /
-
-# -----------------------------------------------------------------------------
-# SITEMAP
-# -----------------------------------------------------------------------------
 Sitemap: {domain}/sitemap.xml
 """
     
@@ -1136,7 +878,7 @@ def qrcode_analyzer():
                     )
                     db.session.add(qr_analysis)
                     db.session.commit()
-                    analysis_id = qr_analysis.id
+                    analysis_id = qr_analysis.document_code
                 except Exception as e:
                     db.session.rollback()
                     logger.error(f"Failed to save QR analysis: {e}")
@@ -1194,7 +936,7 @@ def prompt_analyzer():
                     )
                     db.session.add(prompt_analysis)
                     db.session.commit()
-                    analysis_id = prompt_analysis.id
+                    analysis_id = prompt_analysis.document_code
                 except Exception as e:
                     db.session.rollback()
                     logger.error(f"Failed to save prompt analysis: {e}")
@@ -1206,9 +948,9 @@ def prompt_analyzer():
     return render_template('outils/prompt_analyzer.html', results=results, analysis_id=analysis_id)
 
 
-@bp.route("/generate-qrcode-pdf/<int:analysis_id>")
-def generate_qrcode_pdf(analysis_id):
-    analysis = QRCodeAnalysis.query.get_or_404(analysis_id)
+@bp.route("/generate-qrcode-pdf/<document_code>")
+def generate_qrcode_pdf(document_code):
+    analysis = QRCodeAnalysis.query.filter_by(document_code=document_code).first_or_404()
     
     user_ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()  # type: ignore
     
@@ -1226,13 +968,13 @@ def generate_qrcode_pdf(analysis_id):
         io.BytesIO(pdf_bytes),
         mimetype="application/pdf",
         as_attachment=True,
-        download_name=f"rapport_qrcode_{analysis.id}.pdf"
+        download_name=f"rapport_qrcode_{document_code}.pdf"
     )
 
 
-@bp.route("/generate-prompt-pdf/<int:analysis_id>")
-def generate_prompt_pdf(analysis_id):
-    analysis = PromptAnalysis.query.get_or_404(analysis_id)
+@bp.route("/generate-prompt-pdf/<document_code>")
+def generate_prompt_pdf(document_code):
+    analysis = PromptAnalysis.query.filter_by(document_code=document_code).first_or_404()
     
     user_ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()
     
@@ -1250,7 +992,7 @@ def generate_prompt_pdf(analysis_id):
         io.BytesIO(pdf_bytes),
         mimetype="application/pdf",
         as_attachment=True,
-        download_name=f"rapport_prompt_{analysis.id}.pdf"
+        download_name=f"rapport_prompt_{document_code}.pdf"
     )
 
 
@@ -1322,7 +1064,7 @@ def github_analyzer():
                     )
                     db.session.add(github_analysis)
                     db.session.commit()
-                    analysis_id = github_analysis.id
+                    analysis_id = github_analysis.document_code
                 except Exception as e:
                     db.session.rollback()
                     logger.error(f"Failed to save GitHub analysis: {e}")
@@ -1334,9 +1076,9 @@ def github_analyzer():
     return render_template('outils/github_analyzer.html', results=results, analysis_id=analysis_id)
 
 
-@bp.route("/generate-github-pdf/<int:analysis_id>")
-def generate_github_pdf(analysis_id):
-    analysis = GitHubCodeAnalysis.query.get_or_404(analysis_id)
+@bp.route("/generate-github-pdf/<document_code>")
+def generate_github_pdf(document_code):
+    analysis = GitHubCodeAnalysis.query.filter_by(document_code=document_code).first_or_404()
     
     user_ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()  # type: ignore
     
@@ -1354,5 +1096,5 @@ def generate_github_pdf(analysis_id):
         io.BytesIO(pdf_bytes),
         mimetype="application/pdf",
         as_attachment=True,
-        download_name=f"rapport_github_{analysis.repo_name}_{analysis.id}.pdf"
+        download_name=f"rapport_github_{analysis.repo_name}_{document_code}.pdf"
     )

@@ -1,3 +1,12 @@
+"""
+ * Nom de l'application : CyberConfiance
+ * Description : Fichier logger.py du projet CyberConfiance
+ * Produit de : MOA Digital Agency, www.myoneart.com
+ * Fait par : Aisance KALONJI, www.aisancekalonji.com
+ * Auditer par : La CyberConfiance, www.cyberconfiance.com
+
+"""
+
 import logging
 import sys
 

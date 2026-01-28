@@ -1,14 +1,13 @@
 """
-CyberConfiance
-By MOA Digital Agency LLC
-Developed by: Aisance KALONJI
-Contact: moa@myoneart.com
-www.myoneart.com
+/*
+ * Nom de l'application : CyberConfiance
+ * Description : Routes des outils d'analyse: liens, QR codes, prompts, GitHub, fuites email.
+ * Produit de : MOA Digital Agency, www.myoneart.com
+ * Fait par : Aisance KALONJI, www.aisancekalonji.com
+ * Auditer par : La CyberConfiance, www.cyberconfiance.com
+ */
 
-Routes des outils d'analyse: liens, QR codes, prompts, GitHub, fuites email.
-"""
-
-from flask import Blueprint, render_template, request, flash, redirect, url_for, session, send_file, Response
+from flask import Blueprint, render_template, request, flash, redirect, url_for, session, send_file, Response, abort
 from services import ContentService, HaveIBeenPwnedService, QuizService
 from services.security import SecurityAnalyzerService
 from services.pdf import PDFReportService
@@ -16,18 +15,22 @@ from services.qrcode import QRCodeAnalyzerService
 from services.prompt import PromptAnalyzerService
 from services.github.analyzer import GitHubCodeAnalyzerService
 from services.metadata import MetadataAnalyzerService
-from models import BreachAnalysis, SecurityAnalysis, QRCodeAnalysis, PromptAnalysis, GitHubCodeAnalysis, MetadataAnalysis
+from models import BreachAnalysis, SecurityAnalysis, QRCodeAnalysis, PromptAnalysis, QuizResult, GitHubCodeAnalysis, MetadataAnalysis
 from utils.document_code_generator import ensure_unique_code
 from utils.metadata_collector import get_client_ip
+from utils.security_utils import is_safe_url_strict
+from utils.logger import get_logger
 import __init__ as app_module
 import os
 import requests
 import io
+from urllib.parse import urljoin
 from datetime import datetime
+
+logger = get_logger(__name__)
 db = app_module.db
 
 bp = Blueprint('outils', __name__)
-
 
 @bp.route('/outils/types-attaques')
 def attack_types():
@@ -52,56 +55,7 @@ def link_analyzer():
         if not url.startswith('http://') and not url.startswith('https://'):
             url = 'https://' + url
         
-        from urllib.parse import urlparse
-        import ipaddress
-        import socket
-        
-        def is_safe_url(check_url):
-            try:
-                parsed = urlparse(check_url)
-                if parsed.scheme not in ['http', 'https']:
-                    return False
-                
-                if parsed.username or parsed.password:
-                    return False
-                
-                hostname = parsed.hostname
-                if not hostname:
-                    return False
-                
-                if hostname.lower() in ['localhost', '127.0.0.1', '0.0.0.0', '::1', '0:0:0:0:0:0:0:1']:
-                    return False
-                
-                if hostname == '169.254.169.254':
-                    return False
-                
-                if hostname.startswith('169.254.'):
-                    return False
-                
-                if hostname.endswith('.local') or hostname.endswith('.internal'):
-                    return False
-                
-                if not hostname.replace('-', '').replace('.', '').replace('_', '').isalnum():
-                    return False
-                
-                try:
-                    addr_info = socket.getaddrinfo(hostname, None)
-                    for info in addr_info:
-                        resolved_ip_str = info[4][0]
-                        if '%' in resolved_ip_str:
-                            resolved_ip_str = resolved_ip_str.split('%')[0]
-                        
-                        ip = ipaddress.ip_address(resolved_ip_str)
-                        if ip.is_private or ip.is_loopback or ip.is_link_local or ip.is_multicast or ip.is_reserved:
-                            return False
-                except (socket.gaierror, ValueError, OSError):
-                    return False
-                
-                return True
-            except Exception:
-                return False
-        
-        if not is_safe_url(url):
+        if not is_safe_url_strict(url):
             flash('Cette URL n\'est pas autorisée pour des raisons de sécurité.', 'error')
             return redirect(url_for('outils.link_analyzer'))
         
@@ -113,15 +67,15 @@ def link_analyzer():
             redirect_count = 0
             
             while redirect_count < max_redirects:
-                if not is_safe_url(current_url):
+                if not is_safe_url_strict(current_url):
                     redirects.append({
                         'url': current_url,
-                        'error': 'URL bloquée pour des raisons de sécurité'
+                        'error': 'URL bloquée pour des raisons de sécurité (IP interne ou interdite)'
                     })
                     break
                 
                 try:
-                    response = requests.get(current_url, allow_redirects=False, timeout=10, headers={'User-Agent': 'CyberConfiance-Link-Analyzer'})
+                    response = requests.get(current_url, allow_redirects=False, timeout=5, headers={'User-Agent': 'CyberConfiance-Link-Analyzer'})
                     
                     redirects.append({
                         'url': current_url,
@@ -135,7 +89,6 @@ def link_analyzer():
                             break
                         
                         if not next_url.startswith('http'):
-                            from urllib.parse import urljoin
                             next_url = urljoin(current_url, next_url)
                         
                         current_url = next_url
@@ -166,7 +119,7 @@ def link_analyzer():
 @bp.route('/outils/analyseur-securite', methods=['GET', 'POST'])
 def security_analyzer():
     results = None
-    analysis_id = None
+    analysis_code = None
     
     if request.method == 'POST':
         try:
@@ -216,17 +169,17 @@ def security_analyzer():
                     )
                     db.session.add(analysis_record)
                     db.session.commit()
-                    analysis_id = analysis_record.id
+                    analysis_code = analysis_record.document_code
                 except Exception as e:
-                    print(f"[ERROR] Error saving security analysis: {str(e)}")
+                    logger.error(f"Error saving security analysis: {str(e)}")
                     db.session.rollback()
         except Exception as e:
-            print(f"[ERROR] Critical error in security_analyzer: {str(e)}")
+            logger.error(f"Critical error in security_analyzer: {str(e)}")
             db.session.rollback()
     
     return render_template('outils/security_analyzer.html', 
                          results=results, 
-                         analysis_id=analysis_id)
+                         analysis_id=analysis_code)
 
 
 @bp.route('/quiz', methods=['GET', 'POST'])
@@ -306,20 +259,20 @@ def quiz_submit_email():
         
         session.pop('quiz_data', None)
         
-        return redirect(url_for('outils.quiz_result_detail', result_id=quiz_result.id))
+        return redirect(url_for('outils.quiz_result_detail', document_code=quiz_result.document_code))
     except Exception as e:
-        print(f"Erreur lors de l'enregistrement du résultat: {str(e)}")
+        logger.error(f"Erreur lors de l'enregistrement du résultat: {str(e)}")
         db.session.rollback()
         flash('Une erreur est survenue lors de l\'enregistrement de vos résultats.', 'error')
         return redirect(url_for('outils.quiz'))
 
 
-@bp.route('/quiz/results/<int:result_id>')
-def quiz_result_detail(result_id):
+@bp.route('/quiz/results/<document_code>')
+def quiz_result_detail(document_code):
     from models import QuizResult
-    print(f"[DEBUG] Loading QuizResult ID={result_id}")
-    quiz_result = QuizResult.query.get_or_404(result_id)
-    print(f"[OK] QuizResult loaded: email={quiz_result.email}")
+    logger.debug(f"Loading QuizResult Code={document_code}")
+    quiz_result = QuizResult.query.filter_by(document_code=document_code).first_or_404()
+    logger.info(f"QuizResult loaded: email={quiz_result.email}")
     
     recommendations = QuizService.get_recommendations(
         quiz_result.overall_score,
@@ -337,7 +290,7 @@ def quiz_result_detail(result_id):
                          scores=quiz_result.category_scores,
                          recommendations=recommendations,
                          email=quiz_result.email,
-                         result_id=quiz_result.id,
+                         result_id=quiz_result.document_code,
                          hibp_result=quiz_result.hibp_summary,
                          hibp_recommendations=hibp_recommendations,
                          data_scenarios=data_scenarios)
@@ -346,7 +299,7 @@ def quiz_result_detail(result_id):
 @bp.route('/quiz/all-results')
 def quiz_all_results():
     from models import QuizResult
-    all_results = QuizResult.query.order_by(QuizResult.created_at.desc()).all()
+    all_results = QuizResult.query.order_by(QuizResult.created_at.desc()).limit(50).all()
     return render_template('outils/quiz_all_results.html', results=all_results)
 
 
@@ -362,7 +315,7 @@ def analyze_breach():
         result = HaveIBeenPwnedService.check_email_breach(email)
         
         if result.get('error'):
-            print(f"[!] Analyse de fuite échouée pour {email}: {result['error']}")
+            logger.error(f"Analyse de fuite échouée pour {email}: {result['error']}")
             
             recommendations = {
                 'level': 'error',
@@ -386,7 +339,7 @@ def analyze_breach():
         recommendations = HaveIBeenPwnedService.get_breach_recommendations(result['count'])
         data_scenarios = HaveIBeenPwnedService.get_data_breach_scenarios()
         
-        analysis_id = None
+        analysis_code = None
         try:
             breach_names = [breach.get('Name', 'Inconnu') for breach in result.get('breaches', [])]
             
@@ -408,10 +361,10 @@ def analyze_breach():
             )
             db.session.add(analysis)
             db.session.commit()
-            analysis_id = analysis.id
-            print(f"[OK] Analyse enregistrée: {email} - {result.get('count', 0)} breach(es) - ID: {analysis_id}")
+            analysis_code = analysis.document_code
+            logger.info(f"Analyse enregistrée: {email} - {result.get('count', 0)} breach(es) - ID: {analysis_code}")
         except Exception as e:
-            print(f"[!] Erreur lors de l'enregistrement de l'analyse: {str(e)}")
+            logger.error(f"Erreur lors de l'enregistrement de l'analyse: {str(e)}")
             db.session.rollback()
         
         return render_template('breach_analysis.html', 
@@ -419,17 +372,17 @@ def analyze_breach():
                              result=result, 
                              recommendations=recommendations,
                              data_scenarios=data_scenarios,
-                             analysis_id=analysis_id)
+                             analysis_id=analysis_code)
     except Exception as e:
-        print(f"[ERROR] Critical error in analyze_breach: {str(e)}")
+        logger.error(f"Critical error in analyze_breach: {str(e)}")
         db.session.rollback()
         flash('Erreur critique lors de l\'analyse. Veuillez réessayer.', 'error')
         return redirect(url_for('main.index'))
 
 
-@bp.route("/generate-breach-pdf/<int:analysis_id>")
-def generate_breach_pdf(analysis_id):
-    breach = BreachAnalysis.query.get_or_404(analysis_id)
+@bp.route("/generate-breach-pdf/<document_code>")
+def generate_breach_pdf(document_code):
+    breach = BreachAnalysis.query.filter_by(document_code=document_code).first_or_404()
     
     user_ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()
     
@@ -448,13 +401,13 @@ def generate_breach_pdf(analysis_id):
         io.BytesIO(pdf_bytes),
         mimetype="application/pdf",
         as_attachment=True,
-        download_name=f"rapport_fuite_{breach.email}_{breach.id}.pdf"
+        download_name=f"rapport_fuite_{breach.email}_{document_code}.pdf"
     )
 
 
-@bp.route("/generate-security-pdf/<int:analysis_id>")
-def generate_security_pdf(analysis_id):
-    analysis = SecurityAnalysis.query.get_or_404(analysis_id)
+@bp.route("/generate-security-pdf/<document_code>")
+def generate_security_pdf(document_code):
+    analysis = SecurityAnalysis.query.filter_by(document_code=document_code).first_or_404()
     
     user_ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()
     
@@ -473,15 +426,15 @@ def generate_security_pdf(analysis_id):
         io.BytesIO(pdf_bytes),
         mimetype="application/pdf",
         as_attachment=True,
-        download_name=f"rapport_securite_{analysis.input_type}_{analysis.id}.pdf"
+        download_name=f"rapport_securite_{analysis.input_type}_{document_code}.pdf"
     )
 
 
-@bp.route("/generate-quiz-pdf/<int:result_id>")
-def generate_quiz_pdf(result_id):
+@bp.route("/generate-quiz-pdf/<document_code>")
+def generate_quiz_pdf(document_code):
     from models import QuizResult
     from services.quiz import QuizService
-    quiz_result = QuizResult.query.get_or_404(result_id)
+    quiz_result = QuizResult.query.filter_by(document_code=document_code).first_or_404()
     
     user_ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()
     
@@ -502,16 +455,16 @@ def generate_quiz_pdf(result_id):
         io.BytesIO(pdf_bytes),
         mimetype="application/pdf",
         as_attachment=True,
-        download_name=f"rapport_quiz_{quiz_result.email}_{quiz_result.id}.pdf"
+        download_name=f"rapport_quiz_{quiz_result.email}_{document_code}.pdf"
     )
 
 
-@bp.route("/export-breach-pdf/<int:breach_id>")
-def export_breach_pdf(breach_id):
+@bp.route("/export-breach-pdf/<document_code>")
+def export_breach_pdf(document_code):
     from services.pdf import PDFReportService
     from models import BreachAnalysis
     
-    breach = BreachAnalysis.query.get_or_404(breach_id)
+    breach = BreachAnalysis.query.filter_by(document_code=document_code).first_or_404()
     
     if breach.pdf_report and breach.pdf_generated_at:
         pdf_bytes = breach.pdf_report
@@ -528,16 +481,16 @@ def export_breach_pdf(breach_id):
         io.BytesIO(pdf_bytes),
         mimetype="application/pdf",
         as_attachment=True,
-        download_name=f"rapport_fuite_{breach.email}_{breach.id}.pdf"
+        download_name=f"rapport_fuite_{breach.email}_{document_code}.pdf"
     )
 
 
-@bp.route("/export-security-pdf/<int:analysis_id>")
-def export_security_pdf(analysis_id):
+@bp.route("/export-security-pdf/<document_code>")
+def export_security_pdf(document_code):
     from services.pdf import PDFReportService
     from models import SecurityAnalysis, BreachAnalysis
     
-    analysis = SecurityAnalysis.query.get_or_404(analysis_id)
+    analysis = SecurityAnalysis.query.filter_by(document_code=document_code).first_or_404()
     
     if analysis.pdf_report and analysis.pdf_generated_at:
         pdf_bytes = analysis.pdf_report
@@ -554,7 +507,7 @@ def export_security_pdf(analysis_id):
         io.BytesIO(pdf_bytes),
         mimetype="application/pdf",
         as_attachment=True,
-        download_name=f"rapport_securite_{analysis.input_type}_{analysis.id}.pdf"
+        download_name=f"rapport_securite_{analysis.input_type}_{document_code}.pdf"
     )
 
 
@@ -642,7 +595,7 @@ def qrcode_analyzer():
                     )
                     db.session.add(qr_analysis)
                     db.session.commit()
-                    analysis_id = qr_analysis.id
+                    analysis_id = qr_analysis.document_code
                 except Exception as e:
                     db.session.rollback()
                     print(f"[ERROR] Failed to save QR analysis: {e}")
@@ -700,7 +653,7 @@ def prompt_analyzer():
                     )
                     db.session.add(prompt_analysis)
                     db.session.commit()
-                    analysis_id = prompt_analysis.id
+                    analysis_id = prompt_analysis.document_code
                 except Exception as e:
                     db.session.rollback()
                     print(f"[ERROR] Failed to save prompt analysis: {e}")
@@ -712,136 +665,9 @@ def prompt_analyzer():
     return render_template('outils/prompt_analyzer.html', results=results, analysis_id=analysis_id)
 
 
-@bp.route("/generate-qrcode-pdf/<int:analysis_id>")
-def generate_qrcode_pdf(analysis_id):
-    analysis = QRCodeAnalysis.query.get_or_404(analysis_id)
-    
-    user_ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()
-    
-    if analysis.pdf_report and analysis.pdf_generated_at:
-        pdf_bytes = analysis.pdf_report
-    else:
-        pdf_service = PDFReportService()
-        pdf_bytes = pdf_service.generate_qrcode_analysis_report(analysis, user_ip)
-        
-        analysis.pdf_report = pdf_bytes
-        analysis.pdf_generated_at = datetime.utcnow()
-        db.session.commit()
-    
-    return send_file(
-        io.BytesIO(pdf_bytes),
-        mimetype="application/pdf",
-        as_attachment=True,
-        download_name=f"rapport_qrcode_{analysis.id}.pdf"
-    )
-
-
-@bp.route("/generate-prompt-pdf/<int:analysis_id>")
-def generate_prompt_pdf(analysis_id):
-    analysis = PromptAnalysis.query.get_or_404(analysis_id)
-    
-    user_ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()
-    
-    if analysis.pdf_report and analysis.pdf_generated_at:
-        pdf_bytes = analysis.pdf_report
-    else:
-        pdf_service = PDFReportService()
-        pdf_bytes = pdf_service.generate_prompt_analysis_report(analysis, user_ip)
-        
-        analysis.pdf_report = pdf_bytes
-        analysis.pdf_generated_at = datetime.utcnow()
-        db.session.commit()
-    
-    return send_file(
-        io.BytesIO(pdf_bytes),
-        mimetype="application/pdf",
-        as_attachment=True,
-        download_name=f"rapport_prompt_{analysis.id}.pdf"
-    )
-
-
-@bp.route('/outils/analyseur-fuite', methods=['GET', 'POST'])
-def breach_analyzer():
-    if request.method == 'POST':
-        return redirect(url_for('outils.analyze_breach'), code=307)
-    return render_template('outils/breach_analyzer.html', results=None, analysis_id=None)
-
-
-@bp.route('/outils/analyseur-github', methods=['GET', 'POST'])
-def github_analyzer():
-    results = None
-    analysis_id = None
-    
-    if request.method == 'POST':
-        try:
-            repo_url = request.form.get('repo_url', '').strip()
-            branch = request.form.get('branch', 'main').strip() or 'main'
-            
-            if not repo_url:
-                flash('Veuillez entrer une URL de depot GitHub.', 'error')
-                return redirect(url_for('outils.github_analyzer'))
-            
-            if 'github.com' not in repo_url:
-                flash('Seuls les depots GitHub sont supportes.', 'error')
-                return redirect(url_for('outils.github_analyzer'))
-            
-            analyzer = GitHubCodeAnalyzerService()
-            results = analyzer.analyze(repo_url, branch)
-            
-            if results and not results.get('error'):
-                try:
-                    github_analysis = GitHubCodeAnalysis(
-                        repo_url=repo_url,
-                        repo_name=results.get('repo_name'),
-                        repo_owner=results.get('repo_owner'),
-                        branch=results.get('branch'),
-                        commit_hash=results.get('commit_hash'),
-                        overall_score=results.get('overall_score', 0),
-                        security_score=results.get('security_score', 0),
-                        risk_level=results.get('risk_level'),
-                        security_findings=results.get('security_findings', []),
-                        dependency_findings=results.get('dependency_findings', []),
-                        architecture_findings=results.get('architecture_findings', []),
-                        performance_findings=results.get('performance_findings', []),
-                        git_hygiene_findings=results.get('git_hygiene_findings', []),
-                        documentation_findings=results.get('documentation_findings', []),
-                        toxic_ai_patterns=results.get('toxic_ai_patterns', []),
-                        code_quality_findings=results.get('code_quality_findings', []),
-                        total_files_analyzed=results.get('total_files_analyzed', 0),
-                        total_lines_analyzed=results.get('total_lines_analyzed', 0),
-                        total_directories=results.get('total_directories', 0),
-                        file_types_distribution=results.get('file_types_distribution', {}),
-                        total_issues_found=results.get('total_issues_found', 0),
-                        critical_issues=results.get('critical_issues', 0),
-                        high_issues=results.get('high_issues', 0),
-                        medium_issues=results.get('medium_issues', 0),
-                        low_issues=results.get('low_issues', 0),
-                        languages_detected=results.get('languages_detected', {}),
-                        frameworks_detected=results.get('frameworks_detected', []),
-                        analysis_summary=results.get('analysis_summary'),
-                        status='completed',
-                        analysis_duration=results.get('analysis_duration'),
-                        document_code=ensure_unique_code(GitHubCodeAnalysis),
-                        ip_address=get_client_ip(request),
-                        user_agent=request.headers.get('User-Agent', '')[:500]
-                    )
-                    db.session.add(github_analysis)
-                    db.session.commit()
-                    analysis_id = github_analysis.id
-                except Exception as e:
-                    db.session.rollback()
-                    print(f"[ERROR] Failed to save GitHub analysis: {e}")
-            
-        except Exception as e:
-            flash(f'Erreur lors de l\'analyse: {str(e)}', 'error')
-            return redirect(url_for('outils.github_analyzer'))
-    
-    return render_template('outils/github_analyzer.html', results=results, analysis_id=analysis_id)
-
-
-@bp.route("/generate-github-pdf/<int:analysis_id>")
-def generate_github_pdf(analysis_id):
-    analysis = GitHubCodeAnalysis.query.get_or_404(analysis_id)
+@bp.route("/generate-github-pdf/<document_code>")
+def generate_github_pdf(document_code):
+    analysis = GitHubCodeAnalysis.query.filter_by(document_code=document_code).first_or_404()
     
     user_ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()
     
@@ -859,7 +685,7 @@ def generate_github_pdf(analysis_id):
         io.BytesIO(pdf_bytes),
         mimetype="application/pdf",
         as_attachment=True,
-        download_name=f"rapport_github_{analysis.repo_name}_{analysis.id}.pdf"
+        download_name=f"rapport_github_{analysis.repo_name}_{document_code}.pdf"
     )
 
 
@@ -868,7 +694,7 @@ def metadata_analyzer():
     results = None
     analysis_id = None
     
-    MAX_FILE_SIZE = 200 * 1024 * 1024
+    MAX_FILE_SIZE = 16 * 1024 * 1024
     
     if request.method == 'POST':
         action = request.form.get('action', 'analyze')
@@ -888,7 +714,7 @@ def metadata_analyzer():
             filename = file.filename
             
             if len(file_data) > MAX_FILE_SIZE:
-                flash('Le fichier est trop volumineux. Taille maximale: 200 Mo.', 'error')
+                flash('Le fichier est trop volumineux. Taille maximale: 16 Mo.', 'error')
                 return redirect(url_for('outils.metadata_analyzer'))
             
             file_type = MetadataAnalyzerService.get_file_type(filename)
@@ -926,8 +752,8 @@ def metadata_analyzer():
                         )
                         db.session.add(metadata_analysis)
                         db.session.commit()
-                        analysis_id = metadata_analysis.id
-                        return redirect(url_for('outils.metadata_results', analysis_id=analysis_id))
+                        analysis_id = metadata_analysis.document_code
+                        return redirect(url_for('outils.metadata_results', document_code=analysis_id))
                     except Exception as e:
                         db.session.rollback()
                         print(f"[ERROR] Failed to save metadata analysis: {e}")
@@ -935,9 +761,9 @@ def metadata_analyzer():
                     flash(results.get('error', 'Erreur lors de l\'analyse'), 'error')
                     
             elif action == 'clean':
-                clean_analysis_id = request.form.get('analysis_id')
-                if clean_analysis_id:
-                    return redirect(url_for('outils.metadata_download_clean', analysis_id=clean_analysis_id))
+                clean_analysis_code = request.form.get('document_code')
+                if clean_analysis_code:
+                    return redirect(url_for('outils.metadata_download_clean', document_code=clean_analysis_code))
                 
                 clean_data, clean_filename = MetadataAnalyzerService.remove_metadata(file_data, filename)
                 
@@ -973,19 +799,19 @@ def metadata_analyzer():
     return render_template('outils/metadata_analyzer.html', results=results, analysis_id=analysis_id)
 
 
-@bp.route('/outils/analyseur-metadonnee/<int:analysis_id>/pdf')
-def metadata_analysis_pdf(analysis_id):
+@bp.route('/outils/analyseur-metadonnee/<document_code>/pdf')
+def metadata_analysis_pdf(document_code):
     from services.pdf import PDFReportService
     from datetime import datetime
     
-    analysis = MetadataAnalysis.query.get_or_404(analysis_id)
+    analysis = MetadataAnalysis.query.filter_by(document_code=document_code).first_or_404()
     
     if analysis.pdf_report:
         return Response(
             analysis.pdf_report,
             mimetype='application/pdf',
             headers={
-                'Content-Disposition': f'attachment; filename="rapport_metadonnees_{analysis.id}.pdf"',
+                'Content-Disposition': f'attachment; filename="rapport_metadonnees_{document_code}.pdf"',
                 'Content-Length': len(analysis.pdf_report)
             }
         )
@@ -1004,7 +830,7 @@ def metadata_analysis_pdf(analysis_id):
             pdf_bytes,
             mimetype='application/pdf',
             headers={
-                'Content-Disposition': f'attachment; filename="rapport_metadonnees_{analysis.id}.pdf"',
+                'Content-Disposition': f'attachment; filename="rapport_metadonnees_{document_code}.pdf"',
                 'Content-Length': len(pdf_bytes)
             }
         )
@@ -1016,9 +842,9 @@ def metadata_analysis_pdf(analysis_id):
         return redirect(url_for('outils.metadata_analyzer'))
 
 
-@bp.route('/outils/analyseur-metadonnee/<int:analysis_id>/telecharger')
-def metadata_download_clean(analysis_id):
-    analysis = MetadataAnalysis.query.get_or_404(analysis_id)
+@bp.route('/outils/analyseur-metadonnee/<document_code>/telecharger')
+def metadata_download_clean(document_code):
+    analysis = MetadataAnalysis.query.filter_by(document_code=document_code).first_or_404()
     
     filename = analysis.original_filename or 'fichier'
     base, ext = os.path.splitext(filename)
@@ -1068,18 +894,18 @@ def metadata_download_clean(analysis_id):
     return redirect(url_for('outils.metadata_analyzer'))
 
 
-@bp.route('/outils/analyseur-metadonnee/<int:analysis_id>/resultats')
-def metadata_results(analysis_id):
-    analysis = MetadataAnalysis.query.get_or_404(analysis_id)
+@bp.route('/outils/analyseur-metadonnee/<document_code>/resultats')
+def metadata_results(document_code):
+    analysis = MetadataAnalysis.query.filter_by(document_code=document_code).first_or_404()
     return render_template('outils/metadata_results.html', analysis=analysis)
 
 
-@bp.route('/outils/analyseur-metadonnee/<int:analysis_id>/pdf-resume')
-def metadata_analysis_pdf_summary(analysis_id):
+@bp.route('/outils/analyseur-metadonnee/<document_code>/pdf-resume')
+def metadata_analysis_pdf_summary(document_code):
     from services.pdf import PDFReportService
     from datetime import datetime
     
-    analysis = MetadataAnalysis.query.get_or_404(analysis_id)
+    analysis = MetadataAnalysis.query.filter_by(document_code=document_code).first_or_404()
     
     pdf_service = PDFReportService()
     ip_address = get_client_ip(request)
@@ -1091,7 +917,7 @@ def metadata_analysis_pdf_summary(analysis_id):
             pdf_bytes,
             mimetype='application/pdf',
             headers={
-                'Content-Disposition': f'attachment; filename="rapport_resume_metadonnees_{analysis.id}.pdf"',
+                'Content-Disposition': f'attachment; filename="rapport_resume_metadonnees_{document_code}.pdf"',
                 'Content-Length': len(pdf_bytes)
             }
         )
@@ -1100,22 +926,22 @@ def metadata_analysis_pdf_summary(analysis_id):
         import traceback
         traceback.print_exc()
         flash('Erreur lors de la generation du rapport PDF.', 'error')
-        return redirect(url_for('outils.metadata_results', analysis_id=analysis_id))
+        return redirect(url_for('outils.metadata_results', document_code=document_code))
 
 
-@bp.route('/outils/analyseur-metadonnee/<int:analysis_id>/pdf-complet')
-def metadata_analysis_pdf_complete(analysis_id):
+@bp.route('/outils/analyseur-metadonnee/<document_code>/pdf-complet')
+def metadata_analysis_pdf_complete(document_code):
     from services.pdf import PDFReportService
     from datetime import datetime
     
-    analysis = MetadataAnalysis.query.get_or_404(analysis_id)
+    analysis = MetadataAnalysis.query.filter_by(document_code=document_code).first_or_404()
     
     if analysis.pdf_report:
         return Response(
             analysis.pdf_report,
             mimetype='application/pdf',
             headers={
-                'Content-Disposition': f'attachment; filename="rapport_complet_metadonnees_{analysis.id}.pdf"',
+                'Content-Disposition': f'attachment; filename="rapport_complet_metadonnees_{document_code}.pdf"',
                 'Content-Length': len(analysis.pdf_report)
             }
         )
@@ -1134,7 +960,7 @@ def metadata_analysis_pdf_complete(analysis_id):
             pdf_bytes,
             mimetype='application/pdf',
             headers={
-                'Content-Disposition': f'attachment; filename="rapport_complet_metadonnees_{analysis.id}.pdf"',
+                'Content-Disposition': f'attachment; filename="rapport_complet_metadonnees_{document_code}.pdf"',
                 'Content-Length': len(pdf_bytes)
             }
         )
@@ -1143,4 +969,4 @@ def metadata_analysis_pdf_complete(analysis_id):
         import traceback
         traceback.print_exc()
         flash('Erreur lors de la generation du rapport PDF.', 'error')
-        return redirect(url_for('outils.metadata_results', analysis_id=analysis_id))
+        return redirect(url_for('outils.metadata_results', document_code=document_code))
