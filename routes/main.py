@@ -8,7 +8,7 @@ www.myoneart.com
 Routes principales: page d'accueil, contact, analyseurs, quiz.
 """
 
-from flask import Blueprint, render_template, request, flash, redirect, url_for, session, jsonify, send_file, make_response
+from flask import Blueprint, render_template, request, flash, redirect, url_for, session, jsonify, send_file, make_response, send_from_directory, current_app
 from flask_login import login_required
 from services import ContentService, HaveIBeenPwnedService, QuizService
 from services.security import SecurityAnalyzerService
@@ -1044,6 +1044,12 @@ def sitemap():
     response.headers['Content-Type'] = 'application/xml; charset=utf-8'
     response.headers['Cache-Control'] = 'public, max-age=3600'
     return response
+
+
+@bp.route('/.well-known/security.txt')
+def security_txt():
+    """Serve security.txt file"""
+    return send_from_directory(os.path.join(current_app.root_path, 'static', '.well-known'), 'security.txt')
 
 
 @bp.route('/outils/analyseur-qrcode', methods=['GET', 'POST'])
