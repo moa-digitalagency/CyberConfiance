@@ -16,7 +16,12 @@ load_dotenv()
 
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key-change-in-production'
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///site.db'
+
+    # Force PostgreSQL usage
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
+    if not SQLALCHEMY_DATABASE_URI:
+        raise ValueError("DATABASE_URL is not set. PostgreSQL is required.")
+
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     # Admin settings

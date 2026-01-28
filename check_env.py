@@ -83,7 +83,12 @@ def check_environment_variables():
     for var_name, description in REQUIRED_ENV_VARS.items():
         value = os.environ.get(var_name)
         if not value:
-            if is_deployment:
+            if var_name == 'DATABASE_URL':
+                # DATABASE_URL is strictly required everywhere now
+                missing_vars.append((var_name, description))
+                print(f"  [X] {var_name}: MANQUANT")
+                print(f"      -> {description}")
+            elif is_deployment:
                 missing_vars.append((var_name, description))
                 print(f"  [X] {var_name}: MANQUANT")
                 print(f"      -> {description}")
