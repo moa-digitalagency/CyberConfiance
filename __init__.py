@@ -126,6 +126,18 @@ def create_app(config_class=Config):
         response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
         response.headers['Pragma'] = 'no-cache'
         response.headers['Expires'] = '0'
+
+        # Content Security Policy (Strict)
+        csp = (
+            "default-src 'self'; "
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; "
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; "
+            "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; "
+            "img-src 'self' data: https: http:; "
+            "connect-src 'self';"
+        )
+        response.headers['Content-Security-Policy'] = csp
+
         return response
     
     from flask_wtf.csrf import CSRFError

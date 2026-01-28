@@ -30,3 +30,8 @@ class Config:
     # Application settings
     APP_NAME = 'CyberConfiance'
     APP_DESCRIPTION = 'Plateforme de sensibilisation à la cybersécurité'
+
+    # Security settings
+    SESSION_COOKIE_SECURE = True
+    SESSION_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_SAMESITE = 'Lax'
