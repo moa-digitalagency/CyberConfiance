@@ -245,16 +245,22 @@ def verify_table_columns():
     return all_valid
 
 def check_vps_compatibility():
-    """Check VPS PostgreSQL transaction compatibility"""
-    print("\n[VPS CHECK] Verifying PostgreSQL transaction handling...")
+    """Check PostgreSQL compatibility"""
+    print("\n[DB CHECK] Verifying PostgreSQL connection...")
     try:
         from sqlalchemy import text
+
+        # Verify dialect is PostgreSQL
+        if db.engine.dialect.name != 'postgresql':
+            print(f"✗ Error: Database dialect is '{db.engine.dialect.name}', but 'postgresql' is required.")
+            return False
+
         result = db.session.execute(text("SELECT 1"))
         db.session.rollback()
-        print("✓ PostgreSQL transaction handling: OK")
+        print("✓ PostgreSQL connection and transaction handling: OK")
         return True
     except Exception as e:
-        print(f"⚠️  PostgreSQL transaction check failed: {e}")
+        print(f"⚠️  PostgreSQL check failed: {e}")
         db.session.rollback()
         return False
 

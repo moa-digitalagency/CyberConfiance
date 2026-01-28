@@ -161,7 +161,7 @@ Toutes les soumissions incluent :
 
 ### Prérequis
 - Python 3.11+
-- PostgreSQL (recommandé) ou SQLite
+- PostgreSQL
 - **Compte Have I Been Pwned API** (~$3.50/mois) - OBLIGATOIRE
 - **Clé d'analyse de sécurité** - OBLIGATOIRE pour scan de fichiers/URLs
 
@@ -425,8 +425,7 @@ Configuration SEO complète dans le panel admin:
 - **Pillow** - Traitement d'images pour PDFs
 
 ### Base de données
-- **PostgreSQL** - Base production (recommandé)
-- **SQLite** - Alternative développement
+- **PostgreSQL** - Base de données
 - **psycopg2-binary** - Adaptateur PostgreSQL
 
 ### Frontend
