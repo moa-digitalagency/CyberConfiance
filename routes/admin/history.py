@@ -14,6 +14,7 @@ from models import (db, ActivityLog, SecurityLog, QuizResult, SecurityAnalysis,
 from utils.logging_utils import log_activity
 from datetime import datetime
 from sqlalchemy import func, desc
+from sqlalchemy.orm import defer
 from routes.admin import bp, admin_required
 
 @bp.route('/history/quiz')
@@ -29,7 +30,8 @@ def quiz_history():
     date_from = request.args.get('date_from', '')
     date_to = request.args.get('date_to', '')
     
-    query = QuizResult.query
+    # Performance: Defer loading of PDF report to improve query speed
+    query = QuizResult.query.options(defer(QuizResult.pdf_report))
     
     if search:
         query = query.filter(QuizResult.email.contains(search))
@@ -59,7 +61,8 @@ def security_history():
     input_type = request.args.get('type', '')
     threat_only = request.args.get('threat_only', '')
     
-    query = SecurityAnalysis.query
+    # Performance: Defer loading of PDF report to improve query speed
+    query = SecurityAnalysis.query.options(defer(SecurityAnalysis.pdf_report))
     
     if search:
         query = query.filter(SecurityAnalysis.input_value.contains(search))
@@ -88,7 +91,8 @@ def breach_history():
     search = request.args.get('search', '')
     risk_level = request.args.get('risk_level', '')
     
-    query = BreachAnalysis.query
+    # Performance: Defer loading of PDF report to improve query speed
+    query = BreachAnalysis.query.options(defer(BreachAnalysis.pdf_report))
     
     if search:
         query = query.filter(BreachAnalysis.email.contains(search))
@@ -190,7 +194,8 @@ def qrcode_history():
     threat_level = request.args.get('threat_level', '')
     threat_only = request.args.get('threat_only', '')
     
-    query = QRCodeAnalysis.query
+    # Performance: Defer loading of PDF report to improve query speed
+    query = QRCodeAnalysis.query.options(defer(QRCodeAnalysis.pdf_report))
     
     if search:
         query = query.filter(
@@ -255,7 +260,8 @@ def prompt_history():
     threat_level = request.args.get('threat_level', '')
     threat_only = request.args.get('threat_only', '')
     
-    query = PromptAnalysis.query
+    # Performance: Defer loading of PDF report to improve query speed
+    query = PromptAnalysis.query.options(defer(PromptAnalysis.pdf_report))
     
     if search:
         query = query.filter(PromptAnalysis.prompt_text.contains(search))
