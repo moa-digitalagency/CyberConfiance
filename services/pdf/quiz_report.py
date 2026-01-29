@@ -18,6 +18,7 @@ Mixin pour la generation de rapports PDF de resultats quiz.
 """
 
 import fitz
+from utils.document_code_generator import generate_qr_code
 
 
 class QuizReportMixin:
@@ -188,11 +189,18 @@ class QuizReportMixin:
                     
                     y_pos += 12
         
+        qr_url = "https://cyberconfiance.com/quiz"
+        try:
+            qr_bytes = generate_qr_code(qr_url, box_size=3, border=1)
+        except Exception:
+            qr_bytes = None
+
         total_pages = len(doc)
         for page_num, page in enumerate(doc, 1):
             self._add_header_footer(page, page_num, total_pages, ip_address, 
                                   document_code=quiz_result.document_code,
-                                  qr_url="https://cyberconfiance.com/quiz")
+                                  qr_url=qr_url,
+                                  qr_bytes=qr_bytes)
         
         pdf_bytes = doc.tobytes()
         doc.close()

@@ -72,7 +72,7 @@ class PDFReportBase:
         page.insert_text((30, height - 40), "cyberconfiance.com", 
                         fontsize=10, fontname="helv", color=self.primary_color)
         
-    def _add_header_footer(self, page, page_num, total_pages, ip_address, site_url="https://cyberconfiance.com", document_code=None, qr_url=None):
+    def _add_header_footer(self, page, page_num, total_pages, ip_address, site_url="https://cyberconfiance.com", document_code=None, qr_url=None, qr_bytes=None):
         """Ajoute en-tête et pied de page à une page"""
         width, height = page.rect.width, page.rect.height
         
@@ -83,17 +83,18 @@ class PDFReportBase:
             except:
                 pass
         
-        if qr_url:
+        if qr_bytes or qr_url:
             try:
-                qr_bytes = generate_qr_code(qr_url, box_size=3, border=1)
-                qr_img = Image.open(io.BytesIO(qr_bytes))
+                if not qr_bytes and qr_url:
+                    qr_bytes = generate_qr_code(qr_url, box_size=3, border=1)
                 
-                qr_size = 50
-                qr_x = width - 30 - qr_size
-                qr_y = 15
-                qr_rect = fitz.Rect(qr_x, qr_y, qr_x + qr_size, qr_y + qr_size)
-                
-                page.insert_image(qr_rect, stream=qr_bytes)
+                if qr_bytes:
+                    qr_size = 50
+                    qr_x = width - 30 - qr_size
+                    qr_y = 15
+                    qr_rect = fitz.Rect(qr_x, qr_y, qr_x + qr_size, qr_y + qr_size)
+
+                    page.insert_image(qr_rect, stream=qr_bytes)
             except Exception as e:
                 pass
         
