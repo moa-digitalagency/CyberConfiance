@@ -581,10 +581,12 @@ class SecurityAnalyzerService:
             'source_results': {
                 'virustotal': {
                     'available': vt_result and not vt_result.get('error'),
+                    'found': vt_result.get('found', False) if vt_result else False,
                     'threat_detected': vt_result.get('threat_detected', False) if vt_result else False,
                     'malicious': vt_malicious,
                     'suspicious': vt_suspicious,
-                    'total': vt_total
+                    'total': vt_total,
+                    'stats': vt_stats
                 },
                 'google_safe_browsing': {
                     'available': gsb_result and not gsb_result.get('error'),
