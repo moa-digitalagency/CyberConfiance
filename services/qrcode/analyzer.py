@@ -1032,11 +1032,11 @@ class QRCodeAnalyzerService:
             result['chain_tracker_analysis'] = chain_tracker_analysis
             
             if chain_tracker_analysis.get('ip_loggers_found'):
-                for logger in chain_tracker_analysis.get('ip_loggers_found', []):
+                for ip_logger in chain_tracker_analysis.get('ip_loggers_found', []):
                     result['issues'].append({
                         'type': 'ip_logger_in_chain',
                         'severity': 'critical',
-                        'message': f"IP Logger detecte a l'etape {logger.get('step', '?')} de la redirection"
+                        'message': f"IP Logger detecte a l'etape {ip_logger.get('step', '?')} de la redirection"
                     })
             
             if chain_tracker_analysis.get('trackers_found'):
@@ -1054,6 +1054,8 @@ class QRCodeAnalyzerService:
                 issue['location'] = 'final_url'
                 result['issues'].append(issue)
         
+        vt_result_for_blacklist = None
+
         try:
             security_analyzer = self._get_security_analyzer()
             url_to_analyze = result['final_url'] if result['final_url'] else url
@@ -1062,6 +1064,11 @@ class QRCodeAnalyzerService:
             multi_api_result = security_analyzer.analyze(url_to_analyze, 'url')
             
             if not multi_api_result.get('error'):
+                if url == url_to_analyze:
+                    vt_data = multi_api_result.get('source_results', {}).get('virustotal')
+                    if vt_data and vt_data.get('found') and not vt_data.get('error'):
+                        vt_result_for_blacklist = vt_data
+
                 result['multi_api_analysis'] = {
                     'url_analyzed': url_to_analyze,
                     'threat_detected': multi_api_result.get('threat_detected', False),
@@ -1093,6 +1100,12 @@ class QRCodeAnalyzerService:
                 if url != url_to_analyze:
                     logger.info(f"Analyse multi-API de l'URL originale: {url}")
                     original_api_result = security_analyzer.analyze(url, 'url')
+
+                    if not original_api_result.get('error'):
+                        vt_data = original_api_result.get('source_results', {}).get('virustotal')
+                        if vt_data and vt_data.get('found') and not vt_data.get('error'):
+                            vt_result_for_blacklist = vt_data
+
                     if not original_api_result.get('error') and original_api_result.get('threat_detected'):
                         result['multi_api_analysis']['original_url_threat'] = True
                         result['issues'].append({
@@ -1112,7 +1125,26 @@ class QRCodeAnalyzerService:
                 'message': str(e)[:100]
             }
         
-        blacklist_result, bl_error = self.check_blacklist(url)
+        if vt_result_for_blacklist:
+            stats = vt_result_for_blacklist.get('stats', {})
+            malicious_count = stats.get('malicious', 0)
+            suspicious_count = stats.get('suspicious', 0)
+            harmless_count = stats.get('harmless', 0)
+            undetected_count = stats.get('undetected', 0)
+
+            blacklist_result = {
+                'checked': True,
+                'malicious': malicious_count,
+                'suspicious': suspicious_count,
+                'harmless': harmless_count,
+                'undetected': undetected_count,
+                'total': vt_result_for_blacklist.get('total', 0),
+                'is_blacklisted': malicious_count > 0,
+                'reputation': 0  # Not available in multi_api result
+            }
+            bl_error = None
+        else:
+            blacklist_result, bl_error = self.check_blacklist(url)
         if blacklist_result:
             result['blacklist_result'] = blacklist_result
             if blacklist_result.get('is_blacklisted'):
