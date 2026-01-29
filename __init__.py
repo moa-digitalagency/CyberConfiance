@@ -136,6 +136,13 @@ def create_app(config_class=Config):
         response.headers['Pragma'] = 'no-cache'
         response.headers['Expires'] = '0'
 
+        # Security Headers
+        response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+        response.headers['X-XSS-Protection'] = '1; mode=block'
+        response.headers['Server'] = 'CyberConfiance Secure Server'
+
         # Content Security Policy (Strict)
         csp = (
             "default-src 'self'; "

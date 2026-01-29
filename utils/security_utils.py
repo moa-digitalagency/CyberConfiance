@@ -1,11 +1,10 @@
 """
-/*
  * Nom de l'application : CyberConfiance
  * Description : Utilitaires de sécurité pour la validation et l'assainissement.
  * Produit de : MOA Digital Agency, www.myoneart.com
  * Fait par : Aisance KALONJI, www.aisancekalonji.com
  * Auditer par : La CyberConfiance, www.cyberconfiance.com
- */
+"""
 
 import socket
 import ipaddress
