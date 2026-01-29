@@ -18,6 +18,7 @@ Mixin pour la generation de rapports PDF d'analyse QR code.
 """
 
 import fitz
+from utils.document_code_generator import generate_qr_code
 
 
 class QRCodeReportMixin:
@@ -373,11 +374,18 @@ class QRCodeReportMixin:
                 page.insert_text((40, y_pos), f"- {rec}", fontsize=9, color=(0.3, 0.3, 0.3))
                 y_pos += 16
         
+        qr_url = "https://cyberconfiance.com/outils/analyseur-qrcode"
+        try:
+            qr_bytes = generate_qr_code(qr_url, box_size=3, border=1)
+        except Exception:
+            qr_bytes = None
+
         total_pages = len(doc)
         for page_num, p in enumerate(doc, 1):
             self._add_header_footer(p, page_num, total_pages, ip_address, 
                                    document_code=analysis.document_code,
-                                   qr_url="https://cyberconfiance.com/outils/analyseur-qrcode")
+                                   qr_url=qr_url,
+                                   qr_bytes=qr_bytes)
         
         pdf_bytes = doc.tobytes()
         doc.close()

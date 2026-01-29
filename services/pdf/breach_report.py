@@ -18,6 +18,7 @@ Mixin pour la generation de rapports PDF de fuite de donnees.
 """
 
 import fitz
+from utils.document_code_generator import generate_qr_code
 
 
 class BreachReportMixin:
@@ -123,11 +124,18 @@ class BreachReportMixin:
                             "Votre adresse email n'apparaît dans aucune base de données de fuites connues.", 
                             fontsize=10)
         
+        qr_url = "https://cyberconfiance.com/"
+        try:
+            qr_bytes = generate_qr_code(qr_url, box_size=3, border=1)
+        except Exception:
+            qr_bytes = None
+
         total_pages = len(doc)
         for page_num, page in enumerate(doc, 1):
             self._add_header_footer(page, page_num, total_pages, ip_address, 
                                   document_code=breach_analysis.document_code,
-                                  qr_url="https://cyberconfiance.com/")
+                                  qr_url=qr_url,
+                                  qr_bytes=qr_bytes)
         
         pdf_bytes = doc.tobytes()
         doc.close()
