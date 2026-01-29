@@ -1,11 +1,10 @@
 """
-/*
  * Nom de l'application : CyberConfiance
  * Description : Routes principales: page d'accueil, contact, analyseurs, quiz.
  * Produit de : MOA Digital Agency, www.myoneart.com
  * Fait par : Aisance KALONJI, www.aisancekalonji.com
  * Auditer par : La CyberConfiance, www.cyberconfiance.com
- */
+"""
 
 from flask import Blueprint, render_template, request, flash, redirect, url_for, session, jsonify, send_file, make_response, send_from_directory, current_app
 from flask_login import login_required
@@ -470,7 +469,7 @@ def analyze_breach():
 @bp.route('/set-language', methods=['POST'])
 @bp.route('/set-language/<lang>')
 def set_language(lang=None):
-    """Set user's preferred language"""
+    """Set users preferred language"""
     from urllib.parse import urlparse
     
     if request.method == 'POST' and request.is_json:
@@ -998,7 +997,7 @@ def generate_prompt_pdf(document_code):
 
 @bp.route('/outils/analyseur-fuite', methods=['GET', 'POST'])
 def breach_analyzer():
-    """Redirect to the main breach analysis page with the preferred presentation"""
+    # Redirect to the main breach analysis page
     if request.method == 'POST':
         return redirect(url_for('main.analyze_breach'), code=307)
     return render_template('outils/breach_analyzer.html', results=None, analysis_id=None)

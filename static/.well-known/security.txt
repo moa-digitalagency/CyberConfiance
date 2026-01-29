@@ -1,4 +1,5 @@
-Contact: security@cyberconfiance.com
-Expires: 2025-12-31T23:59:59.000Z
+Contact: mailto:admin@cyberconfiance.fr
+Contact: mailto:moa@myoneart.com
+Expires: 2026-04-21T00:00:00.000Z
 Preferred-Languages: fr, en
-Canonical: https://www.cyberconfiance.com/.well-known/security.txt
+Canonical: https://cyberconfiance.com/.well-known/security.txt

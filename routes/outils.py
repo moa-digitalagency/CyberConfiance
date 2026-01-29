@@ -1,11 +1,10 @@
 """
-/*
  * Nom de l'application : CyberConfiance
  * Description : Routes des outils d'analyse: liens, QR codes, prompts, GitHub, fuites email.
  * Produit de : MOA Digital Agency, www.myoneart.com
  * Fait par : Aisance KALONJI, www.aisancekalonji.com
  * Auditer par : La CyberConfiance, www.cyberconfiance.com
- */
+"""
 
 from flask import Blueprint, render_template, request, flash, redirect, url_for, session, send_file, Response, abort
 from services import ContentService, HaveIBeenPwnedService, QuizService
