@@ -521,21 +521,13 @@ class QRCodeAnalyzerService:
                 break
             
             try:
-                try:
-                    response = session.head(
-                        current_url,
-                        allow_redirects=False,
-                        timeout=self.request_timeout,
-                        verify=True
-                    )
-                except requests.exceptions.RequestException:
-                    response = session.get(
-                        current_url,
-                        allow_redirects=False,
-                        timeout=self.request_timeout,
-                        verify=True,
-                        stream=True
-                    )
+                response = session.get(
+                    current_url,
+                    allow_redirects=False,
+                    timeout=self.request_timeout,
+                    verify=True,
+                    stream=True
+                )
                 
                 redirect_info = {
                     'url': current_url,
@@ -562,6 +554,7 @@ class QRCodeAnalyzerService:
                         })
                         
                         current_url = next_url
+                        response.close()
                         continue
                 
                 header_redirects = self._check_header_redirects(response, current_url)
@@ -577,17 +570,7 @@ class QRCodeAnalyzerService:
                     
                     if 'text/html' in content_type:
                         try:
-                            if hasattr(response, 'text'):
-                                content = response.text[:100000]
-                            else:
-                                get_response = session.get(
-                                    current_url,
-                                    allow_redirects=False,
-                                    timeout=self.request_timeout,
-                                    verify=True
-                                )
-                                content = get_response.text[:100000]
-                                get_response.close()
+                            content = response.text[:100000]
                             
                             soup = BeautifulSoup(content, 'html.parser')
                             
@@ -672,10 +655,12 @@ class QRCodeAnalyzerService:
                     else:
                         redirect_chain.append(redirect_info)
                         final_url = current_url
+                        response.close()
                         break
                 else:
                     redirect_chain.append(redirect_info)
                     final_url = current_url
+                    response.close()
                     break
                     
             except requests.exceptions.Timeout:
