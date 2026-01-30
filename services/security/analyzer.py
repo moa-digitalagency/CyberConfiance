@@ -318,13 +318,16 @@ class SecurityAnalyzerService:
                         analysis_id = analysis.id
                         logger.info(f"URL scan submitted, analysis ID: {analysis_id}")
                         
-                        max_attempts = 12
-                        for attempt in range(max_attempts):
-                            time.sleep(5)
+                        # Adaptive polling strategy: start frequent, then back off
+                        # Delays in seconds: 1, 2, 3, 5... (total ~61s)
+                        polling_delays = [1, 2, 3, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5]
+
+                        for i, delay in enumerate(polling_delays):
+                            time.sleep(delay)
                             try:
                                 analysis_obj = client.get_object(f"/analyses/{analysis_id}")
                                 status = analysis_obj.status
-                                logger.info(f"Analysis status (attempt {attempt+1}): {status}")
+                                logger.info(f"Analysis status (attempt {i+1}): {status}")
                                 
                                 if status == "completed":
                                     url_obj = client.get_object(f"/urls/{url_id}")
