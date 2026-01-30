@@ -21,6 +21,7 @@ import os
 import vt
 import hashlib
 import re
+import concurrent.futures
 from typing import Dict, List, Optional, Tuple
 from utils.logger import get_logger
 
@@ -120,13 +121,22 @@ class VirusTotalService:
         threats = []
         urls = self._extract_urls(text)
         
-        for url in urls:
+        def safe_scan(target_url):
             try:
-                threat_detected, _ = self.scan_url(url)
-                if threat_detected:
-                    threats.append(url)
+                detected, _ = self.scan_url(target_url)
+                return target_url if detected else None
             except:
-                pass
+                return None
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=min(20, len(urls) or 1)) as executor:
+            futures = [executor.submit(safe_scan, url) for url in urls]
+            for future in concurrent.futures.as_completed(futures):
+                try:
+                    result = future.result()
+                    if result:
+                        threats.append(result)
+                except:
+                    pass
         
         suspicious_patterns = [
             r'<script[^>]*>.*?</script>',
