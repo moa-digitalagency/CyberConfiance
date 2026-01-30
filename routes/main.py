@@ -129,43 +129,55 @@ def link_analyzer():
             max_redirects = 10
             redirect_count = 0
             
-            while redirect_count < max_redirects:
-                if not is_safe_url_strict(current_url):
-                    redirects.append({
-                        'url': current_url,
-                        'error': 'URL bloquée pour des raisons de sécurité'
-                    })
-                    break
+            # Use a session for connection reuse and performance
+            with requests.Session() as session:
+                session.headers.update({'User-Agent': 'CyberConfiance-Link-Analyzer'})
                 
-                try:
-                    response = requests.get(current_url, allow_redirects=False, timeout=10, headers={'User-Agent': 'CyberConfiance-Link-Analyzer'})
-                    
-                    redirects.append({
-                        'url': current_url,
-                        'status_code': response.status_code,
-                        'headers': dict(response.headers)
-                    })
-                    
-                    if response.status_code in [301, 302, 303, 307, 308]:
-                        next_url = response.headers.get('Location')
-                        if not next_url:
-                            break
-                        
-                        if not next_url.startswith('http'):
-                            from urllib.parse import urljoin
-                            next_url = urljoin(current_url, next_url)
-                        
-                        current_url = next_url
-                        redirect_count += 1
-                    else:
+                while redirect_count < max_redirects:
+                    if not is_safe_url_strict(current_url):
+                        redirects.append({
+                            'url': current_url,
+                            'error': 'URL bloquée pour des raisons de sécurité'
+                        })
                         break
+                    
+                    try:
+                        # stream=True prevents downloading the body
+                        response = session.get(current_url, allow_redirects=False, timeout=(3.05, 5), stream=True)
                         
-                except requests.exceptions.RequestException as e:
-                    redirects.append({
-                        'url': current_url,
-                        'error': str(e)
-                    })
-                    break
+                        redirects.append({
+                            'url': current_url,
+                            'status_code': response.status_code,
+                            'headers': dict(response.headers)
+                        })
+                        
+                        # Get data we need before closing
+                        status_code = response.status_code
+                        location = response.headers.get('Location')
+
+                        # Explicitly close to abort download and return connection to pool
+                        response.close()
+                        
+                        if status_code in [301, 302, 303, 307, 308]:
+                            next_url = location
+                            if not next_url:
+                                break
+
+                            if not next_url.startswith('http'):
+                                from urllib.parse import urljoin
+                                next_url = urljoin(current_url, next_url)
+
+                            current_url = next_url
+                            redirect_count += 1
+                        else:
+                            break
+
+                    except requests.exceptions.RequestException as e:
+                        redirects.append({
+                            'url': current_url,
+                            'error': str(e)
+                        })
+                        break
             
             final_url = current_url
                                  
