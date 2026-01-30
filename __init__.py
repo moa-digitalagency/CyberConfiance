@@ -132,9 +132,11 @@ def create_app(config_class=Config):
     
     @app.after_request
     def add_header(response):
-        response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
-        response.headers['Pragma'] = 'no-cache'
-        response.headers['Expires'] = '0'
+        # Don't overwrite Cache-Control if the view explicitly set it to public
+        if 'public' not in response.headers.get('Cache-Control', ''):
+            response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+            response.headers['Pragma'] = 'no-cache'
+            response.headers['Expires'] = '0'
 
         # Security Headers
         response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
