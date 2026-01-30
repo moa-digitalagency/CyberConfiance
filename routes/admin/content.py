@@ -23,7 +23,7 @@ from models import (db, QuizResult, SecurityAnalysis, BreachAnalysis,
                     SiteSettings, News, Newsletter, Contact)
 from utils.logging_utils import log_activity
 from datetime import datetime
-from sqlalchemy import desc
+from sqlalchemy import desc, text, literal
 from routes.admin import bp, admin_required, moderator_required
 
 @bp.route('/blog')
@@ -316,75 +316,113 @@ def documents_management():
     search_code = request.args.get('search', '')
     doc_type = request.args.get('type', 'all')
     
-    documents = []
+    from models import RequestSubmission
+
+    queries = []
     
+    # QuizResult
     if doc_type == 'all' or doc_type == 'quiz':
-        quiz_results = QuizResult.query
+        q1 = db.session.query(
+            QuizResult.id,
+            QuizResult.document_code,
+            QuizResult.email.label('identifier'),
+            QuizResult.created_at.label('created_at'),
+            literal('Quiz').label('type_label'),
+            literal('quiz').label('source_type')
+        ).filter(QuizResult.document_code.isnot(None))
         if search_code:
-            quiz_results = quiz_results.filter(QuizResult.document_code.contains(search_code))
-        for q in quiz_results.all():
-            if q.document_code:
-                documents.append({
-                    'type': 'Quiz',
-                    'code': q.document_code,
-                    'email': q.email,
-                    'created_at': q.created_at,
-                    'download_url': url_for('main.generate_quiz_pdf', result_id=q.id)
-                })
-    
+            q1 = q1.filter(QuizResult.document_code.contains(search_code))
+        queries.append(q1)
+
+    # BreachAnalysis
     if doc_type == 'all' or doc_type == 'breach':
-        breach_results = BreachAnalysis.query
+        q2 = db.session.query(
+            BreachAnalysis.id,
+            BreachAnalysis.document_code,
+            BreachAnalysis.email.label('identifier'),
+            BreachAnalysis.created_at.label('created_at'),
+            literal('Analyse de fuite').label('type_label'),
+            literal('breach').label('source_type')
+        ).filter(BreachAnalysis.document_code.isnot(None))
         if search_code:
-            breach_results = breach_results.filter(BreachAnalysis.document_code.contains(search_code))
-        for b in breach_results.all():
-            if b.document_code:
-                documents.append({
-                    'type': 'Analyse de fuite',
-                    'code': b.document_code,
-                    'email': b.email,
-                    'created_at': b.created_at,
-                    'download_url': url_for('main.generate_breach_pdf', analysis_id=b.id)
-                })
-    
+            q2 = q2.filter(BreachAnalysis.document_code.contains(search_code))
+        queries.append(q2)
+
+    # SecurityAnalysis
     if doc_type == 'all' or doc_type == 'security':
-        security_results = SecurityAnalysis.query
+        q3 = db.session.query(
+            SecurityAnalysis.id,
+            SecurityAnalysis.document_code,
+            SecurityAnalysis.input_value.label('identifier'),
+            SecurityAnalysis.created_at.label('created_at'),
+            literal('Analyse de sécurité').label('type_label'),
+            literal('security').label('source_type')
+        ).filter(SecurityAnalysis.document_code.isnot(None))
         if search_code:
-            security_results = security_results.filter(SecurityAnalysis.document_code.contains(search_code))
-        for s in security_results.all():
-            if s.document_code:
-                documents.append({
-                    'type': 'Analyse de sécurité',
-                    'code': s.document_code,
-                    'email': s.input_value[:50],
-                    'created_at': s.created_at,
-                    'download_url': url_for('main.generate_security_pdf', analysis_id=s.id)
-                })
-    
+            q3 = q3.filter(SecurityAnalysis.document_code.contains(search_code))
+        queries.append(q3)
+
+    # RequestSubmission
     if doc_type == 'all' or doc_type == 'request':
-        from models import RequestSubmission
-        request_results = RequestSubmission.query
+        q4 = db.session.query(
+            RequestSubmission.id,
+            RequestSubmission.document_code,
+            RequestSubmission.contact_email.label('identifier'),
+            RequestSubmission.created_at.label('created_at'),
+            literal('Demande').label('type_label'),
+            literal('request').label('source_type')
+        ).filter(RequestSubmission.document_code.isnot(None))
         if search_code:
-            request_results = request_results.filter(RequestSubmission.document_code.contains(search_code))
-        for r in request_results.all():
-            if r.document_code:
-                documents.append({
-                    'type': 'Demande',
-                    'code': r.document_code,
-                    'email': r.contact_email or 'Anonyme',
-                    'created_at': r.created_at,
-                    'detail_url': url_for('admin_requests.request_detail', submission_id=r.id)
-                })
+            q4 = q4.filter(RequestSubmission.document_code.contains(search_code))
+        queries.append(q4)
     
-    documents.sort(key=lambda x: x['created_at'], reverse=True)
+    documents = []
+    total_docs = 0
     
-    total_docs = len(documents)
-    start = (page - 1) * per_page
-    end = start + per_page
-    paginated_docs = documents[start:end]
+    if queries:
+        # Union all queries
+        final_query = queries[0].union_all(*queries[1:])
+
+        # Order by created_at desc
+        final_query = final_query.order_by(desc(text('created_at')))
+
+        # Count total using subquery
+        total_docs = db.session.query(final_query.subquery()).count()
+
+        # Paginate
+        paginated_results = final_query.limit(per_page).offset((page - 1) * per_page).all()
+
+        for row in paginated_results:
+            doc = {
+                'type': row.type_label,
+                'code': row.document_code,
+                'created_at': row.created_at,
+            }
+
+            # Identifier handling
+            if row.source_type == 'security':
+                 doc['email'] = row.identifier[:50] if row.identifier else ''
+            elif row.source_type == 'request':
+                 doc['email'] = row.identifier or 'Anonyme'
+            else:
+                 doc['email'] = row.identifier
+
+            # URL generation
+            # Note: Assuming route params have been fixed or are document_code.
+            # I will use document_code as it's the correct way for the routes found in main.py
+            if row.source_type == 'quiz':
+                doc['download_url'] = url_for('main.generate_quiz_pdf', document_code=row.document_code)
+            elif row.source_type == 'breach':
+                doc['download_url'] = url_for('main.generate_breach_pdf', document_code=row.document_code)
+            elif row.source_type == 'security':
+                doc['download_url'] = url_for('main.generate_security_pdf', document_code=row.document_code)
+            elif row.source_type == 'request':
+                doc['detail_url'] = url_for('admin_requests.request_detail', submission_id=row.id)
+
+            documents.append(doc)
     
     total_pages = (total_docs + per_page - 1) // per_page
     
-    from models import RequestSubmission
     stats = {
         'total': total_docs,
         'quiz': QuizResult.query.filter(QuizResult.document_code.isnot(None)).count(),
@@ -394,7 +432,7 @@ def documents_management():
     }
     
     return render_template('admin/documents.html',
-                         documents=paginated_docs,
+                         documents=documents,
                          stats=stats,
                          page=page,
                          total_pages=total_pages,
