@@ -32,6 +32,13 @@ db = app_module.db
 
 bp = Blueprint('main', __name__)
 
+# Simple in-memory cache for sitemap
+sitemap_cache = {
+    'content': None,
+    'expires_at': None
+}
+SITEMAP_CACHE_TIMEOUT = 3600  # 1 hour
+
 @bp.route('/')
 def index():
     latest_news = ContentService.get_latest_news(limit=2)
@@ -664,10 +671,18 @@ Sitemap: {domain}/sitemap.xml
 @bp.route('/sitemap.xml')
 def sitemap():
     """Generate dynamic XML sitemap for SEO - CyberConfiance"""
+    # Check cache first
+    now = datetime.utcnow()
+    if sitemap_cache['content'] and sitemap_cache['expires_at'] and now < sitemap_cache['expires_at']:
+        response = make_response(sitemap_cache['content'])
+        response.headers['Content-Type'] = 'application/xml; charset=utf-8'
+        response.headers['Cache-Control'] = f'public, max-age={SITEMAP_CACHE_TIMEOUT}'
+        return response
+
     from models import News, Rule, Tool, AttackType, Scenario, GlossaryTerm
     
     domain = request.host_url.rstrip('/')
-    today = datetime.utcnow().strftime('%Y-%m-%d')
+    today = now.strftime('%Y-%m-%d')
     
     pages = []
     
@@ -781,9 +796,14 @@ def sitemap():
     
     sitemap_xml += '</urlset>'
     
+    # Update cache
+    from datetime import timedelta
+    sitemap_cache['content'] = sitemap_xml
+    sitemap_cache['expires_at'] = now + timedelta(seconds=SITEMAP_CACHE_TIMEOUT)
+
     response = make_response(sitemap_xml)
     response.headers['Content-Type'] = 'application/xml; charset=utf-8'
-    response.headers['Cache-Control'] = 'public, max-age=3600'
+    response.headers['Cache-Control'] = f'public, max-age={SITEMAP_CACHE_TIMEOUT}'
     return response
 
 
