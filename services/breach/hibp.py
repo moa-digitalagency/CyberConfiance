@@ -48,7 +48,21 @@ class HaveIBeenPwnedService:
             response = requests.get(url, headers=headers, timeout=10)
             
             if response.status_code == 200:
-                breaches = response.json()
+                try:
+                    breaches = response.json()
+                except ValueError:
+                    logger.error(f"HIBP API: Invalid JSON response")
+                    return {'error': 'Réponse invalide du service tiers', 'breaches': [], 'count': 0}
+
+                if breaches is None:
+                    breaches = []
+                elif not isinstance(breaches, list):
+                    logger.warning(f"HIBP API: Unexpected response type {type(breaches)}")
+                    if isinstance(breaches, dict) and 'Name' in breaches:
+                        breaches = [breaches]
+                    else:
+                        breaches = []
+
                 return {
                     'error': None,
                     'breaches': breaches,
@@ -77,6 +91,9 @@ class HaveIBeenPwnedService:
             return {'error': 'Le service met trop de temps à répondre, veuillez réessayer', 'breaches': [], 'count': 0}
         except requests.exceptions.RequestException as e:
             logger.error(f"HIBP API: Erreur de connexion - {str(e)}")
+            return {'error': 'Service temporairement indisponible', 'breaches': [], 'count': 0}
+        except Exception as e:
+            logger.error(f"HIBP API: Erreur inattendue - {str(e)}")
             return {'error': 'Service temporairement indisponible', 'breaches': [], 'count': 0}
     
     @staticmethod
