@@ -152,7 +152,7 @@ def create_app(config_class=Config):
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; "
             "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; "
             "img-src 'self' data: https: http:; "
-            "connect-src 'self';"
+            "connect-src 'self' https://assets2.lottiefiles.com https://lottie.host;"
         )
         response.headers['Content-Security-Policy'] = csp
 

@@ -1,34 +1,32 @@
-<!--
- * Nom de l'application : CyberConfiance
- * Description : Fichier error_404.html du projet CyberConfiance
- * Produit de : MOA Digital Agency, www.myoneart.com
- * Fait par : Aisance KALONJI, www.aisancekalonji.com
- * Auditer par : La CyberConfiance, www.cyberconfiance.com
-
--->
-
-<!--
-  CyberConfiance
-  By MOA Digital Agency LLC
-  Developed by: Aisance KALONJI
-  Contact: moa@myoneart.com
-  www.myoneart.com
--->
 {% extends "base.html" %}
 
 {% block title %}Page non trouvée - CyberConfiance{% endblock %}
 
 {% block content %}
-<div class="error-container" style="min-height: 70vh; display: flex; align-items: center; justify-content: center; text-align: center; padding: 2rem;">
-    <div>
-        <h1 style="font-size: 8rem; font-weight: bold; color: var(--accent-blue); margin: 0; line-height: 1;">404</h1>
-        <h2 style="font-size: 2rem; color: var(--text-primary); margin: 1rem 0;">Page non trouvée</h2>
-        <p style="color: var(--text-secondary); font-size: 1.1rem; margin-bottom: 2rem;">
-            Désolé, la page que vous recherchez n'existe pas ou a été déplacée.
-        </p>
-        <a href="{{ url_for('main.index') }}" class="cta-button" style="display: inline-block; padding: 1rem 2rem; background: var(--accent-blue); color: white; text-decoration: none; border-radius: 8px; font-weight: 500; transition: all 0.3s;">
-            Retour à l'accueil
-        </a>
+<div class="container" style="min-height: 80vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 4rem 2rem;">
+    <!-- Lottie Animation -->
+    <script src="https://cdn.jsdelivr.net/npm/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    <div style="width: 100%; max-width: 600px; margin-bottom: 2rem;">
+        <lottie-player
+            src="https://assets2.lottiefiles.com/packages/lf20_U10W5l.json"
+            background="transparent"
+            speed="1"
+            style="width: 100%; height: auto;"
+            loop
+            autoplay>
+        </lottie-player>
     </div>
+
+    <h1 class="page-title-modern" style="margin-bottom: 1rem;">404 - Zone Inconnue</h1>
+
+    <p style="color: var(--text-secondary); font-size: 1.2rem; margin-bottom: 2.5rem; max-width: 600px; line-height: 1.6;">
+        Il semble que vous ayez dérivé trop loin dans le cyberespace.
+        La page que vous recherchez n'a pas été trouvée sur nos serveurs sécurisés.
+    </p>
+
+    <a href="{{ url_for('main.index') }}" class="btn btn-primary">
+        <i class="bi bi-house-door-fill" style="margin-right: 10px;"></i>
+        Retour à l'accueil
+    </a>
 </div>
 {% endblock %}
