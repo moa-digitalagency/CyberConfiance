@@ -175,6 +175,7 @@ def security_analyzer():
         except Exception as e:
             logger.error(f"Critical error in security_analyzer: {str(e)}")
             db.session.rollback()
+            flash('Une erreur critique est survenue lors de l\'analyse. Veuillez réessayer.', 'error')
     
     return render_template('outils/security_analyzer.html', 
                          results=results, 
@@ -316,13 +317,27 @@ def analyze_breach():
         if result.get('error'):
             logger.error(f"Analyse de fuite échouée pour {email}: {result['error']}")
             
+            error_type = result.get('type', 'unknown_error')
+            error_title = 'Service temporairement indisponible'
+
+            if error_type == 'configuration_error':
+                error_title = 'Service non configuré'
+            elif error_type == 'auth_error':
+                error_title = 'Erreur d\'authentification'
+            elif error_type == 'rate_limit_error':
+                error_title = 'Limite de requêtes atteinte'
+            elif error_type == 'timeout_error':
+                error_title = 'Délai d\'attente dépassé'
+            elif error_type == 'connection_error':
+                error_title = 'Problème de connexion'
+
             recommendations = {
                 'level': 'error',
-                'title': 'Service temporairement indisponible',
+                'title': error_title,
                 'message': result['error'],
                 'recommendations': [
-                    'Le service d\'analyse de fuites de données est actuellement indisponible.',
-                    'Veuillez contacter l\'administrateur du site si le problème persiste.',
+                    'Le service d\'analyse de fuites de données est actuellement indisponible ou rencontre des difficultés.',
+                    'Veuillez réessayer ultérieurement.',
                     'En attendant, nous vous recommandons d\'utiliser des mots de passe forts et uniques pour chaque service.',
                     'Activez l\'authentification à deux facteurs (2FA) sur tous vos comptes importants.'
                 ]
