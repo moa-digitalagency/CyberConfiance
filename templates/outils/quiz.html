@@ -4,7 +4,6 @@
  * Produit de : MOA Digital Agency, www.myoneart.com
  * Fait par : Aisance KALONJI, www.aisancekalonji.com
  * Auditer par : La CyberConfiance, www.cyberconfiance.com
-
 -->
 
 <!--
@@ -93,5 +92,5 @@
     </div>
 </section>
 
-<script src="{{ url_for('static', filename='js/quiz.js') }}"></script>
+<script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/quiz.js') }}"></script>
 {% endblock %}

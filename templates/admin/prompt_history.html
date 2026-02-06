@@ -4,7 +4,6 @@
  * Produit de : MOA Digital Agency, www.myoneart.com
  * Fait par : Aisance KALONJI, www.aisancekalonji.com
  * Auditer par : La CyberConfiance, www.cyberconfiance.com
-
 -->
 
 <!--
@@ -163,7 +162,7 @@
     {% endif %}
 </div>
 
-<script>
+<script nonce="{{ csp_nonce }}">
 function exportData() {
     let csv = 'Code,Prompt,Longueur,Menace,Injection,Niveau,Date\n';
     const rows = document.querySelectorAll('.admin-table tbody tr');

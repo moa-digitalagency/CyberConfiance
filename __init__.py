@@ -4,7 +4,6 @@
  * Produit de : MOA Digital Agency, www.myoneart.com
  * Fait par : Aisance KALONJI, www.aisancekalonji.com
  * Auditer par : La CyberConfiance, www.cyberconfiance.com
-
 """
 
 """
@@ -18,7 +17,7 @@ Factory Flask et configuration de l'application.
 Initialise les extensions, les blueprints et les gestionnaires d'erreurs.
 """
 
-from flask import Flask, redirect, url_for, session, request
+from flask import Flask, redirect, url_for, session, request, g
 from flask_sqlalchemy import SQLAlchemy
 from flask_admin import Admin, AdminIndexView, expose
 from flask_login import LoginManager, current_user
@@ -27,6 +26,7 @@ from flask_limiter.util import get_remote_address
 from flask_wtf.csrf import CSRFProtect
 from flask_babel import Babel
 from config import Config
+import secrets
 
 class SecureAdminIndexView(AdminIndexView):
     @expose('/')
@@ -87,6 +87,10 @@ def create_app(config_class=Config):
             return ''
         clean = re.compile('<.*?>')
         return re.sub(clean, '', str(text))
+
+    @app.before_request
+    def create_csp_nonce():
+        g.csp_nonce = secrets.token_hex(16)
     
     @app.context_processor
     def inject_site_settings():
@@ -127,7 +131,8 @@ def create_app(config_class=Config):
             site_settings=site_settings, 
             seo_meta=seo_meta,
             og_image_absolute=og_image_absolute,
-            custom_head_code=custom_head_code
+            custom_head_code=custom_head_code,
+            csp_nonce=getattr(g, 'csp_nonce', '')
         )
     
     @app.after_request
@@ -145,11 +150,12 @@ def create_app(config_class=Config):
         response.headers['X-XSS-Protection'] = '1; mode=block'
         response.headers['Server'] = 'CyberConfiance Secure Server'
 
-        # Content Security Policy (Strict)
+        # Content Security Policy (Strict with Nonce)
+        nonce = getattr(g, 'csp_nonce', '')
         csp = (
             "default-src 'self'; "
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; "
-            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; "
+            f"script-src 'self' 'nonce-{nonce}' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; "
+            f"style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; "
             "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; "
             "img-src 'self' data: https: http:; "
             "connect-src 'self' https://assets2.lottiefiles.com https://lottie.host;"
@@ -214,28 +220,28 @@ def create_app(config_class=Config):
 def initialize_data():
     from models import User, GlossaryTerm, Tool, Resource, News
     import os
+    import secrets
     
     is_debug = os.environ.get('FLASK_DEBUG', 'False').lower() in ('true', '1', 't')
-    admin_password_set = bool(os.environ.get('ADMIN_PASSWORD'))
+    admin_password = os.environ.get('ADMIN_PASSWORD')
     
     if User.query.count() == 0:
-        admin_password = os.environ.get('ADMIN_PASSWORD', 'admin123')
+        if not admin_password:
+            admin_password = secrets.token_urlsafe(16)
+            print(f"⚠️  ADMIN_PASSWORD not set. Generated secure password: {admin_password}")
+            print(f"⚠️  PLEASE SAVE THIS PASSWORD OR SET 'ADMIN_PASSWORD' ENV VAR.")
+        else:
+            print("✓ Admin user created with custom password from ADMIN_PASSWORD environment variable.")
+
         admin = User(username='admin', email='admin@cyberconfiance.fr', is_admin=True)
         admin.role = 'admin'
         admin.set_password(admin_password)
         db.session.add(admin)
-        
-        if os.environ.get('ADMIN_PASSWORD'):
-            print("✓ Admin user created with custom password from ADMIN_PASSWORD environment variable.")
-        else:
-            # Log discret pour l'admin uniquement (console serveur)
-            print("⚠️  Admin: credentials par défaut utilisés (username: admin)")
     else:
-        if not is_debug and not admin_password_set:
-            admin = User.query.filter_by(username='admin', is_admin=True).first()
-            if admin and admin.check_password('admin123'):
-                # Log critique pour l'admin (console serveur uniquement)
-                print("⚠️  SÉCURITÉ: Mot de passe admin par défaut détecté en production - Configurez ADMIN_PASSWORD")
+        # Check if default credentials are still in use (weak check but helpful)
+        admin = User.query.filter_by(username='admin', is_admin=True).first()
+        if admin and admin.check_password('admin123') and not is_debug:
+             print("⚠️  CRITICAL SECURITY: Default admin password 'admin123' detected in production! Change it immediately.")
     
     if GlossaryTerm.query.count() == 0:
         glossary_data = [

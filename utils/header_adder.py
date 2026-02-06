@@ -1,3 +1,11 @@
+"""
+ * Nom de l'application : CyberConfiance
+ * Description : Fichier header_adder.py du projet CyberConfiance
+ * Produit de : MOA Digital Agency, www.myoneart.com
+ * Fait par : Aisance KALONJI, www.aisancekalonji.com
+ * Auditer par : La CyberConfiance, www.cyberconfiance.com
+"""
+
 import os
 
 HEADER_TEXT = """

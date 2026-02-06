@@ -1,6 +1,6 @@
 """
  * Nom de l'application : CyberConfiance
- * Description : Routes principales: page d'accueil, contact, analyseurs, quiz.
+ * Description : Fichier main.py du projet CyberConfiance
  * Produit de : MOA Digital Agency, www.myoneart.com
  * Fait par : Aisance KALONJI, www.aisancekalonji.com
  * Auditer par : La CyberConfiance, www.cyberconfiance.com

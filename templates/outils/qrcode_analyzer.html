@@ -4,7 +4,6 @@
  * Produit de : MOA Digital Agency, www.myoneart.com
  * Fait par : Aisance KALONJI, www.aisancekalonji.com
  * Auditer par : La CyberConfiance, www.cyberconfiance.com
-
 -->
 
 <!--
@@ -19,7 +18,7 @@
 {% block title %}Analyseur de QR Code (Anti-Quishing) - CyberConfiance{% endblock %}
 
 {% block content %}
-<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+<script nonce="{{ csp_nonce }}" src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 
 <section class="page-header-modern">
     <div class="container">
@@ -492,7 +491,7 @@
     </div>
 </section>
 
-<script>
+<script nonce="{{ csp_nonce }}">
 document.addEventListener('DOMContentLoaded', function() {
     const tabBtns = document.querySelectorAll('.tab-btn');
     const tabContents = document.querySelectorAll('.tab-content');
