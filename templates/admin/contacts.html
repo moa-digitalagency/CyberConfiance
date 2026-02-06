@@ -4,7 +4,6 @@
  * Produit de : MOA Digital Agency, www.myoneart.com
  * Fait par : Aisance KALONJI, www.aisancekalonji.com
  * Auditer par : La CyberConfiance, www.cyberconfiance.com
-
 -->
 
 <!--
@@ -166,7 +165,7 @@
     {% endif %}
 </div>
 
-<script>
+<script nonce="{{ csp_nonce }}">
 function toggleAll(checkbox) {
     const checkboxes = document.querySelectorAll('.contact-checkbox');
     checkboxes.forEach(cb => cb.checked = checkbox.checked);

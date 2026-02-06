@@ -1,6 +1,6 @@
 """
  * Nom de l'application : CyberConfiance
- * Description : Routes des outils d'analyse: liens, QR codes, prompts, GitHub, fuites email.
+ * Description : Fichier outils.py du projet CyberConfiance
  * Produit de : MOA Digital Agency, www.myoneart.com
  * Fait par : Aisance KALONJI, www.aisancekalonji.com
  * Auditer par : La CyberConfiance, www.cyberconfiance.com

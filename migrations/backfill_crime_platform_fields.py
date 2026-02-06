@@ -1,5 +1,13 @@
 #!/usr/bin/env python3
 """
+ * Nom de l'application : CyberConfiance
+ * Description : Fichier backfill_crime_platform_fields.py du projet CyberConfiance
+ * Produit de : MOA Digital Agency, www.myoneart.com
+ * Fait par : Aisance KALONJI, www.aisancekalonji.com
+ * Auditer par : La CyberConfiance, www.cyberconfiance.com
+"""
+
+"""
 CyberConfiance
 By MOA Digital Agency LLC
 Developed by: Aisance KALONJI

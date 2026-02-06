@@ -1,6 +1,6 @@
 """
  * Nom de l'application : CyberConfiance
- * Description : Utilitaires de sécurité pour la validation et l'assainissement.
+ * Description : Fichier security_utils.py du projet CyberConfiance
  * Produit de : MOA Digital Agency, www.myoneart.com
  * Fait par : Aisance KALONJI, www.aisancekalonji.com
  * Auditer par : La CyberConfiance, www.cyberconfiance.com
@@ -12,8 +12,11 @@ from urllib.parse import urlparse
 
 def is_safe_url_strict(check_url):
     """
-    Strictly validates a URL to prevent SSRF and DNS Rebinding.
+    Strictly validates a URL to prevent SSRF.
     Resolves the hostname and checks if it points to a private/reserved IP.
+
+    Warning: This function is vulnerable to DNS Rebinding attacks if the
+    application resolves the domain again during the request.
     """
     try:
         parsed = urlparse(check_url)
@@ -28,10 +31,13 @@ def is_safe_url_strict(check_url):
             return False
 
         # Block localhost and obvious internal names
-        if hostname.lower() in ['localhost', '127.0.0.1', '0.0.0.0', '::1', '0:0:0:0:0:0:0:1']:
-            return False
+        blocklist = [
+            'localhost', '127.0.0.1', '0.0.0.0', '::1', '0:0:0:0:0:0:0:1',
+            '0', '169.254.169.254', 'metadata.google.internal', 'metadata',
+            'kubernetes.default'
+        ]
 
-        if hostname == '169.254.169.254': # Cloud metadata
+        if hostname.lower() in blocklist:
             return False
 
         if hostname.endswith('.local') or hostname.endswith('.internal'):
@@ -39,6 +45,7 @@ def is_safe_url_strict(check_url):
 
         # DNS Resolution and IP Check
         try:
+            # Resolve to all IPs (IPv4 and IPv6)
             addr_info = socket.getaddrinfo(hostname, None)
             for info in addr_info:
                 resolved_ip_str = info[4][0]
@@ -46,10 +53,19 @@ def is_safe_url_strict(check_url):
                 if '%' in resolved_ip_str:
                     resolved_ip_str = resolved_ip_str.split('%')[0]
 
-                ip = ipaddress.ip_address(resolved_ip_str)
-                if ip.is_private or ip.is_loopback or ip.is_link_local or ip.is_multicast or ip.is_reserved:
+                try:
+                    ip = ipaddress.ip_address(resolved_ip_str)
+                    if (ip.is_private or
+                        ip.is_loopback or
+                        ip.is_link_local or
+                        ip.is_multicast or
+                        ip.is_reserved or
+                        str(ip) in ['0.0.0.0', '::']):
+                        return False
+                except ValueError:
                     return False
         except (socket.gaierror, ValueError, OSError):
+            # If DNS resolution fails, treat as unsafe
             return False
 
         return True

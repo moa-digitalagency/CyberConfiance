@@ -4,7 +4,6 @@
  * Produit de : MOA Digital Agency, www.myoneart.com
  * Fait par : Aisance KALONJI, www.aisancekalonji.com
  * Auditer par : La CyberConfiance, www.cyberconfiance.com
-
 -->
 
 <!--
@@ -116,7 +115,7 @@
     </div>
 </section>
 
-<script>
+<script nonce="{{ csp_nonce }}">
 document.getElementById('is_anonymous').addEventListener('change', function() {
     const contactInfo = document.getElementById('contact-info');
     const inputs = contactInfo.querySelectorAll('input');
