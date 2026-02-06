@@ -35,7 +35,12 @@ class HaveIBeenPwnedService:
         api_key = os.environ.get('HIBP_API_KEY')
         if not api_key:
             logger.warning("HIBP_API_KEY non configurée - Service d'analyse de fuites indisponible")
-            return {'error': 'Service temporairement indisponible', 'breaches': [], 'count': 0}
+            return {
+                'error': 'Service de vérification non disponible. Configuration de la clé API requise.',
+                'type': 'configuration_error',
+                'breaches': [],
+                'count': 0
+            }
         
         encoded_email = quote(email, safe='')
         url = f"https://haveibeenpwned.com/api/v3/breachedaccount/{encoded_email}?truncateResponse=false"
@@ -52,7 +57,12 @@ class HaveIBeenPwnedService:
                     breaches = response.json()
                 except ValueError:
                     logger.error(f"HIBP API: Invalid JSON response")
-                    return {'error': 'Réponse invalide du service tiers', 'breaches': [], 'count': 0}
+                    return {
+                        'error': 'Réponse invalide du service tiers',
+                        'type': 'api_error',
+                        'breaches': [],
+                        'count': 0
+                    }
 
                 if breaches is None:
                     breaches = []
@@ -78,23 +88,61 @@ class HaveIBeenPwnedService:
                 }
             elif response.status_code == 401:
                 logger.error(f"HIBP API: Clé API invalide (401)")
-                return {'error': 'Service temporairement indisponible', 'breaches': [], 'count': 0}
+                return {
+                    'error': 'Problème d\'authentification avec le service HIBP. Veuillez contacter l\'administrateur.',
+                    'type': 'auth_error',
+                    'breaches': [],
+                    'count': 0
+                }
             elif response.status_code == 429:
                 logger.warning(f"HIBP API: Limite de requêtes atteinte (429)")
-                return {'error': 'Service temporairement surchargé, veuillez réessayer dans quelques instants', 'breaches': [], 'count': 0}
+                return {
+                    'error': 'Trop de demandes. Veuillez patienter quelques instants avant de réessayer.',
+                    'type': 'rate_limit_error',
+                    'breaches': [],
+                    'count': 0
+                }
+            elif response.status_code >= 500:
+                logger.error(f"HIBP API: Erreur serveur {response.status_code}")
+                return {
+                    'error': 'Le service HIBP rencontre des difficultés techniques. Veuillez réessayer plus tard.',
+                    'type': 'server_error',
+                    'breaches': [],
+                    'count': 0
+                }
             else:
                 logger.error(f"HIBP API: Erreur {response.status_code}")
-                return {'error': 'Service temporairement indisponible', 'breaches': [], 'count': 0}
+                return {
+                    'error': f'Erreur inattendue du service (Code {response.status_code}).',
+                    'type': 'unknown_error',
+                    'breaches': [],
+                    'count': 0
+                }
                 
         except requests.exceptions.Timeout:
             logger.warning(f"HIBP API: Délai d'attente dépassé")
-            return {'error': 'Le service met trop de temps à répondre, veuillez réessayer', 'breaches': [], 'count': 0}
+            return {
+                'error': 'Le service met trop de temps à répondre. Veuillez vérifier votre connexion.',
+                'type': 'timeout_error',
+                'breaches': [],
+                'count': 0
+            }
         except requests.exceptions.RequestException as e:
             logger.error(f"HIBP API: Erreur de connexion - {str(e)}")
-            return {'error': 'Service temporairement indisponible', 'breaches': [], 'count': 0}
+            return {
+                'error': 'Impossible de se connecter au service. Vérifiez votre connexion internet.',
+                'type': 'connection_error',
+                'breaches': [],
+                'count': 0
+            }
         except Exception as e:
             logger.error(f"HIBP API: Erreur inattendue - {str(e)}")
-            return {'error': 'Service temporairement indisponible', 'breaches': [], 'count': 0}
+            return {
+                'error': 'Une erreur inattendue est survenue. Veuillez réessayer.',
+                'type': 'unknown_error',
+                'breaches': [],
+                'count': 0
+            }
     
     @staticmethod
     def get_breach_recommendations(breach_count):

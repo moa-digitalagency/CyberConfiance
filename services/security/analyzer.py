@@ -75,7 +75,8 @@ class SecurityAnalyzerService:
         if not self.api_key:
             return {
                 'error': True,
-                'message': 'Service de vérification non disponible. Configuration requise.'
+                'type': 'configuration_error',
+                'message': 'Service de vérification non disponible. La clé API de sécurité n\'est pas configurée.'
             }
         
         try:
@@ -91,10 +92,13 @@ class SecurityAnalyzerService:
                 else:
                     return {
                         'error': True,
-                        'message': 'Type d\'analyse non supporté'
+                        'type': 'validation_error',
+                        'message': f'Type d\'analyse non supporté: {input_type}'
                     }
         except vt.APIError as e:
             error_str = str(e)
+            logger.error(f"VirusTotal API Error: {error_str}")
+
             if 'NotFoundError' in error_str:
                 return {
                     'error': False,
@@ -103,17 +107,48 @@ class SecurityAnalyzerService:
                     'malicious': 0,
                     'total': 0
                 }
-            generic_error = 'Service d\'analyse temporairement indisponible. Veuillez réessayer plus tard.'
-            if 'authentication' in error_str.lower() or 'api key' in error_str.lower():
-                generic_error = 'Service d\'analyse non configuré. Contactez l\'administrateur.'
+
+            if 'authentication' in error_str.lower() or 'api key' in error_str.lower() or 'Wrong API key' in error_str:
+                return {
+                    'error': True,
+                    'type': 'auth_error',
+                    'message': 'Problème d\'authentification avec le service d\'analyse. Veuillez contacter l\'administrateur.'
+                }
+
+            if 'quota' in error_str.lower() or 'limit' in error_str.lower():
+                return {
+                    'error': True,
+                    'type': 'quota_error',
+                    'message': 'La limite de requêtes pour le service d\'analyse a été atteinte. Veuillez réessayer plus tard.'
+                }
+
             return {
                 'error': True,
-                'message': generic_error
+                'type': 'api_error',
+                'message': f'Le service d\'analyse a rencontré une erreur: {error_str}'
             }
         except Exception as e:
+            error_str = str(e)
+            logger.error(f"Unexpected error in analyze: {error_str}")
+
+            if "ConnectTimeout" in error_str or "ReadTimeout" in error_str:
+                return {
+                    'error': True,
+                    'type': 'timeout_error',
+                    'message': 'Le service d\'analyse met trop de temps à répondre. Veuillez vérifier votre connexion internet et réessayer.'
+                }
+
+            if "ConnectionError" in error_str or "gaierror" in error_str:
+                return {
+                    'error': True,
+                    'type': 'connection_error',
+                    'message': 'Impossible de se connecter au service d\'analyse. Veuillez vérifier votre connexion internet.'
+                }
+
             return {
                 'error': True,
-                'message': 'Erreur lors de la connexion au service d\'analyse. Veuillez réessayer.'
+                'type': 'unknown_error',
+                'message': 'Une erreur inattendue est survenue lors de l\'analyse. Veuillez réessayer.'
             }
     
     def _analyze_file_hash(self, client, file_hash):
@@ -219,24 +254,28 @@ class SecurityAnalyzerService:
             'all_urls_analyzed': []
         }
         
-        is_shortened, shortener_service = self.url_shortener.is_shortened_url(url)
-        if is_shortened:
-            logger.info(f"URL raccourcie detectee: {url} (service: {shortener_service})")
-            expansion = self.url_shortener.expand_url(url)
-            shortener_info['is_shortened'] = True
-            shortener_info['shortener_service'] = shortener_service
-            shortener_info['shortener_details'] = self.url_shortener.get_shortener_info(shortener_service)
-            shortener_info['final_url'] = expansion.get('final_url', url)
-            shortener_info['redirect_chain'] = expansion.get('redirect_chain', [])
-            shortener_info['redirect_count'] = expansion.get('redirect_count', 0)
-            shortener_info['all_urls'] = expansion.get('all_urls', [url])
-            shortener_info['multiple_shorteners'] = expansion.get('multiple_shorteners', False)
-            shortener_info['expansion_error'] = expansion.get('expansion_error')
-            
-            if shortener_info['final_url'] != url:
-                logger.info(f"URL finale apres expansion: {shortener_info['final_url']}")
+        try:
+            is_shortened, shortener_service = self.url_shortener.is_shortened_url(url)
+            if is_shortened:
+                logger.info(f"URL raccourcie detectee: {url} (service: {shortener_service})")
+                expansion = self.url_shortener.expand_url(url)
+                shortener_info['is_shortened'] = True
+                shortener_info['shortener_service'] = shortener_service
+                shortener_info['shortener_details'] = self.url_shortener.get_shortener_info(shortener_service)
+                shortener_info['final_url'] = expansion.get('final_url', url)
+                shortener_info['redirect_chain'] = expansion.get('redirect_chain', [])
+                shortener_info['redirect_count'] = expansion.get('redirect_count', 0)
+                shortener_info['all_urls'] = expansion.get('all_urls', [url])
+                shortener_info['multiple_shorteners'] = expansion.get('multiple_shorteners', False)
+                shortener_info['expansion_error'] = expansion.get('expansion_error')
+
+                if shortener_info['final_url'] != url:
+                    logger.info(f"URL finale apres expansion: {shortener_info['final_url']}")
+        except Exception as e:
+            logger.warning(f"Error during URL expansion: {e}")
+            shortener_info['expansion_error'] = f"Erreur expansion: {str(e)}"
         
-        url_to_analyze = shortener_info['final_url'] if is_shortened else url
+        url_to_analyze = shortener_info['final_url'] if shortener_info['is_shortened'] else url
         
         multi_source_results = {
             'virustotal': None,
@@ -251,14 +290,14 @@ class SecurityAnalyzerService:
                 return self.google_safe_browsing.check_url(url_to_analyze)
             except Exception as e:
                 logger.error(f"Google Safe Browsing check failed: {e}")
-                return {'error': True, 'source': 'google_safe_browsing', 'message': str(e)}
+                return {'error': True, 'source': 'google_safe_browsing', 'message': f"Erreur GSB: {str(e)}"}
         
         def check_urlhaus():
             try:
                 return self.urlhaus.check_url(url_to_analyze)
             except Exception as e:
                 logger.error(f"URLhaus check failed: {e}")
-                return {'error': True, 'source': 'urlhaus', 'message': str(e)}
+                return {'error': True, 'source': 'urlhaus', 'message': f"Erreur URLhaus: {str(e)}"}
         
         def check_urlscan():
             try:
@@ -267,7 +306,7 @@ class SecurityAnalyzerService:
                 return {'error': True, 'source': 'urlscan', 'message': 'URLScan.io non configuré'}
             except Exception as e:
                 logger.error(f"URLScan check failed: {e}")
-                return {'error': True, 'source': 'urlscan', 'message': str(e)}
+                return {'error': True, 'source': 'urlscan', 'message': f"Erreur URLScan: {str(e)}"}
         
         def check_tracker_detector():
             try:
@@ -278,11 +317,13 @@ class SecurityAnalyzerService:
                 return result
             except Exception as e:
                 logger.error(f"Tracker detector check failed: {e}")
-                return {'error': True, 'source': 'tracker_detector', 'message': str(e)}
+                return {'error': True, 'source': 'tracker_detector', 'message': f"Erreur Tracker: {str(e)}"}
         
+        # Tracker detection is fast and local, run it directly
         multi_source_results['tracker_detector'] = check_tracker_detector()
         logger.info(f"tracker_detector result: is_ip_logger={multi_source_results['tracker_detector'].get('is_ip_logger', False)}")
         
+        # Run other checks in parallel
         with ThreadPoolExecutor(max_workers=3) as executor:
             futures = {
                 executor.submit(check_google_safe_browsing): 'google_safe_browsing',
@@ -301,6 +342,7 @@ class SecurityAnalyzerService:
                     logger.error(f"{source} future failed: {e}")
                     multi_source_results[source] = {'error': True, 'source': source, 'message': str(e)}
         
+        # VirusTotal check (main)
         try:
             url_id = vt.url_id(url_to_analyze)
             url_obj = None
