@@ -78,10 +78,10 @@
 
                 <div class="question-nav">
                     {% if loop.index > 1 %}
-                    <button type="button" class="btn-secondary" onclick="previousQuestion()">← Précédent</button>
+                    <button type="button" class="btn-secondary js-prev-btn">← Précédent</button>
                     {% endif %}
                     {% if loop.index < quiz_data.questions|length %}
-                    <button type="button" class="btn-primary" onclick="nextQuestion()">Suivant →</button>
+                    <button type="button" class="btn-primary js-next-btn">Suivant →</button>
                     {% else %}
                     <button type="submit" class="btn-success">Voir mes résultats</button>
                     {% endif %}

@@ -62,6 +62,18 @@
                 <span class="count-label">Fuite{{ 's' if result.count > 1 else '' }} détectée{{ 's' if result.count > 1 else '' }}</span>
             </div>
         </div>
+        {% elif recommendations.level == 'error' %}
+        <div class="breach-result-card danger-card">
+            <div class="breach-icon-wrapper danger-icon">
+                <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="12"/>
+                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+            </div>
+            <h2 class="breach-title">{{ recommendations.title }}</h2>
+            <p class="breach-message">{{ recommendations.message }}</p>
+        </div>
         {% else %}
         <div class="breach-result-card danger-card">
             <div class="breach-icon-wrapper danger-icon">

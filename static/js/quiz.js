@@ -102,6 +102,15 @@ document.addEventListener('DOMContentLoaded', function() {
             this.classList.add('selected');
         });
     });
+
+    // Event listeners for navigation buttons (CSP Compliant)
+    document.querySelectorAll('.js-next-btn').forEach(btn => {
+        btn.addEventListener('click', nextQuestion);
+    });
+
+    document.querySelectorAll('.js-prev-btn').forEach(btn => {
+        btn.addEventListener('click', previousQuestion);
+    });
 });
 
 console.log('Quiz JS loaded!');
