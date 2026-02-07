@@ -28,6 +28,11 @@ import os
 import sys
 import ctypes
 import ctypes.util
+import logging
+
+# Configure basic logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 
 def verify_critical_libraries():
@@ -254,30 +259,55 @@ def verify_table_columns():
 
 def check_vps_compatibility():
     """Check PostgreSQL compatibility"""
-    print("\n[DB CHECK] Verifying PostgreSQL connection...")
+    print("\n[DB CHECK] Verifying database connection...")
     try:
         from sqlalchemy import text
 
         # Verify dialect is PostgreSQL
         if db.engine.dialect.name != 'postgresql':
-            print(f"✗ Error: Database dialect is '{db.engine.dialect.name}', but 'postgresql' is required.")
-            return False
+            print(f"⚠️ Warning: Database dialect is '{db.engine.dialect.name}'. PostgreSQL is recommended for production.")
+            # Allow SQLite if explicitly allowed by environment variable, otherwise enforce PG in production
+            if not os.environ.get('ALLOW_SQLITE') and not os.environ.get('FLASK_DEBUG'):
+                 print("✗ Error: PostgreSQL is required for production. Set ALLOW_SQLITE=1 to override.")
+                 return False
 
         result = db.session.execute(text("SELECT 1"))
         db.session.rollback()
-        print("✓ PostgreSQL connection and transaction handling: OK")
+        print(f"✓ {db.engine.dialect.name} connection and transaction handling: OK")
         return True
     except Exception as e:
-        print(f"⚠️  PostgreSQL check failed: {e}")
+        print(f"⚠️  Database check failed: {e}")
         db.session.rollback()
         return False
 
+def ensure_column_exists(table_name, column_name, sql_statement, inspector):
+    """
+    Ensure that a specific column exists in a table.
+    If it doesn't, execute the provided SQL statement to create it.
+    """
+    from sqlalchemy import text
+
+    existing_cols = {col['name'] for col in inspector.get_columns(table_name)}
+
+    if column_name not in existing_cols:
+        try:
+            logger.info(f"Adding missing column {table_name}.{column_name}")
+            db.session.execute(text(sql_statement))
+            db.session.commit()
+            print(f"  ✓ Added column {table_name}.{column_name}")
+            return True
+        except Exception as e:
+            db.session.rollback()
+            logger.error(f"Failed to add column {table_name}.{column_name}: {e}")
+            print(f"  ⚠️  Failed to add {table_name}.{column_name}: {e}")
+            return False
+    return False
 
 def run_migrations():
     """Run database migrations to add missing columns for existing VPS installations"""
     print("\n[MIGRATIONS] Checking for missing columns...")
     
-    from sqlalchemy import text, inspect
+    from sqlalchemy import inspect
     
     migrations = [
         # MetadataAnalysis table - new columns
@@ -326,18 +356,9 @@ def run_migrations():
     for table_name, column_name, sql in migrations:
         if table_name not in existing_tables:
             continue
-        
-        existing_cols = {col['name'] for col in inspector.get_columns(table_name)}
-        
-        if column_name not in existing_cols:
-            try:
-                db.session.execute(text(sql))
-                db.session.commit()
-                print(f"  ✓ Added column {table_name}.{column_name}")
-                migrations_run += 1
-            except Exception as e:
-                db.session.rollback()
-                print(f"  ⚠️  Failed to add {table_name}.{column_name}: {e}")
+
+        if ensure_column_exists(table_name, column_name, sql, inspector):
+            migrations_run += 1
     
     if migrations_run == 0:
         print("  ✓ All columns already present - no migrations needed")
@@ -368,7 +389,9 @@ def init_database(reset=False, verify_libs=True):
     with app.app_context():
         try:
             # Check VPS compatibility
-            check_vps_compatibility()
+            if not check_vps_compatibility():
+                 print("✗ Database compatibility check failed. Use ALLOW_SQLITE=1 for local dev.")
+                 return False
             
             if reset:
                 print("\n⚠️  WARNING: Resetting database - ALL DATA WILL BE LOST!")
