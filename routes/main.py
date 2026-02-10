@@ -296,7 +296,12 @@ def quiz_submit_email():
     }
     
     if not hibp_result.get('error') and hibp_result.get('breaches'):
-        for breach in hibp_result.get('breaches', [])[:10]:
+        # Ensure breaches is a list
+        breaches_list = hibp_result.get('breaches')
+        if not isinstance(breaches_list, list):
+            breaches_list = []
+
+        for breach in breaches_list[:10]:
             hibp_summary['breaches'].append({
                 'name': breach.get('Name', 'Inconnu'),
                 'date': breach.get('BreachDate', ''),
@@ -306,6 +311,12 @@ def quiz_submit_email():
     
     try:
         from models import QuizResult
+        # Ensure scores is structured correctly for future retrieval
+        # If it's a flat dict, we wrap it? No, QuizService.calculate_scores returns the structure.
+        # But if calculate_scores returns flat dict (legacy?), we should check.
+        # However, checking calculate_scores implementation: it returns {'raw_scores': ..., 'percentages': ..., 'overall_score': ...}
+        # So 'scores' variable here holds that structure.
+
         quiz_result = QuizResult(  # type: ignore
             email=email,
             overall_score=overall_score,
@@ -334,27 +345,62 @@ def quiz_result_detail(document_code):
     logger.debug(f"Loading QuizResult Code={document_code}")
     quiz_result = QuizResult.query.filter_by(document_code=document_code).first_or_404()
     logger.info(f"QuizResult loaded: email={quiz_result.email}")
-    print(f"DEBUG: scores type: {type(quiz_result.category_scores)}")
-    print(f"DEBUG: scores value: {quiz_result.category_scores}")
     
+    scores = quiz_result.category_scores
+
+    # Fix for legacy/flat scores structure causing 500 error
+    if isinstance(scores, dict) and 'percentages' not in scores:
+        print(f"DEBUG: Fixing flat scores structure for {document_code}")
+        # Recalculate or restructure
+        # Assuming the stored scores are the raw values (vigilance, security, hygiene)
+        # We need to reconstruct the full object: {'raw_scores': scores, 'percentages': ..., 'overall_score': ...}
+
+        # Load quiz data to get max scores for percentage calculation
+        try:
+            quiz_data = QuizService.load_quiz_data()
+            max_scores = quiz_data['scoring']['max_score']
+
+            raw_scores = scores
+            percentages = {
+                'vigilance': round((raw_scores.get('vigilance', 0) / max_scores.get('vigilance', 1)) * 100),
+                'security': round((raw_scores.get('security', 0) / max_scores.get('security', 1)) * 100),
+                'hygiene': round((raw_scores.get('hygiene', 0) / max_scores.get('hygiene', 1)) * 100)
+            }
+            overall = round((percentages['vigilance'] + percentages['security'] + percentages['hygiene']) / 3)
+
+            scores = {
+                'raw_scores': raw_scores,
+                'percentages': percentages,
+                'overall_score': overall
+            }
+        except Exception as e:
+            logger.error(f"Error reconstructing scores: {e}")
+            # Fallback to avoid 500 if possible, though template might still fail
+            scores = {
+                'raw_scores': scores,
+                'percentages': scores, # fallback
+                'overall_score': quiz_result.overall_score
+            }
+
     recommendations = QuizService.get_recommendations(
         quiz_result.overall_score,
         quiz_result.answers
     )
     
+    hibp_summary = quiz_result.hibp_summary or {}
     hibp_recommendations = HaveIBeenPwnedService.get_breach_recommendations(
-        quiz_result.hibp_summary.get('breach_count', 0) if quiz_result.hibp_summary else 0
+        hibp_summary.get('breach_count', 0)
     )
     
     data_scenarios = HaveIBeenPwnedService.get_data_breach_scenarios()
     
     return render_template('outils/quiz_results.html',
                          quiz_result=quiz_result,
-                         scores=quiz_result.category_scores,
+                         scores=scores,
                          recommendations=recommendations,
                          email=quiz_result.email,
                          result_id=quiz_result.document_code,
-                         hibp_result=quiz_result.hibp_summary,
+                         hibp_result=hibp_summary,
                          hibp_recommendations=hibp_recommendations,
                          data_scenarios=data_scenarios)
 
@@ -411,6 +457,10 @@ def analyze_breach():
         
         result = HaveIBeenPwnedService.check_email_breach(email)
         
+        # Ensure result is not None
+        if result is None:
+            result = {'error': 'Erreur interne du service', 'count': 0, 'breaches': []}
+
         if result.get('error'):
             logger.error(f"Analyse de fuite échouée pour {email}: {result['error']}")
             
@@ -426,22 +476,34 @@ def analyze_breach():
                 ]
             }
             data_scenarios = HaveIBeenPwnedService.get_data_breach_scenarios()
-            return render_template('breach_analysis.html', 
-                                 email=email,
-                                 result={'breaches': [], 'count': 0, 'error': result['error']}, 
-                                 recommendations=recommendations,
-                                 data_scenarios=data_scenarios,
-                                 analysis_id=None)
+
+            try:
+                return render_template('breach_analysis.html',
+                                     email=email,
+                                     result={'breaches': [], 'count': 0, 'error': result['error']},
+                                     recommendations=recommendations,
+                                     data_scenarios=data_scenarios,
+                                     analysis_id=None)
+            except Exception as render_err:
+                 logger.error(f"Render error in error-case: {render_err}")
+                 traceback.print_exc()
+                 flash('Erreur lors de l\'affichage des résultats.', 'error')
+                 return redirect(url_for('main.index'))
         
-        recommendations = HaveIBeenPwnedService.get_breach_recommendations(result['count'])
+        recommendations = HaveIBeenPwnedService.get_breach_recommendations(result.get('count', 0))
         data_scenarios = HaveIBeenPwnedService.get_data_breach_scenarios()
         
         analysis_id = None
         try:
-            breach_names = [breach.get('Name', 'Inconnu') for breach in result.get('breaches', [])]
+            # Ensure breaches is a list
+            breaches_list = result.get('breaches')
+            if not isinstance(breaches_list, list):
+                breaches_list = []
+
+            breach_names = [breach.get('Name', 'Inconnu') for breach in breaches_list]
             
             breaches_data_sanitized = {
-                'breaches': result.get('breaches', []),
+                'breaches': breaches_list,
                 'count': result.get('count', 0),
                 'email': email
             }
@@ -450,7 +512,7 @@ def analyze_breach():
                 email=email,
                 breach_count=result.get('count', 0),
                 risk_level=recommendations.get('level', 'unknown'),
-                breaches_found=','.join(breach_names),
+                breaches_found=','.join(breach_names)[:1000] if breach_names else '', # Truncate if too long
                 breaches_data=breaches_data_sanitized,
                 document_code=ensure_unique_code(BreachAnalysis),
                 ip_address=get_client_ip(request),
@@ -462,7 +524,9 @@ def analyze_breach():
             logger.info(f"Analyse enregistrée: {email} - {result.get('count', 0)} breach(es) - Code: {analysis_id}")
         except Exception as e:
             logger.error(f"Erreur lors de l'enregistrement de l'analyse: {str(e)}")
+            traceback.print_exc()
             db.session.rollback()
+            # Continue to show results even if saving failed
         
         return render_template('breach_analysis.html', 
                              email=email,
@@ -472,9 +536,9 @@ def analyze_breach():
                              analysis_id=analysis_id)
     except Exception as e:
         logger.error(f"Critical error in analyze_breach: {str(e)}")
-        traceback.print_exc()
+        traceback.print_exc() # Print to stderr for visibility
         db.session.rollback()
-        flash('Erreur critique lors de l\'analyse. Veuillez réessayer.', 'error')
+        flash(f'Erreur critique lors de l\'analyse: {str(e)}', 'error') # Show error in flash for debugging
         return redirect(url_for('main.index'))
 
 @bp.route('/set-language', methods=['POST'])
