@@ -204,7 +204,7 @@
         </div>
 
         <div class="actions-card">
-            <a href="{{ url_for('main.generate_quiz_pdf', result_id=quiz_result.id) }}" class="btn-pdf">
+            <a href="{{ url_for('main.generate_quiz_pdf', document_code=quiz_result.document_code) }}" class="btn-pdf">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 0.5rem;">
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                     <polyline points="7 10 12 15 17 10"/>
