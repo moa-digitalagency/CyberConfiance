@@ -303,95 +303,97 @@ def quiz_all_results():
     return render_template('outils/quiz_all_results.html', results=all_results)
 
 
-@bp.route('/analyze-breach', methods=['POST'])
-def analyze_breach():
-    try:
-        email = request.form.get('email')
+# @bp.route('/analyze-breach', methods=['POST'])
+# def analyze_breach():
+#     # Deprecated: use main.analyze_breach instead
+#     # Kept commented out to avoid route conflict
+#     try:
+#         email = request.form.get('email')
         
-        if not email:
-            flash('Veuillez fournir une adresse email.', 'error')
-            return redirect(url_for('main.index'))
+#         if not email:
+#             flash('Veuillez fournir une adresse email.', 'error')
+#             return redirect(url_for('main.index'))
         
-        result = HaveIBeenPwnedService.check_email_breach(email)
+#         result = HaveIBeenPwnedService.check_email_breach(email)
         
-        if result.get('error'):
-            logger.error(f"Analyse de fuite échouée pour {email}: {result['error']}")
+#         if result.get('error'):
+#             logger.error(f"Analyse de fuite échouée pour {email}: {result['error']}")
             
-            error_type = result.get('type', 'unknown_error')
-            error_title = 'Service temporairement indisponible'
+#             error_type = result.get('type', 'unknown_error')
+#             error_title = 'Service temporairement indisponible'
 
-            if error_type == 'configuration_error':
-                error_title = 'Service non configuré'
-            elif error_type == 'auth_error':
-                error_title = 'Erreur d\'authentification'
-            elif error_type == 'rate_limit_error':
-                error_title = 'Limite de requêtes atteinte'
-            elif error_type == 'timeout_error':
-                error_title = 'Délai d\'attente dépassé'
-            elif error_type == 'connection_error':
-                error_title = 'Problème de connexion'
+#             if error_type == 'configuration_error':
+#                 error_title = 'Service non configuré'
+#             elif error_type == 'auth_error':
+#                 error_title = 'Erreur d\'authentification'
+#             elif error_type == 'rate_limit_error':
+#                 error_title = 'Limite de requêtes atteinte'
+#             elif error_type == 'timeout_error':
+#                 error_title = 'Délai d\'attente dépassé'
+#             elif error_type == 'connection_error':
+#                 error_title = 'Problème de connexion'
 
-            recommendations = {
-                'level': 'error',
-                'title': error_title,
-                'message': result['error'],
-                'recommendations': [
-                    'Le service d\'analyse de fuites de données est actuellement indisponible ou rencontre des difficultés.',
-                    'Veuillez réessayer ultérieurement.',
-                    'En attendant, nous vous recommandons d\'utiliser des mots de passe forts et uniques pour chaque service.',
-                    'Activez l\'authentification à deux facteurs (2FA) sur tous vos comptes importants.'
-                ]
-            }
-            data_scenarios = HaveIBeenPwnedService.get_data_breach_scenarios()
-            return render_template('breach_analysis.html', 
-                                 email=email,
-                                 result={'breaches': [], 'count': 0, 'error': result['error']}, 
-                                 recommendations=recommendations,
-                                 data_scenarios=data_scenarios,
-                                 analysis_id=None)
+#             recommendations = {
+#                 'level': 'error',
+#                 'title': error_title,
+#                 'message': result['error'],
+#                 'recommendations': [
+#                     'Le service d\'analyse de fuites de données est actuellement indisponible ou rencontre des difficultés.',
+#                     'Veuillez réessayer ultérieurement.',
+#                     'En attendant, nous vous recommandons d\'utiliser des mots de passe forts et uniques pour chaque service.',
+#                     'Activez l\'authentification à deux facteurs (2FA) sur tous vos comptes importants.'
+#                 ]
+#             }
+#             data_scenarios = HaveIBeenPwnedService.get_data_breach_scenarios()
+#             return render_template('breach_analysis.html',
+#                                  email=email,
+#                                  result={'breaches': [], 'count': 0, 'error': result['error']},
+#                                  recommendations=recommendations,
+#                                  data_scenarios=data_scenarios,
+#                                  analysis_id=None)
         
-        recommendations = HaveIBeenPwnedService.get_breach_recommendations(result['count'])
-        data_scenarios = HaveIBeenPwnedService.get_data_breach_scenarios()
+#         recommendations = HaveIBeenPwnedService.get_breach_recommendations(result['count'])
+#         data_scenarios = HaveIBeenPwnedService.get_data_breach_scenarios()
         
-        analysis_code = None
-        try:
-            breach_names = [breach.get('Name', 'Inconnu') for breach in result.get('breaches', [])]
+#         analysis_code = None
+#         try:
+#             breach_names = [breach.get('Name', 'Inconnu') for breach in result.get('breaches', [])]
             
-            breaches_data_sanitized = {
-                'breaches': result.get('breaches', []),
-                'count': result.get('count', 0),
-                'email': email
-            }
+#             breaches_data_sanitized = {
+#                 'breaches': result.get('breaches', []),
+#                 'count': result.get('count', 0),
+#                 'email': email
+#             }
             
-            analysis = BreachAnalysis(
-                email=email,
-                breach_count=result.get('count', 0),
-                risk_level=recommendations.get('level', 'unknown'),
-                breaches_found=','.join(breach_names),
-                breaches_data=breaches_data_sanitized,
-                document_code=ensure_unique_code(BreachAnalysis),
-                ip_address=get_client_ip(request),
-                user_agent=request.headers.get('User-Agent', '')[:500]
-            )
-            db.session.add(analysis)
-            db.session.commit()
-            analysis_code = analysis.document_code
-            logger.info(f"Analyse enregistrée: {email} - {result.get('count', 0)} breach(es) - ID: {analysis_code}")
-        except Exception as e:
-            logger.error(f"Erreur lors de l'enregistrement de l'analyse: {str(e)}")
-            db.session.rollback()
+#             analysis = BreachAnalysis(
+#                 email=email,
+#                 breach_count=result.get('count', 0),
+#                 risk_level=recommendations.get('level', 'unknown'),
+#                 breaches_found=','.join(breach_names),
+#                 breaches_data=breaches_data_sanitized,
+#                 document_code=ensure_unique_code(BreachAnalysis),
+#                 ip_address=get_client_ip(request),
+#                 user_agent=request.headers.get('User-Agent', '')[:500]
+#             )
+#             db.session.add(analysis)
+#             db.session.commit()
+#             analysis_code = analysis.document_code
+#             logger.info(f"Analyse enregistrée: {email} - {result.get('count', 0)} breach(es) - ID: {analysis_code}")
+#         except Exception as e:
+#             logger.error(f"Erreur lors de l'enregistrement de l'analyse: {str(e)}")
+#             db.session.rollback()
         
-        return render_template('breach_analysis.html', 
-                             email=email,
-                             result=result, 
-                             recommendations=recommendations,
-                             data_scenarios=data_scenarios,
-                             analysis_id=analysis_code)
-    except Exception as e:
-        logger.error(f"Critical error in analyze_breach: {str(e)}")
-        db.session.rollback()
-        flash('Erreur critique lors de l\'analyse. Veuillez réessayer.', 'error')
-        return redirect(url_for('main.index'))
+#         return render_template('breach_analysis.html',
+#                              email=email,
+#                              result=result,
+#                              recommendations=recommendations,
+#                              data_scenarios=data_scenarios,
+#                              analysis_id=analysis_code)
+#     except Exception as e:
+#         logger.error(f"Critical error in analyze_breach: {str(e)}")
+#         db.session.rollback()
+#         flash('Erreur critique lors de l\'analyse. Veuillez réessayer.', 'error')
+#         return redirect(url_for('main.index'))
 
 
 @bp.route("/generate-breach-pdf/<document_code>")

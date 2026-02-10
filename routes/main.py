@@ -26,6 +26,7 @@ import requests
 import io
 from urllib.parse import urlparse, urljoin
 from datetime import datetime
+import traceback
 
 logger = get_logger(__name__)
 db = app_module.db
@@ -333,6 +334,8 @@ def quiz_result_detail(document_code):
     logger.debug(f"Loading QuizResult Code={document_code}")
     quiz_result = QuizResult.query.filter_by(document_code=document_code).first_or_404()
     logger.info(f"QuizResult loaded: email={quiz_result.email}")
+    print(f"DEBUG: scores type: {type(quiz_result.category_scores)}")
+    print(f"DEBUG: scores value: {quiz_result.category_scores}")
     
     recommendations = QuizService.get_recommendations(
         quiz_result.overall_score,
@@ -469,6 +472,7 @@ def analyze_breach():
                              analysis_id=analysis_id)
     except Exception as e:
         logger.error(f"Critical error in analyze_breach: {str(e)}")
+        traceback.print_exc()
         db.session.rollback()
         flash('Erreur critique lors de l\'analyse. Veuillez réessayer.', 'error')
         return redirect(url_for('main.index'))
