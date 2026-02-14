@@ -132,7 +132,9 @@ def create_app(config_class=Config):
             seo_meta=seo_meta,
             og_image_absolute=og_image_absolute,
             custom_head_code=custom_head_code,
-            csp_nonce=getattr(g, 'csp_nonce', '')
+            csp_nonce=getattr(g, 'csp_nonce', ''),
+            whatsapp_number=app.config.get('WHATSAPP_NUMBER'),
+            consultation_url=app.config.get('CONSULTATION_URL')
         )
     
     @app.after_request
@@ -158,7 +160,7 @@ def create_app(config_class=Config):
             f"style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; "
             "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; "
             "img-src 'self' data: https: http:; "
-            "connect-src 'self' https://assets2.lottiefiles.com https://lottie.host;"
+            "connect-src 'self' https://*.lottiefiles.com https://lottie.host;"
         )
         response.headers['Content-Security-Policy'] = csp
 
@@ -176,11 +178,26 @@ def create_app(config_class=Config):
             return redirect(url_for('admin_panel.dashboard'))
         return redirect(url_for('main.index'))
     
+    @app.errorhandler(400)
+    def handle_bad_request(e):
+        from flask import render_template
+        return render_template('error_400.html'), 400
+
+    @app.errorhandler(403)
+    def handle_forbidden(e):
+        from flask import render_template
+        return render_template('error_403.html'), 403
+
     @app.errorhandler(404)
     def handle_not_found(e):
         from flask import render_template
         return render_template('error_404.html'), 404
     
+    @app.errorhandler(451)
+    def handle_legal_restriction(e):
+        from flask import render_template
+        return render_template('error_451.html'), 451
+
     @app.errorhandler(413)
     def handle_file_too_large(e):
         from flask import flash, redirect, request, url_for

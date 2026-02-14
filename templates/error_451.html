@@ -1,0 +1,62 @@
+<!--
+ * Nom de l'application : CyberConfiance
+ * Description : Fichier error_451.html du projet CyberConfiance
+ * Produit de : MOA Digital Agency, www.myoneart.com
+ * Fait par : Aisance KALONJI, www.aisancekalonji.com
+ * Auditer par : La CyberConfiance, www.cyberconfiance.com
+-->
+
+{% extends "base.html" %}
+
+{% block title %}451 - Censuré{% endblock %}
+
+{% block content %}
+<div class="error-page-container" style="background-color: #1a1a1a; color: #e0e0e0; min-height: 90vh; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;">
+
+    <!-- Background overlay for 'Classified' feel -->
+    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: repeating-linear-gradient(45deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 10px, transparent 10px, transparent 20px); pointer-events: none;"></div>
+
+    <div class="container" style="text-align: center; position: relative; z-index: 2; padding: 3rem;">
+
+        <!-- Lottie Animation: Burning Book / Fire -->
+        <script nonce="{{ csp_nonce }}" src="https://cdn.jsdelivr.net/npm/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+        <div style="width: 100%; max-width: 400px; margin: 0 auto 2rem;">
+            <lottie-player
+                src="https://assets3.lottiefiles.com/packages/lf20_tmsiddoc.json"
+                background="transparent"
+                speed="1"
+                style="width: 100%; height: auto;"
+                loop
+                autoplay>
+            </lottie-player>
+        </div>
+
+        <h1 style="font-family: 'Courier New', monospace; font-size: 3rem; margin-bottom: 1rem; color: #ff4d4d; text-transform: uppercase; letter-spacing: 5px;">
+            Erreur 451
+        </h1>
+
+        <h2 style="font-family: 'Courier New', monospace; font-size: 1.5rem; margin-bottom: 2rem; color: #ff9999;">
+            CONTENU NON DISPONIBLE POUR RAISON LÉGALE
+        </h2>
+
+        <div style="max-width: 600px; margin: 0 auto 3rem; border-left: 4px solid #ff4d4d; padding-left: 1.5rem; text-align: left;">
+            <p style="font-size: 1.1rem; line-height: 1.6; margin-bottom: 1rem;">
+                <em>"C'était un plaisir de brûler."</em> — Ray Bradbury, Fahrenheit 451.
+            </p>
+            <p style="font-size: 1rem; line-height: 1.6; color: #bbb;">
+                Cette page a été retirée ou bloquée en raison d'une demande légale ou d'une restriction géographique.
+                Comme dans un futur dystopique, certaines connaissances sont parfois jugées trop dangereuses pour être partagées librement.
+            </p>
+        </div>
+
+        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+            <a href="{{ url_for('main.index') }}" class="btn btn-outline-light" style="border-radius: 0; font-family: 'Courier New', monospace;">
+                <i class="bi bi-arrow-left"></i> RETOUR À LA BASE
+            </a>
+            <a href="{{ url_for('main.contact') }}" class="btn btn-danger" style="border-radius: 0; font-family: 'Courier New', monospace;">
+                SIGNALER UNE ERREUR <i class="bi bi-exclamation-triangle"></i>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
