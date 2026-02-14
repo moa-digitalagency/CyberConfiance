@@ -1,0 +1,60 @@
+<!--
+ * Nom de l'application : CyberConfiance
+ * Description : Fichier error_403.html du projet CyberConfiance
+ * Produit de : MOA Digital Agency, www.myoneart.com
+ * Fait par : Aisance KALONJI, www.aisancekalonji.com
+ * Auditer par : La CyberConfiance, www.cyberconfiance.com
+-->
+
+{% extends "base.html" %}
+
+{% block title %}403 - Interdit{% endblock %}
+
+{% block content %}
+<div class="container" style="min-height: 80vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 4rem 2rem;">
+    <!-- Lottie Animation: Padlock / Security -->
+    <script nonce="{{ csp_nonce }}" src="https://cdn.jsdelivr.net/npm/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    <div style="width: 100%; max-width: 450px; margin-bottom: 2rem;">
+        <lottie-player
+            src="https://assets4.lottiefiles.com/packages/lf20_sfgpbkis.json"
+            background="transparent"
+            speed="1"
+            style="width: 100%; height: auto;"
+            loop
+            autoplay>
+        </lottie-player>
+    </div>
+
+    <h1 class="page-title-modern" style="margin-bottom: 1rem; color: #ef4444;">403 - Accès Refusé</h1>
+
+    <div style="max-width: 600px; margin: 0 auto 3rem;">
+        <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">Zone Restreinte</h3>
+        <p style="font-size: 1.2rem; color: var(--text-secondary); line-height: 1.6;">
+            Halte là ! Vous n'avez pas les accréditations nécessaires pour entrer ici.
+            <br><span style="font-size: 0.9em; opacity: 0.8;">(Et nos systèmes de surveillance vous ont déjà repéré)</span>
+        </p>
+
+        <div style="background-color: rgba(239, 68, 68, 0.1); border: 1px dashed rgba(239, 68, 68, 0.4); padding: 1.5rem; border-radius: 8px; margin-top: 2rem;">
+            <i class="bi bi-shield-lock-fill" style="font-size: 2rem; color: #ef4444; margin-bottom: 1rem; display: block;"></i>
+            <p style="margin: 0; font-weight: 500;">
+                Si vous pensez qu'il s'agit d'une erreur, vérifiez que vous êtes bien connecté avec le bon compte.
+            </p>
+        </div>
+    </div>
+
+    <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
+        <a href="{{ url_for('auth.login') }}" class="btn btn-primary">
+            <i class="bi bi-person-fill-lock" style="margin-right: 8px;"></i>
+            Se connecter
+        </a>
+        <a href="{{ url_for('main.index') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left" style="margin-right: 8px;"></i>
+            Retour en zone sûre
+        </a>
+        <a href="{{ url_for('main.contact') }}" class="btn btn-outline-danger">
+            <i class="bi bi-envelope-exclamation" style="margin-right: 8px;"></i>
+            Contacter l'admin
+        </a>
+    </div>
+</div>
+{% endblock %}

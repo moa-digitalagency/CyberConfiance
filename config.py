@@ -39,6 +39,10 @@ class Config:
     APP_NAME = 'CyberConfiance'
     APP_DESCRIPTION = 'Plateforme de sensibilisation à la cybersécurité'
 
+    # External Links & Contacts
+    WHATSAPP_NUMBER = os.environ.get('WHATSAPP_NUMBER', '243860493345')
+    CONSULTATION_URL = os.environ.get('CONSULTATION_URL', 'https://tidycal.com/moamyoneart/consultation-gratuite-15-min')
+
     # Security settings
     SESSION_COOKIE_SECURE = True
     SESSION_COOKIE_HTTPONLY = True
