@@ -1,0 +1,182 @@
+/* Hero */
+.hero-title-static {
+    display: block;
+    margin-bottom: 1rem;
+    margin-top: 2rem;
+}
+.hero-btn {
+    text-align: center;
+}
+
+/* Sections */
+.section-center-title {
+    text-align: center;
+}
+.section-subtitle-centered {
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto 3rem;
+}
+
+/* Tools Cards - Base */
+.tool-card-custom {
+    padding: 2rem;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+.tool-card-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+.tool-icon-box {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.tool-text-content {
+    flex: 1;
+}
+.tool-title {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+.tool-description {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+.tool-link {
+    font-size: 0.9rem;
+    text-decoration: none;
+}
+
+/* Tools Cards - Variants */
+.tool-card-security {
+    border-left: 3px solid rgba(245, 158, 11, 0.5);
+}
+.tool-icon-security {
+    background: rgba(245, 158, 11, 0.15);
+}
+.tool-link-security {
+    color: rgba(245, 158, 11, 1);
+}
+.tool-svg-security {
+    stroke: rgba(245, 158, 11, 1);
+}
+
+.tool-card-breach {
+    border-left: 3px solid rgba(14, 165, 233, 0.5);
+}
+.tool-icon-breach {
+    background: rgba(14, 165, 233, 0.15);
+}
+.tool-link-breach {
+    color: rgba(14, 165, 233, 1);
+}
+.tool-svg-breach {
+    stroke: rgba(14, 165, 233, 1);
+}
+
+.tool-card-qrcode {
+    border-left: 3px solid rgba(239, 68, 68, 0.5);
+}
+.tool-icon-qrcode {
+    background: rgba(239, 68, 68, 0.15);
+}
+.tool-link-qrcode {
+    color: rgba(239, 68, 68, 1);
+}
+.tool-svg-qrcode {
+    stroke: rgba(239, 68, 68, 1);
+}
+
+.tool-card-prompt {
+    border-left: 3px solid rgba(139, 92, 246, 0.5);
+}
+.tool-icon-prompt {
+    background: rgba(139, 92, 246, 0.15);
+}
+.tool-link-prompt {
+    color: rgba(139, 92, 246, 1);
+}
+.tool-svg-prompt {
+    stroke: rgba(139, 92, 246, 1);
+}
+
+.tool-card-metadata {
+    border-left: 3px solid rgba(236, 72, 153, 0.5);
+}
+.tool-icon-metadata {
+    background: rgba(236, 72, 153, 0.15);
+}
+.tool-link-metadata {
+    color: rgba(236, 72, 153, 1);
+}
+.tool-svg-metadata {
+    stroke: rgba(236, 72, 153, 1);
+}
+
+.tool-card-github {
+    border-left: 3px solid rgba(34, 197, 94, 0.5);
+}
+.tool-icon-github {
+    background: rgba(34, 197, 94, 0.15);
+}
+.tool-link-github {
+    color: rgba(34, 197, 94, 1);
+}
+.tool-svg-github {
+    stroke: rgba(34, 197, 94, 1);
+}
+
+/* Tools Section Padding */
+.tools-section-padding {
+    padding: 4rem 0;
+}
+
+/* Request Section */
+.request-section-bg {
+    padding: 4rem 0;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(10, 14, 39, 0.3) 100%);
+}
+
+/* News Section */
+.news-meta-wrapper {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+.news-badge-source {
+    padding: 0.25rem 0.75rem;
+    background: rgba(59, 130, 246, 0.15);
+    border-radius: 12px;
+    font-size: 0.75rem;
+    color: rgba(59, 130, 246, 1);
+    font-weight: 500;
+}
+.news-badge-category {
+    padding: 0.25rem 0.75rem;
+    background: rgba(34, 197, 94, 0.15);
+    border-radius: 12px;
+    font-size: 0.75rem;
+    color: rgba(34, 197, 94, 1);
+    font-weight: 500;
+}
+.news-btn-wrapper {
+    text-align: center;
+    margin-top: 2.5rem;
+}
+.news-btn-more {
+    display: inline-block;
+    padding: 0.875rem 2rem;
+    font-size: 1rem;
+}

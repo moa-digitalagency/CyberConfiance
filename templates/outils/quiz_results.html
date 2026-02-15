@@ -5,7 +5,6 @@
  * Fait par : Aisance KALONJI, www.aisancekalonji.com
  * Auditer par : La CyberConfiance, www.cyberconfiance.com
 -->
-
 <!--
   CyberConfiance
   By MOA Digital Agency LLC
@@ -19,228 +18,197 @@
 
 {% block content %}
 <section class="page-header">
-    <div class="container">
-        <h1>Vos Résultats de Sécurité Numérique</h1>
-        <p class="subtitle">Analyse complète de votre niveau de cybersécurité</p>
-    </div>
+<div class="container">
+<h1>Vos Résultats de Sécurité Numérique</h1>
+<p class="subtitle">Analyse complète de votre niveau de cybersécurité</p>
+</div>
 </section>
-
 <section class="results-container">
-    <div class="container">
-        <div class="overall-score-card">
-            <h2>Score Global</h2>
-            <div class="score-circle" style="--score: {{ scores.overall_score }}; --color: {{ recommendations.level.color }}">
-                <div class="score-value">{{ scores.overall_score }}<span>%</span></div>
-                <div class="score-label" style="color: {{ recommendations.level.color }}">{{ recommendations.level.label }}</div>
-            </div>
-        </div>
-
-        <div class="detailed-scores" style="padding: 1.5rem;">
-            <h2 style="font-size: 1.3rem; margin-bottom: 1rem;">Scores Détaillés</h2>
-            <div class="scores-grid" style="gap: 1rem;">
-                <div class="score-item">
-                    <div class="score-header">
-                        <h3 style="font-size: 0.95rem;">Vigilance</h3>
-                    </div>
-                    <div class="score-bar" style="height: 28px;">
-                        <div class="score-fill" style="width: {{ scores.percentages.vigilance }}%; background: linear-gradient(90deg, #3b82f6, #60a5fa)">
-                            <span class="score-percentage" style="font-size: 0.85rem;">{{ scores.percentages.vigilance }}%</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="score-item">
-                    <div class="score-header">
-                        <h3 style="font-size: 0.95rem;">Sécurité</h3>
-                    </div>
-                    <div class="score-bar" style="height: 28px;">
-                        <div class="score-fill" style="width: {{ scores.percentages.security }}%; background: linear-gradient(90deg, #10b981, #34d399)">
-                            <span class="score-percentage" style="font-size: 0.85rem;">{{ scores.percentages.security }}%</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="score-item">
-                    <div class="score-header">
-                        <h3 style="font-size: 0.95rem;">Hygiène Numérique</h3>
-                    </div>
-                    <div class="score-bar" style="height: 28px;">
-                        <div class="score-fill" style="width: {{ scores.percentages.hygiene }}%; background: linear-gradient(90deg, #8b5cf6, #a78bfa)">
-                            <span class="score-percentage" style="font-size: 0.85rem;">{{ scores.percentages.hygiene }}%</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="recommendations-card">
-            <div class="recommendation-header" style="border-left: 4px solid {{ recommendations.level.color }}">
-                <h2>{{ recommendations.title }}</h2>
-                <p class="recommendation-message">{{ recommendations.message }}</p>
-            </div>
+<div class="container">
+<div class="overall-score-card">
+<h2>Score Global</h2>
+<div class="score-circle" style="--score: {{ scores.overall_score }}; --color: {{ recommendations.level.color }}">
+<div class="score-value">{{ scores.overall_score }}<span>%</span></div>
+<div class="score-label" style="color: {{ recommendations.level.color }}">{{ recommendations.level.label }}</div>
+</div>
+</div>
+<div class="detailed-scores" style="padding: 1.5rem;">
+<h2 style="font-size: 1.3rem; margin-bottom: 1rem;">Scores Détaillés</h2>
+<div class="scores-grid" style="gap: 1rem;">
+<div class="score-item">
+<div class="score-header">
+<h3 style="font-size: 0.95rem;">Vigilance</h3>
+</div>
+<div class="score-bar" style="height: 28px;">
+<div class="score-fill" style="width: {{ scores.percentages.vigilance }}%; background: linear-gradient(90deg, #3b82f6, #60a5fa)">
+<span class="score-percentage" style="font-size: 0.85rem;">{{ scores.percentages.vigilance }}%</span>
+</div>
+</div>
+</div>
+<div class="score-item">
+<div class="score-header">
+<h3 style="font-size: 0.95rem;">Sécurité</h3>
+</div>
+<div class="score-bar" style="height: 28px;">
+<div class="score-fill" style="width: {{ scores.percentages.security }}%; background: linear-gradient(90deg, #10b981, #34d399)">
+<span class="score-percentage" style="font-size: 0.85rem;">{{ scores.percentages.security }}%</span>
+</div>
+</div>
+</div>
+<div class="score-item">
+<div class="score-header">
+<h3 style="font-size: 0.95rem;">Hygiène Numérique</h3>
+</div>
+<div class="score-bar" style="height: 28px;">
+<div class="score-fill" style="width: {{ scores.percentages.hygiene }}%; background: linear-gradient(90deg, #8b5cf6, #a78bfa)">
+<span class="score-percentage" style="font-size: 0.85rem;">{{ scores.percentages.hygiene }}%</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="recommendations-card">
+<div class="recommendation-header" style="border-left: 4px solid {{ recommendations.level.color }}">
+<h2>{{ recommendations.title }}</h2>
+<p class="recommendation-message">{{ recommendations.message }}</p>
+</div>
 
             {% if recommendations.priority_rules %}
             <div class="priority-rules">
-                <h3 style="font-size: 1.2rem;">Règles d'Or Recommandées</h3>
-                <div class="rules-grid" style="gap: 1rem;">
+<h3 style="font-size: 1.2rem;">Règles d'Or Recommandées</h3>
+<div class="rules-grid" style="gap: 1rem;">
                     {% for rule in recommendations.priority_rules %}
-                    <a href="{{ url_for('content.rule_detail', rule_id=rule.id) }}" class="rule-card" style="padding: 1.2rem;">
-                        <div class="rule-number" style="font-size: 1.8rem;">Règle {{ rule.order }}</div>
-                        <h4 style="font-size: 0.95rem;">{{ rule.title|striptags }}</h4>
-                        <p style="font-size: 0.85rem;">{{ rule.description|striptags|truncate(100) }}</p>
-                        <span class="rule-link" style="font-size: 0.85rem;">En savoir plus →</span>
-                    </a>
+                    <a class="rule-card" href="{{ url_for('content.rule_detail', rule_id=rule.id) }}" style="padding: 1.2rem;">
+<div class="rule-number" style="font-size: 1.8rem;">Règle {{ rule.order }}</div>
+<h4 style="font-size: 0.95rem;">{{ rule.title|striptags }}</h4>
+<p style="font-size: 0.85rem;">{{ rule.description|striptags|truncate(100) }}</p>
+<span class="rule-link" style="font-size: 0.85rem;">En savoir plus →</span>
+</a>
                     {% endfor %}
                 </div>
-            </div>
+</div>
             {% endif %}
 
             {% if recommendations.weak_areas %}
             <div class="weak-areas">
-                <h3>Points d'Attention</h3>
-                <ul class="weak-areas-list">
+<h3>Points d'Attention</h3>
+<ul class="weak-areas-list">
                     {% for area in recommendations.weak_areas[:5] %}
                     <li>
-                        <strong>{{ area.question }}</strong>
-                        <p>{{ area.description }}</p>
-                    </li>
+<strong>{{ area.question }}</strong>
+<p>{{ area.description }}</p>
+</li>
                     {% endfor %}
                 </ul>
-            </div>
+</div>
             {% endif %}
 
             {% if recommendations.suggested_tools %}
             <div class="suggested-tools">
-                <h3>Outils Recommandés</h3>
-                <div class="tools-grid">
+<h3>Outils Recommandés</h3>
+<div class="tools-grid">
                     {% for tool in recommendations.suggested_tools %}
                     <div class="tool-card">
-                        <h4>{{ tool.name }}</h4>
-                        <p>{{ tool.description[:100] }}...</p>
-                    </div>
+<h4>{{ tool.name }}</h4>
+<p>{{ tool.description[:100] }}...</p>
+</div>
                     {% endfor %}
                 </div>
-                <p class="tools-link">
-                    <a href="{{ url_for('content.tools') }}">Voir tous les outils →</a>
-                </p>
-            </div>
+<p class="tools-link">
+<a href="{{ url_for('content.tools') }}">Voir tous les outils →</a>
+</p>
+</div>
             {% endif %}
         </div>
 
         {% if hibp_result %}
         <div class="breach-results-card" style="margin-top: 2rem;">
-            <h2 style="font-size: 1.5rem;">Analyse de Sécurité Email: {{ email }}</h2>
+<h2 style="font-size: 1.5rem;">Analyse de Sécurité Email: {{ email }}</h2>
             
             {% if hibp_result.error %}
             <div class="alert alert-error">
-                <h3 style="font-size: 1.1rem;">Service temporairement indisponible</h3>
-                <p style="font-size: 0.95rem;">{{ hibp_result.error }}</p>
-            </div>
+<h3 style="font-size: 1.1rem;">Service temporairement indisponible</h3>
+<p style="font-size: 0.95rem;">{{ hibp_result.error }}</p>
+</div>
             {% elif hibp_result.breach_count == 0 %}
             <div class="alert alert-success">
-                <h3 style="font-size: 1.1rem;">Aucune fuite détectée</h3>
-                <p style="font-size: 0.95rem;">Votre adresse email n'apparaît dans aucune base de données de fuites connues. C'est excellent pour votre sécurité!</p>
-            </div>
+<h3 style="font-size: 1.1rem;">Aucune fuite détectée</h3>
+<p style="font-size: 0.95rem;">Votre adresse email n'apparaît dans aucune base de données de fuites connues. C'est excellent pour votre sécurité!</p>
+</div>
             {% else %}
-            <div class="alert alert-{{ 'danger' if hibp_result.breach_count > 5 else 'warning' }}">
-                <h3 style="font-size: 1.1rem;">{{ hibp_result.breach_count }} fuite{% if hibp_result.breach_count > 1 %}s{% endif %} de données détectée{% if hibp_result.breach_count > 1 %}s{% endif %}</h3>
-                <p style="font-size: 0.95rem;">Votre adresse email apparaît dans {{ hibp_result.breach_count }} base{% if hibp_result.breach_count > 1 %}s{% endif %} de données compromises.</p>
-            </div>
+            <div class="alert alert-{{ 'danger' if hibp_result.breach_count &gt; 5 else 'warning' }}">
+<h3 style="font-size: 1.1rem;">{{ hibp_result.breach_count }} fuite{% if hibp_result.breach_count &gt; 1 %}s{% endif %} de données détectée{% if hibp_result.breach_count &gt; 1 %}s{% endif %}</h3>
+<p style="font-size: 0.95rem;">Votre adresse email apparaît dans {{ hibp_result.breach_count }} base{% if hibp_result.breach_count &gt; 1 %}s{% endif %} de données compromises.</p>
+</div>
 
             {% if hibp_result.breaches %}
             <div class="breaches-list">
-                <h3 style="font-size: 1.2rem;">Détails des fuites de données</h3>
-                <div class="breaches-grid">
+<h3 style="font-size: 1.2rem;">Détails des fuites de données</h3>
+<div class="breaches-grid">
                     {% for breach in hibp_result.breaches %}
                     <div class="breach-item">
-                        <div class="breach-header">
-                            <h4 style="font-size: 1.05rem;">{{ breach.name }}</h4>
-                            <span class="breach-date" style="font-size: 0.85rem;">{{ breach.date }}</span>
-                        </div>
+<div class="breach-header">
+<h4 style="font-size: 1.05rem;">{{ breach.name }}</h4>
+<span class="breach-date" style="font-size: 0.85rem;">{{ breach.date }}</span>
+</div>
                         {% if breach.pwn_count %}
                         <p class="breach-impact" style="font-size: 0.9rem;"><strong>{{ "{:,}".format(breach.pwn_count) }}</strong> comptes compromis</p>
                         {% endif %}
                         {% if breach.data_classes %}
                         <div class="data-classes" style="margin-top: 0.8rem;">
-                            <strong style="font-size: 0.9rem; display: block; margin-bottom: 0.6rem;">Données compromises:</strong>
-                            <div class="data-classes-list" style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+<strong style="font-size: 0.9rem; display: block; margin-bottom: 0.6rem;">Données compromises:</strong>
+<div class="data-classes-list" style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
                                 {% for data_class in breach.data_classes %}
                                 <span class="data-class-tag" style="font-size: 0.8rem; background: rgba(239, 68, 68, 0.1); color: #ef4444; padding: 0.3rem 0.7rem; border-radius: 6px; border: 1px solid rgba(239, 68, 68, 0.3);">{{ data_class }}</span>
                                 {% endfor %}
                             </div>
-                        </div>
+</div>
                         {% endif %}
                     </div>
                     {% endfor %}
                 </div>
-            </div>
+</div>
             {% endif %}
 
             {% if hibp_recommendations %}
             <div class="hibp-recommendations">
-                <h3 style="font-size: 1.2rem;">Recommandations de sécurité</h3>
-                <ul style="font-size: 0.95rem;">
+<h3 style="font-size: 1.2rem;">Recommandations de sécurité</h3>
+<ul style="font-size: 0.95rem;">
                     {% for recommendation in hibp_recommendations.recommendations %}
                     <li>{{ recommendation }}</li>
                     {% endfor %}
                 </ul>
-            </div>
+</div>
             {% endif %}
             {% endif %}
         </div>
         {% endif %}
 
         <div style="padding: 15px; background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%); border-left: 3px solid #3b82f6; border-radius: 8px; margin-bottom: 2rem;">
-            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2.5">
-                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                    <circle cx="12" cy="12" r="3"/>
-                </svg>
-                <h4 style="color: #3b82f6; font-size: 0.95rem; font-weight: 700; margin: 0;">🔒 Vos données sont protégées</h4>
-            </div>
-            <p style="margin: 0; color: #94a3b8; font-size: 0.875rem; line-height: 1.5;">
+<div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+<svg fill="none" height="20" stroke="#3b82f6" stroke-width="2.5" viewbox="0 0 24 24" width="20">
+<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+<circle cx="12" cy="12" r="3"></circle>
+</svg>
+<h4 style="color: #3b82f6; font-size: 0.95rem; font-weight: 700; margin: 0;">🔒 Vos données sont protégées</h4>
+</div>
+<p style="margin: 0; color: #94a3b8; font-size: 0.875rem; line-height: 1.5;">
                 Aucun marketing ni tracking. Stockage chiffré et anonymisé. Vos informations restent confidentielles.
             </p>
-        </div>
-
-        <div class="actions-card">
-            <a href="{{ url_for('main.generate_quiz_pdf', document_code=quiz_result.document_code) }}" class="btn-pdf">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 0.5rem;">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                    <polyline points="7 10 12 15 17 10"/>
-                    <line x1="12" y1="15" x2="12" y2="3"/>
-                </svg>
+</div>
+<div class="actions-card">
+<a class="btn-pdf" href="{{ url_for('main.generate_quiz_pdf', document_code=quiz_result.document_code) }}">
+<svg fill="none" height="20" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 0.5rem;" viewbox="0 0 24 24" width="20">
+<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+<polyline points="7 10 12 15 17 10"></polyline>
+<line x1="12" x2="12" y1="15" y2="3"></line>
+</svg>
                 Télécharger le rapport PDF
             </a>
-            <a href="{{ url_for('main.quiz') }}" class="btn-secondary">Refaire le quiz</a>
-            <a href="{{ url_for('content.rules') }}" class="btn-primary">Consulter les 20 Règles d'Or</a>
-        </div>
-    </div>
+<a class="btn-secondary" href="{{ url_for('main.quiz') }}">Refaire le quiz</a>
+<a class="btn-primary" href="{{ url_for('content.rules') }}">Consulter les 20 Règles d'Or</a>
+</div>
+</div>
 </section>
-
-<style>
-.btn-pdf {
-    background: linear-gradient(145deg, rgba(16, 185, 129, 0.2) 0%, rgba(16, 185, 129, 0.1) 100%);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border: 1px solid rgba(16, 185, 129, 0.3);
-    color: #10b981;
-    padding: 0.875rem 1.75rem;
-    border-radius: 12px;
-    font-weight: 500;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 16px rgba(16, 185, 129, 0.2);
-}
-
-.btn-pdf:hover {
-    background: linear-gradient(145deg, rgba(16, 185, 129, 0.3) 0%, rgba(16, 185, 129, 0.2) 100%);
-    border-color: rgba(16, 185, 129, 0.5);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
-    color: #10b981;
-}
-</style>
+<link href="{{ url_for('static', filename='css/quiz_results.css') }}" rel="stylesheet"/>
 {% endblock %}

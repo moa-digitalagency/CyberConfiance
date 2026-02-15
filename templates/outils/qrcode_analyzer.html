@@ -5,7 +5,6 @@
  * Fait par : Aisance KALONJI, www.aisancekalonji.com
  * Auditer par : La CyberConfiance, www.cyberconfiance.com
 -->
-
 <!--
   CyberConfiance
   By MOA Digital Agency LLC
@@ -19,271 +18,259 @@
 
 {% block content %}
 <script nonce="{{ csp_nonce }}" src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
-
 <section class="page-header-modern">
-    <div class="container">
-        <div class="header-content-centered">
-            <h1 class="page-title-modern">Analyseur de QR Code</h1>
-            <p class="page-subtitle-modern">Protection contre le Quishing - Analysez les QR codes avant de les scanner</p>
-        </div>
-    </div>
+<div class="container">
+<div class="header-content-centered">
+<h1 class="page-title-modern">Analyseur de QR Code</h1>
+<p class="page-subtitle-modern">Protection contre le Quishing - Analysez les QR codes avant de les scanner</p>
+</div>
+</div>
 </section>
-
 <section class="analyzer-container">
-    <div class="container">
+<div class="container">
         {% if not results %}
         <div class="analyzer-card">
-            <h2>Analyse Anti-Quishing</h2>
-            <p class="analyzer-description">
+<h2>Analyse Anti-Quishing</h2>
+<p class="analyzer-description">
                 La camera s'active automatiquement pour scanner les QR codes. Placez le QR code devant la camera pour 
                 une detection automatique, ou capturez manuellement. L'URL est extraite, les redirections sont suivies 
                 et la securite est verifiee - <strong>sans jamais ouvrir ni executer le lien</strong>.
             </p>
-
-            <div class="input-method-tabs">
-                <button type="button" class="tab-btn active" data-tab="camera">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-                        <circle cx="12" cy="13" r="4"/>
-                    </svg>
+<div class="input-method-tabs">
+<button class="tab-btn active" data-tab="camera" type="button">
+<svg fill="none" height="20" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="20">
+<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+<circle cx="12" cy="13" r="4"></circle>
+</svg>
                     Scanner avec Camera
                 </button>
-                <button type="button" class="tab-btn" data-tab="upload">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                        <polyline points="17 8 12 3 7 8"/>
-                        <line x1="12" y1="3" x2="12" y2="15"/>
-                    </svg>
+<button class="tab-btn" data-tab="upload" type="button">
+<svg fill="none" height="20" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="20">
+<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+<polyline points="17 8 12 3 7 8"></polyline>
+<line x1="12" x2="12" y1="3" y2="15"></line>
+</svg>
                     Uploader une Image
                 </button>
-            </div>
-
-            <form method="POST" action="{{ url_for('main.qrcode_analyzer') }}" class="analyzer-form" enctype="multipart/form-data" id="analyzerForm">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                <input type="hidden" name="camera_capture" id="cameraCaptureData" value="">
-                
-                <div class="tab-content active" id="camera-tab">
-                    <div class="camera-container">
-                        <div id="scanStatus" class="scan-status">
-                            <div class="scan-indicator scanning">
-                                <span class="pulse"></span>
-                                <span>Recherche de QR code en cours...</span>
-                            </div>
-                        </div>
-                        <div class="camera-view-wrapper">
-                            <video id="cameraVideo" autoplay playsinline></video>
-                            <canvas id="cameraCanvas" style="display: none;"></canvas>
-                            <canvas id="scanCanvas" style="display: none;"></canvas>
-                            <div class="camera-overlay">
-                                <div class="scan-frame" id="scanFrame"></div>
-                            </div>
-                            <div id="cameraPlaceholder" class="camera-placeholder">
-                                <div class="loading-spinner"></div>
-                                <p>Activation de la camera...</p>
-                                <p class="camera-hint">Autorisez l'acces a la camera dans votre navigateur</p>
-                            </div>
-                        </div>
-                        <div class="camera-controls">
-                            <button type="button" id="captureBtn" class="btn-primary" style="display: none;">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <circle cx="12" cy="12" r="10"/>
-                                    <circle cx="12" cy="12" r="3"/>
-                                </svg>
+</div>
+<form action="{{ url_for('main.qrcode_analyzer') }}" class="analyzer-form" enctype="multipart/form-data" id="analyzerForm" method="POST">
+<input name="csrf_token" type="hidden" value="{{ csrf_token() }}"/>
+<input id="cameraCaptureData" name="camera_capture" type="hidden" value=""/>
+<div class="tab-content active" id="camera-tab">
+<div class="camera-container">
+<div class="scan-status" id="scanStatus">
+<div class="scan-indicator scanning">
+<span class="pulse"></span>
+<span>Recherche de QR code en cours...</span>
+</div>
+</div>
+<div class="camera-view-wrapper">
+<video autoplay="" id="cameraVideo" playsinline=""></video>
+<canvas id="cameraCanvas" style="display: none;"></canvas>
+<canvas id="scanCanvas" style="display: none;"></canvas>
+<div class="camera-overlay">
+<div class="scan-frame" id="scanFrame"></div>
+</div>
+<div class="camera-placeholder" id="cameraPlaceholder">
+<div class="loading-spinner"></div>
+<p>Activation de la camera...</p>
+<p class="camera-hint">Autorisez l'acces a la camera dans votre navigateur</p>
+</div>
+</div>
+<div class="camera-controls">
+<button class="btn-primary" id="captureBtn" style="display: none;" type="button">
+<svg fill="none" height="20" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="20">
+<circle cx="12" cy="12" r="10"></circle>
+<circle cx="12" cy="12" r="3"></circle>
+</svg>
                                 Capturer Manuellement
                             </button>
-                            <button type="button" id="switchCameraBtn" class="btn-secondary" style="display: none;">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="23 4 23 10 17 10"/>
-                                    <polyline points="1 20 1 14 7 14"/>
-                                    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
-                                </svg>
-                            </button>
-                        </div>
-                        <div id="qrDetected" class="qr-detected-banner" style="display: none;">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                                <polyline points="22 4 12 14.01 9 11.01"/>
-                            </svg>
-                            <span>QR Code detecte ! Analyse en cours...</span>
-                        </div>
-                        
-                        <div id="analysisProgress" class="analysis-progress-container" style="display: none;">
-                            <div class="progress-content">
-                                <div class="progress-icon">
-                                    <svg class="progress-spinner" viewBox="0 0 50 50">
-                                        <circle class="progress-circle-bg" cx="25" cy="25" r="20" fill="none" stroke-width="4"/>
-                                        <circle class="progress-circle" cx="25" cy="25" r="20" fill="none" stroke-width="4" stroke-linecap="round"/>
-                                    </svg>
-                                    <div class="progress-icon-inner">
-                                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <rect x="3" y="3" width="7" height="7" rx="1"/>
-                                            <rect x="14" y="3" width="7" height="7" rx="1"/>
-                                            <rect x="3" y="14" width="7" height="7" rx="1"/>
-                                            <rect x="14" y="14" width="7" height="7" rx="1"/>
-                                        </svg>
-                                    </div>
-                                </div>
-                                <h3 class="progress-title">Analyse du QR Code en cours</h3>
-                                <p class="progress-subtitle">Verification de securite multi-moteurs...</p>
-                                
-                                <div class="progress-bar-container">
-                                    <div class="progress-bar" id="progressBar"></div>
-                                </div>
-                                <span class="progress-percent" id="progressPercent">0%</span>
-                                
-                                <div class="progress-steps">
-                                    <div class="progress-step active" id="step1">
-                                        <span class="step-dot"></span>
-                                        <span class="step-text">Decodage QR</span>
-                                    </div>
-                                    <div class="progress-step" id="step2">
-                                        <span class="step-dot"></span>
-                                        <span class="step-text">Extraction URL</span>
-                                    </div>
-                                    <div class="progress-step" id="step3">
-                                        <span class="step-dot"></span>
-                                        <span class="step-text">Suivi redirections</span>
-                                    </div>
-                                    <div class="progress-step" id="step4">
-                                        <span class="step-dot"></span>
-                                        <span class="step-text">Analyse securite</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="capturePreview" class="capture-preview" style="display: none;">
-                            <img id="capturedImage" alt="Captured QR Code">
-                            <button type="button" id="retakeBtn" class="btn-secondary">
+<button class="btn-secondary" id="switchCameraBtn" style="display: none;" type="button">
+<svg fill="none" height="20" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="20">
+<polyline points="23 4 23 10 17 10"></polyline>
+<polyline points="1 20 1 14 7 14"></polyline>
+<path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+</svg>
+</button>
+</div>
+<div class="qr-detected-banner" id="qrDetected" style="display: none;">
+<svg fill="none" height="24" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="24">
+<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+<polyline points="22 4 12 14.01 9 11.01"></polyline>
+</svg>
+<span>QR Code detecte ! Analyse en cours...</span>
+</div>
+<div class="analysis-progress-container" id="analysisProgress" style="display: none;">
+<div class="progress-content">
+<div class="progress-icon">
+<svg class="progress-spinner" viewbox="0 0 50 50">
+<circle class="progress-circle-bg" cx="25" cy="25" fill="none" r="20" stroke-width="4"></circle>
+<circle class="progress-circle" cx="25" cy="25" fill="none" r="20" stroke-linecap="round" stroke-width="4"></circle>
+</svg>
+<div class="progress-icon-inner">
+<svg fill="none" height="32" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="32">
+<rect height="7" rx="1" width="7" x="3" y="3"></rect>
+<rect height="7" rx="1" width="7" x="14" y="3"></rect>
+<rect height="7" rx="1" width="7" x="3" y="14"></rect>
+<rect height="7" rx="1" width="7" x="14" y="14"></rect>
+</svg>
+</div>
+</div>
+<h3 class="progress-title">Analyse du QR Code en cours</h3>
+<p class="progress-subtitle">Verification de securite multi-moteurs...</p>
+<div class="progress-bar-container">
+<div class="progress-bar" id="progressBar"></div>
+</div>
+<span class="progress-percent" id="progressPercent">0%</span>
+<div class="progress-steps">
+<div class="progress-step active" id="step1">
+<span class="step-dot"></span>
+<span class="step-text">Decodage QR</span>
+</div>
+<div class="progress-step" id="step2">
+<span class="step-dot"></span>
+<span class="step-text">Extraction URL</span>
+</div>
+<div class="progress-step" id="step3">
+<span class="step-dot"></span>
+<span class="step-text">Suivi redirections</span>
+</div>
+<div class="progress-step" id="step4">
+<span class="step-dot"></span>
+<span class="step-text">Analyse securite</span>
+</div>
+</div>
+</div>
+</div>
+<div class="capture-preview" id="capturePreview" style="display: none;">
+<img alt="Captured QR Code" id="capturedImage"/>
+<button class="btn-secondary" id="retakeBtn" type="button">
                                 Reprendre
                             </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="tab-content" id="upload-tab">
-                    <div class="upload-zone" id="uploadZone">
-                        <div class="upload-icon">
-                            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                <rect x="3" y="3" width="7" height="7" rx="1"/>
-                                <rect x="14" y="3" width="7" height="7" rx="1"/>
-                                <rect x="3" y="14" width="7" height="7" rx="1"/>
-                                <rect x="14" y="14" width="7" height="7" rx="1"/>
-                                <rect x="5" y="5" width="3" height="3"/>
-                                <rect x="16" y="5" width="3" height="3"/>
-                                <rect x="5" y="16" width="3" height="3"/>
-                            </svg>
-                        </div>
-                        <p class="upload-text">Glissez-deposez une image ici ou cliquez pour selectionner</p>
-                        <p class="upload-hint">Formats supportes: PNG, JPG, GIF, BMP, WebP (max 10 MB)</p>
-                        <input type="file" name="qrcode_image" id="qrcodeImage" accept="image/*" class="file-input-hidden">
-                        <div id="filePreview" class="file-preview" style="display: none;">
-                            <span class="file-name"></span>
-                            <button type="button" class="remove-file" onclick="removeFile()">x</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <button type="submit" class="btn-primary btn-full" id="submitBtn">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="11" cy="11" r="8"/>
-                        <path d="m21 21-4.35-4.35"/>
-                    </svg>
-                    <span>Analyser le QR Code</span>
-                </button>
-            </form>
-            
-            <div style="padding: 15px; background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0.05) 100%); border-left: 3px solid #ef4444; border-radius: 8px; margin-top: 1.5rem;">
-                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5">
-                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                        <line x1="12" y1="9" x2="12" y2="13"/>
-                        <line x1="12" y1="17" x2="12.01" y2="17"/>
-                    </svg>
-                    <h4 style="color: #ef4444; font-size: 0.95rem; font-weight: 700; margin: 0;">Qu'est-ce que le Quishing ?</h4>
-                </div>
-                <p style="margin: 0; color: #94a3b8; font-size: 0.875rem; line-height: 1.5;">
+</div>
+</div>
+</div>
+<div class="tab-content" id="upload-tab">
+<div class="upload-zone" id="uploadZone">
+<div class="upload-icon">
+<svg fill="none" height="64" stroke="currentColor" stroke-width="1.5" viewbox="0 0 24 24" width="64">
+<rect height="7" rx="1" width="7" x="3" y="3"></rect>
+<rect height="7" rx="1" width="7" x="14" y="3"></rect>
+<rect height="7" rx="1" width="7" x="3" y="14"></rect>
+<rect height="7" rx="1" width="7" x="14" y="14"></rect>
+<rect height="3" width="3" x="5" y="5"></rect>
+<rect height="3" width="3" x="16" y="5"></rect>
+<rect height="3" width="3" x="5" y="16"></rect>
+</svg>
+</div>
+<p class="upload-text">Glissez-deposez une image ici ou cliquez pour selectionner</p>
+<p class="upload-hint">Formats supportes: PNG, JPG, GIF, BMP, WebP (max 10 MB)</p>
+<input accept="image/*" class="file-input-hidden" id="qrcodeImage" name="qrcode_image" type="file"/>
+<div class="file-preview" id="filePreview" style="display: none;">
+<span class="file-name"></span>
+<button class="remove-file" onclick="removeFile()" type="button">x</button>
+</div>
+</div>
+</div>
+<button class="btn-primary btn-full" id="submitBtn" type="submit">
+<svg fill="none" height="20" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="20">
+<circle cx="11" cy="11" r="8"></circle>
+<path d="m21 21-4.35-4.35"></path>
+</svg>
+<span>Analyser le QR Code</span>
+</button>
+</form>
+<div style="padding: 15px; background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0.05) 100%); border-left: 3px solid #ef4444; border-radius: 8px; margin-top: 1.5rem;">
+<div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+<svg fill="none" height="20" stroke="#ef4444" stroke-width="2.5" viewbox="0 0 24 24" width="20">
+<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+<line x1="12" x2="12" y1="9" y2="13"></line>
+<line x1="12" x2="12.01" y1="17" y2="17"></line>
+</svg>
+<h4 style="color: #ef4444; font-size: 0.95rem; font-weight: 700; margin: 0;">Qu'est-ce que le Quishing ?</h4>
+</div>
+<p style="margin: 0; color: #94a3b8; font-size: 0.875rem; line-height: 1.5;">
                     Le Quishing (QR + Phishing) est une attaque ou des QR codes malveillants redirigent vers des sites de phishing. 
                     Ne scannez jamais un QR code sans verification prealable.
                 </p>
-            </div>
-        </div>
+</div>
+</div>
         {% endif %}
 
         {% if results %}
         <div class="results-card">
             {% if results.error %}
             <div class="alert alert-error">
-                <h3>Erreur d'analyse</h3>
-                <p>{{ results.error }}</p>
-            </div>
-            <div style="margin-top: 1.5rem; text-align: center;">
-                <a href="{{ url_for('main.qrcode_analyzer') }}" class="btn-secondary" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; text-decoration: none;">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="3" y="3" width="7" height="7" rx="1"/>
-                        <rect x="14" y="3" width="7" height="7" rx="1"/>
-                        <rect x="3" y="14" width="7" height="7" rx="1"/>
-                        <rect x="14" y="14" width="7" height="7" rx="1"/>
-                    </svg>
-                    <span>Nouvelle Analyse</span>
-                </a>
-            </div>
+<h3>Erreur d'analyse</h3>
+<p>{{ results.error }}</p>
+</div>
+<div style="margin-top: 1.5rem; text-align: center;">
+<a class="btn-secondary" href="{{ url_for('main.qrcode_analyzer') }}" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; text-decoration: none;">
+<svg fill="none" height="18" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="18">
+<rect height="7" rx="1" width="7" x="3" y="3"></rect>
+<rect height="7" rx="1" width="7" x="14" y="3"></rect>
+<rect height="7" rx="1" width="7" x="3" y="14"></rect>
+<rect height="7" rx="1" width="7" x="14" y="14"></rect>
+</svg>
+<span>Nouvelle Analyse</span>
+</a>
+</div>
             {% elif results.data_type == 'text' %}
             <div class="alert alert-info">
-                <h3>Contenu Texte Detecte</h3>
-                <p>{{ results.message }}</p>
-                <p><strong>Donnees extraites:</strong> {{ results.extracted_data[:200] }}{% if results.extracted_data|length > 200 %}...{% endif %}</p>
-            </div>
-            <div style="margin-top: 1.5rem; text-align: center;">
-                <a href="{{ url_for('main.qrcode_analyzer') }}" class="btn-secondary" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; text-decoration: none;">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="3" y="3" width="7" height="7" rx="1"/>
-                        <rect x="14" y="3" width="7" height="7" rx="1"/>
-                        <rect x="3" y="14" width="7" height="7" rx="1"/>
-                        <rect x="14" y="14" width="7" height="7" rx="1"/>
-                    </svg>
-                    <span>Nouvelle Analyse</span>
-                </a>
-            </div>
+<h3>Contenu Texte Detecte</h3>
+<p>{{ results.message }}</p>
+<p><strong>Donnees extraites:</strong> {{ results.extracted_data[:200] }}{% if results.extracted_data|length &gt; 200 %}...{% endif %}</p>
+</div>
+<div style="margin-top: 1.5rem; text-align: center;">
+<a class="btn-secondary" href="{{ url_for('main.qrcode_analyzer') }}" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; text-decoration: none;">
+<svg fill="none" height="18" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="18">
+<rect height="7" rx="1" width="7" x="3" y="3"></rect>
+<rect height="7" rx="1" width="7" x="14" y="3"></rect>
+<rect height="7" rx="1" width="7" x="3" y="14"></rect>
+<rect height="7" rx="1" width="7" x="14" y="14"></rect>
+</svg>
+<span>Nouvelle Analyse</span>
+</a>
+</div>
             {% else %}
             <div class="analysis-summary">
-                <div class="summary-header">
-                    <h3>Resultats de l'Analyse QR Code</h3>
-                    <span class="threat-badge threat-{{ results.threat_level }}">
+<div class="summary-header">
+<h3>Resultats de l'Analyse QR Code</h3>
+<span class="threat-badge threat-{{ results.threat_level }}">
                         Niveau: {{ results.threat_level|capitalize }}
                     </span>
-                </div>
-
-                <div class="url-display">
-                    <div class="url-item">
-                        <span class="url-label">URL extraite:</span>
-                        <code class="url-value">{{ results.extracted_url }}</code>
-                    </div>
+</div>
+<div class="url-display">
+<div class="url-item">
+<span class="url-label">URL extraite:</span>
+<code class="url-value">{{ results.extracted_url }}</code>
+</div>
                     {% if results.final_url and results.final_url != results.extracted_url %}
                     <div class="url-item">
-                        <span class="url-label">URL finale:</span>
-                        <code class="url-value">{{ results.final_url }}</code>
-                    </div>
+<span class="url-label">URL finale:</span>
+<code class="url-value">{{ results.final_url }}</code>
+</div>
                     {% endif %}
                 </div>
 
                 {% if results.redirect_chain %}
                 <div class="redirect-chain" style="margin-top: 1.5rem; background: rgba(217, 119, 6, 0.1); border: 1px solid rgba(217, 119, 6, 0.3); border-radius: 12px; padding: 1.25rem;">
-                    <h4 style="color: #f59e0b; margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.5rem;">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
-                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
-                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
-                        </svg>
-                        Chaine de Redirection Complete {% if results.redirect_count > 0 %}({{ results.redirect_count }} redirection{{ 's' if results.redirect_count > 1 else '' }}){% else %}(acces direct){% endif %}
+<h4 style="color: #f59e0b; margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.5rem;">
+<svg fill="none" height="20" stroke="#f59e0b" stroke-width="2" viewbox="0 0 24 24" width="20">
+<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+<path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+</svg>
+                        Chaine de Redirection Complete {% if results.redirect_count &gt; 0 %}({{ results.redirect_count }} redirection{{ 's' if results.redirect_count &gt; 1 else '' }}){% else %}(acces direct){% endif %}
                     </h4>
-                    <div class="redirect-timeline" style="position: relative; padding-left: 1.5rem; border-left: 2px solid rgba(217, 119, 6, 0.4);">
+<div class="redirect-timeline" style="position: relative; padding-left: 1.5rem; border-left: 2px solid rgba(217, 119, 6, 0.4);">
                         {% for redirect in results.redirect_chain %}
                         <div class="redirect-step" style="position: relative; padding: 0.5rem 0 0.75rem 1rem; margin-bottom: 0.25rem;">
-                            <div style="position: absolute; left: -1.75rem; top: 0.6rem; width: 12px; height: 12px; background: {% if redirect.js_redirect_detected %}#ef4444{% elif redirect.status_code and redirect.status_code >= 300 and redirect.status_code < 400 %}#f59e0b{% else %}#3b82f6{% endif %}; border-radius: 50%; border: 2px solid rgba(15, 31, 53, 1);"></div>
-                            <div class="step-content" style="display: flex; flex-direction: column; gap: 0.25rem;">
-                                <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-                                    <span style="background: rgba(59, 130, 246, 0.2); color: #60a5fa; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 600;">{{ loop.index }}</span>
+<div style="position: absolute; left: -1.75rem; top: 0.6rem; width: 12px; height: 12px; background: {% if redirect.js_redirect_detected %}#ef4444{% elif redirect.status_code and redirect.status_code &gt;= 300 and redirect.status_code &lt; 400 %}#f59e0b{% else %}#3b82f6{% endif %}; border-radius: 50%; border: 2px solid rgba(15, 31, 53, 1);"></div>
+<div class="step-content" style="display: flex; flex-direction: column; gap: 0.25rem;">
+<div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+<span style="background: rgba(59, 130, 246, 0.2); color: #60a5fa; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 600;">{{ loop.index }}</span>
                                     {% if redirect.status_code %}
-                                    <span class="status-code" style="background: {% if redirect.status_code >= 300 and redirect.status_code < 400 %}rgba(217, 119, 6, 0.3){% elif redirect.status_code >= 200 and redirect.status_code < 300 %}rgba(34, 197, 94, 0.3){% else %}rgba(239, 68, 68, 0.3){% endif %}; color: {% if redirect.status_code >= 300 and redirect.status_code < 400 %}#fbbf24{% elif redirect.status_code >= 200 and redirect.status_code < 300 %}#4ade80{% else %}#f87171{% endif %}; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem;">{{ redirect.status_code }}</span>
+                                    <span class="status-code" style="background: {% if redirect.status_code &gt;= 300 and redirect.status_code &lt; 400 %}rgba(217, 119, 6, 0.3){% elif redirect.status_code &gt;= 200 and redirect.status_code &lt; 300 %}rgba(34, 197, 94, 0.3){% else %}rgba(239, 68, 68, 0.3){% endif %}; color: {% if redirect.status_code &gt;= 300 and redirect.status_code &lt; 400 %}#fbbf24{% elif redirect.status_code &gt;= 200 and redirect.status_code &lt; 300 %}#4ade80{% else %}#f87171{% endif %}; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem;">{{ redirect.status_code }}</span>
                                     {% endif %}
                                     {% if redirect.redirect_type %}
                                     <span class="redirect-type" style="color: #94a3b8; font-size: 0.75rem;">{{ redirect.redirect_type }}</span>
@@ -295,12 +282,12 @@
                                     <span style="background: rgba(217, 119, 6, 0.3); color: #fbbf24; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem;">Raccourcisseur</span>
                                     {% endif %}
                                 </div>
-                                <code class="step-url" style="display: block; background: rgba(30, 41, 59, 0.6); padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; color: #e2e8f0; word-break: break-all;">{{ redirect.url }}</code>
+<code class="step-url" style="display: block; background: rgba(30, 41, 59, 0.6); padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; color: #e2e8f0; word-break: break-all;">{{ redirect.url }}</code>
                                 {% if redirect.redirects_to %}
                                 <div style="color: #64748b; font-size: 0.7rem; display: flex; align-items: center; gap: 0.25rem;">
-                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <polyline points="9 18 15 12 9 6"/>
-                                    </svg>
+<svg fill="none" height="12" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="12">
+<polyline points="9 18 15 12 9 6"></polyline>
+</svg>
                                     Redirige vers l'etape suivante
                                 </div>
                                 {% endif %}
@@ -308,1479 +295,186 @@
                                 <span class="redirect-error" style="color: #ef4444; font-size: 0.8rem; background: rgba(239, 68, 68, 0.1); padding: 4px 8px; border-radius: 4px;">{{ redirect.error }}</span>
                                 {% endif %}
                             </div>
-                        </div>
+</div>
                         {% endfor %}
                     </div>
-                </div>
+</div>
                 {% endif %}
 
                 {% if results.js_redirects %}
                 <div class="alert alert-warning">
-                    <h4>Redirections JavaScript Detectees</h4>
-                    <p>Des redirections cote client ont ete detectees. Ces redirections peuvent etre utilisees pour masquer la destination finale.</p>
-                </div>
+<h4>Redirections JavaScript Detectees</h4>
+<p>Des redirections cote client ont ete detectees. Ces redirections peuvent etre utilisees pour masquer la destination finale.</p>
+</div>
                 {% endif %}
 
                 {% set summary = results.consolidated_summary %}
                 {% if summary %}
                 {% if summary.key_findings %}
                 <div class="findings-section" style="margin-top: 1.5rem;">
-                    <h4 style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; color: #e2e8f0;">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M9 11l3 3L22 4"/>
-                            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
-                        </svg>
-                        Resultats de l'Analyse ({{ summary.key_findings|length }} element{{ 's' if summary.key_findings|length > 1 else '' }})
+<h4 style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; color: #e2e8f0;">
+<svg fill="none" height="20" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="20">
+<path d="M9 11l3 3L22 4"></path>
+<path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+</svg>
+                        Resultats de l'Analyse ({{ summary.key_findings|length }} element{{ 's' if summary.key_findings|length &gt; 1 else '' }})
                     </h4>
-                    <div class="findings-grid" style="display: grid; gap: 0.75rem;">
+<div class="findings-grid" style="display: grid; gap: 0.75rem;">
                         {% for finding in summary.key_findings %}
                         <div class="finding-card" style="background: {% if finding.severity == 'critical' %}rgba(239, 68, 68, 0.15); border-left: 4px solid #ef4444;{% elif finding.severity == 'high' %}rgba(249, 115, 22, 0.15); border-left: 4px solid #f97316;{% elif finding.severity == 'medium' %}rgba(234, 179, 8, 0.15); border-left: 4px solid #eab308;{% else %}rgba(59, 130, 246, 0.15); border-left: 4px solid #3b82f6;{% endif %} border-radius: 8px; padding: 1rem;">
-                            <div style="display: flex; align-items: center; gap: 0.75rem;">
-                                <div style="width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: {% if finding.severity == 'critical' %}rgba(239, 68, 68, 0.2){% elif finding.severity == 'high' %}rgba(249, 115, 22, 0.2){% elif finding.severity == 'medium' %}rgba(234, 179, 8, 0.2){% else %}rgba(59, 130, 246, 0.2){% endif %};">
+<div style="display: flex; align-items: center; gap: 0.75rem;">
+<div style="width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: {% if finding.severity == 'critical' %}rgba(239, 68, 68, 0.2){% elif finding.severity == 'high' %}rgba(249, 115, 22, 0.2){% elif finding.severity == 'medium' %}rgba(234, 179, 8, 0.2){% else %}rgba(59, 130, 246, 0.2){% endif %};">
                                     {% if finding.icon == 'alert-triangle' %}
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="{% if finding.severity == 'critical' %}#ef4444{% elif finding.severity == 'high' %}#f97316{% else %}#eab308{% endif %}" stroke-width="2">
-                                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                                        <line x1="12" y1="9" x2="12" y2="13"/>
-                                        <line x1="12" y1="17" x2="12.01" y2="17"/>
-                                    </svg>
+                                    <svg fill="none" height="20" stroke="{% if finding.severity == 'critical' %}#ef4444{% elif finding.severity == 'high' %}#f97316{% else %}#eab308{% endif %}" stroke-width="2" viewbox="0 0 24 24" width="20">
+<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+<line x1="12" x2="12" y1="9" y2="13"></line>
+<line x1="12" x2="12.01" y1="17" y2="17"></line>
+</svg>
                                     {% elif finding.icon == 'shield-off' %}
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2">
-                                        <path d="M19.69 14a6.9 6.9 0 0 0 .31-2V5l-8-3-3.16 1.18"/>
-                                        <path d="M4.73 4.73L4 5v7c0 6 8 10 8 10a20.29 20.29 0 0 0 5.62-4.38"/>
-                                        <line x1="1" y1="1" x2="23" y2="23"/>
-                                    </svg>
+                                    <svg fill="none" height="20" stroke="#ef4444" stroke-width="2" viewbox="0 0 24 24" width="20">
+<path d="M19.69 14a6.9 6.9 0 0 0 .31-2V5l-8-3-3.16 1.18"></path>
+<path d="M4.73 4.73L4 5v7c0 6 8 10 8 10a20.29 20.29 0 0 0 5.62-4.38"></path>
+<line x1="1" x2="23" y1="1" y2="23"></line>
+</svg>
                                     {% elif finding.icon == 'eye' %}
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="2">
-                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                                        <circle cx="12" cy="12" r="3"/>
-                                    </svg>
+                                    <svg fill="none" height="20" stroke="#eab308" stroke-width="2" viewbox="0 0 24 24" width="20">
+<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+<circle cx="12" cy="12" r="3"></circle>
+</svg>
                                     {% elif finding.icon == 'link' %}
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2">
-                                        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
-                                        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
-                                    </svg>
+                                    <svg fill="none" height="20" stroke="#3b82f6" stroke-width="2" viewbox="0 0 24 24" width="20">
+<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+<path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+</svg>
                                     {% else %}
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <circle cx="12" cy="12" r="10"/>
-                                        <line x1="12" y1="8" x2="12" y2="12"/>
-                                        <line x1="12" y1="16" x2="12.01" y2="16"/>
-                                    </svg>
+                                    <svg fill="none" height="20" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="20">
+<circle cx="12" cy="12" r="10"></circle>
+<line x1="12" x2="12" y1="8" y2="12"></line>
+<line x1="12" x2="12.01" y1="16" y2="16"></line>
+</svg>
                                     {% endif %}
                                 </div>
-                                <div style="flex: 1;">
-                                    <div style="font-weight: 600; color: {% if finding.severity == 'critical' %}#f87171{% elif finding.severity == 'high' %}#fb923c{% elif finding.severity == 'medium' %}#fbbf24{% else %}#60a5fa{% endif %}; font-size: 0.95rem;">{{ finding.title }}</div>
-                                    <div style="color: #94a3b8; font-size: 0.85rem; margin-top: 2px;">{{ finding.description }}</div>
-                                </div>
-                                <span style="padding: 4px 10px; border-radius: 4px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; background: {% if finding.severity == 'critical' %}rgba(239, 68, 68, 0.3); color: #fca5a5;{% elif finding.severity == 'high' %}rgba(249, 115, 22, 0.3); color: #fdba74;{% elif finding.severity == 'medium' %}rgba(234, 179, 8, 0.3); color: #fde047;{% else %}rgba(59, 130, 246, 0.3); color: #93c5fd;{% endif %}">{{ finding.severity }}</span>
-                            </div>
-                        </div>
+<div style="flex: 1;">
+<div style="font-weight: 600; color: {% if finding.severity == 'critical' %}#f87171{% elif finding.severity == 'high' %}#fb923c{% elif finding.severity == 'medium' %}#fbbf24{% else %}#60a5fa{% endif %}; font-size: 0.95rem;">{{ finding.title }}</div>
+<div style="color: #94a3b8; font-size: 0.85rem; margin-top: 2px;">{{ finding.description }}</div>
+</div>
+<span style="padding: 4px 10px; border-radius: 4px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; background: {% if finding.severity == 'critical' %}rgba(239, 68, 68, 0.3); color: #fca5a5;{% elif finding.severity == 'high' %}rgba(249, 115, 22, 0.3); color: #fdba74;{% elif finding.severity == 'medium' %}rgba(234, 179, 8, 0.3); color: #fde047;{% else %}rgba(59, 130, 246, 0.3); color: #93c5fd;{% endif %}">{{ finding.severity }}</span>
+</div>
+</div>
                         {% endfor %}
                     </div>
-                </div>
+</div>
                 {% endif %}
                 
                 {% if summary.recommendations %}
                 <div class="recommendations-section" style="margin-top: 1.5rem; background: {% if summary.overall_verdict == 'critical' or summary.overall_verdict == 'high' %}rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3);{% elif summary.overall_verdict == 'medium' %}rgba(234, 179, 8, 0.1); border: 1px solid rgba(234, 179, 8, 0.3);{% else %}rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3);{% endif %} border-radius: 12px; padding: 1.25rem;">
-                    <h4 style="margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.5rem; color: {% if summary.overall_verdict == 'critical' or summary.overall_verdict == 'high' %}#f87171{% elif summary.overall_verdict == 'medium' %}#fbbf24{% else %}#4ade80{% endif %};">
+<h4 style="margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.5rem; color: {% if summary.overall_verdict == 'critical' or summary.overall_verdict == 'high' %}#f87171{% elif summary.overall_verdict == 'medium' %}#fbbf24{% else %}#4ade80{% endif %};">
                         {% if summary.overall_verdict == 'critical' or summary.overall_verdict == 'high' %}
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"/>
-                            <line x1="15" y1="9" x2="9" y2="15"/>
-                            <line x1="9" y1="9" x2="15" y2="15"/>
-                        </svg>
+                        <svg fill="none" height="20" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="20">
+<circle cx="12" cy="12" r="10"></circle>
+<line x1="15" x2="9" y1="9" y2="15"></line>
+<line x1="9" x2="15" y1="9" y2="15"></line>
+</svg>
                         Avertissement de Securite
                         {% elif summary.overall_verdict == 'medium' %}
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                            <line x1="12" y1="9" x2="12" y2="13"/>
-                            <line x1="12" y1="17" x2="12.01" y2="17"/>
-                        </svg>
+                        <svg fill="none" height="20" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="20">
+<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+<line x1="12" x2="12" y1="9" y2="13"></line>
+<line x1="12" x2="12.01" y1="17" y2="17"></line>
+</svg>
                         Points d'Attention
                         {% else %}
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                            <polyline points="22 4 12 14.01 9 11.01"/>
-                        </svg>
+                        <svg fill="none" height="20" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="20">
+<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+<polyline points="22 4 12 14.01 9 11.01"></polyline>
+</svg>
                         Recommandations
                         {% endif %}
                     </h4>
-                    <ul style="margin: 0; padding-left: 1.25rem; color: #cbd5e1;">
+<ul style="margin: 0; padding-left: 1.25rem; color: #cbd5e1;">
                         {% for rec in summary.recommendations %}
                         <li style="margin-bottom: 0.5rem; line-height: 1.5;">{{ rec }}</li>
                         {% endfor %}
                     </ul>
-                </div>
+</div>
                 {% endif %}
                 
                 {% else %}
                 
                 {% if results.threat_detected %}
                 <div class="alert alert-danger" style="margin-top: 1.5rem;">
-                    <h4>Menace Potentielle Detectee</h4>
-                    <p>Ce QR code presente des caracteristiques suspectes. <strong>Ne scannez pas ce QR code</strong> avec votre telephone.</p>
-                </div>
+<h4>Menace Potentielle Detectee</h4>
+<p>Ce QR code presente des caracteristiques suspectes. <strong>Ne scannez pas ce QR code</strong> avec votre telephone.</p>
+</div>
                 {% else %}
                 <div class="alert alert-success" style="margin-top: 1.5rem;">
-                    <h4>Aucune Menace Majeure Detectee</h4>
-                    <p>Ce QR code semble sur, mais restez vigilant lors de la navigation.</p>
-                </div>
+<h4>Aucune Menace Majeure Detectee</h4>
+<p>Ce QR code semble sur, mais restez vigilant lors de la navigation.</p>
+</div>
                 {% endif %}
                 
                 {% endif %}
 
                 <div style="margin-top: 2rem; text-align: center; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
                     {% if analysis_id %}
-                    <a href="{{ url_for('main.generate_qrcode_pdf', analysis_id=analysis_id) }}" class="btn-primary" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; text-decoration: none;">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                            <polyline points="14 2 14 8 20 8"/>
-                            <line x1="16" y1="13" x2="8" y2="13"/>
-                            <line x1="16" y1="17" x2="8" y2="17"/>
-                        </svg>
-                        <span>Telecharger le Rapport PDF</span>
-                    </a>
+                    <a class="btn-primary" href="{{ url_for('main.generate_qrcode_pdf', analysis_id=analysis_id) }}" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; text-decoration: none;">
+<svg fill="none" height="18" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="18">
+<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+<polyline points="14 2 14 8 20 8"></polyline>
+<line x1="16" x2="8" y1="13" y2="13"></line>
+<line x1="16" x2="8" y1="17" y2="17"></line>
+</svg>
+<span>Telecharger le Rapport PDF</span>
+</a>
                     {% endif %}
-                    <a href="{{ url_for('main.qrcode_analyzer') }}" class="btn-secondary" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; text-decoration: none;">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="3" y="3" width="7" height="7" rx="1"/>
-                            <rect x="14" y="3" width="7" height="7" rx="1"/>
-                            <rect x="3" y="14" width="7" height="7" rx="1"/>
-                            <rect x="14" y="14" width="7" height="7" rx="1"/>
-                        </svg>
-                        <span>Nouvelle Analyse</span>
-                    </a>
-                </div>
-            </div>
+                    <a class="btn-secondary" href="{{ url_for('main.qrcode_analyzer') }}" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; text-decoration: none;">
+<svg fill="none" height="18" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="18">
+<rect height="7" rx="1" width="7" x="3" y="3"></rect>
+<rect height="7" rx="1" width="7" x="14" y="3"></rect>
+<rect height="7" rx="1" width="7" x="3" y="14"></rect>
+<rect height="7" rx="1" width="7" x="14" y="14"></rect>
+</svg>
+<span>Nouvelle Analyse</span>
+</a>
+</div>
+</div>
             {% endif %}
         </div>
         {% endif %}
 
         <div class="info-card">
-            <h3>À Propos de Cet Outil</h3>
-            
-            <div class="info-section">
-                <h4>Comment fonctionne l'analyseur ?</h4>
-                <p>Notre outil analyse les QR codes de maniere securisee en plusieurs etapes :</p>
-                <ol style="color: var(--text-secondary); line-height: 1.8; padding-left: 1.5rem;">
-                    <li><strong>Extraction</strong> : Le QR code est decode pour extraire son contenu (URL, texte, etc.)</li>
-                    <li><strong>Analyse des redirections</strong> : L'outil suit la chaine de redirections HTTP sans ouvrir les pages</li>
-                    <li><strong>Detection JavaScript</strong> : Les redirections cote client sont identifiees dans le code source</li>
-                    <li><strong>Verification blacklist</strong> : Les URLs sont verifiees contre les bases de donnees de menaces</li>
-                    <li><strong>Analyse de patterns</strong> : Detection de mots-cles suspects et de techniques de phishing</li>
-                </ol>
-            </div>
-            
-            <div class="info-section">
-                <h4>Pourquoi utiliser cet outil ?</h4>
-                <div class="analysis-types">
-                    <div class="analysis-type">
-                        <strong>Protection Quishing</strong>
-                        <p>Evitez les attaques par QR codes malveillants dans les espaces publics, emails ou documents.</p>
-                    </div>
-                    <div class="analysis-type">
-                        <strong>Analyse Sans Risque</strong>
-                        <p>L'URL n'est jamais ouverte ni executee, evitant tout risque d'infection ou de tracking.</p>
-                    </div>
-                    <div class="analysis-type">
-                        <strong>Transparence Complete</strong>
-                        <p>Visualisez toute la chaine de redirections et decouvrez la vraie destination du lien.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+<h3>À Propos de Cet Outil</h3>
+<div class="info-section">
+<h4>Comment fonctionne l'analyseur ?</h4>
+<p>Notre outil analyse les QR codes de maniere securisee en plusieurs etapes :</p>
+<ol style="color: var(--text-secondary); line-height: 1.8; padding-left: 1.5rem;">
+<li><strong>Extraction</strong> : Le QR code est decode pour extraire son contenu (URL, texte, etc.)</li>
+<li><strong>Analyse des redirections</strong> : L'outil suit la chaine de redirections HTTP sans ouvrir les pages</li>
+<li><strong>Detection JavaScript</strong> : Les redirections cote client sont identifiees dans le code source</li>
+<li><strong>Verification blacklist</strong> : Les URLs sont verifiees contre les bases de donnees de menaces</li>
+<li><strong>Analyse de patterns</strong> : Detection de mots-cles suspects et de techniques de phishing</li>
+</ol>
+</div>
+<div class="info-section">
+<h4>Pourquoi utiliser cet outil ?</h4>
+<div class="analysis-types">
+<div class="analysis-type">
+<strong>Protection Quishing</strong>
+<p>Evitez les attaques par QR codes malveillants dans les espaces publics, emails ou documents.</p>
+</div>
+<div class="analysis-type">
+<strong>Analyse Sans Risque</strong>
+<p>L'URL n'est jamais ouverte ni executee, evitant tout risque d'infection ou de tracking.</p>
+</div>
+<div class="analysis-type">
+<strong>Transparence Complete</strong>
+<p>Visualisez toute la chaine de redirections et decouvrez la vraie destination du lien.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
 </section>
-
-<script nonce="{{ csp_nonce }}">
-document.addEventListener('DOMContentLoaded', function() {
-    const tabBtns = document.querySelectorAll('.tab-btn');
-    const tabContents = document.querySelectorAll('.tab-content');
-    const uploadZone = document.getElementById('uploadZone');
-    const fileInput = document.getElementById('qrcodeImage');
-    const filePreview = document.getElementById('filePreview');
-    const fileName = filePreview.querySelector('.file-name');
-    const analyzerForm = document.getElementById('analyzerForm');
-    const cameraCaptureData = document.getElementById('cameraCaptureData');
-    
-    const video = document.getElementById('cameraVideo');
-    const canvas = document.getElementById('cameraCanvas');
-    const scanCanvas = document.getElementById('scanCanvas');
-    const cameraPlaceholder = document.getElementById('cameraPlaceholder');
-    const captureBtn = document.getElementById('captureBtn');
-    const switchCameraBtn = document.getElementById('switchCameraBtn');
-    const capturePreview = document.getElementById('capturePreview');
-    const capturedImage = document.getElementById('capturedImage');
-    const retakeBtn = document.getElementById('retakeBtn');
-    const scanStatus = document.getElementById('scanStatus');
-    const scanFrame = document.getElementById('scanFrame');
-    const qrDetected = document.getElementById('qrDetected');
-    
-    let stream = null;
-    let facingMode = 'environment';
-    let activeTab = 'camera';
-    let scanInterval = null;
-    let isScanning = false;
-    let qrDetectedRecently = false;
-
-    tabBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
-            const tab = this.dataset.tab;
-            activeTab = tab;
-            
-            tabBtns.forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            
-            tabContents.forEach(content => {
-                content.classList.remove('active');
-                if (content.id === tab + '-tab') {
-                    content.classList.add('active');
-                }
-            });
-            
-            if (tab === 'upload') {
-                fileInput.required = true;
-                stopCamera();
-                stopScanning();
-            } else {
-                fileInput.required = false;
-                startCamera();
-            }
-        });
-    });
-
-    async function startCamera() {
-        try {
-            if (stream) {
-                stopCamera();
-            }
-            
-            cameraPlaceholder.style.display = 'flex';
-            scanStatus.style.display = 'none';
-            
-            stream = await navigator.mediaDevices.getUserMedia({
-                video: {
-                    facingMode: facingMode,
-                    width: { ideal: 1280 },
-                    height: { ideal: 720 }
-                }
-            });
-            
-            video.srcObject = stream;
-            await video.play();
-            
-            video.style.display = 'block';
-            cameraPlaceholder.style.display = 'none';
-            captureBtn.style.display = 'inline-flex';
-            scanStatus.style.display = 'block';
-            
-            const devices = await navigator.mediaDevices.enumerateDevices();
-            const videoDevices = devices.filter(d => d.kind === 'videoinput');
-            if (videoDevices.length > 1) {
-                switchCameraBtn.style.display = 'inline-flex';
-            }
-            
-            startScanning();
-            
-        } catch (err) {
-            console.error('Camera error:', err);
-            cameraPlaceholder.innerHTML = `
-                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="1.5">
-                    <circle cx="12" cy="12" r="10"/>
-                    <line x1="15" y1="9" x2="9" y2="15"/>
-                    <line x1="9" y1="9" x2="15" y2="15"/>
-                </svg>
-                <p style="color: #ef4444;">Camera non accessible</p>
-                <p class="camera-hint">Verifiez les permissions ou utilisez l'upload d'image</p>
-            `;
-        }
-    }
-
-    function stopCamera() {
-        stopScanning();
-        if (stream) {
-            stream.getTracks().forEach(track => track.stop());
-            stream = null;
-        }
-        video.srcObject = null;
-        video.style.display = 'none';
-    }
-
-    function startScanning() {
-        if (isScanning || !stream) return;
-        isScanning = true;
-        
-        scanCanvas.width = video.videoWidth || 640;
-        scanCanvas.height = video.videoHeight || 480;
-        
-        scanInterval = setInterval(() => {
-            if (!stream || !video.videoWidth) return;
-            
-            scanCanvas.width = video.videoWidth;
-            scanCanvas.height = video.videoHeight;
-            const ctx = scanCanvas.getContext('2d');
-            ctx.drawImage(video, 0, 0);
-            
-            const imageData = ctx.getImageData(0, 0, scanCanvas.width, scanCanvas.height);
-            
-            if (typeof jsQR !== 'undefined') {
-                // Try with attemptBoth for better detection of inverted/normal QR codes
-                let code = jsQR(imageData.data, imageData.width, imageData.height, {
-                    inversionAttempts: 'attemptBoth'
-                });
-                
-                // If not found, try with enhanced contrast
-                if (!code) {
-                    const enhancedData = enhanceImageContrast(imageData);
-                    code = jsQR(enhancedData.data, enhancedData.width, enhancedData.height, {
-                        inversionAttempts: 'attemptBoth'
-                    });
-                }
-                
-                if (code && code.data && !qrDetectedRecently) {
-                    qrDetectedRecently = true;
-                    onQRCodeDetected(code);
-                }
-            }
-        }, 100);
-    }
-    
-    function enhanceImageContrast(imageData) {
-        const data = new Uint8ClampedArray(imageData.data);
-        const factor = 1.3; // Contrast factor
-        
-        for (let i = 0; i < data.length; i += 4) {
-            // Convert to grayscale
-            const gray = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
-            
-            // Apply contrast enhancement
-            let newValue = factor * (gray - 128) + 128;
-            newValue = Math.max(0, Math.min(255, newValue));
-            
-            // Apply threshold for better QR detection
-            const threshold = newValue > 128 ? 255 : 0;
-            
-            data[i] = threshold;
-            data[i + 1] = threshold;
-            data[i + 2] = threshold;
-        }
-        
-        return new ImageData(data, imageData.width, imageData.height);
-    }
-
-    function stopScanning() {
-        isScanning = false;
-        if (scanInterval) {
-            clearInterval(scanInterval);
-            scanInterval = null;
-        }
-    }
-
-    function onQRCodeDetected(code) {
-        stopScanning();
-        
-        scanFrame.classList.add('detected');
-        qrDetected.style.display = 'flex';
-        scanStatus.style.display = 'none';
-        
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(video, 0, 0);
-        
-        const imageData = canvas.toDataURL('image/jpeg', 0.9);
-        cameraCaptureData.value = imageData;
-        
-        setTimeout(() => {
-            showAnalysisProgress();
-        }, 600);
-    }
-    
-    function showAnalysisProgress() {
-        const cameraWrapper = document.querySelector('.camera-view-wrapper');
-        const cameraControls = document.querySelector('.camera-controls');
-        const analysisProgress = document.getElementById('analysisProgress');
-        const progressBar = document.getElementById('progressBar');
-        const progressPercent = document.getElementById('progressPercent');
-        const submitBtn = document.getElementById('submitBtn');
-        
-        if (cameraWrapper) cameraWrapper.style.display = 'none';
-        if (cameraControls) cameraControls.style.display = 'none';
-        qrDetected.style.display = 'none';
-        if (submitBtn) submitBtn.style.display = 'none';
-        analysisProgress.style.display = 'block';
-        
-        let progress = 0;
-        const steps = ['step1', 'step2', 'step3', 'step4'];
-        let currentStep = 0;
-        
-        const progressInterval = setInterval(() => {
-            progress += Math.random() * 8 + 2;
-            if (progress > 95) progress = 95;
-            
-            progressBar.style.width = progress + '%';
-            progressPercent.textContent = Math.round(progress) + '%';
-            
-            const stepThresholds = [25, 50, 75, 90];
-            for (let i = 0; i < stepThresholds.length; i++) {
-                if (progress >= stepThresholds[i] && i > currentStep - 1) {
-                    const stepEl = document.getElementById(steps[i]);
-                    if (stepEl && !stepEl.classList.contains('active')) {
-                        stepEl.classList.add('active');
-                        currentStep = i + 1;
-                    }
-                }
-            }
-            
-            if (progress >= 95) {
-                clearInterval(progressInterval);
-                progressBar.style.width = '100%';
-                progressPercent.textContent = '100%';
-                steps.forEach(s => document.getElementById(s).classList.add('active'));
-                
-                setTimeout(() => {
-                    analyzerForm.submit();
-                }, 300);
-            }
-        }, 150);
-    }
-
-    function captureImage() {
-        stopScanning();
-        
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(video, 0, 0);
-        
-        const imageData = canvas.toDataURL('image/jpeg', 0.9);
-        cameraCaptureData.value = imageData;
-        
-        capturedImage.src = imageData;
-        capturePreview.style.display = 'block';
-        video.style.display = 'none';
-        captureBtn.style.display = 'none';
-        switchCameraBtn.style.display = 'none';
-        scanStatus.style.display = 'none';
-    }
-
-    function retakePhoto() {
-        capturePreview.style.display = 'none';
-        cameraCaptureData.value = '';
-        video.style.display = 'block';
-        captureBtn.style.display = 'inline-flex';
-        scanStatus.style.display = 'block';
-        qrDetectedRecently = false;
-        scanFrame.classList.remove('detected');
-        qrDetected.style.display = 'none';
-        
-        navigator.mediaDevices.enumerateDevices().then(devices => {
-            const videoDevices = devices.filter(d => d.kind === 'videoinput');
-            if (videoDevices.length > 1) {
-                switchCameraBtn.style.display = 'inline-flex';
-            }
-        });
-        
-        startScanning();
-    }
-
-    async function switchCamera() {
-        facingMode = facingMode === 'environment' ? 'user' : 'environment';
-        qrDetectedRecently = false;
-        await startCamera();
-    }
-
-    captureBtn.addEventListener('click', captureImage);
-    retakeBtn.addEventListener('click', retakePhoto);
-    switchCameraBtn.addEventListener('click', switchCamera);
-
-    uploadZone.addEventListener('click', function(e) {
-        if (e.target.closest('.remove-file')) return;
-        fileInput.click();
-    });
-
-    uploadZone.addEventListener('dragover', function(e) {
-        e.preventDefault();
-        uploadZone.classList.add('dragover');
-    });
-
-    uploadZone.addEventListener('dragleave', function() {
-        uploadZone.classList.remove('dragover');
-    });
-
-    uploadZone.addEventListener('drop', function(e) {
-        e.preventDefault();
-        uploadZone.classList.remove('dragover');
-        if (e.dataTransfer.files.length) {
-            fileInput.files = e.dataTransfer.files;
-            updatePreview(e.dataTransfer.files[0]);
-        }
-    });
-
-    fileInput.addEventListener('change', function() {
-        if (this.files.length) {
-            updatePreview(this.files[0]);
-        }
-    });
-
-    function updatePreview(file) {
-        fileName.textContent = file.name;
-        filePreview.style.display = 'flex';
-        uploadZone.classList.add('has-file');
-    }
-
-    window.removeFile = function() {
-        fileInput.value = '';
-        filePreview.style.display = 'none';
-        uploadZone.classList.remove('has-file');
-    };
-
-    analyzerForm.addEventListener('submit', function(e) {
-        if (activeTab === 'camera') {
-            if (!cameraCaptureData.value) {
-                e.preventDefault();
-                alert('Veuillez capturer un QR code avec la camera ou basculez vers l\'upload d\'image.');
-                return false;
-            }
-            fileInput.required = false;
-        } else {
-            if (!fileInput.files.length) {
-                e.preventDefault();
-                alert('Veuillez selectionner une image contenant un QR code.');
-                return false;
-            }
-        }
-    });
-
-    if (activeTab === 'camera') {
-        setTimeout(() => {
-            startCamera();
-        }, 500);
-    }
-});
-</script>
-
-<style>
-.analyzer-container {
-    padding: 4rem 0;
-    position: relative;
-    z-index: 1;
-}
-
-.analyzer-card, .results-card, .info-card {
-    background: rgba(15, 31, 53, 0.6);
-    border: 1px solid rgba(59, 130, 246, 0.3);
-    border-radius: 12px;
-    padding: 2.5rem;
-    margin-bottom: 2rem;
-    backdrop-filter: blur(10px);
-}
-
-.analyzer-card h2, .results-card h3, .info-card h3 {
-    color: var(--text-primary);
-    margin-bottom: 1rem;
-}
-
-.analyzer-description {
-    color: var(--text-secondary);
-    margin-bottom: 2rem;
-    font-size: 1rem;
-}
-
-.input-method-tabs {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-    padding: 0.5rem;
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 12px;
-}
-
-.tab-btn {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    padding: 1rem;
-    background: transparent;
-    border: none;
-    border-radius: 8px;
-    color: var(--text-secondary);
-    font-size: 0.95rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.tab-btn:hover {
-    background: rgba(59, 130, 246, 0.1);
-    color: var(--text-primary);
-}
-
-.tab-btn.active {
-    background: rgba(59, 130, 246, 0.2);
-    color: var(--accent-blue);
-}
-
-.tab-content {
-    display: none;
-}
-
-.tab-content.active {
-    display: block;
-}
-
-.camera-container {
-    margin-bottom: 1.5rem;
-}
-
-.scan-status {
-    text-align: center;
-    margin-bottom: 1rem;
-    display: none;
-}
-
-.scan-indicator {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem 1.25rem;
-    background: rgba(59, 130, 246, 0.15);
-    border: 1px solid rgba(59, 130, 246, 0.3);
-    border-radius: 50px;
-    color: #60a5fa;
-    font-size: 0.9rem;
-}
-
-.pulse {
-    width: 10px;
-    height: 10px;
-    background: #3b82f6;
-    border-radius: 50%;
-    animation: pulse 1.5s ease-in-out infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.5; transform: scale(1.2); }
-}
-
-.loading-spinner {
-    width: 48px;
-    height: 48px;
-    border: 3px solid rgba(59, 130, 246, 0.2);
-    border-top-color: #3b82f6;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin-bottom: 1rem;
-}
-
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-
-.qr-detected-banner {
-    display: none;
-    align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
-    padding: 1rem 1.5rem;
-    background: linear-gradient(135deg, rgba(34, 197, 94, 0.2) 0%, rgba(34, 197, 94, 0.1) 100%);
-    border: 1px solid rgba(34, 197, 94, 0.4);
-    border-radius: 12px;
-    color: #22c55e;
-    font-weight: 600;
-    margin-top: 1rem;
-    animation: slideIn 0.3s ease-out;
-}
-
-.analysis-progress-container {
-    display: none;
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
-    border: 1px solid rgba(59, 130, 246, 0.3);
-    border-radius: 16px;
-    padding: 3rem 2rem;
-    text-align: center;
-    animation: fadeInUp 0.5s ease-out;
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.progress-content {
-    max-width: 400px;
-    margin: 0 auto;
-}
-
-.progress-icon {
-    position: relative;
-    width: 100px;
-    height: 100px;
-    margin: 0 auto 1.5rem;
-}
-
-.progress-spinner {
-    width: 100px;
-    height: 100px;
-    animation: rotate 2s linear infinite;
-}
-
-@keyframes rotate {
-    to { transform: rotate(360deg); }
-}
-
-.progress-circle-bg {
-    stroke: rgba(59, 130, 246, 0.2);
-}
-
-.progress-circle {
-    stroke: #3b82f6;
-    stroke-dasharray: 125.6;
-    stroke-dashoffset: 31.4;
-    animation: dash 1.5s ease-in-out infinite;
-}
-
-@keyframes dash {
-    0% { stroke-dashoffset: 125.6; }
-    50% { stroke-dashoffset: 31.4; }
-    100% { stroke-dashoffset: 125.6; }
-}
-
-.progress-icon-inner {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: #60a5fa;
-    animation: pulse 1.5s ease-in-out infinite;
-}
-
-.progress-title {
-    color: var(--text-primary);
-    font-size: 1.3rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-}
-
-.progress-subtitle {
-    color: var(--text-secondary);
-    font-size: 0.95rem;
-    margin-bottom: 2rem;
-}
-
-.progress-bar-container {
-    height: 8px;
-    background: rgba(59, 130, 246, 0.2);
-    border-radius: 10px;
-    overflow: hidden;
-    margin-bottom: 0.75rem;
-}
-
-.progress-bar {
-    height: 100%;
-    width: 0%;
-    background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 50%, #3b82f6 100%);
-    background-size: 200% 100%;
-    border-radius: 10px;
-    transition: width 0.15s ease-out;
-    animation: shimmer 2s infinite linear;
-}
-
-@keyframes shimmer {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
-}
-
-.progress-percent {
-    display: block;
-    color: #60a5fa;
-    font-size: 1.1rem;
-    font-weight: 700;
-    margin-bottom: 2rem;
-}
-
-.progress-steps {
-    display: flex;
-    justify-content: space-between;
-    gap: 0.5rem;
-}
-
-.progress-step {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    flex: 1;
-    opacity: 0.4;
-    transition: all 0.3s ease;
-}
-
-.progress-step.active {
-    opacity: 1;
-}
-
-.step-dot {
-    width: 12px;
-    height: 12px;
-    background: rgba(59, 130, 246, 0.3);
-    border-radius: 50%;
-    transition: all 0.3s ease;
-}
-
-.progress-step.active .step-dot {
-    background: #3b82f6;
-    box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
-    animation: stepPulse 1s ease-in-out infinite;
-}
-
-@keyframes stepPulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.2); }
-}
-
-.step-text {
-    color: var(--text-secondary);
-    font-size: 0.75rem;
-    white-space: nowrap;
-}
-
-.progress-step.active .step-text {
-    color: #60a5fa;
-}
-
-@keyframes slideIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.scan-frame.detected {
-    border-color: #22c55e !important;
-    animation: detected 0.5s ease-out;
-}
-
-.scan-frame.detected::before,
-.scan-frame.detected::after {
-    border-color: #22c55e !important;
-}
-
-@keyframes detected {
-    0%, 100% { transform: translate(-50%, -50%) scale(1); }
-    50% { transform: translate(-50%, -50%) scale(1.05); }
-}
-
-.camera-view-wrapper {
-    position: relative;
-    width: 100%;
-    max-width: 500px;
-    margin: 0 auto 1rem;
-    aspect-ratio: 4/3;
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 12px;
-    overflow: hidden;
-}
-
-#cameraVideo {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: none;
-}
-
-.camera-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    pointer-events: none;
-}
-
-.scan-frame {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 200px;
-    height: 200px;
-    border: 3px solid rgba(59, 130, 246, 0.8);
-    border-radius: 12px;
-    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.3);
-}
-
-.scan-frame::before,
-.scan-frame::after {
-    content: '';
-    position: absolute;
-    width: 30px;
-    height: 30px;
-    border-color: var(--accent-blue);
-    border-style: solid;
-}
-
-.scan-frame::before {
-    top: -3px;
-    left: -3px;
-    border-width: 4px 0 0 4px;
-    border-radius: 8px 0 0 0;
-}
-
-.scan-frame::after {
-    bottom: -3px;
-    right: -3px;
-    border-width: 0 4px 4px 0;
-    border-radius: 0 0 8px 0;
-}
-
-.camera-placeholder {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    color: var(--text-secondary);
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.camera-placeholder:hover {
-    color: var(--accent-blue);
-}
-
-.camera-placeholder svg {
-    margin-bottom: 1rem;
-    opacity: 0.5;
-}
-
-.camera-placeholder p {
-    margin: 0.25rem 0;
-}
-
-.camera-hint {
-    font-size: 0.85rem;
-    opacity: 0.7;
-}
-
-.camera-controls {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-.capture-preview {
-    text-align: center;
-    max-width: 500px;
-    margin: 0 auto;
-}
-
-.capture-preview img {
-    width: 100%;
-    max-width: 400px;
-    border-radius: 12px;
-    margin-bottom: 1rem;
-    border: 2px solid rgba(34, 197, 94, 0.5);
-}
-
-.upload-zone {
-    border: 2px dashed rgba(59, 130, 246, 0.4);
-    border-radius: 12px;
-    padding: 3rem;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    margin-bottom: 1.5rem;
-    background: rgba(59, 130, 246, 0.05);
-}
-
-.upload-zone:hover, .upload-zone.dragover {
-    border-color: var(--accent-blue);
-    background: rgba(59, 130, 246, 0.1);
-}
-
-.upload-zone.has-file {
-    border-color: rgba(34, 197, 94, 0.5);
-    background: rgba(34, 197, 94, 0.1);
-}
-
-.upload-icon {
-    color: var(--accent-blue);
-    margin-bottom: 1rem;
-}
-
-.upload-text {
-    color: var(--text-primary);
-    font-size: 1.1rem;
-    margin-bottom: 0.5rem;
-}
-
-.upload-hint {
-    color: var(--text-secondary);
-    font-size: 0.875rem;
-}
-
-.file-input-hidden {
-    display: none;
-}
-
-.file-preview {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    margin-top: 1rem;
-    padding: 0.75rem 1rem;
-    background: rgba(34, 197, 94, 0.15);
-    border-radius: 8px;
-}
-
-.file-name {
-    color: var(--text-primary);
-    font-weight: 500;
-}
-
-.remove-file {
-    background: rgba(239, 68, 68, 0.2);
-    border: none;
-    color: #ef4444;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 1.2rem;
-    line-height: 1;
-}
-
-.btn-full {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    padding: 1rem;
-    font-size: 1.1rem;
-}
-
-.btn-secondary {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1.5rem;
-    background: rgba(59, 130, 246, 0.15);
-    border: 1px solid rgba(59, 130, 246, 0.3);
-    border-radius: 8px;
-    color: var(--accent-blue);
-    font-size: 0.95rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.btn-secondary:hover {
-    background: rgba(59, 130, 246, 0.25);
-}
-
-.url-display {
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 8px;
-    padding: 1.5rem;
-    margin: 1.5rem 0;
-}
-
-.url-item {
-    margin-bottom: 1rem;
-}
-
-.url-item:last-child {
-    margin-bottom: 0;
-}
-
-.url-label {
-    color: var(--text-secondary);
-    font-size: 0.875rem;
-    display: block;
-    margin-bottom: 0.25rem;
-}
-
-.url-value {
-    color: var(--accent-blue);
-    word-break: break-all;
-    font-size: 0.9rem;
-}
-
-.redirect-chain {
-    margin: 2rem 0;
-}
-
-.redirect-chain h4 {
-    color: var(--text-primary);
-    margin-bottom: 1rem;
-}
-
-.redirect-timeline {
-    position: relative;
-    padding-left: 2rem;
-}
-
-.redirect-step {
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    margin-bottom: 1rem;
-    position: relative;
-}
-
-.redirect-step::before {
-    content: '';
-    position: absolute;
-    left: -1.5rem;
-    top: 1.5rem;
-    bottom: -1rem;
-    width: 2px;
-    background: rgba(59, 130, 246, 0.3);
-}
-
-.redirect-step:last-child::before {
-    display: none;
-}
-
-.step-number {
-    width: 24px;
-    height: 24px;
-    background: var(--accent-blue);
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.75rem;
-    font-weight: 600;
-    flex-shrink: 0;
-}
-
-.step-content {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.step-url {
-    color: var(--text-secondary);
-    font-size: 0.85rem;
-    word-break: break-all;
-}
-
-.status-code {
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: 600;
-}
-
-.status-code.status-200 { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
-.status-code.status-301, .status-code.status-302 { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
-.status-code.status-404, .status-code.status-500 { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
-
-.redirect-type, .js-redirect-badge {
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    background: rgba(168, 85, 247, 0.2);
-    color: #a855f7;
-}
-
-.js-redirect-badge {
-    background: rgba(245, 158, 11, 0.2);
-    color: #f59e0b;
-}
-
-.issues-section {
-    margin: 2rem 0;
-}
-
-.issues-section h4 {
-    color: var(--text-primary);
-    margin-bottom: 1rem;
-}
-
-.issues-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.issue-item {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 0.75rem 1rem;
-    border-radius: 8px;
-    background: rgba(0, 0, 0, 0.2);
-}
-
-.issue-item.severity-critical { border-left: 3px solid #ef4444; }
-.issue-item.severity-high { border-left: 3px solid #f97316; }
-.issue-item.severity-medium { border-left: 3px solid #eab308; }
-.issue-item.severity-low { border-left: 3px solid #3b82f6; }
-
-.issue-severity {
-    font-size: 0.7rem;
-    font-weight: 700;
-    padding: 2px 8px;
-    border-radius: 4px;
-}
-
-.severity-critical .issue-severity { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
-.severity-high .issue-severity { background: rgba(249, 115, 22, 0.2); color: #f97316; }
-.severity-medium .issue-severity { background: rgba(234, 179, 8, 0.2); color: #eab308; }
-.severity-low .issue-severity { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
-
-.issue-message {
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-}
-
-.alert {
-    padding: 1.5rem;
-    border-radius: 8px;
-    margin: 1rem 0;
-}
-
-.alert h3, .alert h4 {
-    margin-bottom: 0.5rem;
-}
-
-.alert-success { background: rgba(34, 197, 94, 0.15); border-left: 3px solid #22c55e; }
-.alert-success h3, .alert-success h4 { color: #22c55e; }
-
-.alert-warning { background: rgba(245, 158, 11, 0.15); border-left: 3px solid #f59e0b; }
-.alert-warning h3, .alert-warning h4 { color: #f59e0b; }
-
-.alert-danger { background: rgba(239, 68, 68, 0.15); border-left: 3px solid #ef4444; }
-.alert-danger h3, .alert-danger h4 { color: #ef4444; }
-
-.alert-error { background: rgba(239, 68, 68, 0.15); border-left: 3px solid #ef4444; }
-.alert-error h3 { color: #ef4444; }
-
-.alert-info { background: rgba(59, 130, 246, 0.15); border-left: 3px solid #3b82f6; }
-.alert-info h3 { color: #3b82f6; }
-
-.threat-badge {
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-size: 0.875rem;
-    font-weight: 600;
-}
-
-.threat-safe { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
-.threat-low { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
-.threat-medium { background: rgba(234, 179, 8, 0.2); color: #eab308; }
-.threat-high { background: rgba(249, 115, 22, 0.2); color: #f97316; }
-.threat-critical { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
-
-.summary-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-}
-
-.safety-recommendations {
-    margin: 1rem 0 0 1.5rem;
-    color: var(--text-secondary);
-}
-
-.safety-recommendations li {
-    margin-bottom: 0.5rem;
-}
-
-.info-section {
-    margin-bottom: 2rem;
-}
-
-.info-section:last-child {
-    margin-bottom: 0;
-}
-
-.info-section h4 {
-    color: var(--text-primary);
-    margin-bottom: 1rem;
-}
-
-.info-section p, .info-section li {
-    color: var(--text-secondary);
-    line-height: 1.6;
-}
-
-.analysis-types {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.5rem;
-}
-
-.analysis-type {
-    background: rgba(0, 0, 0, 0.2);
-    padding: 1.5rem;
-    border-radius: 8px;
-}
-
-.analysis-type strong {
-    color: var(--text-primary);
-    display: block;
-    margin-bottom: 0.5rem;
-}
-
-.analysis-type p {
-    font-size: 0.9rem;
-    margin: 0;
-}
-
-@media (max-width: 768px) {
-    .input-method-tabs {
-        flex-direction: column;
-    }
-    
-    .camera-controls {
-        flex-direction: column;
-        align-items: center;
-    }
-    
-    .progress-steps {
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 1rem;
-    }
-    
-    .progress-step {
-        flex: 0 0 auto;
-        min-width: 70px;
-    }
-    
-    .step-text {
-        white-space: normal;
-        text-align: center;
-        font-size: 0.7rem;
-    }
-    
-    .progress-content {
-        padding: 0 0.5rem;
-    }
-    
-    .progress-title {
-        font-size: 1.1rem;
-    }
-    
-    .progress-subtitle {
-        font-size: 0.85rem;
-    }
-    
-    .analysis-progress-container {
-        padding: 2rem 1rem;
-    }
-    
-    .analyzer-card h2 {
-        font-size: 1.3rem;
-    }
-    
-    .analyzer-description {
-        font-size: 0.9rem;
-    }
-    
-    .upload-zone {
-        padding: 2rem 1rem;
-    }
-    
-    .upload-text {
-        font-size: 0.95rem;
-    }
-    
-    .upload-hint {
-        font-size: 0.8rem;
-    }
-    
-    .scan-frame {
-        width: 150px;
-        height: 150px;
-    }
-    
-    .summary-header {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-    
-    .url-display {
-        padding: 1rem;
-    }
-    
-    .url-value {
-        font-size: 0.8rem;
-    }
-    
-    .redirect-chain {
-        padding: 1rem !important;
-    }
-    
-    .findings-grid {
-        gap: 0.5rem !important;
-    }
-    
-    .finding-card {
-        padding: 0.75rem !important;
-    }
-    
-    .analysis-types {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 480px) {
-    .progress-steps {
-        flex-direction: column;
-        align-items: center;
-        gap: 0.75rem;
-    }
-    
-    .progress-step {
-        flex-direction: row;
-        width: 100%;
-        max-width: 200px;
-        justify-content: flex-start;
-        gap: 0.75rem;
-    }
-    
-    .step-text {
-        font-size: 0.8rem;
-    }
-    
-    .page-title-modern {
-        font-size: 1.5rem;
-    }
-    
-    .page-subtitle-modern {
-        font-size: 0.9rem;
-    }
-    
-    .tab-btn {
-        padding: 0.75rem 1rem;
-        font-size: 0.85rem;
-    }
-    
-    .btn-full {
-        padding: 0.875rem;
-        font-size: 1rem;
-    }
-}
-</style>
+<script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/qrcode_analyzer_1.js') }}"></script>
+<link href="{{ url_for('static', filename='css/qrcode_analyzer.css') }}" rel="stylesheet"/>
 {% endblock %}

@@ -5,7 +5,6 @@
  * Fait par : Aisance KALONJI, www.aisancekalonji.com
  * Auditer par : La CyberConfiance, www.cyberconfiance.com
 -->
-
 <!--
   CyberConfiance
   By MOA Digital Agency LLC
@@ -19,74 +18,71 @@
 
 {% block content %}
 <div class="admin-header">
-    <h1>Historique des Analyses de Fuites</h1>
-    <p>Toutes les vérifications d'emails effectuées via l'outil Have I Been Pwned</p>
+<h1>Historique des Analyses de Fuites</h1>
+<p>Toutes les vérifications d'emails effectuées via l'outil Have I Been Pwned</p>
 </div>
-
 <div class="admin-toolbar">
-    <div class="toolbar-left">
-        <form method="GET" style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
-            <div class="filter-group">
-                <label for="search">Recherche:</label>
-                <input type="text" id="search" name="search" value="{{ search }}" placeholder="Email..." style="min-width: 250px;">
-            </div>
-            <div class="filter-group">
-                <label for="risk_level">Niveau de risque:</label>
-                <select id="risk_level" name="risk_level">
-                    <option value="">Tous les niveaux</option>
-                    <option value="critique" {% if risk_level == 'critique' %}selected{% endif %}>Critique</option>
-                    <option value="élevé" {% if risk_level == 'élevé' %}selected{% endif %}>Élevé</option>
-                    <option value="moyen" {% if risk_level == 'moyen' %}selected{% endif %}>Moyen</option>
-                    <option value="faible" {% if risk_level == 'faible' %}selected{% endif %}>Faible</option>
-                </select>
-            </div>
-            <button type="submit" class="btn btn-primary btn-sm">Filtrer</button>
-            <a href="{{ url_for('admin_panel.breach_history') }}" class="btn btn-secondary btn-sm">Réinitialiser</a>
-        </form>
-    </div>
-    <div class="toolbar-right">
-        <button onclick="exportData()" class="btn btn-secondary">Exporter CSV</button>
-    </div>
+<div class="toolbar-left">
+<form method="GET" style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+<div class="filter-group">
+<label for="search">Recherche:</label>
+<input id="search" name="search" placeholder="Email..." style="min-width: 250px;" type="text" value="{{ search }}"/>
 </div>
-
+<div class="filter-group">
+<label for="risk_level">Niveau de risque:</label>
+<select id="risk_level" name="risk_level">
+<option value="">Tous les niveaux</option>
+<option %}="" %}selected{%="" 'critique'="" endif="" if="" risk_level="=" value="critique" {%="">Critique</option>
+<option %}="" %}selected{%="" 'élevé'="" endif="" if="" risk_level="=" value="élevé" {%="">Élevé</option>
+<option %}="" %}selected{%="" 'moyen'="" endif="" if="" risk_level="=" value="moyen" {%="">Moyen</option>
+<option %}="" %}selected{%="" 'faible'="" endif="" if="" risk_level="=" value="faible" {%="">Faible</option>
+</select>
+</div>
+<button class="btn btn-primary btn-sm" type="submit">Filtrer</button>
+<a class="btn btn-secondary btn-sm" href="{{ url_for('admin_panel.breach_history') }}">Réinitialiser</a>
+</form>
+</div>
+<div class="toolbar-right">
+<button class="btn btn-secondary" onclick="exportData()">Exporter CSV</button>
+</div>
+</div>
 <div class="admin-card">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-        <h3 style="margin: 0;">Analyses de fuites ({{ results.total }})</h3>
-        <div style="color: var(--text-secondary); font-size: 0.9rem;">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+<h3 style="margin: 0;">Analyses de fuites ({{ results.total }})</h3>
+<div style="color: var(--text-secondary); font-size: 0.9rem;">
             Total fuites trouvées: <strong style="color: #ef4444;">{{ total_breaches|default(0) }}</strong>
-        </div>
-    </div>
-    
-    <div class="table-container">
-        <table class="admin-table">
-            <thead>
-                <tr>
-                    <th>Email</th>
-                    <th style="width: 120px;">Fuites trouvées</th>
-                    <th style="width: 140px;">Niveau de risque</th>
-                    <th style="width: 140px;">Date</th>
-                    <th style="width: 140px;">Adresse IP</th>
-                    <th class="actions-cell" style="width: 150px;">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
+</div>
+</div>
+<div class="table-container">
+<table class="admin-table">
+<thead>
+<tr>
+<th>Email</th>
+<th style="width: 120px;">Fuites trouvées</th>
+<th style="width: 140px;">Niveau de risque</th>
+<th style="width: 140px;">Date</th>
+<th style="width: 140px;">Adresse IP</th>
+<th class="actions-cell" style="width: 150px;">Actions</th>
+</tr>
+</thead>
+<tbody>
                 {% for result in results.items %}
                 <tr>
-                    <td>
-                        <strong style="color: var(--text-primary); font-family: monospace; font-size: 0.9rem;">
+<td>
+<strong style="color: var(--text-primary); font-family: monospace; font-size: 0.9rem;">
                             {{ result.email }}
                         </strong>
-                    </td>
-                    <td>
-                        {% if result.breach_count > 5 %}
+</td>
+<td>
+                        {% if result.breach_count &gt; 5 %}
                         <span class="badge badge-danger">{{ result.breach_count }}</span>
-                        {% elif result.breach_count > 0 %}
+                        {% elif result.breach_count &gt; 0 %}
                         <span class="badge badge-warning">{{ result.breach_count }}</span>
                         {% else %}
                         <span class="badge badge-success">{{ result.breach_count }}</span>
                         {% endif %}
                     </td>
-                    <td>
+<td>
                         {% if result.risk_level == 'critique' %}
                         <span class="badge badge-danger">{{ result.risk_level|upper }}</span>
                         {% elif result.risk_level == 'élevé' %}
@@ -97,26 +93,26 @@
                         <span class="badge badge-success">{{ result.risk_level|upper }}</span>
                         {% endif %}
                     </td>
-                    <td style="font-size: 0.85rem;">{{ result.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
-                    <td style="font-family: monospace; font-size: 0.85rem; color: var(--text-muted);">
+<td style="font-size: 0.85rem;">{{ result.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
+<td style="font-family: monospace; font-size: 0.85rem; color: var(--text-muted);">
                         {{ result.ip_address }}
                     </td>
-                    <td class="actions-cell">
-                        <div class="action-btn-group">
-                            <a href="{{ url_for('admin_panel.breach_detail', breach_id=result.id) }}" class="btn btn-primary btn-sm">Voir détails</a>
-                            <form method="POST" action="{{ url_for('admin_panel.delete_breach_result', breach_id=result.id) }}" style="display: inline;" onsubmit="return confirm('Supprimer ce résultat ?')">
-                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                                <button type="submit" class="btn btn-danger btn-sm">✕</button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
+<td class="actions-cell">
+<div class="action-btn-group">
+<a class="btn btn-primary btn-sm" href="{{ url_for('admin_panel.breach_detail', breach_id=result.id) }}">Voir détails</a>
+<form action="{{ url_for('admin_panel.delete_breach_result', breach_id=result.id) }}" method="POST" onsubmit="return confirm('Supprimer ce résultat ?')" style="display: inline;">
+<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
+<button class="btn btn-danger btn-sm" type="submit">✕</button>
+</input></form>
+</div>
+</td>
+</tr>
                 {% endfor %}
             </tbody>
-        </table>
-    </div>
+</table>
+</div>
     
-    {% if results.pages > 1 %}
+    {% if results.pages &gt; 1 %}
     <div class="pagination">
         {% if results.has_prev %}
         <a href="{{ url_for('admin_panel.breach_history', page=results.prev_num, search=search, risk_level=risk_level) }}">‹ Précédent</a>
@@ -140,31 +136,5 @@
     </div>
     {% endif %}
 </div>
-
-<script nonce="{{ csp_nonce }}">
-function exportData() {
-    let csv = 'Email,Fuites,Niveau de risque,Date,IP\n';
-    const rows = document.querySelectorAll('.admin-table tbody tr');
-    
-    rows.forEach(row => {
-        const cells = row.querySelectorAll('td');
-        if (cells.length >= 5) {
-            const email = cells[0].textContent.trim();
-            const breaches = cells[1].textContent.trim();
-            const risk = cells[2].textContent.trim();
-            const date = cells[3].textContent.trim();
-            const ip = cells[4].textContent.trim();
-            csv += `"${email}","${breaches}","${risk}","${date}","${ip}"\n`;
-        }
-    });
-    
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'breach_history_' + new Date().toISOString().split('T')[0] + '.csv';
-    a.click();
-    window.URL.revokeObjectURL(url);
-}
-</script>
+<script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/breach_history.js') }}"></script>
 {% endblock %}

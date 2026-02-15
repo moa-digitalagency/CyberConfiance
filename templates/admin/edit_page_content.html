@@ -5,7 +5,6 @@
  * Fait par : Aisance KALONJI, www.aisancekalonji.com
  * Auditer par : La CyberConfiance, www.cyberconfiance.com
 -->
-
 <!--
   CyberConfiance
   By MOA Digital Agency LLC
@@ -19,29 +18,27 @@
 
 {% block content %}
 <div class="admin-header">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-        <div>
-            <h1>Éditer {{ page_name }}</h1>
-            <p>Modifiez le contenu textuel affiché sur cette page</p>
-        </div>
-        <a href="{{ url_for('admin_panel.content_management') }}" class="btn btn-secondary">← Retour</a>
-    </div>
+<div style="display: flex; justify-content: space-between; align-items: center;">
+<div>
+<h1>Éditer {{ page_name }}</h1>
+<p>Modifiez le contenu textuel affiché sur cette page</p>
 </div>
-
-<form method="POST" action="{{ url_for('admin_panel.edit_page_content', page=page) }}">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-    <div class="admin-card">
-        <h3>Paramètres de contenu</h3>
+<a class="btn btn-secondary" href="{{ url_for('admin_panel.content_management') }}">← Retour</a>
+</div>
+</div>
+<form action="{{ url_for('admin_panel.edit_page_content', page=page) }}" method="POST">
+<input name="csrf_token" type="hidden" value="{{ csrf_token() }}"/>
+<div class="admin-card">
+<h3>Paramètres de contenu</h3>
         
         {% if settings %}
         <p style="margin-bottom: 2rem; color: var(--text-secondary);">
             Modifiez les valeurs ci-dessous puis cliquez sur "Enregistrer les modifications".
         </p>
-        
-        <div style="display: grid; gap: 1.5rem;">
+<div style="display: grid; gap: 1.5rem;">
             {% for setting in settings %}
             <div class="form-group">
-                <label for="setting_{{ setting.key }}" style="display: block; color: var(--text-primary); margin-bottom: 0.5rem; font-weight: 500;">
+<label for="setting_{{ setting.key }}" style="display: block; color: var(--text-primary); margin-bottom: 0.5rem; font-weight: 500;">
                     {{ setting.key|replace('_', ' ')|title }}
                     {% if setting.description %}
                     <span style="color: var(--text-secondary); font-weight: normal; font-size: 0.85rem;">({{ setting.description }})</span>
@@ -49,11 +46,11 @@
                 </label>
                 
                 {% if setting.value_type == 'text' or not setting.value_type %}
-                <textarea id="setting_{{ setting.key }}" name="setting_{{ setting.key }}" rows="4" class="admin-filter-input" style="width: 100%; font-family: inherit; resize: vertical;">{{ setting.value }}</textarea>
+                <textarea class="admin-filter-input" id="setting_{{ setting.key }}" name="setting_{{ setting.key }}" rows="4" style="width: 100%; font-family: inherit; resize: vertical;">{{ setting.value }}</textarea>
                 {% elif setting.value_type == 'string' %}
-                <input type="text" id="setting_{{ setting.key }}" name="setting_{{ setting.key }}" value="{{ setting.value }}" class="admin-filter-input" style="width: 100%;">
+                <input class="admin-filter-input" id="setting_{{ setting.key }}" name="setting_{{ setting.key }}" style="width: 100%;" type="text" value="{{ setting.value }}"/>
                 {% else %}
-                <input type="text" id="setting_{{ setting.key }}" name="setting_{{ setting.key }}" value="{{ setting.value }}" class="admin-filter-input" style="width: 100%;">
+                <input class="admin-filter-input" id="setting_{{ setting.key }}" name="setting_{{ setting.key }}" style="width: 100%;" type="text" value="{{ setting.value }}"/>
                 {% endif %}
                 
                 {% if setting.updated_at %}
@@ -64,35 +61,21 @@
             </div>
             {% endfor %}
         </div>
-        
-        <div style="margin-top: 2rem; display: flex; gap: 1rem;">
-            <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
-            <a href="{{ url_for('admin_panel.content_management') }}" class="btn btn-secondary">Annuler</a>
-        </div>
+<div style="margin-top: 2rem; display: flex; gap: 1rem;">
+<button class="btn btn-primary" type="submit">Enregistrer les modifications</button>
+<a class="btn btn-secondary" href="{{ url_for('admin_panel.content_management') }}">Annuler</a>
+</div>
         {% else %}
         <div style="text-align: center; padding: 3rem; color: var(--text-secondary);">
-            <p style="margin-bottom: 1rem;">Aucun paramètre de contenu défini pour cette page.</p>
-            <p style="font-size: 0.9rem;">
+<p style="margin-bottom: 1rem;">Aucun paramètre de contenu défini pour cette page.</p>
+<p style="font-size: 0.9rem;">
                 Pour ajouter des paramètres personnalisables, accédez à 
-                <a href="{{ url_for('admin_panel.site_settings') }}" style="color: var(--accent-blue);">Paramètres > Site</a> 
+                <a href="{{ url_for('admin_panel.site_settings') }}" style="color: var(--accent-blue);">Paramètres &gt; Site</a>
                 et créez des paramètres avec la catégorie "{{ page }}".
             </p>
-        </div>
+</div>
         {% endif %}
     </div>
 </form>
-
-<style>
-.form-group {
-    background: rgba(255, 255, 255, 0.02);
-    padding: 1.5rem;
-    border-radius: 8px;
-    border: 1px solid rgba(59, 130, 246, 0.1);
-}
-
-.form-group:hover {
-    background: rgba(255, 255, 255, 0.03);
-    border-color: rgba(59, 130, 246, 0.2);
-}
-</style>
+<link href="{{ url_for('static', filename='css/edit_page_content.css') }}" rel="stylesheet"/>
 {% endblock %}

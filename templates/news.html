@@ -5,7 +5,6 @@
  * Fait par : Aisance KALONJI, www.aisancekalonji.com
  * Auditer par : La CyberConfiance, www.cyberconfiance.com
 -->
-
 <!--
   CyberConfiance
   By MOA Digital Agency LLC
@@ -19,42 +18,37 @@
 
 {% block content %}
 <section class="page-header-modern">
-    <div class="container">
-        <div class="header-content-centered">
-            <h1 class="page-title-modern">Blog - Actualités Cybersécurité</h1>
-            <p class="page-subtitle-modern">Les dernières nouvelles, analyses et tendances en cybersécurité</p>
-        </div>
-    </div>
+<div class="container">
+<div class="header-content-centered">
+<h1 class="page-title-modern">Blog - Actualités Cybersécurité</h1>
+<p class="page-subtitle-modern">Les dernières nouvelles, analyses et tendances en cybersécurité</p>
+</div>
+</div>
 </section>
-
 <section class="content-section">
-    <div class="container">
+<div class="container">
         {% if categories %}
         <div class="category-filter" style="margin-bottom: 2.5rem;">
-            <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; justify-content: center;">
-                <span style="color: var(--text-secondary); font-weight: 500;">Filtrer par catégorie:</span>
-                <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-                    <a href="{{ url_for('content.news') }}" 
-                       class="category-btn {% if not selected_category or selected_category == 'Toutes' %}active{% endif %}"
-                       style="padding: 0.5rem 1.25rem; border-radius: 20px; text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: all 0.3s ease; {% if not selected_category or selected_category == 'Toutes' %}background: rgba(59, 130, 246, 0.2); border: 1px solid rgba(59, 130, 246, 0.5); color: var(--accent-blue);{% else %}background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text-secondary);{% endif %}">
+<div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; justify-content: center;">
+<span style="color: var(--text-secondary); font-weight: 500;">Filtrer par catégorie:</span>
+<div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+<a class="category-btn {% if not selected_category or selected_category == 'Toutes' %}active{% endif %}" href="{{ url_for('content.news') }}" style="padding: 0.5rem 1.25rem; border-radius: 20px; text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: all 0.3s ease; {% if not selected_category or selected_category == 'Toutes' %}background: rgba(59, 130, 246, 0.2); border: 1px solid rgba(59, 130, 246, 0.5); color: var(--accent-blue);{% else %}background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text-secondary);{% endif %}">
                         Toutes
                     </a>
                     {% for cat in categories %}
-                    <a href="{{ url_for('content.news', category=cat) }}" 
-                       class="category-btn {% if selected_category == cat %}active{% endif %}"
-                       style="padding: 0.5rem 1.25rem; border-radius: 20px; text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: all 0.3s ease; {% if selected_category == cat %}background: rgba(59, 130, 246, 0.2); border: 1px solid rgba(59, 130, 246, 0.5); color: var(--accent-blue);{% else %}background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text-secondary);{% endif %}">
+                    <a class="category-btn {% if selected_category == cat %}active{% endif %}" href="{{ url_for('content.news', category=cat) }}" style="padding: 0.5rem 1.25rem; border-radius: 20px; text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: all 0.3s ease; {% if selected_category == cat %}background: rgba(59, 130, 246, 0.2); border: 1px solid rgba(59, 130, 246, 0.5); color: var(--accent-blue);{% else %}background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text-secondary);{% endif %}">
                         {{ cat }}
                     </a>
                     {% endfor %}
                 </div>
-            </div>
-        </div>
+</div>
+</div>
         {% endif %}
         {% if news %}
         <div class="blog-grid">
             {% for item in news %}
             <article class="blog-card glass-card">
-                <div class="blog-header">
+<div class="blog-header">
                     {% if item.published_date %}
                     <time class="blog-date" datetime="{{ item.published_date.isoformat() }}">
                         {{ item.published_date.strftime('%d %B %Y') }}
@@ -67,148 +61,28 @@
                     <span class="blog-category" style="padding: 0.25rem 0.75rem; background: rgba(34, 197, 94, 0.15); border-radius: 12px; font-size: 0.75rem; color: rgba(34, 197, 94, 1); font-weight: 500;">{{ item.category }}</span>
                     {% endif %}
                 </div>
-                <h2 class="blog-title">{{ item.title }}</h2>
-                <div class="blog-excerpt">
-                    {% if item.content|length > 250 %}
+<h2 class="blog-title">{{ item.title }}</h2>
+<div class="blog-excerpt">
+                    {% if item.content|length &gt; 250 %}
                         {{ item.content[:250] }}...
                     {% else %}
                         {{ item.content }}
                     {% endif %}
                 </div>
-                <a href="{{ url_for('content.news_detail', news_id=item.id) }}" class="blog-read-more">
+<a class="blog-read-more" href="{{ url_for('content.news_detail', news_id=item.id) }}">
                     Lire la suite
                     <span class="arrow">→</span>
-                </a>
-            </article>
+</a>
+</article>
             {% endfor %}
         </div>
         {% else %}
         <div class="empty-state">
-            <p>Aucune actualité disponible pour le moment.</p>
-            <p class="empty-hint">Revenez bientôt pour découvrir les dernières actualités en cybersécurité.</p>
-        </div>
+<p>Aucune actualité disponible pour le moment.</p>
+<p class="empty-hint">Revenez bientôt pour découvrir les dernières actualités en cybersécurité.</p>
+</div>
         {% endif %}
     </div>
 </section>
-
-<style>
-.category-btn {
-    display: inline-block;
-}
-
-.category-btn:hover {
-    background: rgba(59, 130, 246, 0.25) !important;
-    border-color: rgba(59, 130, 246, 0.6) !important;
-    color: var(--accent-blue) !important;
-    transform: translateY(-2px);
-}
-
-.blog-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 2rem;
-    margin-top: 3rem;
-}
-
-.blog-card {
-    padding: 2rem;
-    transition: all 0.3s ease;
-    display: flex;
-    flex-direction: column;
-}
-
-.blog-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 40px rgba(59, 130, 246, 0.2);
-}
-
-.blog-header {
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-    margin-bottom: 1.5rem;
-    flex-wrap: wrap;
-}
-
-.blog-date {
-    color: var(--accent-blue);
-    font-size: 0.85rem;
-    font-weight: 500;
-}
-
-.blog-source {
-    padding: 0.25rem 0.75rem;
-    background: rgba(59, 130, 246, 0.15);
-    border-radius: 12px;
-    font-size: 0.75rem;
-    color: var(--accent-blue);
-    font-weight: 500;
-}
-
-.blog-title {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin-bottom: 1rem;
-    line-height: 1.3;
-    letter-spacing: -0.5px;
-}
-
-.blog-excerpt {
-    color: var(--text-secondary);
-    line-height: 1.7;
-    margin-bottom: 1.5rem;
-    flex-grow: 1;
-}
-
-.blog-read-more {
-    color: var(--accent-blue);
-    font-weight: 500;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    transition: all 0.3s ease;
-}
-
-.blog-read-more:hover {
-    gap: 0.75rem;
-    color: var(--accent-purple);
-}
-
-.blog-read-more .arrow {
-    transition: transform 0.3s ease;
-}
-
-.blog-read-more:hover .arrow {
-    transform: translateX(4px);
-}
-
-.empty-state {
-    text-align: center;
-    padding: 4rem 2rem;
-}
-
-.empty-state p {
-    color: var(--text-secondary);
-    font-size: 1.1rem;
-    margin-bottom: 1rem;
-}
-
-.empty-hint {
-    color: var(--text-muted);
-    font-size: 0.95rem;
-}
-
-@media (max-width: 768px) {
-    .blog-grid {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-    }
-    
-    .blog-title {
-        font-size: 1.3rem;
-    }
-}
-</style>
+<link href="{{ url_for('static', filename='css/news.css') }}" rel="stylesheet"/>
 {% endblock %}

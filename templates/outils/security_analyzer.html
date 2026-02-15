@@ -5,7 +5,6 @@
  * Fait par : Aisance KALONJI, www.aisancekalonji.com
  * Auditer par : La CyberConfiance, www.cyberconfiance.com
 -->
-
 <!--
   CyberConfiance
   By MOA Digital Agency LLC
@@ -19,324 +18,301 @@
 
 {% block content %}
 <section class="page-header-modern">
-    <div class="container">
-        <div class="header-content-centered">
-            <h1 class="page-title-modern">Analyseur de Sécurité</h1>
-            <p class="page-subtitle-modern">Vérifiez la sécurité de fichiers, domaines, adresses IP et URLs</p>
-        </div>
-    </div>
+<div class="container">
+<div class="header-content-centered">
+<h1 class="page-title-modern">Analyseur de Sécurité</h1>
+<p class="page-subtitle-modern">Vérifiez la sécurité de fichiers, domaines, adresses IP et URLs</p>
+</div>
+</div>
 </section>
-
 <section class="analyzer-container">
-    <div class="container">
+<div class="container">
         {% if not results %}
         <div class="analyzer-card">
-            <h2>Analyse de Sécurité</h2>
-            <p class="analyzer-description">
+<h2>Analyse de Sécurité</h2>
+<p class="analyzer-description">
                 Vérifiez la réputation et la sécurité de différents éléments numériques en utilisant notre base de données de menaces.
             </p>
-
-            <form method="POST" action="{{ url_for('main.security_analyzer') }}" class="analyzer-form" enctype="multipart/form-data">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                <div class="input-type-selector">
-                    <label class="type-option">
-                        <input type="radio" name="input_type" value="url" checked>
-                        <span class="type-label">
-                            <span class="type-text">URL (Liens)</span>
-                        </span>
-                    </label>
-                    <label class="type-option">
-                        <input type="radio" name="input_type" value="file">
-                        <span class="type-label">
-                            <span class="type-text">Fichier</span>
-                        </span>
-                    </label>
-                    <label class="type-option">
-                        <input type="radio" name="input_type" value="domain">
-                        <span class="type-label">
-                            <span class="type-text">Domaine</span>
-                        </span>
-                    </label>
-                    <label class="type-option">
-                        <input type="radio" name="input_type" value="ip">
-                        <span class="type-label">
-                            <span class="type-text">Adresse IP</span>
-                        </span>
-                    </label>
-                    <label class="type-option">
-                        <input type="radio" name="input_type" value="hash">
-                        <span class="type-label">
-                            <span class="type-text">Hash (MD5/SHA)</span>
-                        </span>
-                    </label>
-                </div>
-
-                <div class="input-group" id="textInputGroup" style="display: flex;">
-                    <input 
-                        type="text" 
-                        name="input_value" 
-                        id="inputValue" 
-                        placeholder="Entrez la valeur à analyser..." 
-                        class="analyzer-input"
-                        required
-                    >
-                    <button type="submit" class="btn-primary">
-                        <span>Analyser</span>
-                    </button>
-                </div>
-
-                <div class="input-group" id="fileInputGroup" style="display: none;">
-                    <input 
-                        type="file" 
-                        name="file" 
-                        id="fileInput" 
-                        class="analyzer-input file-input"
-                        accept="*/*"
-                    >
-                    <button type="submit" class="btn-primary">
-                        <span>Analyser le fichier</span>
-                    </button>
-                </div>
-
-                <div class="input-hints">
-                    <p class="hint url-hint active">
-                        <strong>Exemple:</strong> https://example.com/page
+<form action="{{ url_for('main.security_analyzer') }}" class="analyzer-form" enctype="multipart/form-data" method="POST">
+<input name="csrf_token" type="hidden" value="{{ csrf_token() }}"/>
+<div class="input-type-selector">
+<label class="type-option">
+<input checked="" name="input_type" type="radio" value="url"/>
+<span class="type-label">
+<span class="type-text">URL (Liens)</span>
+</span>
+</label>
+<label class="type-option">
+<input name="input_type" type="radio" value="file"/>
+<span class="type-label">
+<span class="type-text">Fichier</span>
+</span>
+</label>
+<label class="type-option">
+<input name="input_type" type="radio" value="domain"/>
+<span class="type-label">
+<span class="type-text">Domaine</span>
+</span>
+</label>
+<label class="type-option">
+<input name="input_type" type="radio" value="ip"/>
+<span class="type-label">
+<span class="type-text">Adresse IP</span>
+</span>
+</label>
+<label class="type-option">
+<input name="input_type" type="radio" value="hash"/>
+<span class="type-label">
+<span class="type-text">Hash (MD5/SHA)</span>
+</span>
+</label>
+</div>
+<div class="input-group" id="textInputGroup" style="display: flex;">
+<input class="analyzer-input" id="inputValue" name="input_value" placeholder="Entrez la valeur à analyser..." required="" type="text"/>
+<button class="btn-primary" type="submit">
+<span>Analyser</span>
+</button>
+</div>
+<div class="input-group" id="fileInputGroup" style="display: none;">
+<input accept="*/*" class="analyzer-input file-input" id="fileInput" name="file" type="file"/>
+<button class="btn-primary" type="submit">
+<span>Analyser le fichier</span>
+</button>
+</div>
+<div class="input-hints">
+<p class="hint url-hint active">
+<strong>Exemple:</strong> https://example.com/page
                     </p>
-                    <p class="hint file-hint">
-                        <strong>Info:</strong> Taille maximale 32 MB. Tous les types de fichiers sont acceptés.
+<p class="hint file-hint">
+<strong>Info:</strong> Taille maximale 32 MB. Tous les types de fichiers sont acceptés.
                     </p>
-                    <p class="hint domain-hint">
-                        <strong>Exemple:</strong> example.com
+<p class="hint domain-hint">
+<strong>Exemple:</strong> example.com
                     </p>
-                    <p class="hint ip-hint">
-                        <strong>Exemple:</strong> 8.8.8.8
+<p class="hint ip-hint">
+<strong>Exemple:</strong> 8.8.8.8
                     </p>
-                    <p class="hint hash-hint">
-                        <strong>Exemple:</strong> 44d88612fea8a8f36de82e1278abb02f
+<p class="hint hash-hint">
+<strong>Exemple:</strong> 44d88612fea8a8f36de82e1278abb02f
                     </p>
-                </div>
-            </form>
-            
-            <!-- Privacy Disclaimer -->
-            <div style="padding: 15px; background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%); border-left: 3px solid #3b82f6; border-radius: 8px; margin-top: 1.5rem;">
-                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2.5">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                        <circle cx="12" cy="12" r="3"/>
-                    </svg>
-                    <h4 style="color: #3b82f6; font-size: 0.95rem; font-weight: 700; margin: 0;">🔒 Vos données sont protégées</h4>
-                </div>
-                <p style="margin: 0; color: #94a3b8; font-size: 0.875rem; line-height: 1.5;">
+</div>
+</form>
+<!-- Privacy Disclaimer -->
+<div style="padding: 15px; background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%); border-left: 3px solid #3b82f6; border-radius: 8px; margin-top: 1.5rem;">
+<div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+<svg fill="none" height="20" stroke="#3b82f6" stroke-width="2.5" viewbox="0 0 24 24" width="20">
+<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+<circle cx="12" cy="12" r="3"></circle>
+</svg>
+<h4 style="color: #3b82f6; font-size: 0.95rem; font-weight: 700; margin: 0;">🔒 Vos données sont protégées</h4>
+</div>
+<p style="margin: 0; color: #94a3b8; font-size: 0.875rem; line-height: 1.5;">
                     Aucun marketing ni tracking. Stockage chiffré et anonymisé. Vos informations restent confidentielles.
                 </p>
-            </div>
-        </div>
+</div>
+</div>
         {% endif %}
 
         {% if results %}
         <div class="results-card">
             {% if results.error %}
             <div class="alert alert-error">
-                <h3>Erreur d'analyse</h3>
-                <p>{{ results.message }}</p>
-            </div>
-            <div style="margin-top: 1.5rem; text-align: center;">
-                <a href="{{ url_for('main.security_analyzer') }}" class="btn-secondary" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; text-decoration: none;">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                    </svg>
-                    <span>Nouvelle Analyse</span>
-                </a>
-            </div>
+<h3>Erreur d'analyse</h3>
+<p>{{ results.message }}</p>
+</div>
+<div style="margin-top: 1.5rem; text-align: center;">
+<a class="btn-secondary" href="{{ url_for('main.security_analyzer') }}" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; text-decoration: none;">
+<svg fill="none" height="18" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="18">
+<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+</svg>
+<span>Nouvelle Analyse</span>
+</a>
+</div>
             {% elif not results.found %}
             <div class="alert alert-success">
-                <h3>Élément non répertorié</h3>
-                <p>{{ results.message }}</p>
-                <p class="result-note">Cet élément n'est pas connu dans notre base de données de menaces, ce qui est généralement un bon signe.</p>
-            </div>
-            
-            <div style="margin-top: 2rem; text-align: center; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+<h3>Élément non répertorié</h3>
+<p>{{ results.message }}</p>
+<p class="result-note">Cet élément n'est pas connu dans notre base de données de menaces, ce qui est généralement un bon signe.</p>
+</div>
+<div style="margin-top: 2rem; text-align: center; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
                 {% if analysis_id %}
-                <a href="{{ url_for('main.generate_security_pdf', analysis_id=analysis_id) }}" class="btn-primary" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; text-decoration: none;">
-                    <span>📄 Télécharger le Rapport PDF</span>
-                </a>
+                <a class="btn-primary" href="{{ url_for('main.generate_security_pdf', analysis_id=analysis_id) }}" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; text-decoration: none;">
+<span>📄 Télécharger le Rapport PDF</span>
+</a>
                 {% endif %}
-                <a href="{{ url_for('main.security_analyzer') }}" class="btn-secondary" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; text-decoration: none;">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                    </svg>
-                    <span>Nouvelle Analyse</span>
-                </a>
-            </div>
+                <a class="btn-secondary" href="{{ url_for('main.security_analyzer') }}" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; text-decoration: none;">
+<svg fill="none" height="18" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="18">
+<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+</svg>
+<span>Nouvelle Analyse</span>
+</a>
+</div>
             {% else %}
             <div class="analysis-summary">
-                <div class="summary-header">
-                    <h3>Résultats de l'Analyse</h3>
-                    <span class="threat-badge threat-{{ results.threat_level }}">
+<div class="summary-header">
+<h3>Résultats de l'Analyse</h3>
+<span class="threat-badge threat-{{ results.threat_level }}">
                         Niveau: {{ results.threat_level|capitalize }}
                     </span>
-                </div>
-
-                <div class="detection-stats">
-                    <div class="stat-item malicious">
-                        <div class="stat-value">{{ results.malicious }}</div>
-                        <div class="stat-label">Malveillant</div>
-                    </div>
-                    <div class="stat-item suspicious">
-                        <div class="stat-value">{{ results.suspicious }}</div>
-                        <div class="stat-label">Suspect</div>
-                    </div>
-                    <div class="stat-item clean">
-                        <div class="stat-value">{{ results.clean }}</div>
-                        <div class="stat-label">Sûr</div>
-                    </div>
-                    <div class="stat-item total">
-                        <div class="stat-value">{{ results.total }}</div>
-                        <div class="stat-label">Total</div>
-                    </div>
-                </div>
-
-                <div class="threat-meter">
-                    <div class="meter-bar">
-                        <div class="meter-fill" style="width: {{ (results.malicious / results.total * 100) if results.total > 0 else 0 }}%"></div>
-                    </div>
-                    <p class="meter-text">
+</div>
+<div class="detection-stats">
+<div class="stat-item malicious">
+<div class="stat-value">{{ results.malicious }}</div>
+<div class="stat-label">Malveillant</div>
+</div>
+<div class="stat-item suspicious">
+<div class="stat-value">{{ results.suspicious }}</div>
+<div class="stat-label">Suspect</div>
+</div>
+<div class="stat-item clean">
+<div class="stat-value">{{ results.clean }}</div>
+<div class="stat-label">Sûr</div>
+</div>
+<div class="stat-item total">
+<div class="stat-value">{{ results.total }}</div>
+<div class="stat-label">Total</div>
+</div>
+</div>
+<div class="threat-meter">
+<div class="meter-bar">
+<div class="meter-fill" style="width: {{ (results.malicious / results.total * 100) if results.total &gt; 0 else 0 }}%"></div>
+</div>
+<p class="meter-text">
                         {{ results.malicious }} sur {{ results.total }} moteurs de sécurité ont détecté une menace
                     </p>
-                </div>
+</div>
 
                 {% if results.threat_detected %}
                 <div class="alert alert-warning">
-                    <h4>Menace Détectée</h4>
-                    <p>Cet élément a été signalé comme potentiellement dangereux par plusieurs sources de sécurité.</p>
-                    <ul class="safety-recommendations">
-                        <li>Ne téléchargez pas ou n'exécutez pas ce fichier</li>
-                        <li>Ne visitez pas ce site ou cette URL</li>
-                        <li>Vérifiez avec votre équipe de sécurité IT si vous avez des doutes</li>
-                    </ul>
-                </div>
+<h4>Menace Détectée</h4>
+<p>Cet élément a été signalé comme potentiellement dangereux par plusieurs sources de sécurité.</p>
+<ul class="safety-recommendations">
+<li>Ne téléchargez pas ou n'exécutez pas ce fichier</li>
+<li>Ne visitez pas ce site ou cette URL</li>
+<li>Vérifiez avec votre équipe de sécurité IT si vous avez des doutes</li>
+</ul>
+</div>
                 {% else %}
                 <div class="alert alert-success">
-                    <h4>Aucune Menace Majeure Détectée</h4>
-                    <p>Cet élément semble sûr selon les analyses de sécurité disponibles.</p>
-                </div>
+<h4>Aucune Menace Majeure Détectée</h4>
+<p>Cet élément semble sûr selon les analyses de sécurité disponibles.</p>
+</div>
                 {% endif %}
 
                 <div class="analysis-details">
-                    <h4>Détails de l'Analyse</h4>
+<h4>Détails de l'Analyse</h4>
                     
                     {% if results.type == 'file' %}
                     <div class="detail-grid">
-                        <div class="detail-item">
-                            <span class="detail-label">Type:</span>
-                            <span class="detail-value">{{ results.type_description }}</span>
-                        </div>
+<div class="detail-item">
+<span class="detail-label">Type:</span>
+<span class="detail-value">{{ results.type_description }}</span>
+</div>
                         {% if results.size %}
                         <div class="detail-item">
-                            <span class="detail-label">Taille:</span>
-                            <span class="detail-value">{{ (results.size / 1024)|round(2) }} KB</span>
-                        </div>
+<span class="detail-label">Taille:</span>
+<span class="detail-value">{{ (results.size / 1024)|round(2) }} KB</span>
+</div>
                         {% endif %}
                         {% if results.names %}
                         <div class="detail-item detail-full">
-                            <span class="detail-label">Noms connus:</span>
-                            <span class="detail-value">{{ results.names|join(', ') }}</span>
-                        </div>
+<span class="detail-label">Noms connus:</span>
+<span class="detail-value">{{ results.names|join(', ') }}</span>
+</div>
                         {% endif %}
                     </div>
                     {% endif %}
 
                     {% if results.type == 'domain' %}
                     <div class="detail-grid">
-                        <div class="detail-item">
-                            <span class="detail-label">Domaine:</span>
-                            <span class="detail-value">{{ results.domain }}</span>
-                        </div>
+<div class="detail-item">
+<span class="detail-label">Domaine:</span>
+<span class="detail-value">{{ results.domain }}</span>
+</div>
                         {% if results.reputation %}
                         <div class="detail-item">
-                            <span class="detail-label">Réputation:</span>
-                            <span class="detail-value">{{ results.reputation }}</span>
-                        </div>
+<span class="detail-label">Réputation:</span>
+<span class="detail-value">{{ results.reputation }}</span>
+</div>
                         {% endif %}
                     </div>
                     {% endif %}
 
                     {% if results.type == 'ip' %}
                     <div class="detail-grid">
-                        <div class="detail-item">
-                            <span class="detail-label">Adresse IP:</span>
-                            <span class="detail-value">{{ results.ip }}</span>
-                        </div>
+<div class="detail-item">
+<span class="detail-label">Adresse IP:</span>
+<span class="detail-value">{{ results.ip }}</span>
+</div>
                         {% if results.country %}
                         <div class="detail-item">
-                            <span class="detail-label">Pays:</span>
-                            <span class="detail-value">{{ results.country }}</span>
-                        </div>
+<span class="detail-label">Pays:</span>
+<span class="detail-value">{{ results.country }}</span>
+</div>
                         {% endif %}
                         {% if results.as_owner %}
                         <div class="detail-item detail-full">
-                            <span class="detail-label">Propriétaire:</span>
-                            <span class="detail-value">{{ results.as_owner }}</span>
-                        </div>
+<span class="detail-label">Propriétaire:</span>
+<span class="detail-value">{{ results.as_owner }}</span>
+</div>
                         {% endif %}
                     </div>
                     {% endif %}
 
                     {% if results.type == 'url' %}
                     <div class="detail-grid">
-                        <div class="detail-item detail-full">
-                            <span class="detail-label">URL:</span>
-                            <span class="detail-value url-value">{{ results.url }}</span>
-                        </div>
+<div class="detail-item detail-full">
+<span class="detail-label">URL:</span>
+<span class="detail-value url-value">{{ results.url }}</span>
+</div>
                         {% if results.times_submitted %}
                         <div class="detail-item">
-                            <span class="detail-label">Soumissions:</span>
-                            <span class="detail-value">{{ results.times_submitted }}</span>
-                        </div>
+<span class="detail-label">Soumissions:</span>
+<span class="detail-value">{{ results.times_submitted }}</span>
+</div>
                         {% endif %}
                     </div>
                     
                     {% if results.url_shortener and results.url_shortener.detected %}
                     <div class="redirect-chain-section" style="margin-top: 1.5rem; background: rgba(217, 119, 6, 0.1); border: 1px solid rgba(217, 119, 6, 0.3); border-radius: 12px; padding: 1.25rem;">
-                        <h4 style="color: #f59e0b; margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.5rem;">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
-                                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
-                                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
-                            </svg>
+<h4 style="color: #f59e0b; margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.5rem;">
+<svg fill="none" height="20" stroke="#f59e0b" stroke-width="2" viewbox="0 0 24 24" width="20">
+<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+<path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+</svg>
                             URL Raccourcie Detectee
                             {% if results.url_shortener.service %}
                             <span style="background: rgba(217, 119, 6, 0.3); color: #fbbf24; padding: 2px 8px; border-radius: 8px; font-size: 0.75rem; font-weight: 600;">{{ results.url_shortener.service }}</span>
                             {% endif %}
                         </h4>
-                        
-                        <div style="margin-bottom: 1rem;">
-                            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                                <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                    <span style="color: #94a3b8; font-size: 0.875rem; min-width: 100px;">URL originale:</span>
-                                    <code style="background: rgba(30, 41, 59, 0.8); padding: 4px 8px; border-radius: 6px; font-size: 0.8rem; color: #e2e8f0; word-break: break-all;">{{ results.url_shortener.original_url }}</code>
-                                </div>
+<div style="margin-bottom: 1rem;">
+<div style="display: flex; flex-direction: column; gap: 0.5rem;">
+<div style="display: flex; align-items: center; gap: 0.5rem;">
+<span style="color: #94a3b8; font-size: 0.875rem; min-width: 100px;">URL originale:</span>
+<code style="background: rgba(30, 41, 59, 0.8); padding: 4px 8px; border-radius: 6px; font-size: 0.8rem; color: #e2e8f0; word-break: break-all;">{{ results.url_shortener.original_url }}</code>
+</div>
                                 {% if results.url_shortener.final_url and results.url_shortener.final_url != results.url_shortener.original_url %}
                                 <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                    <span style="color: #94a3b8; font-size: 0.875rem; min-width: 100px;">URL finale:</span>
-                                    <code style="background: rgba(30, 41, 59, 0.8); padding: 4px 8px; border-radius: 6px; font-size: 0.8rem; color: #22c55e; word-break: break-all;">{{ results.url_shortener.final_url }}</code>
-                                </div>
+<span style="color: #94a3b8; font-size: 0.875rem; min-width: 100px;">URL finale:</span>
+<code style="background: rgba(30, 41, 59, 0.8); padding: 4px 8px; border-radius: 6px; font-size: 0.8rem; color: #22c55e; word-break: break-all;">{{ results.url_shortener.final_url }}</code>
+</div>
                                 {% endif %}
                             </div>
-                        </div>
+</div>
                         
-                        {% if results.url_shortener.redirect_chain and results.url_shortener.redirect_chain|length > 0 %}
+                        {% if results.url_shortener.redirect_chain and results.url_shortener.redirect_chain|length &gt; 0 %}
                         <div class="redirect-chain-timeline" style="margin-top: 1rem;">
-                            <h5 style="color: #e2e8f0; margin: 0 0 0.75rem 0; font-size: 0.9rem;">
-                                Chaine de Redirection Complete ({{ results.url_shortener.redirect_count }} redirection{{ 's' if results.url_shortener.redirect_count > 1 else '' }})
+<h5 style="color: #e2e8f0; margin: 0 0 0.75rem 0; font-size: 0.9rem;">
+                                Chaine de Redirection Complete ({{ results.url_shortener.redirect_count }} redirection{{ 's' if results.url_shortener.redirect_count &gt; 1 else '' }})
                             </h5>
-                            <div style="position: relative; padding-left: 1.5rem; border-left: 2px solid rgba(217, 119, 6, 0.4);">
+<div style="position: relative; padding-left: 1.5rem; border-left: 2px solid rgba(217, 119, 6, 0.4);">
                                 {% for redirect in results.url_shortener.redirect_chain %}
                                 <div style="position: relative; padding: 0.5rem 0 0.75rem 1rem; margin-bottom: 0.25rem;">
-                                    <div style="position: absolute; left: -1.75rem; top: 0.6rem; width: 12px; height: 12px; background: {% if redirect.is_shortener %}#f59e0b{% else %}#3b82f6{% endif %}; border-radius: 50%; border: 2px solid rgba(15, 31, 53, 1);"></div>
-                                    <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-                                        <span style="background: rgba(59, 130, 246, 0.2); color: #60a5fa; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 600;">{{ loop.index }}</span>
+<div style="position: absolute; left: -1.75rem; top: 0.6rem; width: 12px; height: 12px; background: {% if redirect.is_shortener %}#f59e0b{% else %}#3b82f6{% endif %}; border-radius: 50%; border: 2px solid rgba(15, 31, 53, 1);"></div>
+<div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+<span style="background: rgba(59, 130, 246, 0.2); color: #60a5fa; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 600;">{{ loop.index }}</span>
                                         {% if redirect.status_code %}
-                                        <span style="background: {% if redirect.status_code >= 300 and redirect.status_code < 400 %}rgba(217, 119, 6, 0.3){% else %}rgba(34, 197, 94, 0.3){% endif %}; color: {% if redirect.status_code >= 300 and redirect.status_code < 400 %}#fbbf24{% else %}#4ade80{% endif %}; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem;">{{ redirect.status_code }}</span>
+                                        <span style="background: {% if redirect.status_code &gt;= 300 and redirect.status_code &lt; 400 %}rgba(217, 119, 6, 0.3){% else %}rgba(34, 197, 94, 0.3){% endif %}; color: {% if redirect.status_code &gt;= 300 and redirect.status_code &lt; 400 %}#fbbf24{% else %}#4ade80{% endif %}; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem;">{{ redirect.status_code }}</span>
                                         {% endif %}
                                         {% if redirect.redirect_type %}
                                         <span style="color: #94a3b8; font-size: 0.75rem;">{{ redirect.redirect_type }}</span>
@@ -345,60 +321,59 @@
                                         <span style="background: rgba(239, 68, 68, 0.2); color: #f87171; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem;">Raccourcisseur</span>
                                         {% endif %}
                                     </div>
-                                    <code style="display: block; margin-top: 0.25rem; background: rgba(30, 41, 59, 0.6); padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; color: #e2e8f0; word-break: break-all;">{{ redirect.url }}</code>
+<code style="display: block; margin-top: 0.25rem; background: rgba(30, 41, 59, 0.6); padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; color: #e2e8f0; word-break: break-all;">{{ redirect.url }}</code>
                                     {% if redirect.redirects_to %}
                                     <div style="margin-top: 0.25rem; color: #64748b; font-size: 0.7rem; display: flex; align-items: center; gap: 0.25rem;">
-                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <polyline points="9 18 15 12 9 6"/>
-                                        </svg>
+<svg fill="none" height="12" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="12">
+<polyline points="9 18 15 12 9 6"></polyline>
+</svg>
                                         Redirige vers l'etape suivante
                                     </div>
                                     {% endif %}
                                 </div>
                                 {% endfor %}
                             </div>
-                        </div>
+</div>
                         {% endif %}
                         
                         {% if results.url_shortener.multiple_shorteners %}
                         <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 8px;">
-                            <p style="margin: 0; color: #f87171; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem;">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
-                                    <line x1="12" y1="9" x2="12" y2="13"/>
-                                    <line x1="12" y1="17" x2="12.01" y2="17"/>
-                                </svg>
-                                <strong>Attention:</strong> Plusieurs raccourcisseurs d'URL detectes dans la chaine de redirection. Cela peut indiquer une tentative de masquer la destination reelle.
+<p style="margin: 0; color: #f87171; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem;">
+<svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="16">
+<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
+<line x1="12" x2="12" y1="9" y2="13"></line>
+<line x1="12" x2="12.01" y1="17" y2="17"></line>
+</svg>
+<strong>Attention:</strong> Plusieurs raccourcisseurs d'URL detectes dans la chaine de redirection. Cela peut indiquer une tentative de masquer la destination reelle.
                             </p>
-                        </div>
+</div>
                         {% endif %}
                         
                         {% if results.url_shortener.expansion_error %}
                         <div style="margin-top: 0.75rem; padding: 0.5rem; background: rgba(239, 68, 68, 0.1); border-radius: 6px;">
-                            <p style="margin: 0; color: #f87171; font-size: 0.8rem;">Erreur d'expansion: {{ results.url_shortener.expansion_error }}</p>
-                        </div>
+<p style="margin: 0; color: #f87171; font-size: 0.8rem;">Erreur d'expansion: {{ results.url_shortener.expansion_error }}</p>
+</div>
                         {% endif %}
                     </div>
                     {% endif %}
                     
                     {% if results.multi_source %}
                     <div class="multi-source-results" style="margin-top: 1.5rem;">
-                        <h4 style="color: #e2e8f0; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2">
-                                <circle cx="12" cy="12" r="10"/>
-                                <path d="M12 6v6l4 2"/>
-                            </svg>
+<h4 style="color: #e2e8f0; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+<svg fill="none" height="20" stroke="#3b82f6" stroke-width="2" viewbox="0 0 24 24" width="20">
+<circle cx="12" cy="12" r="10"></circle>
+<path d="M12 6v6l4 2"></path>
+</svg>
                             Analyse Multi-Sources ({{ results.sources_checked }} sources vérifiées)
                         </h4>
-                        
-                        <div class="source-cards" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
+<div class="source-cards" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
                             {% if results.source_results.virustotal %}
                             <div class="source-card" style="background: rgba(30, 41, 59, 0.8); border-radius: 12px; padding: 1rem; border-left: 4px solid {% if results.source_results.virustotal.threat_detected %}#ef4444{% else %}#22c55e{% endif %};">
-                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
-                                    <span style="font-weight: 600; color: #e2e8f0; display: flex; align-items: center; gap: 0.5rem;">
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2">
-                                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                                        </svg>
+<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+<span style="font-weight: 600; color: #e2e8f0; display: flex; align-items: center; gap: 0.5rem;">
+<svg fill="none" height="18" stroke="#3b82f6" stroke-width="2" viewbox="0 0 24 24" width="18">
+<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+</svg>
                                         VirusTotal
                                     </span>
                                     {% if results.source_results.virustotal.available %}
@@ -423,12 +398,12 @@
                             
                             {% if results.source_results.google_safe_browsing %}
                             <div class="source-card" style="background: rgba(30, 41, 59, 0.8); border-radius: 12px; padding: 1rem; border-left: 4px solid {% if results.source_results.google_safe_browsing.threat_detected %}#ef4444{% else %}#22c55e{% endif %};">
-                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
-                                    <span style="font-weight: 600; color: #e2e8f0; display: flex; align-items: center; gap: 0.5rem;">
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
-                                            <circle cx="11" cy="11" r="8"/>
-                                            <path d="m21 21-4.35-4.35"/>
-                                        </svg>
+<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+<span style="font-weight: 600; color: #e2e8f0; display: flex; align-items: center; gap: 0.5rem;">
+<svg fill="none" height="18" stroke="#f59e0b" stroke-width="2" viewbox="0 0 24 24" width="18">
+<circle cx="11" cy="11" r="8"></circle>
+<path d="m21 21-4.35-4.35"></path>
+</svg>
                                         Google Safe Browsing
                                     </span>
                                     {% if results.source_results.google_safe_browsing.available %}
@@ -455,12 +430,12 @@
                             
                             {% if results.source_results.urlhaus %}
                             <div class="source-card" style="background: rgba(30, 41, 59, 0.8); border-radius: 12px; padding: 1rem; border-left: 4px solid {% if results.source_results.urlhaus.threat_detected %}#ef4444{% else %}#22c55e{% endif %};">
-                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
-                                    <span style="font-weight: 600; color: #e2e8f0; display: flex; align-items: center; gap: 0.5rem;">
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2">
-                                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
-                                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
-                                        </svg>
+<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+<span style="font-weight: 600; color: #e2e8f0; display: flex; align-items: center; gap: 0.5rem;">
+<svg fill="none" height="18" stroke="#a855f7" stroke-width="2" viewbox="0 0 24 24" width="18">
+<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+<path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+</svg>
                                         URLhaus (Malware)
                                     </span>
                                     {% if results.source_results.urlhaus.available %}
@@ -486,593 +461,92 @@
                             {% endif %}
                         </div>
                         
-                        {% if results.all_threats and results.all_threats|length > 0 %}
+                        {% if results.all_threats and results.all_threats|length &gt; 0 %}
                         <div class="threats-summary" style="margin-top: 1.5rem; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 12px; padding: 1rem;">
-                            <h5 style="color: #ef4444; margin: 0 0 0.75rem 0; display: flex; align-items: center; gap: 0.5rem;">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2">
-                                    <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
-                                    <line x1="12" y1="9" x2="12" y2="13"/>
-                                    <line x1="12" y1="17" x2="12.01" y2="17"/>
-                                </svg>
+<h5 style="color: #ef4444; margin: 0 0 0.75rem 0; display: flex; align-items: center; gap: 0.5rem;">
+<svg fill="none" height="18" stroke="#ef4444" stroke-width="2" viewbox="0 0 24 24" width="18">
+<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
+<line x1="12" x2="12" y1="9" y2="13"></line>
+<line x1="12" x2="12.01" y1="17" y2="17"></line>
+</svg>
                                 Menaces Detectees ({{ results.sources_with_threat }}/{{ results.sources_checked }} sources)
                             </h5>
-                            <ul style="margin: 0; padding-left: 1.25rem; color: #f87171;">
+<ul style="margin: 0; padding-left: 1.25rem; color: #f87171;">
                                 {% for threat in results.all_threats %}
                                 <li style="margin-bottom: 0.5rem;">
-                                    <strong>{{ threat.source }}:</strong> {{ threat.type }}
+<strong>{{ threat.source }}:</strong> {{ threat.type }}
                                     {% if threat.details %}<span style="color: #94a3b8;"> - {{ threat.details }}</span>{% endif %}
                                 </li>
                                 {% endfor %}
                             </ul>
-                        </div>
+</div>
                         {% endif %}
                     </div>
                     {% endif %}
                     {% endif %}
                 </div>
-
-                <div style="margin-top: 2rem; text-align: center; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+<div style="margin-top: 2rem; text-align: center; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
                     {% if analysis_id %}
-                    <a href="{{ url_for('main.generate_security_pdf', analysis_id=analysis_id) }}" class="btn-primary" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; text-decoration: none;">
-                        <span>📄 Télécharger le Rapport PDF</span>
-                    </a>
+                    <a class="btn-primary" href="{{ url_for('main.generate_security_pdf', analysis_id=analysis_id) }}" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; text-decoration: none;">
+<span>📄 Télécharger le Rapport PDF</span>
+</a>
                     {% endif %}
-                    <a href="{{ url_for('main.security_analyzer') }}" class="btn-secondary" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; text-decoration: none;">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                        </svg>
-                        <span>Nouvelle Analyse</span>
-                    </a>
-                </div>
-            </div>
+                    <a class="btn-secondary" href="{{ url_for('main.security_analyzer') }}" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; text-decoration: none;">
+<svg fill="none" height="18" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="18">
+<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+</svg>
+<span>Nouvelle Analyse</span>
+</a>
+</div>
+</div>
             {% endif %}
         </div>
         {% endif %}
 
         <div class="info-card">
-            <h3>À Propos de Cet Outil</h3>
-            
-            <div class="info-section">
-                <h4>Qu'est-ce que l'Analyseur de Sécurité ?</h4>
-                <p>Cet outil vérifie la réputation et la sécurité d'éléments numériques en les comparant à une vaste base de données de menaces connues. Les résultats proviennent de multiples moteurs de sécurité pour vous fournir une analyse complète et fiable.</p>
-            </div>
-            
-            <div class="info-section">
-                <h4>Types d'Analyses Disponibles</h4>
-                <div class="analysis-types">
-                    <div class="analysis-type">
-                        <strong>Fichiers</strong>
-                        <p>Upload et analyse de fichiers suspects (taille maximale : 32 MB). Tous les types de fichiers sont acceptés.</p>
-                    </div>
-                    <div class="analysis-type">
-                        <strong>URL et Liens Web</strong>
-                        <p>Vérification de la sécurité des liens avant de les visiter. Détection de sites de phishing et de malware.</p>
-                    </div>
-                    <div class="analysis-type">
-                        <strong>Noms de Domaine</strong>
-                        <p>Analyse de la réputation et de l'historique de sécurité d'un domaine Internet.</p>
-                    </div>
-                    <div class="analysis-type">
-                        <strong>Adresses IP</strong>
-                        <p>Vérification de la réputation d'une adresse IP et détection d'activités malveillantes.</p>
-                    </div>
-                    <div class="analysis-type">
-                        <strong>Hash de Fichiers</strong>
-                        <p>Vérification par empreinte cryptographique (MD5, SHA-1, SHA-256) sans upload du fichier complet.</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="info-section">
-                <h4>Comment Interpréter les Résultats</h4>
-                <p>Chaque analyse interroge plusieurs dizaines de moteurs de sécurité. Un élément est considéré comme dangereux si plusieurs moteurs le signalent comme malveillant. Les niveaux de menace sont :</p>
-                <ul class="threat-levels-list">
-                    <li><span class="level-indicator level-critique"></span><strong>Critique</strong> : Menace confirmée, évitez tout contact</li>
-                    <li><span class="level-indicator level-elevé"></span><strong>Élevé</strong> : Forte probabilité de danger, prudence recommandée</li>
-                    <li><span class="level-indicator level-modéré"></span><strong>Modéré</strong> : Quelques signalements, vérification conseillée</li>
-                    <li><span class="level-indicator level-faible"></span><strong>Faible</strong> : Peu ou pas de signalements</li>
-                </ul>
-            </div>
-        </div>
-    </div>
+<h3>À Propos de Cet Outil</h3>
+<div class="info-section">
+<h4>Qu'est-ce que l'Analyseur de Sécurité ?</h4>
+<p>Cet outil vérifie la réputation et la sécurité d'éléments numériques en les comparant à une vaste base de données de menaces connues. Les résultats proviennent de multiples moteurs de sécurité pour vous fournir une analyse complète et fiable.</p>
+</div>
+<div class="info-section">
+<h4>Types d'Analyses Disponibles</h4>
+<div class="analysis-types">
+<div class="analysis-type">
+<strong>Fichiers</strong>
+<p>Upload et analyse de fichiers suspects (taille maximale : 32 MB). Tous les types de fichiers sont acceptés.</p>
+</div>
+<div class="analysis-type">
+<strong>URL et Liens Web</strong>
+<p>Vérification de la sécurité des liens avant de les visiter. Détection de sites de phishing et de malware.</p>
+</div>
+<div class="analysis-type">
+<strong>Noms de Domaine</strong>
+<p>Analyse de la réputation et de l'historique de sécurité d'un domaine Internet.</p>
+</div>
+<div class="analysis-type">
+<strong>Adresses IP</strong>
+<p>Vérification de la réputation d'une adresse IP et détection d'activités malveillantes.</p>
+</div>
+<div class="analysis-type">
+<strong>Hash de Fichiers</strong>
+<p>Vérification par empreinte cryptographique (MD5, SHA-1, SHA-256) sans upload du fichier complet.</p>
+</div>
+</div>
+</div>
+<div class="info-section">
+<h4>Comment Interpréter les Résultats</h4>
+<p>Chaque analyse interroge plusieurs dizaines de moteurs de sécurité. Un élément est considéré comme dangereux si plusieurs moteurs le signalent comme malveillant. Les niveaux de menace sont :</p>
+<ul class="threat-levels-list">
+<li><span class="level-indicator level-critique"></span><strong>Critique</strong> : Menace confirmée, évitez tout contact</li>
+<li><span class="level-indicator level-elevé"></span><strong>Élevé</strong> : Forte probabilité de danger, prudence recommandée</li>
+<li><span class="level-indicator level-modéré"></span><strong>Modéré</strong> : Quelques signalements, vérification conseillée</li>
+<li><span class="level-indicator level-faible"></span><strong>Faible</strong> : Peu ou pas de signalements</li>
+</ul>
+</div>
+</div>
+</div>
 </section>
-
-<script nonce="{{ csp_nonce }}">
-document.addEventListener('DOMContentLoaded', function() {
-    const typeOptions = document.querySelectorAll('input[name="input_type"]');
-    const hints = document.querySelectorAll('.hint');
-    const textInputGroup = document.getElementById('textInputGroup');
-    const fileInputGroup = document.getElementById('fileInputGroup');
-    const textInput = document.getElementById('inputValue');
-    const fileInput = document.getElementById('fileInput');
-    
-    typeOptions.forEach(option => {
-        option.addEventListener('change', function() {
-            hints.forEach(hint => hint.classList.remove('active'));
-            const hintClass = this.value + '-hint';
-            const activeHint = document.querySelector('.' + hintClass);
-            if (activeHint) {
-                activeHint.classList.add('active');
-            }
-            
-            if (this.value === 'file') {
-                textInputGroup.style.display = 'none';
-                fileInputGroup.style.display = 'flex';
-                textInput.removeAttribute('required');
-                fileInput.setAttribute('required', 'required');
-            } else {
-                textInputGroup.style.display = 'flex';
-                fileInputGroup.style.display = 'none';
-                textInput.setAttribute('required', 'required');
-                fileInput.removeAttribute('required');
-            }
-        });
-    });
-});
-</script>
-
-<style>
-.analyzer-container {
-    padding: 4rem 0;
-    position: relative;
-    z-index: 1;
-}
-
-.analyzer-card, .results-card, .info-card {
-    background: rgba(15, 31, 53, 0.6);
-    border: 1px solid rgba(59, 130, 246, 0.3);
-    border-radius: 12px;
-    padding: 2.5rem;
-    margin-bottom: 2rem;
-    backdrop-filter: blur(10px);
-}
-
-.analyzer-card h2, .results-card h3, .info-card h3 {
-    color: var(--text-primary);
-    margin-bottom: 1rem;
-}
-
-.analyzer-description {
-    color: var(--text-secondary);
-    margin-bottom: 2rem;
-    font-size: 1rem;
-}
-
-.input-type-selector {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 1rem;
-    margin-bottom: 2rem;
-}
-
-.type-option {
-    cursor: pointer;
-}
-
-.type-option input[type="radio"] {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-}
-
-.type-option input:focus + .type-label {
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
-    border-color: var(--accent-blue);
-    background: rgba(59, 130, 246, 0.08);
-}
-
-.type-label {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 1.5rem 1rem;
-    background: rgba(59, 130, 246, 0.05);
-    border: 1px solid rgba(59, 130, 246, 0.2);
-    border-radius: 8px;
-    transition: all 0.3s ease;
-}
-
-.type-option input:checked + .type-label {
-    background: rgba(59, 130, 246, 0.15);
-    border-color: var(--accent-blue);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
-}
-
-.type-icon {
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
-}
-
-.type-text {
-    color: var(--text-primary);
-    font-size: 0.9rem;
-    font-weight: 500;
-}
-
-.input-group {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 1rem;
-}
-
-.analyzer-input {
-    flex: 1;
-    padding: 1rem 1.5rem;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 8px;
-    color: var(--text-primary);
-    font-size: 1rem;
-}
-
-.analyzer-input:focus {
-    outline: none;
-    border-color: var(--accent-blue);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.file-input {
-    cursor: pointer;
-}
-
-.file-input::file-selector-button {
-    padding: 0.5rem 1rem;
-    background: rgba(59, 130, 246, 0.2);
-    color: var(--text-primary);
-    border: 1px solid rgba(59, 130, 246, 0.3);
-    border-radius: 6px;
-    cursor: pointer;
-    margin-right: 1rem;
-    transition: all 0.3s ease;
-}
-
-.file-input::file-selector-button:hover {
-    background: rgba(59, 130, 246, 0.3);
-}
-
-.btn-icon {
-    margin-left: 0.5rem;
-}
-
-.input-hints {
-    min-height: 30px;
-}
-
-.hint {
-    display: none;
-    color: var(--text-muted);
-    font-size: 0.85rem;
-    margin-top: 0.5rem;
-}
-
-.hint.active {
-    display: block;
-}
-
-.detection-stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 1.5rem;
-    margin: 2rem 0;
-}
-
-.stat-item {
-    text-align: center;
-    padding: 1.5rem 1rem;
-    background: rgba(59, 130, 246, 0.05);
-    border-radius: 8px;
-}
-
-.stat-value {
-    font-size: 2rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-}
-
-.stat-item.malicious .stat-value {
-    color: #ef4444;
-}
-
-.stat-item.suspicious .stat-value {
-    color: #f59e0b;
-}
-
-.stat-item.clean .stat-value {
-    color: #10b981;
-}
-
-.stat-item.total .stat-value {
-    color: var(--accent-blue);
-}
-
-.stat-label {
-    color: var(--text-secondary);
-    font-size: 0.85rem;
-}
-
-.threat-badge {
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    text-transform: uppercase;
-}
-
-.threat-critique {
-    background: rgba(239, 68, 68, 0.2);
-    color: #fca5a5;
-}
-
-.threat-élevé {
-    background: rgba(245, 158, 11, 0.2);
-    color: #fbbf24;
-}
-
-.threat-modéré {
-    background: rgba(251, 191, 36, 0.2);
-    color: #fcd34d;
-}
-
-.threat-faible {
-    background: rgba(59, 130, 246, 0.2);
-    color: #93c5fd;
-}
-
-.threat-sûr, .threat-inconnu {
-    background: rgba(16, 185, 129, 0.2);
-    color: #6ee7b7;
-}
-
-.threat-meter {
-    margin: 2rem 0;
-}
-
-.meter-bar {
-    height: 12px;
-    background: rgba(59, 130, 246, 0.1);
-    border-radius: 6px;
-    overflow: hidden;
-    margin-bottom: 0.5rem;
-}
-
-.meter-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #ef4444, #f59e0b);
-    transition: width 0.5s ease;
-}
-
-.meter-text {
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-    text-align: center;
-}
-
-.analysis-details {
-    margin-top: 2rem;
-    padding-top: 2rem;
-    border-top: 1px solid rgba(59, 130, 246, 0.2);
-}
-
-.detail-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1rem;
-    margin-top: 1rem;
-}
-
-.detail-item {
-    padding: 1rem;
-    background: rgba(59, 130, 246, 0.05);
-    border-radius: 6px;
-}
-
-.detail-full {
-    grid-column: 1 / -1;
-}
-
-.detail-label {
-    color: var(--text-secondary);
-    font-size: 0.85rem;
-    display: block;
-    margin-bottom: 0.25rem;
-}
-
-.detail-value {
-    color: var(--text-primary);
-    font-weight: 500;
-}
-
-.url-value {
-    word-break: break-all;
-}
-
-.safety-recommendations {
-    margin-top: 1rem;
-    padding-left: 1.5rem;
-}
-
-.safety-recommendations li {
-    color: var(--text-secondary);
-    margin-bottom: 0.5rem;
-}
-
-.capabilities ul {
-    list-style-position: inside;
-    color: var(--text-secondary);
-}
-
-.capabilities li {
-    margin-bottom: 0.75rem;
-    line-height: 1.6;
-}
-
-.info-section {
-    margin-bottom: 2.5rem;
-}
-
-.info-section:last-child {
-    margin-bottom: 0;
-}
-
-.info-section h4 {
-    color: var(--text-primary);
-    font-size: 1.2rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid rgba(59, 130, 246, 0.2);
-}
-
-.info-section p {
-    color: var(--text-secondary);
-    line-height: 1.7;
-    margin-bottom: 1rem;
-}
-
-.analysis-types {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1.5rem;
-    margin-top: 1.5rem;
-}
-
-.analysis-type {
-    padding: 1.5rem;
-    background: rgba(59, 130, 246, 0.05);
-    border-radius: 8px;
-    border: 1px solid rgba(59, 130, 246, 0.15);
-    transition: all 0.3s ease;
-}
-
-.analysis-type:hover {
-    background: rgba(59, 130, 246, 0.08);
-    border-color: rgba(59, 130, 246, 0.25);
-}
-
-.analysis-type strong {
-    display: block;
-    color: var(--accent-blue);
-    font-size: 1rem;
-    margin-bottom: 0.75rem;
-    font-weight: 600;
-}
-
-.analysis-type p {
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-    line-height: 1.6;
-    margin: 0;
-}
-
-.threat-levels-list {
-    list-style: none;
-    padding: 0;
-    margin-top: 1.5rem;
-}
-
-.threat-levels-list li {
-    display: flex;
-    align-items: center;
-    padding: 0.75rem;
-    margin-bottom: 0.75rem;
-    background: rgba(59, 130, 246, 0.03);
-    border-radius: 6px;
-    color: var(--text-secondary);
-}
-
-.level-indicator {
-    display: inline-block;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    margin-right: 1rem;
-    flex-shrink: 0;
-}
-
-.level-critique {
-    background: #ef4444;
-    box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
-}
-
-.level-elevé {
-    background: #f59e0b;
-    box-shadow: 0 0 8px rgba(245, 158, 11, 0.5);
-}
-
-.level-modéré {
-    background: #fbbf24;
-    box-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
-}
-
-.level-faible {
-    background: #3b82f6;
-    box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
-}
-
-@media (max-width: 768px) {
-    .input-type-selector {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .input-group {
-        flex-direction: column;
-    }
-    
-    .detection-stats {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .detail-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-.breaches-list {
-    display: grid;
-    gap: 1rem;
-    margin-top: 1rem;
-}
-
-.breach-item {
-    padding: 1rem;
-    background: rgba(239, 68, 68, 0.05);
-    border: 1px solid rgba(239, 68, 68, 0.2);
-    border-radius: 8px;
-}
-
-.breach-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.5rem;
-}
-
-.breach-header strong {
-    color: #ef4444;
-    font-size: 1rem;
-}
-
-.breach-date {
-    color: var(--text-secondary);
-    font-size: 0.85rem;
-}
-
-.breach-stat {
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-    margin: 0.25rem 0;
-}
-
-.breach-data {
-    color: #ef4444;
-    font-size: 0.85rem;
-    margin: 0.5rem 0 0 0;
-}
-</style>
+<script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/security_analyzer.js') }}"></script>
+<link href="{{ url_for('static', filename='css/security_analyzer.css') }}" rel="stylesheet"/>
 {% endblock %}

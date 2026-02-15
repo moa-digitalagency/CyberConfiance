@@ -5,7 +5,6 @@
  * Fait par : Aisance KALONJI, www.aisancekalonji.com
  * Auditer par : La CyberConfiance, www.cyberconfiance.com
 -->
-
 <!--
   CyberConfiance
   By MOA Digital Agency LLC
@@ -19,71 +18,35 @@
 
 {% block content %}
 <section class="page-header-modern">
-    <div class="container">
-        <div class="header-content-centered">
-            <h1 class="page-title-modern">Glossaire Cyber</h1>
-            <p class="page-subtitle-modern">Comprenez les termes essentiels de la cybersécurité</p>
-        </div>
-    </div>
+<div class="container">
+<div class="header-content-centered">
+<h1 class="page-title-modern">Glossaire Cyber</h1>
+<p class="page-subtitle-modern">Comprenez les termes essentiels de la cybersécurité</p>
+</div>
+</div>
 </section>
-
 <section class="content-section">
-    <div class="container">
-        <div class="glossary-search-container">
-            <input type="text" id="glossary-search" class="glossary-search-input" placeholder="Rechercher un terme...">
-        </div>
+<div class="container">
+<div class="glossary-search-container">
+<input class="glossary-search-input" id="glossary-search" placeholder="Rechercher un terme..." type="text"/>
+</div>
         
         {% if terms %}
         <div class="glossary-grid" id="glossary-grid">
             {% for term in terms %}
-            <div class="glossary-item glass-card" data-term="{{ term.term|lower }}" data-definition="{{ term.definition|lower }}">
-                <h3>{{ term.term }}</h3>
-                <p>{{ term.definition }}</p>
-            </div>
+            <div class="glossary-item glass-card" data-definition="{{ term.definition|lower }}" data-term="{{ term.term|lower }}">
+<h3>{{ term.term }}</h3>
+<p>{{ term.definition }}</p>
+</div>
             {% endfor %}
         </div>
-        <div id="no-results" class="no-results" style="display: none;">
-            <p>Aucun terme ne correspond à votre recherche.</p>
-        </div>
+<div class="no-results" id="no-results" style="display: none;">
+<p>Aucun terme ne correspond à votre recherche.</p>
+</div>
         {% else %}
         <p>Aucun terme disponible pour le moment.</p>
         {% endif %}
     </div>
 </section>
-
-<script nonce="{{ csp_nonce }}">
-document.addEventListener('DOMContentLoaded', function() {
-    const searchInput = document.getElementById('glossary-search');
-    const glossaryGrid = document.getElementById('glossary-grid');
-    const glossaryItems = document.querySelectorAll('.glossary-item');
-    const noResults = document.getElementById('no-results');
-    
-    if (searchInput) {
-        searchInput.addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase().trim();
-            let visibleCount = 0;
-            
-            glossaryItems.forEach(function(item) {
-                const term = item.getAttribute('data-term');
-                const definition = item.getAttribute('data-definition');
-                
-                if (term.includes(searchTerm) || definition.includes(searchTerm)) {
-                    item.style.display = '';
-                    visibleCount++;
-                } else {
-                    item.style.display = 'none';
-                }
-            });
-            
-            if (visibleCount === 0) {
-                noResults.style.display = 'block';
-                glossaryGrid.style.display = 'none';
-            } else {
-                noResults.style.display = 'none';
-                glossaryGrid.style.display = 'grid';
-            }
-        });
-    }
-});
-</script>
+<script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/glossary.js') }}"></script>
 {% endblock %}

@@ -5,7 +5,6 @@
  * Fait par : Aisance KALONJI, www.aisancekalonji.com
  * Auditer par : La CyberConfiance, www.cyberconfiance.com
 -->
-
 <!--
   CyberConfiance
   By MOA Digital Agency LLC
@@ -19,77 +18,68 @@
 
 {% block content %}
 <section class="page-header-modern">
-    <div class="container">
-        <div class="header-content-centered">
-            <h1 class="page-title-modern">Types d'Attaques Informatiques</h1>
-            <p class="page-subtitle-modern">Apprenez à reconnaître et à prévenir les différentes formes d'attaques cybernétiques</p>
-        </div>
-    </div>
+<div class="container">
+<div class="header-content-centered">
+<h1 class="page-title-modern">Types d'Attaques Informatiques</h1>
+<p class="page-subtitle-modern">Apprenez à reconnaître et à prévenir les différentes formes d'attaques cybernétiques</p>
+</div>
+</div>
 </section>
-
 <section class="filters-section-attacks">
-    <div class="container">
-        <div class="filters-container-attacks">
-            <div class="search-filter-attack">
-                <input type="text" id="attackSearchInput" placeholder="Rechercher une attaque..." class="search-input-attack">
-                <svg class="search-icon-attack" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="11" cy="11" r="8"/>
-                    <path d="m21 21-4.35-4.35"/>
-                </svg>
-            </div>
-            
-            <div class="filters-row">
-                <div class="filter-group-attack">
-                    <label class="filter-label-attack">Catégorie</label>
-                    <div class="category-buttons">
-                        <button class="filter-btn-attack active" data-category="all">Toutes</button>
-                        <button class="filter-btn-attack" data-category="AI">IA</button>
-                        <button class="filter-btn-attack" data-category="Web">Web</button>
-                        <button class="filter-btn-attack" data-category="Network">Réseau</button>
-                        <button class="filter-btn-attack" data-category="Data">Données</button>
-                        <button class="filter-btn-attack" data-category="Social">Social</button>
-                    </div>
-                </div>
-                
-                <div class="filter-group-attack" style="max-width: 180px; flex: 0 0 180px;">
-                    <label class="filter-label-attack">Niveau de sévérité</label>
-                    <select id="severityFilter" class="filter-select-attack">
-                        <option value="">Tous les niveaux</option>
-                        <option value="Critique">Critique</option>
-                        <option value="Élevé">Élevé</option>
-                        <option value="Moyen">Moyen</option>
-                        <option value="Faible">Faible</option>
-                    </select>
-                </div>
-            </div>
-            
-            <button id="resetAttackFilters" class="btn-reset-attack">Réinitialiser</button>
-        </div>
-        <div id="attackResultsCount" class="results-count-attacks"></div>
-    </div>
+<div class="container">
+<div class="filters-container-attacks">
+<div class="search-filter-attack">
+<input class="search-input-attack" id="attackSearchInput" placeholder="Rechercher une attaque..." type="text"/>
+<svg class="search-icon-attack" fill="none" height="20" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="20">
+<circle cx="11" cy="11" r="8"></circle>
+<path d="m21 21-4.35-4.35"></path>
+</svg>
+</div>
+<div class="filters-row">
+<div class="filter-group-attack">
+<label class="filter-label-attack">Catégorie</label>
+<div class="category-buttons">
+<button class="filter-btn-attack active" data-category="all">Toutes</button>
+<button class="filter-btn-attack" data-category="AI">IA</button>
+<button class="filter-btn-attack" data-category="Web">Web</button>
+<button class="filter-btn-attack" data-category="Network">Réseau</button>
+<button class="filter-btn-attack" data-category="Data">Données</button>
+<button class="filter-btn-attack" data-category="Social">Social</button>
+</div>
+</div>
+<div class="filter-group-attack" style="max-width: 180px; flex: 0 0 180px;">
+<label class="filter-label-attack">Niveau de sévérité</label>
+<select class="filter-select-attack" id="severityFilter">
+<option value="">Tous les niveaux</option>
+<option value="Critique">Critique</option>
+<option value="Élevé">Élevé</option>
+<option value="Moyen">Moyen</option>
+<option value="Faible">Faible</option>
+</select>
+</div>
+</div>
+<button class="btn-reset-attack" id="resetAttackFilters">Réinitialiser</button>
+</div>
+<div class="results-count-attacks" id="attackResultsCount"></div>
+</div>
 </section>
-
 <section class="attacks-section-modern">
-    <div class="container">
+<div class="container">
         {% if attacks %}
         <div class="attacks-grid-modern" id="attacksGrid">
             {% for attack in attacks %}
-            <article class="attack-card-modern" 
-                     data-category="{{ attack.category or 'Web' }}" 
-                     data-severity="{{ attack.severity or 'Moyen' }}"
-                     data-name="{{ attack.name_fr.lower() }}"
-                     data-description="{{ attack.description_fr|lower }}">
-                <div class="attack-header-modern">
-                    <div class="attack-icon-wrapper">
-                        <svg class="attack-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                            <line x1="12" y1="9" x2="12" y2="13"/>
-                            <line x1="12" y1="17" x2="12.01" y2="17"/>
-                        </svg>
-                    </div>
-                    <div class="attack-header-content">
-                        <div class="attack-title-row">
-                            <h3 class="attack-title-modern">{{ attack.name_fr }}</h3>
+            <article class="attack-card-modern" data-category="{{ attack.category or 'Web' }}" data-description="{{ attack.description_fr|lower }}" data-name="{{ attack.name_fr.lower() }}" data-severity="{{ attack.severity or 'Moyen' }}">
+<div class="attack-header-modern">
+<div class="attack-icon-wrapper">
+<svg class="attack-icon" fill="none" height="24" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="24">
+<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+<line x1="12" x2="12" y1="9" y2="13"></line>
+<line x1="12" x2="12.01" y1="17" y2="17"></line>
+</svg>
+</div>
+<div class="attack-header-content">
+<div class="attack-title-row">
+<h3 class="attack-title-modern">{{ attack.name_fr }}</h3>
                             {% if attack.severity %}
                             <span class="severity-badge-modern severity-{{ attack.severity|lower }}">{{ attack.severity }}</span>
                             {% endif %}
@@ -98,447 +88,34 @@
                         <div class="attack-subtitle">{{ attack.name_en }}</div>
                         {% endif %}
                     </div>
-                </div>
-                
-                <div class="attack-description-modern">{{ attack.description_fr|safe }}</div>
+</div>
+<div class="attack-description-modern">{{ attack.description_fr|safe }}</div>
                 
                 {% if attack.prevention %}
                 <div class="attack-prevention-modern">
-                    <div class="prevention-header">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                            <path d="m9 12 2 2 4-4"/>
-                        </svg>
-                        <span class="prevention-title">Comment se protéger</span>
-                    </div>
-                    <div class="prevention-text">{{ attack.prevention|safe }}</div>
-                </div>
+<div class="prevention-header">
+<svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="16">
+<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+<path d="m9 12 2 2 4-4"></path>
+</svg>
+<span class="prevention-title">Comment se protéger</span>
+</div>
+<div class="prevention-text">{{ attack.prevention|safe }}</div>
+</div>
                 {% endif %}
             </article>
             {% endfor %}
         </div>
-        
-        <div id="noAttackResults" class="empty-state-attacks" style="display: none;">
-            <p>Aucun type d'attaque ne correspond à ce filtre.</p>
-        </div>
+<div class="empty-state-attacks" id="noAttackResults" style="display: none;">
+<p>Aucun type d'attaque ne correspond à ce filtre.</p>
+</div>
         {% else %}
         <div class="empty-state-attacks">
-            <p>Aucun type d'attaque disponible pour le moment.</p>
-        </div>
+<p>Aucun type d'attaque disponible pour le moment.</p>
+</div>
         {% endif %}
     </div>
 </section>
-
-<style>
-.filters-section-attacks {
-    padding: 0 0 40px;
-}
-
-.filters-container-attacks {
-    background: rgba(15, 31, 53, 0.6);
-    border: 1px solid rgba(59, 130, 246, 0.2);
-    border-radius: 16px;
-    padding: 2rem;
-    backdrop-filter: blur(20px);
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
-.search-filter-attack {
-    position: relative;
-    width: 100%;
-}
-
-.search-input-attack {
-    width: 100%;
-    padding: 0.875rem 1rem 0.875rem 3rem;
-    background: rgba(10, 22, 40, 0.8);
-    border: 1px solid rgba(59, 130, 246, 0.3);
-    border-radius: 12px;
-    color: var(--text-primary);
-    font-size: 1rem;
-    transition: all 0.3s ease;
-}
-
-.search-input-attack:focus {
-    outline: none;
-    border-color: var(--accent-blue);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.search-icon-attack {
-    position: absolute;
-    left: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--text-muted);
-    pointer-events: none;
-}
-
-.filters-row {
-    display: flex;
-    gap: 2rem;
-    align-items: flex-start;
-}
-
-.filter-group-attack {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    flex: 1;
-}
-
-.filter-label-attack {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.category-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    justify-content: center;
-}
-
-.filter-select-attack {
-    padding: 0.875rem 1rem;
-    background: rgba(10, 22, 40, 0.8);
-    border: 1px solid rgba(59, 130, 246, 0.3);
-    border-radius: 12px;
-    color: var(--text-primary);
-    font-size: 1rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.filter-select-attack:focus {
-    outline: none;
-    border-color: var(--accent-blue);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.btn-reset-attack {
-    padding: 0.875rem 1.5rem;
-    background: rgba(239, 68, 68, 0.1);
-    border: 1px solid rgba(239, 68, 68, 0.3);
-    border-radius: 12px;
-    color: #f87171;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    align-self: center;
-}
-
-.btn-reset-attack:hover {
-    background: rgba(239, 68, 68, 0.2);
-    border-color: rgba(239, 68, 68, 0.5);
-}
-
-.filter-btn-attack {
-    padding: 0.75rem 1.75rem;
-    background: rgba(59, 130, 246, 0.1);
-    border: 1px solid rgba(59, 130, 246, 0.3);
-    border-radius: 20px;
-    color: var(--text-primary);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 0.95rem;
-    font-weight: 500;
-}
-
-.filter-btn-attack:hover {
-    background: rgba(59, 130, 246, 0.2);
-    border-color: rgba(59, 130, 246, 0.5);
-    transform: translateY(-2px);
-}
-
-.filter-btn-attack.active {
-    background: rgba(59, 130, 246, 0.3);
-    border-color: var(--accent-blue);
-    color: var(--accent-blue);
-}
-
-.results-count-attacks {
-    margin-top: 1.5rem;
-    font-size: 0.95rem;
-    color: var(--text-secondary);
-    text-align: center;
-}
-
-.attacks-section-modern {
-    padding: 40px 0 60px;
-}
-
-.attacks-grid-modern {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 2rem;
-    animation: fadeIn 0.5s ease-in;
-}
-
-.attack-card-modern {
-    background: rgba(15, 31, 53, 0.6);
-    border: 1px solid rgba(59, 130, 246, 0.2);
-    border-radius: 16px;
-    padding: 2rem;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(20px);
-}
-
-.attack-card-modern:hover {
-    transform: translateY(-4px);
-    border-color: rgba(59, 130, 246, 0.4);
-    box-shadow: 0 12px 40px rgba(59, 130, 246, 0.15);
-}
-
-.attack-header-modern {
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    margin-bottom: 1.25rem;
-}
-
-.attack-icon-wrapper {
-    width: 48px;
-    height: 48px;
-    background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(251, 146, 60, 0.2));
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
-.attack-icon {
-    color: #f87171;
-}
-
-.attack-header-content {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    flex: 1;
-}
-
-.attack-title-row {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-}
-
-.attack-title-modern {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin: 0;
-}
-
-.attack-subtitle {
-    font-size: 0.9rem;
-    color: var(--text-muted);
-    font-style: italic;
-}
-
-.severity-badge-modern {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.25rem 0.75rem;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    border-radius: 12px;
-    white-space: nowrap;
-}
-
-.severity-critique, .severity-élevé {
-    background: rgba(239, 68, 68, 0.15);
-    color: #ef4444;
-    border: 1px solid rgba(239, 68, 68, 0.3);
-}
-
-.severity-moyen {
-    background: rgba(251, 191, 36, 0.15);
-    color: #fbbf24;
-    border: 1px solid rgba(251, 191, 36, 0.3);
-}
-
-.severity-faible {
-    background: rgba(34, 197, 94, 0.15);
-    color: #22c55e;
-    border: 1px solid rgba(34, 197, 94, 0.3);
-}
-
-.attack-description-modern {
-    font-size: 1rem;
-    color: var(--text-secondary);
-    line-height: 1.7;
-    margin-bottom: 1.5rem;
-}
-
-.attack-prevention-modern {
-    background: rgba(10, 22, 40, 0.5);
-    border-left: 3px solid rgba(34, 197, 94, 0.5);
-    border-radius: 8px;
-    padding: 1rem;
-}
-
-.prevention-header {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 0.75rem;
-}
-
-.prevention-header svg {
-    color: #22c55e;
-    flex-shrink: 0;
-}
-
-.prevention-title {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: var(--text-primary);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.prevention-text {
-    font-size: 0.95rem;
-    color: var(--text-secondary);
-    line-height: 1.6;
-}
-
-.empty-state-attacks {
-    text-align: center;
-    padding: 4rem 2rem;
-    color: var(--text-muted);
-    font-size: 1.125rem;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-@media (max-width: 768px) {
-    .page-title-modern {
-        font-size: 2rem;
-    }
-    
-    .page-subtitle-modern {
-        font-size: 1rem;
-    }
-    
-    .filters-container-attacks {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    
-    .filters-row {
-        flex-direction: column;
-        gap: 1.5rem;
-    }
-    
-    .filter-btn-attack {
-        width: 100%;
-    }
-    
-    .attacks-grid-modern {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-    }
-    
-    .attack-card-modern {
-        padding: 1.5rem;
-    }
-}
-</style>
-
-<script nonce="{{ csp_nonce }}">
-document.addEventListener('DOMContentLoaded', function() {
-    const searchInput = document.getElementById('attackSearchInput');
-    const severityFilter = document.getElementById('severityFilter');
-    const filterBtns = document.querySelectorAll('.filter-btn-attack');
-    const resetButton = document.getElementById('resetAttackFilters');
-    const attackCards = document.querySelectorAll('.attack-card-modern');
-    const noResults = document.getElementById('noAttackResults');
-    const attacksGrid = document.getElementById('attacksGrid');
-    const resultsCount = document.getElementById('attackResultsCount');
-    
-    function filterAttacks() {
-        const searchTerm = searchInput.value.toLowerCase();
-        const selectedSeverity = severityFilter.value;
-        const activeBtn = document.querySelector('.filter-btn-attack.active');
-        const category = activeBtn ? activeBtn.dataset.category : 'all';
-        let visibleCount = 0;
-        
-        attackCards.forEach(card => {
-            const name = card.dataset.name || '';
-            const description = card.dataset.description || '';
-            const cardCategory = card.dataset.category || '';
-            const cardSeverity = card.dataset.severity || '';
-            
-            let show = true;
-            
-            if (searchTerm && !name.includes(searchTerm) && !description.includes(searchTerm)) {
-                show = false;
-            }
-            
-            if (category !== 'all' && cardCategory !== category) {
-                show = false;
-            }
-            
-            if (selectedSeverity && cardSeverity !== selectedSeverity) {
-                show = false;
-            }
-            
-            if (show) {
-                card.style.display = 'block';
-                visibleCount++;
-            } else {
-                card.style.display = 'none';
-            }
-        });
-        
-        if (visibleCount === 0) {
-            attacksGrid.style.display = 'none';
-            noResults.style.display = 'block';
-            resultsCount.textContent = '';
-        } else {
-            attacksGrid.style.display = 'grid';
-            noResults.style.display = 'none';
-            resultsCount.textContent = `${visibleCount} type${visibleCount > 1 ? 's' : ''} d'attaque${visibleCount > 1 ? 's' : ''}`;
-        }
-    }
-    
-    function resetFilters() {
-        searchInput.value = '';
-        severityFilter.value = '';
-        filterBtns.forEach(btn => btn.classList.remove('active'));
-        filterBtns[0].classList.add('active');
-        filterAttacks();
-    }
-    
-    searchInput.addEventListener('input', filterAttacks);
-    severityFilter.addEventListener('change', filterAttacks);
-    resetButton.addEventListener('click', resetFilters);
-    
-    filterBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
-            filterBtns.forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            filterAttacks();
-        });
-    });
-    
-    filterAttacks();
-});
-</script>
+<link href="{{ url_for('static', filename='css/attack_types.css') }}" rel="stylesheet"/>
+<script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/attack_types.js') }}"></script>
 {% endblock %}
