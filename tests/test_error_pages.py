@@ -36,7 +36,7 @@ class ErrorPageTestCase(unittest.TestCase):
         response = self.client.get('/non-existent-page-12345')
         self.assertEqual(response.status_code, 404)
         self.assertIn(b'404 - Perdu dans le Cyberespace', response.data)
-        self.assertIn(b'Retour aux fonctionnalit', response.data)
+        self.assertIn(b'Retour \xc3\xa0 l\'accueil', response.data)
         self.assertIn(b'Besoin d\'aide imm', response.data)
         # Check for Lottie
         self.assertIn(b'lottie-player', response.data)

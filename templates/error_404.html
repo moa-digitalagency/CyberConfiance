@@ -5,67 +5,66 @@
  * Fait par : Aisance KALONJI, www.aisancekalonji.com
  * Auditer par : La CyberConfiance, www.cyberconfiance.com
 -->
-
 {% extends "base.html" %}
 
 {% block title %}Page non trouvée - CyberConfiance{% endblock %}
 
 {% block content %}
-<div class="container" style="min-height: 80vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 4rem 2rem;">
+<div class="container error-page-container">
     <!-- Lottie Animation -->
     <script nonce="{{ csp_nonce }}" src="https://cdn.jsdelivr.net/npm/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
-    <div style="width: 100%; max-width: 500px; margin-bottom: 2rem;">
+    <div class="lottie-wrapper">
         <lottie-player
             src="https://assets2.lottiefiles.com/packages/lf20_U10W5l.json"
             background="transparent"
             speed="1"
-            style="width: 100%; height: auto;"
+            class="lottie-player-style"
             loop
             autoplay>
         </lottie-player>
     </div>
 
-    <h1 class="page-title-modern" style="margin-bottom: 1rem;">404 - Perdu dans le Cyberespace ?</h1>
+    <h1 class="page-title-modern error-title">404 - Perdu dans le Cyberespace ?</h1>
 
-    <p style="color: var(--text-secondary); font-size: 1.2rem; margin-bottom: 3rem; max-width: 600px; line-height: 1.6;">
+    <p class="error-description">
         Il semble que vous ayez dérivé un peu trop loin. Mais pas de panique, nous avons prévu un plan de sauvetage pour vous.
     </p>
 
     <!-- Strategy: Retention Tunnel -->
-    <div style="display: flex; flex-direction: column; gap: 2rem; width: 100%; max-width: 800px;">
+    <div class="action-cards-container">
 
         <!-- Pillar 1: The Guide -->
-        <div class="error-action-card" style="background: var(--bg-card); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
-            <div style="text-align: left;">
-                <h3 style="font-size: 1.1rem; margin-bottom: 0.25rem;">Reprenez le contrôle</h3>
-                <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0;">Retournez vers nos outils de sécurité essentiels.</p>
+        <div class="error-action-card error-action-card-base card-default">
+            <div class="action-text">
+                <h3 class="action-title">Reprenez le contrôle</h3>
+                <p class="action-desc">Retournez vers nos outils de sécurité essentiels.</p>
             </div>
             <a href="{{ url_for('main.index') }}" class="btn btn-primary">
-                <i class="bi bi-shield-check" style="margin-right: 8px;"></i>
-                Retour aux fonctionnalités phares
+                <i class="bi bi-shield-check icon-margin"></i>
+                Retour à l'accueil
             </a>
         </div>
 
         <!-- Pillar 2: The Conciergerie (Support) -->
-        <div class="error-action-card" style="background: rgba(37, 211, 102, 0.1); padding: 1.5rem; border-radius: 12px; border: 1px solid rgba(37, 211, 102, 0.3); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
-            <div style="text-align: left;">
-                <h3 style="font-size: 1.1rem; margin-bottom: 0.25rem; color: #25D366;">Besoin d'aide immédiate ?</h3>
-                <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0;">Notre équipe de support est disponible sur WhatsApp.</p>
+        <div class="error-action-card error-action-card-base card-support">
+            <div class="action-text">
+                <h3 class="action-title text-whatsapp">Besoin d'aide immédiate ?</h3>
+                <p class="action-desc">Notre équipe de support est disponible sur WhatsApp.</p>
             </div>
-            <a href="https://wa.me/{{ whatsapp_number|default('243860493345') }}" target="_blank" class="btn" style="background-color: #25D366; color: white; border: none;">
-                <i class="bi bi-whatsapp" style="margin-right: 8px;"></i>
+            <a href="https://wa.me/{{ whatsapp_number|default('243860493345') }}" target="_blank" class="btn btn-whatsapp">
+                <i class="bi bi-whatsapp icon-margin"></i>
                 Contacter le support
             </a>
         </div>
 
         <!-- Pillar 3: The Lead Magnet -->
-        <div class="error-action-card" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(147, 51, 234, 0.1)); padding: 1.5rem; border-radius: 12px; border: 1px solid rgba(59, 130, 246, 0.3); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
-            <div style="text-align: left;">
-                <h3 style="font-size: 1.1rem; margin-bottom: 0.25rem; color: var(--primary-color);">Pour nous faire pardonner...</h3>
-                <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0;">Profitez d'une consultation de sécurité offerte.</p>
+        <div class="error-action-card error-action-card-base card-lead">
+            <div class="action-text">
+                <h3 class="action-title text-primary-color">Pour nous faire pardonner...</h3>
+                <p class="action-desc">Profitez d'une consultation de sécurité offerte.</p>
             </div>
-            <a href="{{ consultation_url|default('#') }}" target="_blank" class="btn btn-outline-primary">
-                <i class="bi bi-gift-fill" style="margin-right: 8px;"></i>
+            <a href="{{ consultation_url|default('https://tidycal.com/moamyoneart/consultation-gratuite-15-min') }}" target="_blank" class="btn btn-outline-primary">
+                <i class="bi bi-gift-fill icon-margin"></i>
                 Consultation offerte (30 min)
             </a>
         </div>
@@ -73,24 +72,5 @@
     </div>
 </div>
 
-<style>
-    .error-action-card {
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    .error-action-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-    }
-    @media (max-width: 600px) {
-        .error-action-card {
-            flex-direction: column;
-            text-align: center !important;
-            align-items: stretch;
-        }
-        .error-action-card > div {
-            text-align: center !important;
-            margin-bottom: 1rem;
-        }
-    }
-</style>
+<link href="{{ url_for('static', filename='css/error_404.css') }}" rel="stylesheet"/>
 {% endblock %}

@@ -5,7 +5,6 @@
  * Fait par : Aisance KALONJI, www.aisancekalonji.com
  * Auditer par : La CyberConfiance, www.cyberconfiance.com
 -->
-
 <!--
   CyberConfiance
   By MOA Digital Agency LLC
@@ -19,92 +18,89 @@
 
 {% block content %}
 <div class="admin-header">
-    <h1>Historique des Quiz</h1>
-    <p>Tous les résultats de quiz complétés par les utilisateurs</p>
+<h1>Historique des Quiz</h1>
+<p>Tous les résultats de quiz complétés par les utilisateurs</p>
 </div>
-
 <div class="admin-toolbar">
-    <div class="toolbar-left">
-        <form method="GET" style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
-            <div class="filter-group">
-                <label for="search">Recherche:</label>
-                <input type="text" id="search" name="search" value="{{ search }}" placeholder="Email..." style="min-width: 200px;">
-            </div>
-            <div class="filter-group">
-                <label for="date_from">Du:</label>
-                <input type="date" id="date_from" name="date_from" value="{{ date_from }}">
-            </div>
-            <div class="filter-group">
-                <label for="date_to">Au:</label>
-                <input type="date" id="date_to" name="date_to" value="{{ date_to }}">
-            </div>
-            <button type="submit" class="btn btn-primary btn-sm">Filtrer</button>
-            <a href="{{ url_for('admin_panel.quiz_history') }}" class="btn btn-secondary btn-sm">Réinitialiser</a>
-        </form>
-    </div>
-    <div class="toolbar-right">
-        <button onclick="exportData()" class="btn btn-secondary">Exporter CSV</button>
-    </div>
+<div class="toolbar-left">
+<form method="GET" style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+<div class="filter-group">
+<label for="search">Recherche:</label>
+<input id="search" name="search" placeholder="Email..." style="min-width: 200px;" type="text" value="{{ search }}"/>
 </div>
-
+<div class="filter-group">
+<label for="date_from">Du:</label>
+<input id="date_from" name="date_from" type="date" value="{{ date_from }}"/>
+</div>
+<div class="filter-group">
+<label for="date_to">Au:</label>
+<input id="date_to" name="date_to" type="date" value="{{ date_to }}"/>
+</div>
+<button class="btn btn-primary btn-sm" type="submit">Filtrer</button>
+<a class="btn btn-secondary btn-sm" href="{{ url_for('admin_panel.quiz_history') }}">Réinitialiser</a>
+</form>
+</div>
+<div class="toolbar-right">
+<button class="btn btn-secondary" onclick="exportData()">Exporter CSV</button>
+</div>
+</div>
 <div class="admin-card">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-        <h3 style="margin: 0;">Résultats ({{ results.total }})</h3>
-        <div style="color: var(--text-secondary); font-size: 0.9rem;">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+<h3 style="margin: 0;">Résultats ({{ results.total }})</h3>
+<div style="color: var(--text-secondary); font-size: 0.9rem;">
             Moyenne globale: <strong style="color: var(--accent-blue);">{{ average_score|default(0)|round(1) }}%</strong>
-        </div>
-    </div>
-    
-    <div class="table-container">
-        <table class="admin-table">
-            <thead>
-                <tr>
-                    <th>Email</th>
-                    <th style="width: 150px;">Score global</th>
-                    <th style="width: 150px;">Date</th>
-                    <th style="width: 140px;">Adresse IP</th>
-                    <th class="actions-cell" style="width: 150px;">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
+</div>
+</div>
+<div class="table-container">
+<table class="admin-table">
+<thead>
+<tr>
+<th>Email</th>
+<th style="width: 150px;">Score global</th>
+<th style="width: 150px;">Date</th>
+<th style="width: 140px;">Adresse IP</th>
+<th class="actions-cell" style="width: 150px;">Actions</th>
+</tr>
+</thead>
+<tbody>
                 {% for result in results.items %}
                 <tr>
-                    <td>
-                        <strong style="color: var(--text-primary); font-family: monospace; font-size: 0.9rem;">
+<td>
+<strong style="color: var(--text-primary); font-family: monospace; font-size: 0.9rem;">
                             {{ result.email }}
                         </strong>
-                    </td>
-                    <td>
-                        <div style="display: flex; align-items: center; gap: 0.5rem;">
-                            {% if result.overall_score >= 80 %}
+</td>
+<td>
+<div style="display: flex; align-items: center; gap: 0.5rem;">
+                            {% if result.overall_score &gt;= 80 %}
                             <span class="badge badge-success">{{ result.overall_score }}%</span>
-                            {% elif result.overall_score >= 60 %}
+                            {% elif result.overall_score &gt;= 60 %}
                             <span class="badge badge-warning">{{ result.overall_score }}%</span>
                             {% else %}
                             <span class="badge badge-danger">{{ result.overall_score }}%</span>
                             {% endif %}
                         </div>
-                    </td>
-                    <td style="font-size: 0.85rem;">{{ result.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
-                    <td style="font-family: monospace; font-size: 0.85rem; color: var(--text-muted);">
+</td>
+<td style="font-size: 0.85rem;">{{ result.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
+<td style="font-family: monospace; font-size: 0.85rem; color: var(--text-muted);">
                         {{ result.ip_address }}
                     </td>
-                    <td class="actions-cell">
-                        <div class="action-btn-group">
-                            <a href="{{ url_for('admin_panel.quiz_detail', quiz_id=result.id) }}" class="btn btn-primary btn-sm">Voir détails</a>
-                            <form method="POST" action="{{ url_for('admin_panel.delete_quiz_result', quiz_id=result.id) }}" style="display: inline;" onsubmit="return confirm('Supprimer ce résultat ?')">
-                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                                <button type="submit" class="btn btn-danger btn-sm" title="Supprimer">✕</button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
+<td class="actions-cell">
+<div class="action-btn-group">
+<a class="btn btn-primary btn-sm" href="{{ url_for('admin_panel.quiz_detail', quiz_id=result.id) }}">Voir détails</a>
+<form action="{{ url_for('admin_panel.delete_quiz_result', quiz_id=result.id) }}" method="POST" onsubmit="return confirm('Supprimer ce résultat ?')" style="display: inline;">
+<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
+<button class="btn btn-danger btn-sm" title="Supprimer" type="submit">✕</button>
+</input></form>
+</div>
+</td>
+</tr>
                 {% endfor %}
             </tbody>
-        </table>
-    </div>
+</table>
+</div>
     
-    {% if results.pages > 1 %}
+    {% if results.pages &gt; 1 %}
     <div class="pagination">
         {% if results.has_prev %}
         <a href="{{ url_for('admin_panel.quiz_history', page=results.prev_num, search=search, date_from=date_from, date_to=date_to) }}">‹ Précédent</a>
@@ -128,31 +124,5 @@
     </div>
     {% endif %}
 </div>
-
-<script nonce="{{ csp_nonce }}">
-function exportData() {
-    // Simple CSV export
-    let csv = 'Email,Score,Date,IP\n';
-    const rows = document.querySelectorAll('.admin-table tbody tr');
-    
-    rows.forEach(row => {
-        const cells = row.querySelectorAll('td');
-        if (cells.length >= 4) {
-            const email = cells[0].textContent.trim();
-            const score = cells[1].textContent.trim();
-            const date = cells[2].textContent.trim();
-            const ip = cells[3].textContent.trim();
-            csv += `"${email}","${score}","${date}","${ip}"\n`;
-        }
-    });
-    
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'quiz_history_' + new Date().toISOString().split('T')[0] + '.csv';
-    a.click();
-    window.URL.revokeObjectURL(url);
-}
-</script>
+<script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/quiz_history.js') }}"></script>
 {% endblock %}

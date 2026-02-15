@@ -5,7 +5,6 @@
  * Fait par : Aisance KALONJI, www.aisancekalonji.com
  * Auditer par : La CyberConfiance, www.cyberconfiance.com
 -->
-
 <!--
   CyberConfiance
   By MOA Digital Agency LLC
@@ -19,134 +18,119 @@
 
 {% block content %}
 <section class="page-header-modern">
-    <div class="container">
-        <div class="header-content-centered">
-            <h1 class="page-title-modern">Outils de Sécurité</h1>
-            <p class="page-subtitle-modern">Découvrez les outils essentiels pour protéger vos appareils et données</p>
-        </div>
-    </div>
+<div class="container">
+<div class="header-content-centered">
+<h1 class="page-title-modern">Outils de Sécurité</h1>
+<p class="page-subtitle-modern">Découvrez les outils essentiels pour protéger vos appareils et données</p>
+</div>
+</div>
 </section>
-
 <section class="section cta-section" style="padding: 40px 0 20px;">
-    <div class="container">
-        <div class="glass-card-enhanced" style="text-align: center; padding: 2rem;">
-            <h2 style="font-size: 1.5rem; margin-bottom: 0.75rem;">Besoin d'aide pour choisir les bons outils ?</h2>
-            <p style="font-size: 1rem; color: var(--text-secondary); margin-bottom: 1.5rem; max-width: 700px; margin-left: auto; margin-right: auto;">
+<div class="container">
+<div class="glass-card-enhanced" style="text-align: center; padding: 2rem;">
+<h2 style="font-size: 1.5rem; margin-bottom: 0.75rem;">Besoin d'aide pour choisir les bons outils ?</h2>
+<p style="font-size: 1rem; color: var(--text-secondary); margin-bottom: 1.5rem; max-width: 700px; margin-left: auto; margin-right: auto;">
                 Nos consultants en cybersécurité peuvent vous accompagner dans la sélection des meilleurs outils selon votre niveau de confidentialité voulu. Nous vous aidons également à apprendre à les utiliser et à faire une transition fluide pour ne pas revenir aux mauvaises habitudes.
             </p>
-            <a href="{{ url_for('main.contact') }}" class="btn btn-primary" style="padding: 0.75rem 2rem; text-align: center;">
+<a class="btn btn-primary" href="{{ url_for('main.contact') }}" style="padding: 0.75rem 2rem; text-align: center;">
                 Demander une consultation
             </a>
-        </div>
-    </div>
+</div>
+</div>
 </section>
-
 <section class="filters-section">
-    <div class="container">
-        <div class="filters-container">
-            <div class="search-filter">
-                <input type="text" id="searchInput" placeholder="Rechercher un outil..." class="search-input">
-                <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="11" cy="11" r="8"/>
-                    <path d="m21 21-4.35-4.35"/>
-                </svg>
-            </div>
-            
-            <div class="filter-group">
-                <label class="filter-label">Type d'outil</label>
-                <select id="typeFilter" class="filter-select">
-                    <option value="">Tous les types</option>
-                    <option value="Logiciel">Logiciel</option>
-                    <option value="Application">Application</option>
-                    <option value="Service">Service</option>
-                    <option value="Matériel">Matériel</option>
-                    <option value="Fonctionnalité">Fonctionnalité</option>
-                </select>
-            </div>
-            
-            <div class="filter-group">
-                <label class="filter-label">Règle d'or</label>
-                <select id="ruleFilter" class="filter-select">
-                    <option value="">Toutes les règles</option>
+<div class="container">
+<div class="filters-container">
+<div class="search-filter">
+<input class="search-input" id="searchInput" placeholder="Rechercher un outil..." type="text"/>
+<svg class="search-icon" fill="none" height="20" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="20">
+<circle cx="11" cy="11" r="8"></circle>
+<path d="m21 21-4.35-4.35"></path>
+</svg>
+</div>
+<div class="filter-group">
+<label class="filter-label">Type d'outil</label>
+<select class="filter-select" id="typeFilter">
+<option value="">Tous les types</option>
+<option value="Logiciel">Logiciel</option>
+<option value="Application">Application</option>
+<option value="Service">Service</option>
+<option value="Matériel">Matériel</option>
+<option value="Fonctionnalité">Fonctionnalité</option>
+</select>
+</div>
+<div class="filter-group">
+<label class="filter-label">Règle d'or</label>
+<select class="filter-select" id="ruleFilter">
+<option value="">Toutes les règles</option>
                     {% for i in range(1, 21) %}
                     <option value="{{ i }}">Règle {{ i }}</option>
                     {% endfor %}
                 </select>
-            </div>
-            
-            <div class="filter-group">
-                <label class="filter-label">Scénario</label>
-                <select id="scenarioFilter" class="filter-select">
-                    <option value="">Tous les scénarios</option>
+</div>
+<div class="filter-group">
+<label class="filter-label">Scénario</label>
+<select class="filter-select" id="scenarioFilter">
+<option value="">Tous les scénarios</option>
                     {% for i in range(1, 12) %}
                     <option value="{{ i }}">Scénario {{ i }}</option>
                     {% endfor %}
                 </select>
-            </div>
-            
-            <button id="resetFilters" class="btn-reset">Réinitialiser</button>
-        </div>
-        
-        <div id="resultsCount" class="results-count"></div>
-    </div>
+</div>
+<button class="btn-reset" id="resetFilters">Réinitialiser</button>
+</div>
+<div class="results-count" id="resultsCount"></div>
+</div>
 </section>
-
 <section class="tools-section-modern">
-    <div class="container">
+<div class="container">
         {% if tools %}
         <div class="tools-grid-modern" id="toolsGrid">
             {% for tool in tools %}
-            <article class="tool-card-modern" 
-                     data-type="{{ tool.type or '' }}"
-                     data-rules="{{ tool.related_rules or '' }}"
-                     data-scenarios="{{ tool.related_scenarios or '' }}"
-                     data-tags="{{ tool.category|lower if tool.category else '' }}"
-                     data-name="{{ tool.name.lower() }}"
-                     data-description="{{ tool.description.lower() }}">
-                <div class="tool-header-modern">
-                    <div class="tool-icon-wrapper">
-                        <svg class="tool-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                        </svg>
-                    </div>
-                    <div class="tool-header-content">
-                        <div class="tool-title-row">
-                            <h3 class="tool-title-modern">{{ tool.name }}</h3>
+            <article class="tool-card-modern" data-description="{{ tool.description.lower() }}" data-name="{{ tool.name.lower() }}" data-rules="{{ tool.related_rules or '' }}" data-scenarios="{{ tool.related_scenarios or '' }}" data-tags="{{ tool.category|lower if tool.category else '' }}" data-type="{{ tool.type or '' }}">
+<div class="tool-header-modern">
+<div class="tool-icon-wrapper">
+<svg class="tool-icon" fill="none" height="24" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="24">
+<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+</svg>
+</div>
+<div class="tool-header-content">
+<div class="tool-title-row">
+<h3 class="tool-title-modern">{{ tool.name }}</h3>
                             {% if tool.type %}
                             <span class="tool-type-badge tool-type-{{ tool.type.lower() }}">{{ tool.type }}</span>
                             {% endif %}
                         </div>
-                    </div>
-                </div>
-                
-                <p class="tool-description-modern">{{ tool.description }}</p>
+</div>
+</div>
+<p class="tool-description-modern">{{ tool.description }}</p>
                 
                 {% if tool.use_case or tool.dangers %}
                 <div class="tool-sections">
                     {% if tool.use_case %}
                     <div class="tool-info-block">
-                        <div class="info-block-header">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="10"/>
-                                <line x1="12" y1="16" x2="12" y2="12"/>
-                                <line x1="12" y1="8" x2="12.01" y2="8"/>
-                            </svg>
-                            <span class="info-block-title">À quoi ça sert</span>
-                        </div>
-                        <p class="info-block-text">{{ tool.use_case }}</p>
-                    </div>
+<div class="info-block-header">
+<svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="16">
+<circle cx="12" cy="12" r="10"></circle>
+<line x1="12" x2="12" y1="16" y2="12"></line>
+<line x1="12" x2="12.01" y1="8" y2="8"></line>
+</svg>
+<span class="info-block-title">À quoi ça sert</span>
+</div>
+<p class="info-block-text">{{ tool.use_case }}</p>
+</div>
                     {% endif %}
                     
                     {% if tool.dangers %}
                     <div class="tool-info-block tool-protection">
-                        <div class="info-block-header">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                            </svg>
-                            <span class="info-block-title">Protège contre</span>
-                        </div>
-                        <p class="info-block-text">{{ tool.dangers }}</p>
-                    </div>
+<div class="info-block-header">
+<svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="16">
+<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+</svg>
+<span class="info-block-title">Protège contre</span>
+</div>
+<p class="info-block-text">{{ tool.dangers }}</p>
+</div>
                     {% endif %}
                 </div>
                 {% endif %}
@@ -155,509 +139,40 @@
                 <div class="tool-links-section">
                     {% if tool.related_rules %}
                     <div class="tool-links-group">
-                        <h4 class="links-group-title">Règles d'or</h4>
-                        <div class="badge-container">
+<h4 class="links-group-title">Règles d'or</h4>
+<div class="badge-container">
                             {% for rule_id in tool.get_related_rule_ids() %}
-                            <a href="{{ url_for('content.rule_detail', rule_id=rule_id) }}" class="badge-link">Règle {{ rule_id }}</a>
+                            <a class="badge-link" href="{{ url_for('content.rule_detail', rule_id=rule_id) }}">Règle {{ rule_id }}</a>
                             {% endfor %}
                         </div>
-                    </div>
+</div>
                     {% endif %}
                     
                     {% if tool.related_scenarios %}
                     <div class="tool-links-group">
-                        <h4 class="links-group-title">Scénarios</h4>
-                        <div class="badge-container">
+<h4 class="links-group-title">Scénarios</h4>
+<div class="badge-container">
                             {% for scenario_id in tool.get_related_scenario_ids() %}
-                            <a href="{{ url_for('content.scenarios') }}#scenario-{{ scenario_id }}" class="badge-link badge-scenario">Scénario {{ scenario_id }}</a>
+                            <a class="badge-link badge-scenario" href="{{ url_for('content.scenarios') }}#scenario-{{ scenario_id }}">Scénario {{ scenario_id }}</a>
                             {% endfor %}
                         </div>
-                    </div>
+</div>
                     {% endif %}
                 </div>
                 {% endif %}
             </article>
             {% endfor %}
         </div>
-        
-        <div id="noResults" class="empty-state" style="display: none;">
-            <p>Aucun outil ne correspond à vos critères de recherche.</p>
-        </div>
+<div class="empty-state" id="noResults" style="display: none;">
+<p>Aucun outil ne correspond à vos critères de recherche.</p>
+</div>
         {% else %}
         <div class="empty-state">
-            <p>Aucun outil disponible pour le moment.</p>
-        </div>
+<p>Aucun outil disponible pour le moment.</p>
+</div>
         {% endif %}
     </div>
 </section>
-
-
-<style>
-.filters-section {
-    padding: 0 0 40px;
-}
-
-.filters-container {
-    background: rgba(15, 31, 53, 0.6);
-    border: 1px solid rgba(59, 130, 246, 0.2);
-    border-radius: 16px;
-    padding: 2rem;
-    backdrop-filter: blur(20px);
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1.5rem;
-    align-items: flex-end;
-}
-
-.search-filter {
-    flex: 1;
-    min-width: 250px;
-    position: relative;
-}
-
-.search-input {
-    width: 100%;
-    padding: 0.875rem 1rem 0.875rem 3rem;
-    background: rgba(10, 22, 40, 0.8);
-    border: 1px solid rgba(59, 130, 246, 0.3);
-    border-radius: 12px;
-    color: var(--text-primary);
-    font-size: 1rem;
-    transition: all 0.3s ease;
-}
-
-.search-input:focus {
-    outline: none;
-    border-color: var(--accent-blue);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.search-icon {
-    position: absolute;
-    left: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--text-muted);
-    pointer-events: none;
-}
-
-.filter-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    min-width: 180px;
-}
-
-.filter-label {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.filter-select {
-    padding: 0.875rem 1rem;
-    background: rgba(10, 22, 40, 0.8);
-    border: 1px solid rgba(59, 130, 246, 0.3);
-    border-radius: 12px;
-    color: var(--text-primary);
-    font-size: 1rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.filter-select:focus {
-    outline: none;
-    border-color: var(--accent-blue);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.btn-reset {
-    padding: 0.875rem 1.5rem;
-    background: rgba(239, 68, 68, 0.1);
-    border: 1px solid rgba(239, 68, 68, 0.3);
-    border-radius: 12px;
-    color: #f87171;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.btn-reset:hover {
-    background: rgba(239, 68, 68, 0.2);
-    border-color: rgba(239, 68, 68, 0.5);
-}
-
-.results-count {
-    margin-top: 1.5rem;
-    font-size: 0.95rem;
-    color: var(--text-secondary);
-    text-align: center;
-}
-
-.tools-section-modern {
-    padding: 40px 0 60px;
-}
-
-.tools-grid-modern {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 2rem;
-}
-
-.tool-card-modern {
-    background: rgba(15, 31, 53, 0.6);
-    border: 1px solid rgba(59, 130, 246, 0.2);
-    border-radius: 16px;
-    padding: 2rem;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(20px);
-}
-
-.tool-card-modern:hover {
-    transform: translateY(-4px);
-    border-color: rgba(59, 130, 246, 0.4);
-    box-shadow: 0 12px 40px rgba(59, 130, 246, 0.15);
-}
-
-.tool-header-modern {
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    margin-bottom: 1.25rem;
-}
-
-.tool-icon-wrapper {
-    width: 48px;
-    height: 48px;
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(147, 51, 234, 0.2));
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
-.tool-icon {
-    color: var(--accent-blue-light);
-}
-
-.tool-header-content {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    flex: 1;
-}
-
-.tool-title-row {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-}
-
-.tool-title-modern {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin: 0;
-}
-
-.tool-type-badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.25rem 0.75rem;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    border-radius: 12px;
-    width: fit-content;
-}
-
-.tool-type-logiciel {
-    background: rgba(59, 130, 246, 0.15);
-    color: #60a5fa;
-    border: 1px solid rgba(59, 130, 246, 0.3);
-}
-
-.tool-type-application {
-    background: rgba(16, 185, 129, 0.15);
-    color: #34d399;
-    border: 1px solid rgba(16, 185, 129, 0.3);
-}
-
-.tool-type-service {
-    background: rgba(147, 51, 234, 0.15);
-    color: #c084fc;
-    border: 1px solid rgba(147, 51, 234, 0.3);
-}
-
-.tool-type-matériel,
-.tool-type-materiel {
-    background: rgba(251, 146, 60, 0.15);
-    color: #fb923c;
-    border: 1px solid rgba(251, 146, 60, 0.3);
-}
-
-.tool-type-fonctionnalité,
-.tool-type-fonctionnalite {
-    background: rgba(236, 72, 153, 0.15);
-    color: #f472b6;
-    border: 1px solid rgba(236, 72, 153, 0.3);
-}
-
-.tool-description-modern {
-    font-size: 1rem;
-    color: var(--text-secondary);
-    line-height: 1.7;
-    margin-bottom: 1.5rem;
-}
-
-.tool-sections {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-}
-
-.tool-info-block {
-    background: rgba(10, 22, 40, 0.5);
-    border-left: 3px solid rgba(59, 130, 246, 0.5);
-    border-radius: 8px;
-    padding: 1rem;
-}
-
-.tool-protection {
-    border-left-color: rgba(34, 197, 94, 0.5);
-}
-
-.info-block-header {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 0.75rem;
-}
-
-.info-block-header svg {
-    color: var(--accent-blue-light);
-    flex-shrink: 0;
-}
-
-.tool-protection .info-block-header svg {
-    color: #22c55e;
-}
-
-.info-block-title {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: var(--text-primary);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.info-block-text {
-    font-size: 0.95rem;
-    color: var(--text-secondary);
-    line-height: 1.6;
-    margin: 0;
-}
-
-.tool-links-section {
-    border-top: 1px solid rgba(59, 130, 246, 0.1);
-    padding-top: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.tool-links-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-
-.links-group-title {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin: 0;
-}
-
-.badge-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-}
-
-.badge-link {
-    display: inline-block;
-    padding: 0.5rem 1rem;
-    background: rgba(59, 130, 246, 0.1);
-    border: 1px solid rgba(59, 130, 246, 0.3);
-    border-radius: 20px;
-    color: var(--accent-blue-light);
-    font-size: 0.875rem;
-    font-weight: 500;
-    text-decoration: none;
-    transition: all 0.2s ease;
-}
-
-.badge-link:hover {
-    background: rgba(59, 130, 246, 0.2);
-    border-color: var(--accent-blue);
-    transform: translateY(-1px);
-}
-
-.badge-scenario {
-    background: rgba(147, 51, 234, 0.1);
-    border-color: rgba(147, 51, 234, 0.3);
-    color: #c084fc;
-}
-
-.badge-scenario:hover {
-    background: rgba(147, 51, 234, 0.2);
-    border-color: #9333ea;
-}
-
-.empty-state {
-    text-align: center;
-    padding: 4rem 2rem;
-    color: var(--text-muted);
-    font-size: 1.125rem;
-}
-
-.cta-section {
-    padding: 40px 0 120px;
-}
-
-@media (max-width: 768px) {
-    .page-title-modern {
-        font-size: 2rem;
-    }
-    
-    .page-subtitle-modern {
-        font-size: 1rem;
-    }
-    
-    .filters-container {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    
-    .search-filter,
-    .filter-group {
-        min-width: 100%;
-    }
-    
-    .tools-grid-modern {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-    }
-    
-    .tool-card-modern {
-        padding: 1.5rem;
-    }
-    
-    .tool-sections {
-        grid-template-columns: 1fr;
-    }
-    
-    .container {
-        padding: 0 1.5rem;
-    }
-}
-</style>
-
-<script nonce="{{ csp_nonce }}">
-document.addEventListener('DOMContentLoaded', function() {
-    const searchInput = document.getElementById('searchInput');
-    const typeFilter = document.getElementById('typeFilter');
-    const ruleFilter = document.getElementById('ruleFilter');
-    const scenarioFilter = document.getElementById('scenarioFilter');
-    const resetButton = document.getElementById('resetFilters');
-    const toolCards = document.querySelectorAll('.tool-card-modern');
-    const resultsCount = document.getElementById('resultsCount');
-    const noResults = document.getElementById('noResults');
-    const toolsGrid = document.getElementById('toolsGrid');
-    
-    function filterTools() {
-        const searchTerm = searchInput.value.toLowerCase();
-        const selectedType = typeFilter.value;
-        const selectedRule = ruleFilter.value;
-        const selectedScenario = scenarioFilter.value;
-        
-        let visibleCount = 0;
-        
-        toolCards.forEach(card => {
-            const name = card.dataset.name || '';
-            const description = card.dataset.description || '';
-            const type = card.dataset.type || '';
-            const rules = card.dataset.rules || '';
-            const scenarios = card.dataset.scenarios || '';
-            
-            let show = true;
-            
-            if (searchTerm && !name.includes(searchTerm) && !description.includes(searchTerm)) {
-                show = false;
-            }
-            
-            if (selectedType && type !== selectedType) {
-                show = false;
-            }
-            
-            if (selectedRule) {
-                const ruleIds = rules.split(',').map(r => r.trim());
-                if (!ruleIds.includes(selectedRule)) {
-                    show = false;
-                }
-            }
-            
-            if (selectedScenario) {
-                const scenarioIds = scenarios.split(',').map(s => s.trim());
-                if (!scenarioIds.includes(selectedScenario)) {
-                    show = false;
-                }
-            }
-            
-            if (show) {
-                card.style.display = 'block';
-                visibleCount++;
-            } else {
-                card.style.display = 'none';
-            }
-        });
-        
-        if (visibleCount === 0) {
-            toolsGrid.style.display = 'none';
-            noResults.style.display = 'block';
-            resultsCount.textContent = '';
-        } else {
-            toolsGrid.style.display = 'grid';
-            noResults.style.display = 'none';
-            resultsCount.textContent = `${visibleCount} outil${visibleCount > 1 ? 's' : ''} trouvé${visibleCount > 1 ? 's' : ''}`;
-        }
-    }
-    
-    function resetFilters() {
-        searchInput.value = '';
-        typeFilter.value = '';
-        ruleFilter.value = '';
-        scenarioFilter.value = '';
-        filterTools();
-    }
-    
-    searchInput.addEventListener('input', filterTools);
-    typeFilter.addEventListener('change', filterTools);
-    ruleFilter.addEventListener('change', filterTools);
-    scenarioFilter.addEventListener('change', filterTools);
-    resetButton.addEventListener('click', resetFilters);
-    
-    filterTools();
-});
-</script>
+<link href="{{ url_for('static', filename='css/tools.css') }}" rel="stylesheet"/>
+<script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/tools.js') }}"></script>
 {% endblock %}

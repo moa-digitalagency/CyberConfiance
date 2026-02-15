@@ -5,7 +5,6 @@
  * Fait par : Aisance KALONJI, www.aisancekalonji.com
  * Auditer par : La CyberConfiance, www.cyberconfiance.com
 -->
-
 <!--
   CyberConfiance
   By MOA Digital Agency LLC
@@ -19,561 +18,404 @@
 
 {% block content %}
 <section class="page-header-modern">
-    <div class="container">
-        <div class="header-content-centered">
-            <h1 class="page-title-modern">Services de Cybersécurité</h1>
-            <p class="page-subtitle-modern">Demandez une consultation en cybersécurité ou une investigation OSINT professionnelle</p>
-        </div>
-    </div>
+<div class="container">
+<div class="header-content-centered">
+<h1 class="page-title-modern">Services de Cybersécurité</h1>
+<p class="page-subtitle-modern">Demandez une consultation en cybersécurité ou une investigation OSINT professionnelle</p>
+</div>
+</div>
 </section>
-
 <section class="section">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-10">
-                <!-- Service Tabs -->
-                <div class="service-tabs" style="margin-bottom: 2rem;">
-                    <div class="tabs-container" style="display: flex; gap: 1rem; background: rgba(255, 255, 255, 0.03); padding: 8px; border-radius: 12px; backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.08);">
-                        <button class="tab-button active" data-tab="consultation" style="flex: 1; padding: 16px 24px; border: none; background: rgba(59, 130, 246, 0.15); color: var(--text-primary); font-weight: 600; font-size: 1.05rem; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 10px; border: 1px solid rgba(59, 130, 246, 0.3);">
-                            <i class="bi bi-shield-check"></i> Cyberconsultation
+<div class="container">
+<div class="row justify-content-center">
+<div class="col-lg-10">
+<!-- Service Tabs -->
+<div class="service-tabs" style="margin-bottom: 2rem;">
+<div class="tabs-container" style="display: flex; gap: 1rem; background: rgba(255, 255, 255, 0.03); padding: 8px; border-radius: 12px; backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.08);">
+<button class="tab-button active" data-tab="consultation" style="flex: 1; padding: 16px 24px; border: none; background: rgba(59, 130, 246, 0.15); color: var(--text-primary); font-weight: 600; font-size: 1.05rem; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 10px; border: 1px solid rgba(59, 130, 246, 0.3);">
+<i class="bi bi-shield-check"></i> Cyberconsultation
                         </button>
-                        <button class="tab-button" data-tab="osint" style="flex: 1; padding: 16px 24px; border: none; background: transparent; color: var(--text-secondary); font-weight: 600; font-size: 1.05rem; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 10px; border: 1px solid transparent;">
-                            <i class="bi bi-search"></i> Investigation OSINT
+<button class="tab-button" data-tab="osint" style="flex: 1; padding: 16px 24px; border: none; background: transparent; color: var(--text-secondary); font-weight: 600; font-size: 1.05rem; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 10px; border: 1px solid transparent;">
+<i class="bi bi-search"></i> Investigation OSINT
                         </button>
-                    </div>
-                </div>
-
-                <!-- Consultation Tab Content -->
-                <div id="consultation-content" class="tab-content active">
-                    <div class="glass-card-enhanced" style="padding: 3rem;">
-                        <div style="text-align: center; padding: 2rem 1rem 3rem;">
-                            <i class="bi bi-shield-check" style="font-size: 4rem; color: var(--accent-blue); margin-bottom: 1.5rem; display: block;"></i>
-                            <h2 style="font-size: 2rem; margin-bottom: 1rem; color: var(--text-primary);">Consultation en Cybersécurité</h2>
-                            <p style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 2.5rem; max-width: 700px; margin-left: auto; margin-right: auto;">
+</div>
+</div>
+<!-- Consultation Tab Content -->
+<div class="tab-content active" id="consultation-content">
+<div class="glass-card-enhanced" style="padding: 3rem;">
+<div style="text-align: center; padding: 2rem 1rem 3rem;">
+<i class="bi bi-shield-check" style="font-size: 4rem; color: var(--accent-blue); margin-bottom: 1.5rem; display: block;"></i>
+<h2 style="font-size: 2rem; margin-bottom: 1rem; color: var(--text-primary);">Consultation en Cybersécurité</h2>
+<p style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 2.5rem; max-width: 700px; margin-left: auto; margin-right: auto;">
                                 Demandez une consultation professionnelle pour sécuriser votre infrastructure et protéger vos données.
                             </p>
-                        </div>
-                        
-                        <form method="POST" action="{{ url_for('request_forms.cyberconsultation') }}" enctype="multipart/form-data">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            
-                            <!-- Privacy Disclaimer -->
-                            <div style="padding: 15px; background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%); border-left: 3px solid #3b82f6; border-radius: 8px; margin-bottom: 2rem;">
-                                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2.5">
-                                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                                        <circle cx="12" cy="12" r="3"/>
-                                    </svg>
-                                    <h4 style="color: #3b82f6; font-size: 0.95rem; font-weight: 700; margin: 0;">🔒 Vos données sont protégées</h4>
-                                </div>
-                                <p style="margin: 0; color: #94a3b8; font-size: 0.875rem; line-height: 1.5;">
+</div>
+<form action="{{ url_for('request_forms.cyberconsultation') }}" enctype="multipart/form-data" method="POST">
+<input name="csrf_token" type="hidden" value="{{ csrf_token() }}"/>
+<!-- Privacy Disclaimer -->
+<div style="padding: 15px; background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%); border-left: 3px solid #3b82f6; border-radius: 8px; margin-bottom: 2rem;">
+<div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+<svg fill="none" height="20" stroke="#3b82f6" stroke-width="2.5" viewbox="0 0 24 24" width="20">
+<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+<circle cx="12" cy="12" r="3"></circle>
+</svg>
+<h4 style="color: #3b82f6; font-size: 0.95rem; font-weight: 700; margin: 0;">🔒 Vos données sont protégées</h4>
+</div>
+<p style="margin: 0; color: #94a3b8; font-size: 0.875rem; line-height: 1.5;">
                                     Aucun marketing ni tracking. Stockage chiffré et anonymisé. Vos informations restent confidentielles.
                                 </p>
-                            </div>
-                            
-                            <!-- Anonymous Toggle -->
-                            <div class="form-section" style="margin-bottom: 2.5rem;">
-                                <div class="anonymous-toggle" style="display: flex; align-items: center; gap: 15px; padding: 20px; background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 12px; backdrop-filter: blur(10px);">
-                                    <input type="checkbox" id="is_anonymous_cyber" name="is_anonymous" style="width: 24px; height: 24px; cursor: pointer; accent-color: var(--accent-blue);">
-                                    <label for="is_anonymous_cyber" style="margin: 0; cursor: pointer; font-weight: 600; font-size: 1.05rem; color: var(--text-primary);">
-                                        <i class="bi bi-incognito" style="margin-right: 5px;"></i> Soumettre de manière anonyme
+</div>
+<!-- Anonymous Toggle -->
+<div class="form-section" style="margin-bottom: 2.5rem;">
+<div class="anonymous-toggle" style="display: flex; align-items: center; gap: 15px; padding: 20px; background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 12px; backdrop-filter: blur(10px);">
+<input id="is_anonymous_cyber" name="is_anonymous" style="width: 24px; height: 24px; cursor: pointer; accent-color: var(--accent-blue);" type="checkbox"/>
+<label for="is_anonymous_cyber" style="margin: 0; cursor: pointer; font-weight: 600; font-size: 1.05rem; color: var(--text-primary);">
+<i class="bi bi-incognito" style="margin-right: 5px;"></i> Soumettre de manière anonyme
                                     </label>
-                                </div>
-                            </div>
-
-                            <!-- Contact Information -->
-                            <div id="contact-section-cyber" class="form-section" style="margin-bottom: 2.5rem;">
-                                <h3 class="section-heading" style="font-size: 1.4rem; margin-bottom: 1.5rem; color: var(--accent-blue); display: flex; align-items: center; gap: 10px;">
-                                    <i class="bi bi-person-circle"></i> Informations de contact
+</div>
+</div>
+<!-- Contact Information -->
+<div class="form-section" id="contact-section-cyber" style="margin-bottom: 2.5rem;">
+<h3 class="section-heading" style="font-size: 1.4rem; margin-bottom: 1.5rem; color: var(--accent-blue); display: flex; align-items: center; gap: 10px;">
+<i class="bi bi-person-circle"></i> Informations de contact
                                 </h3>
-                                
-                                <div class="row" style="gap: 1.5rem 0;">
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label for="name_cyber" class="form-label">Nom complet <span style="color: #ef4444;">*</span></label>
-                                            <input type="text" id="name_cyber" name="name" class="form-input" placeholder="Jean Dupont" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem;">
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label for="email_cyber" class="form-label">Adresse email <span style="color: #ef4444;">*</span></label>
-                                            <input type="email" id="email_cyber" name="email" class="form-input" placeholder="jean.dupont@example.com" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem;">
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <label for="phone_cyber" class="form-label">Numéro de téléphone (Optionnel)</label>
-                                            <input type="tel" id="phone_cyber" name="phone" class="form-input" placeholder="+225 XX XX XX XX XX" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem;">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Consultation Details -->
-                            <div class="form-section" style="margin-bottom: 2.5rem;">
-                                <h3 class="section-heading" style="font-size: 1.4rem; margin-bottom: 1.5rem; color: var(--accent-blue); display: flex; align-items: center; gap: 10px;">
-                                    <i class="bi bi-file-text"></i> Détails de la consultation
+<div class="row" style="gap: 1.5rem 0;">
+<div class="col-md-6">
+<div class="form-group">
+<label class="form-label" for="name_cyber">Nom complet <span style="color: #ef4444;">*</span></label>
+<input class="form-input" id="name_cyber" name="name" placeholder="Jean Dupont" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem;" type="text"/>
+</div>
+</div>
+<div class="col-md-6">
+<div class="form-group">
+<label class="form-label" for="email_cyber">Adresse email <span style="color: #ef4444;">*</span></label>
+<input class="form-input" id="email_cyber" name="email" placeholder="jean.dupont@example.com" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem;" type="email"/>
+</div>
+</div>
+<div class="col-md-12">
+<div class="form-group">
+<label class="form-label" for="phone_cyber">Numéro de téléphone (Optionnel)</label>
+<input class="form-input" id="phone_cyber" name="phone" placeholder="+225 XX XX XX XX XX" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem;" type="tel"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Consultation Details -->
+<div class="form-section" style="margin-bottom: 2.5rem;">
+<h3 class="section-heading" style="font-size: 1.4rem; margin-bottom: 1.5rem; color: var(--accent-blue); display: flex; align-items: center; gap: 10px;">
+<i class="bi bi-file-text"></i> Détails de la consultation
                                 </h3>
-
-                                <div class="form-group" style="margin-bottom: 1.5rem;">
-                                    <label for="consultation_type" class="form-label">Type de consultation <span style="color: #ef4444;">*</span></label>
-                                    <select id="consultation_type" name="consultation_type" required class="form-input" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; cursor: pointer;">
-                                        <option value="">-- Sélectionnez un type --</option>
-                                        <optgroup label="Évaluation & Audit">
-                                            <option value="audit_securite">Audit de sécurité informatique complet</option>
-                                            <option value="evaluation_risques">Évaluation des risques et vulnérabilités</option>
-                                            <option value="test_intrusion">Test d'intrusion (Pentest)</option>
-                                            <option value="audit_code">Audit de code et revue de sécurité</option>
-                                        </optgroup>
-                                        <optgroup label="Protection & Conformité">
-                                            <option value="protection_donnees">Protection des données (RGPD/Compliance)</option>
-                                            <option value="mise_conformite">Mise en conformité réglementaire</option>
-                                            <option value="dlp">Prévention de perte de données (DLP)</option>
-                                        </optgroup>
-                                        <optgroup label="Infrastructure & Défense">
-                                            <option value="securisation_infra">Sécurisation d'infrastructure (Cloud/On-premise)</option>
-                                            <option value="soc">Mise en place d'un SOC (Security Operations Center)</option>
-                                            <option value="siem">Déploiement SIEM et monitoring de sécurité</option>
-                                            <option value="pare_feu">Configuration pare-feu et segmentation réseau</option>
-                                        </optgroup>
-                                        <optgroup label="Réponse & Gestion de crise">
-                                            <option value="incident_response">Réponse à incident de sécurité actif</option>
-                                            <option value="investigation_forensic">Investigation forensique et analyse post-incident</option>
-                                            <option value="plan_continuite">Plan de continuité et reprise d'activité (PCA/PRA)</option>
-                                        </optgroup>
-                                        <optgroup label="Formation & Sensibilisation">
-                                            <option value="formation">Formation en cybersécurité (équipes techniques)</option>
-                                            <option value="sensibilisation">Sensibilisation des employés</option>
-                                            <option value="phishing_simulation">Simulation de phishing et tests de vigilance</option>
-                                        </optgroup>
-                                        <optgroup label="Stratégie & Gouvernance">
-                                            <option value="conseil_strategique">Conseil stratégique en cybersécurité</option>
-                                            <option value="politique_securite">Élaboration de politiques de sécurité</option>
-                                            <option value="gestion_identites">Gestion des identités et des accès (IAM)</option>
-                                        </optgroup>
-                                        <optgroup label="Autre">
-                                            <option value="autre">Autre demande spécifique</option>
-                                        </optgroup>
-                                    </select>
-                                </div>
-
-                                <div class="row" style="gap: 1.5rem 0; margin-bottom: 1.5rem;">
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label for="organization_size" class="form-label">Taille de l'organisation</label>
-                                            <select id="organization_size" name="organization_size" class="form-input" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; cursor: pointer;">
-                                                <option value="">-- Sélectionnez --</option>
-                                                <option value="particulier">Particulier</option>
-                                                <option value="1-10">1-10 employés</option>
-                                                <option value="11-50">11-50 employés</option>
-                                                <option value="51-200">51-200 employés</option>
-                                                <option value="201-500">201-500 employés</option>
-                                                <option value="500+">Plus de 500 employés</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label for="business_sector" class="form-label">Secteur d'activité</label>
-                                            <select id="business_sector" name="business_sector" class="form-input" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; cursor: pointer;">
-                                                <option value="">-- Sélectionnez --</option>
-                                                <option value="finance">Finance / Banque</option>
-                                                <option value="sante">Santé</option>
-                                                <option value="education">Éducation</option>
-                                                <option value="gouvernement">Gouvernement / Administration</option>
-                                                <option value="ecommerce">E-commerce / Retail</option>
-                                                <option value="telecom">Télécommunications</option>
-                                                <option value="tech">Technologies / IT</option>
-                                                <option value="industrie">Industrie</option>
-                                                <option value="autre">Autre</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="form-group" style="margin-bottom: 1.5rem;">
-                                    <label for="consultation_priority" class="form-label">Niveau de priorité</label>
-                                    <select id="consultation_priority" name="priority" class="form-input" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; cursor: pointer;">
-                                        <option value="normal">Normale - Planification standard</option>
-                                        <option value="urgent">Urgente - Intervention sous 48h</option>
-                                        <option value="critique">Critique - Intervention immédiate requise</option>
-                                    </select>
-                                </div>
-
-                                <div class="form-group" style="margin-bottom: 1.5rem;">
-                                    <label for="description_cyber" class="form-label">Description détaillée de votre besoin <span style="color: #ef4444;">*</span></label>
-                                    <textarea id="description_cyber" name="description" required rows="7" class="form-input" placeholder="Décrivez votre contexte actuel, vos objectifs de sécurité, les systèmes et infrastructures concernés, les problématiques rencontrées et vos attentes précises pour cette consultation..." style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; resize: vertical;"></textarea>
-                                    <small style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 8px; display: flex; align-items: center; gap: 5px;">
-                                        <i class="bi bi-shield-check"></i> Le contenu textuel est scanné pour détecter tout contenu malveillant
+<div class="form-group" style="margin-bottom: 1.5rem;">
+<label class="form-label" for="consultation_type">Type de consultation <span style="color: #ef4444;">*</span></label>
+<select class="form-input" id="consultation_type" name="consultation_type" required="" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; cursor: pointer;">
+<option value="">-- Sélectionnez un type --</option>
+<optgroup label="Évaluation &amp; Audit">
+<option value="audit_securite">Audit de sécurité informatique complet</option>
+<option value="evaluation_risques">Évaluation des risques et vulnérabilités</option>
+<option value="test_intrusion">Test d'intrusion (Pentest)</option>
+<option value="audit_code">Audit de code et revue de sécurité</option>
+</optgroup>
+<optgroup label="Protection &amp; Conformité">
+<option value="protection_donnees">Protection des données (RGPD/Compliance)</option>
+<option value="mise_conformite">Mise en conformité réglementaire</option>
+<option value="dlp">Prévention de perte de données (DLP)</option>
+</optgroup>
+<optgroup label="Infrastructure &amp; Défense">
+<option value="securisation_infra">Sécurisation d'infrastructure (Cloud/On-premise)</option>
+<option value="soc">Mise en place d'un SOC (Security Operations Center)</option>
+<option value="siem">Déploiement SIEM et monitoring de sécurité</option>
+<option value="pare_feu">Configuration pare-feu et segmentation réseau</option>
+</optgroup>
+<optgroup label="Réponse &amp; Gestion de crise">
+<option value="incident_response">Réponse à incident de sécurité actif</option>
+<option value="investigation_forensic">Investigation forensique et analyse post-incident</option>
+<option value="plan_continuite">Plan de continuité et reprise d'activité (PCA/PRA)</option>
+</optgroup>
+<optgroup label="Formation &amp; Sensibilisation">
+<option value="formation">Formation en cybersécurité (équipes techniques)</option>
+<option value="sensibilisation">Sensibilisation des employés</option>
+<option value="phishing_simulation">Simulation de phishing et tests de vigilance</option>
+</optgroup>
+<optgroup label="Stratégie &amp; Gouvernance">
+<option value="conseil_strategique">Conseil stratégique en cybersécurité</option>
+<option value="politique_securite">Élaboration de politiques de sécurité</option>
+<option value="gestion_identites">Gestion des identités et des accès (IAM)</option>
+</optgroup>
+<optgroup label="Autre">
+<option value="autre">Autre demande spécifique</option>
+</optgroup>
+</select>
+</div>
+<div class="row" style="gap: 1.5rem 0; margin-bottom: 1.5rem;">
+<div class="col-md-6">
+<div class="form-group">
+<label class="form-label" for="organization_size">Taille de l'organisation</label>
+<select class="form-input" id="organization_size" name="organization_size" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; cursor: pointer;">
+<option value="">-- Sélectionnez --</option>
+<option value="particulier">Particulier</option>
+<option value="1-10">1-10 employés</option>
+<option value="11-50">11-50 employés</option>
+<option value="51-200">51-200 employés</option>
+<option value="201-500">201-500 employés</option>
+<option value="500+">Plus de 500 employés</option>
+</select>
+</div>
+</div>
+<div class="col-md-6">
+<div class="form-group">
+<label class="form-label" for="business_sector">Secteur d'activité</label>
+<select class="form-input" id="business_sector" name="business_sector" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; cursor: pointer;">
+<option value="">-- Sélectionnez --</option>
+<option value="finance">Finance / Banque</option>
+<option value="sante">Santé</option>
+<option value="education">Éducation</option>
+<option value="gouvernement">Gouvernement / Administration</option>
+<option value="ecommerce">E-commerce / Retail</option>
+<option value="telecom">Télécommunications</option>
+<option value="tech">Technologies / IT</option>
+<option value="industrie">Industrie</option>
+<option value="autre">Autre</option>
+</select>
+</div>
+</div>
+</div>
+<div class="form-group" style="margin-bottom: 1.5rem;">
+<label class="form-label" for="consultation_priority">Niveau de priorité</label>
+<select class="form-input" id="consultation_priority" name="priority" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; cursor: pointer;">
+<option value="normal">Normale - Planification standard</option>
+<option value="urgent">Urgente - Intervention sous 48h</option>
+<option value="critique">Critique - Intervention immédiate requise</option>
+</select>
+</div>
+<div class="form-group" style="margin-bottom: 1.5rem;">
+<label class="form-label" for="description_cyber">Description détaillée de votre besoin <span style="color: #ef4444;">*</span></label>
+<textarea class="form-input" id="description_cyber" name="description" placeholder="Décrivez votre contexte actuel, vos objectifs de sécurité, les systèmes et infrastructures concernés, les problématiques rencontrées et vos attentes précises pour cette consultation..." required="" rows="7" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; resize: vertical;"></textarea>
+<small style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 8px; display: flex; align-items: center; gap: 5px;">
+<i class="bi bi-shield-check"></i> Le contenu textuel est scanné pour détecter tout contenu malveillant
                                     </small>
-                                </div>
-
-                                <div class="form-group" style="margin-bottom: 1.5rem;">
-                                    <label for="urls_cyber" class="form-label">URLs ou ressources à analyser (une par ligne)</label>
-                                    <textarea id="urls_cyber" name="urls" rows="4" class="form-input" placeholder="https://example.com&#10;https://another-example.com" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; resize: vertical;"></textarea>
-                                    <small style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 8px; display: flex; align-items: center; gap: 5px;">
-                                        <i class="bi bi-shield-check"></i> Les URLs sont analysées pour détecter les menaces
+</div>
+<div class="form-group" style="margin-bottom: 1.5rem;">
+<label class="form-label" for="urls_cyber">URLs ou ressources à analyser (une par ligne)</label>
+<textarea class="form-input" id="urls_cyber" name="urls" placeholder="https://example.com
+https://another-example.com" rows="4" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; resize: vertical;"></textarea>
+<small style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 8px; display: flex; align-items: center; gap: 5px;">
+<i class="bi bi-shield-check"></i> Les URLs sont analysées pour détecter les menaces
                                     </small>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="file_cyber" class="form-label">Joindre un fichier (Optionnel)</label>
-                                    <input type="file" id="file_cyber" name="file" class="form-input" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem;">
-                                    <small style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 8px; display: flex; align-items: center; gap: 5px;">
-                                        <i class="bi bi-shield-check"></i> Les fichiers sont scannés pour détecter les malwares
+</div>
+<div class="form-group">
+<label class="form-label" for="file_cyber">Joindre un fichier (Optionnel)</label>
+<input class="form-input" id="file_cyber" name="file" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem;" type="file"/>
+<small style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 8px; display: flex; align-items: center; gap: 5px;">
+<i class="bi bi-shield-check"></i> Les fichiers sont scannés pour détecter les malwares
                                     </small>
-                                </div>
-                            </div>
-
-                            <!-- Security Notice -->
-                            <div class="security-notice" style="padding: 20px; background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 12px; margin-bottom: 2rem; backdrop-filter: blur(10px);">
-                                <p style="margin: 0; color: #ef4444; font-size: 1rem; font-weight: 600; display: flex; align-items: flex-start; gap: 10px;">
-                                    <i class="bi bi-exclamation-triangle-fill" style="font-size: 1.2rem; flex-shrink: 0; margin-top: 2px;"></i>
-                                    <span>Avis de sécurité : Toute tentative de soumettre du contenu malveillant (fichiers, liens ou injection de code) sera détectée et enregistrée comme activité illégale.</span>
-                                </p>
-                            </div>
-
-                            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 18px; font-size: 1.15rem; font-weight: 600; border-radius: 12px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;">
-                                <i class="bi bi-send-fill"></i> Soumettre la demande
+</div>
+</div>
+<!-- Security Notice -->
+<div class="security-notice" style="padding: 20px; background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 12px; margin-bottom: 2rem; backdrop-filter: blur(10px);">
+<p style="margin: 0; color: #ef4444; font-size: 1rem; font-weight: 600; display: flex; align-items: flex-start; gap: 10px;">
+<i class="bi bi-exclamation-triangle-fill" style="font-size: 1.2rem; flex-shrink: 0; margin-top: 2px;"></i>
+<span>Avis de sécurité : Toute tentative de soumettre du contenu malveillant (fichiers, liens ou injection de code) sera détectée et enregistrée comme activité illégale.</span>
+</p>
+</div>
+<button class="btn btn-primary" style="width: 100%; padding: 18px; font-size: 1.15rem; font-weight: 600; border-radius: 12px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;" type="submit">
+<i class="bi bi-send-fill"></i> Soumettre la demande
                             </button>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- OSINT Tab Content (Hidden by default) -->
-                <div id="osint-content" class="tab-content" style="display: none;">
-                    <div class="glass-card-enhanced" style="padding: 3rem;">
-                        <div style="text-align: center; padding: 2rem 1rem 3rem;">
-                            <i class="bi bi-search" style="font-size: 4rem; color: var(--accent-blue); margin-bottom: 1.5rem; display: block;"></i>
-                            <h2 style="font-size: 2rem; margin-bottom: 1rem; color: var(--text-primary);">Investigation OSINT</h2>
-                            <p style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 2.5rem; max-width: 700px; margin-left: auto; margin-right: auto;">
+</form>
+</div>
+</div>
+<!-- OSINT Tab Content (Hidden by default) -->
+<div class="tab-content" id="osint-content" style="display: none;">
+<div class="glass-card-enhanced" style="padding: 3rem;">
+<div style="text-align: center; padding: 2rem 1rem 3rem;">
+<i class="bi bi-search" style="font-size: 4rem; color: var(--accent-blue); margin-bottom: 1.5rem; display: block;"></i>
+<h2 style="font-size: 2rem; margin-bottom: 1rem; color: var(--text-primary);">Investigation OSINT</h2>
+<p style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 2.5rem; max-width: 700px; margin-left: auto; margin-right: auto;">
                                 Demandez une investigation professionnelle en sources ouvertes (OSINT) pour analyser des données publiques et découvrir des informations critiques.
                             </p>
-                        </div>
-                        
-                        <form method="POST" action="{{ url_for('request_forms.osint_investigation') }}" enctype="multipart/form-data">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            
-                            <!-- Privacy Disclaimer -->
-                            <div style="padding: 15px; background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%); border-left: 3px solid #3b82f6; border-radius: 8px; margin-bottom: 2rem;">
-                                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2.5">
-                                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                                        <circle cx="12" cy="12" r="3"/>
-                                    </svg>
-                                    <h4 style="color: #3b82f6; font-size: 0.95rem; font-weight: 700; margin: 0;">🔒 Vos données sont protégées</h4>
-                                </div>
-                                <p style="margin: 0; color: #94a3b8; font-size: 0.875rem; line-height: 1.5;">
+</div>
+<form action="{{ url_for('request_forms.osint_investigation') }}" enctype="multipart/form-data" method="POST">
+<input name="csrf_token" type="hidden" value="{{ csrf_token() }}"/>
+<!-- Privacy Disclaimer -->
+<div style="padding: 15px; background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%); border-left: 3px solid #3b82f6; border-radius: 8px; margin-bottom: 2rem;">
+<div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+<svg fill="none" height="20" stroke="#3b82f6" stroke-width="2.5" viewbox="0 0 24 24" width="20">
+<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+<circle cx="12" cy="12" r="3"></circle>
+</svg>
+<h4 style="color: #3b82f6; font-size: 0.95rem; font-weight: 700; margin: 0;">🔒 Vos données sont protégées</h4>
+</div>
+<p style="margin: 0; color: #94a3b8; font-size: 0.875rem; line-height: 1.5;">
                                     Aucun marketing ni tracking. Stockage chiffré et anonymisé. Vos informations restent confidentielles.
                                 </p>
-                            </div>
-                            
-                            <!-- Anonymous Toggle -->
-                            <div class="form-section" style="margin-bottom: 2.5rem;">
-                                <div class="anonymous-toggle" style="display: flex; align-items: center; gap: 15px; padding: 20px; background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 12px; backdrop-filter: blur(10px);">
-                                    <input type="checkbox" id="is_anonymous_osint" name="is_anonymous" style="width: 24px; height: 24px; cursor: pointer; accent-color: var(--accent-blue);">
-                                    <label for="is_anonymous_osint" style="margin: 0; cursor: pointer; font-weight: 600; font-size: 1.05rem; color: var(--text-primary);">
-                                        <i class="bi bi-incognito" style="margin-right: 5px;"></i> Soumettre de manière anonyme
+</div>
+<!-- Anonymous Toggle -->
+<div class="form-section" style="margin-bottom: 2.5rem;">
+<div class="anonymous-toggle" style="display: flex; align-items: center; gap: 15px; padding: 20px; background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 12px; backdrop-filter: blur(10px);">
+<input id="is_anonymous_osint" name="is_anonymous" style="width: 24px; height: 24px; cursor: pointer; accent-color: var(--accent-blue);" type="checkbox"/>
+<label for="is_anonymous_osint" style="margin: 0; cursor: pointer; font-weight: 600; font-size: 1.05rem; color: var(--text-primary);">
+<i class="bi bi-incognito" style="margin-right: 5px;"></i> Soumettre de manière anonyme
                                     </label>
-                                </div>
-                            </div>
-
-                            <!-- Contact Information -->
-                            <div id="contact-section-osint" class="form-section" style="margin-bottom: 2.5rem;">
-                                <h3 class="section-heading" style="font-size: 1.4rem; margin-bottom: 1.5rem; color: var(--accent-blue); display: flex; align-items: center; gap: 10px;">
-                                    <i class="bi bi-person-circle"></i> Informations de contact
+</div>
+</div>
+<!-- Contact Information -->
+<div class="form-section" id="contact-section-osint" style="margin-bottom: 2.5rem;">
+<h3 class="section-heading" style="font-size: 1.4rem; margin-bottom: 1.5rem; color: var(--accent-blue); display: flex; align-items: center; gap: 10px;">
+<i class="bi bi-person-circle"></i> Informations de contact
                                 </h3>
-                                
-                                <div class="row" style="gap: 1.5rem 0;">
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label for="name_osint" class="form-label">Nom complet <span style="color: #ef4444;">*</span></label>
-                                            <input type="text" id="name_osint" name="name" class="form-input" placeholder="Jean Dupont" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem;">
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label for="email_osint" class="form-label">Adresse email <span style="color: #ef4444;">*</span></label>
-                                            <input type="email" id="email_osint" name="email" class="form-input" placeholder="jean.dupont@example.com" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem;">
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <label for="phone_osint" class="form-label">Numéro de téléphone (Optionnel)</label>
-                                            <input type="tel" id="phone_osint" name="phone" class="form-input" placeholder="+225 XX XX XX XX XX" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem;">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Investigation Details -->
-                            <div class="form-section" style="margin-bottom: 2.5rem;">
-                                <h3 class="section-heading" style="font-size: 1.4rem; margin-bottom: 1.5rem; color: var(--accent-blue); display: flex; align-items: center; gap: 10px;">
-                                    <i class="bi bi-file-text"></i> Détails de l'investigation
+<div class="row" style="gap: 1.5rem 0;">
+<div class="col-md-6">
+<div class="form-group">
+<label class="form-label" for="name_osint">Nom complet <span style="color: #ef4444;">*</span></label>
+<input class="form-input" id="name_osint" name="name" placeholder="Jean Dupont" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem;" type="text"/>
+</div>
+</div>
+<div class="col-md-6">
+<div class="form-group">
+<label class="form-label" for="email_osint">Adresse email <span style="color: #ef4444;">*</span></label>
+<input class="form-input" id="email_osint" name="email" placeholder="jean.dupont@example.com" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem;" type="email"/>
+</div>
+</div>
+<div class="col-md-12">
+<div class="form-group">
+<label class="form-label" for="phone_osint">Numéro de téléphone (Optionnel)</label>
+<input class="form-input" id="phone_osint" name="phone" placeholder="+225 XX XX XX XX XX" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem;" type="tel"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Investigation Details -->
+<div class="form-section" style="margin-bottom: 2.5rem;">
+<h3 class="section-heading" style="font-size: 1.4rem; margin-bottom: 1.5rem; color: var(--accent-blue); display: flex; align-items: center; gap: 10px;">
+<i class="bi bi-file-text"></i> Détails de l'investigation
                                 </h3>
-
-                                <div class="form-group" style="margin-bottom: 1.5rem;">
-                                    <label for="investigation_type" class="form-label">Type d'investigation OSINT <span style="color: #ef4444;">*</span></label>
-                                    <select id="investigation_type" name="investigation_type" required class="form-input" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; cursor: pointer;">
-                                        <option value="">-- Sélectionnez un type --</option>
-                                        <optgroup label="Identité & Personnes">
-                                            <option value="personne">Investigation approfondie sur une personne physique</option>
-                                            <option value="verification_identite">Vérification d'identité et background check</option>
-                                            <option value="localisation_personne">Localisation géographique d'une personne</option>
-                                            <option value="reseaux_contacts">Cartographie des réseaux et contacts</option>
-                                        </optgroup>
-                                        <optgroup label="Organisations & Entreprises">
-                                            <option value="organisation">Investigation sur une organisation/entreprise</option>
-                                            <option value="due_diligence">Due diligence et analyse de réputation</option>
-                                            <option value="concurrence">Analyse concurrentielle et veille stratégique</option>
-                                            <option value="fraude_entreprise">Détection de fraude d'entreprise</option>
-                                        </optgroup>
-                                        <optgroup label="Numérique & Réseaux sociaux">
-                                            <option value="compte_social">Investigation de compte sur réseaux sociaux</option>
-                                            <option value="empreinte_numerique">Analyse d'empreinte numérique complète</option>
-                                            <option value="fuite_donnees">Recherche de fuites de données</option>
-                                            <option value="deep_web">Investigation sur le deep web/dark web</option>
-                                        </optgroup>
-                                        <optgroup label="Infrastructure & Technique">
-                                            <option value="site_web">Analyse de site web/domaine et infrastructure</option>
-                                            <option value="adresse_ip">Recherche sur adresse IP et géolocalisation</option>
-                                            <option value="serveur_infrastructure">Analyse serveur et infrastructure réseau</option>
-                                            <option value="dns_whois">Analyse DNS, WHOIS et historique de domaine</option>
-                                        </optgroup>
-                                        <optgroup label="Communications">
-                                            <option value="adresse_email">Recherche sur adresse email et validité</option>
-                                            <option value="numero_telephone">Recherche sur numéro de téléphone</option>
-                                            <option value="metadata_analyse">Analyse de métadonnées de communication</option>
-                                        </optgroup>
-                                        <optgroup label="Crypto & Finance">
-                                            <option value="crypto">Investigation sur portefeuille et transactions crypto</option>
-                                            <option value="blockchain_analyse">Analyse de blockchain et traçage de fonds</option>
-                                            <option value="fraude_financiere">Détection de fraude financière</option>
-                                        </optgroup>
-                                        <optgroup label="Menaces & Sécurité">
-                                            <option value="menace_interne">Investigation de menace interne</option>
-                                            <option value="cyber_attaque">Analyse d'attaque cyber et attribution</option>
-                                            <option value="desinformation">Enquête sur campagne de désinformation</option>
-                                        </optgroup>
-                                        <optgroup label="Autre">
-                                            <option value="autre">Autre type d'investigation OSINT</option>
-                                        </optgroup>
-                                    </select>
-                                </div>
-
-                                <div class="form-group" style="margin-bottom: 1.5rem;">
-                                    <label for="investigation_context" class="form-label">Contexte de l'investigation</label>
-                                    <select id="investigation_context" name="context" class="form-input" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; cursor: pointer;">
-                                        <option value="">-- Sélectionnez un contexte --</option>
-                                        <option value="legal">Cadre légal/juridique</option>
-                                        <option value="security">Enquête de sécurité interne</option>
-                                        <option value="fraud">Suspicion de fraude</option>
-                                        <option value="threat">Analyse de menace potentielle</option>
-                                        <option value="compliance">Conformité/Due diligence</option>
-                                        <option value="competitive">Intelligence concurrentielle</option>
-                                        <option value="other">Autre contexte</option>
-                                    </select>
-                                </div>
-
-                                <div class="row" style="gap: 1.5rem 0; margin-bottom: 1.5rem;">
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label for="target_identifier" class="form-label">Identifiant principal de la cible</label>
-                                            <input type="text" id="target_identifier" name="target_identifier" class="form-input" placeholder="Ex: @username, nom complet, email, numéro..." style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem;">
-                                            <small style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 5px; display: block;">
+<div class="form-group" style="margin-bottom: 1.5rem;">
+<label class="form-label" for="investigation_type">Type d'investigation OSINT <span style="color: #ef4444;">*</span></label>
+<select class="form-input" id="investigation_type" name="investigation_type" required="" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; cursor: pointer;">
+<option value="">-- Sélectionnez un type --</option>
+<optgroup label="Identité &amp; Personnes">
+<option value="personne">Investigation approfondie sur une personne physique</option>
+<option value="verification_identite">Vérification d'identité et background check</option>
+<option value="localisation_personne">Localisation géographique d'une personne</option>
+<option value="reseaux_contacts">Cartographie des réseaux et contacts</option>
+</optgroup>
+<optgroup label="Organisations &amp; Entreprises">
+<option value="organisation">Investigation sur une organisation/entreprise</option>
+<option value="due_diligence">Due diligence et analyse de réputation</option>
+<option value="concurrence">Analyse concurrentielle et veille stratégique</option>
+<option value="fraude_entreprise">Détection de fraude d'entreprise</option>
+</optgroup>
+<optgroup label="Numérique &amp; Réseaux sociaux">
+<option value="compte_social">Investigation de compte sur réseaux sociaux</option>
+<option value="empreinte_numerique">Analyse d'empreinte numérique complète</option>
+<option value="fuite_donnees">Recherche de fuites de données</option>
+<option value="deep_web">Investigation sur le deep web/dark web</option>
+</optgroup>
+<optgroup label="Infrastructure &amp; Technique">
+<option value="site_web">Analyse de site web/domaine et infrastructure</option>
+<option value="adresse_ip">Recherche sur adresse IP et géolocalisation</option>
+<option value="serveur_infrastructure">Analyse serveur et infrastructure réseau</option>
+<option value="dns_whois">Analyse DNS, WHOIS et historique de domaine</option>
+</optgroup>
+<optgroup label="Communications">
+<option value="adresse_email">Recherche sur adresse email et validité</option>
+<option value="numero_telephone">Recherche sur numéro de téléphone</option>
+<option value="metadata_analyse">Analyse de métadonnées de communication</option>
+</optgroup>
+<optgroup label="Crypto &amp; Finance">
+<option value="crypto">Investigation sur portefeuille et transactions crypto</option>
+<option value="blockchain_analyse">Analyse de blockchain et traçage de fonds</option>
+<option value="fraude_financiere">Détection de fraude financière</option>
+</optgroup>
+<optgroup label="Menaces &amp; Sécurité">
+<option value="menace_interne">Investigation de menace interne</option>
+<option value="cyber_attaque">Analyse d'attaque cyber et attribution</option>
+<option value="desinformation">Enquête sur campagne de désinformation</option>
+</optgroup>
+<optgroup label="Autre">
+<option value="autre">Autre type d'investigation OSINT</option>
+</optgroup>
+</select>
+</div>
+<div class="form-group" style="margin-bottom: 1.5rem;">
+<label class="form-label" for="investigation_context">Contexte de l'investigation</label>
+<select class="form-input" id="investigation_context" name="context" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; cursor: pointer;">
+<option value="">-- Sélectionnez un contexte --</option>
+<option value="legal">Cadre légal/juridique</option>
+<option value="security">Enquête de sécurité interne</option>
+<option value="fraud">Suspicion de fraude</option>
+<option value="threat">Analyse de menace potentielle</option>
+<option value="compliance">Conformité/Due diligence</option>
+<option value="competitive">Intelligence concurrentielle</option>
+<option value="other">Autre contexte</option>
+</select>
+</div>
+<div class="row" style="gap: 1.5rem 0; margin-bottom: 1.5rem;">
+<div class="col-md-6">
+<div class="form-group">
+<label class="form-label" for="target_identifier">Identifiant principal de la cible</label>
+<input class="form-input" id="target_identifier" name="target_identifier" placeholder="Ex: @username, nom complet, email, numéro..." style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem;" type="text"/>
+<small style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 5px; display: block;">
                                                 Nom d'utilisateur, email, numéro, adresse, ou tout identifiant unique
                                             </small>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label for="investigation_timeline" class="form-label">Délai souhaité</label>
-                                            <select id="investigation_timeline" name="timeline" class="form-input" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; cursor: pointer;">
-                                                <option value="1week">1 semaine</option>
-                                                <option value="2weeks">2 semaines</option>
-                                                <option value="1month">1 mois</option>
-                                                <option value="urgent">Urgent (sous 48h)</option>
-                                                <option value="flexible">Flexible</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="form-group" style="margin-bottom: 1.5rem;">
-                                    <label for="known_information" class="form-label">Sources et indices déjà disponibles</label>
-                                    <textarea id="known_information" name="known_information" rows="4" class="form-input" placeholder="Listez toutes les informations, sources ou indices en votre possession : profils réseaux sociaux, numéros, adresses, historique, connections, activités connues, etc." style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; resize: vertical;"></textarea>
-                                </div>
-
-                                <div class="form-group" style="margin-bottom: 1.5rem;">
-                                    <label for="description_osint" class="form-label">Objectif de l'investigation <span style="color: #ef4444;">*</span></label>
-                                    <textarea id="description_osint" name="description" required rows="6" class="form-input" placeholder="Décrivez précisément ce que vous cherchez à découvrir : contexte, objectifs, informations recherchées, raison de l'investigation..." style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; resize: vertical;"></textarea>
-                                    <small style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 8px; display: flex; align-items: center; gap: 5px;">
-                                        <i class="bi bi-shield-check"></i> Le contenu textuel est scanné pour détecter tout contenu malveillant
+</div>
+</div>
+<div class="col-md-6">
+<div class="form-group">
+<label class="form-label" for="investigation_timeline">Délai souhaité</label>
+<select class="form-input" id="investigation_timeline" name="timeline" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; cursor: pointer;">
+<option value="1week">1 semaine</option>
+<option value="2weeks">2 semaines</option>
+<option value="1month">1 mois</option>
+<option value="urgent">Urgent (sous 48h)</option>
+<option value="flexible">Flexible</option>
+</select>
+</div>
+</div>
+</div>
+<div class="form-group" style="margin-bottom: 1.5rem;">
+<label class="form-label" for="known_information">Sources et indices déjà disponibles</label>
+<textarea class="form-input" id="known_information" name="known_information" placeholder="Listez toutes les informations, sources ou indices en votre possession : profils réseaux sociaux, numéros, adresses, historique, connections, activités connues, etc." rows="4" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; resize: vertical;"></textarea>
+</div>
+<div class="form-group" style="margin-bottom: 1.5rem;">
+<label class="form-label" for="description_osint">Objectif de l'investigation <span style="color: #ef4444;">*</span></label>
+<textarea class="form-input" id="description_osint" name="description" placeholder="Décrivez précisément ce que vous cherchez à découvrir : contexte, objectifs, informations recherchées, raison de l'investigation..." required="" rows="6" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; resize: vertical;"></textarea>
+<small style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 8px; display: flex; align-items: center; gap: 5px;">
+<i class="bi bi-shield-check"></i> Le contenu textuel est scanné pour détecter tout contenu malveillant
                                     </small>
-                                </div>
-
-                                <div class="form-group" style="margin-bottom: 1.5rem;">
-                                    <label for="urls_osint" class="form-label">URLs ou sources à investiguer (une par ligne)</label>
-                                    <textarea id="urls_osint" name="urls" rows="4" class="form-input" placeholder="https://example.com&#10;https://another-example.com" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; resize: vertical;"></textarea>
-                                    <small style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 8px; display: flex; align-items: center; gap: 5px;">
-                                        <i class="bi bi-shield-check"></i> Les URLs sont analysées pour détecter les menaces
+</div>
+<div class="form-group" style="margin-bottom: 1.5rem;">
+<label class="form-label" for="urls_osint">URLs ou sources à investiguer (une par ligne)</label>
+<textarea class="form-input" id="urls_osint" name="urls" placeholder="https://example.com
+https://another-example.com" rows="4" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; resize: vertical;"></textarea>
+<small style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 8px; display: flex; align-items: center; gap: 5px;">
+<i class="bi bi-shield-check"></i> Les URLs sont analysées pour détecter les menaces
                                     </small>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="file_osint" class="form-label">Joindre un fichier (Optionnel)</label>
-                                    <input type="file" id="file_osint" name="file" class="form-input" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem;">
-                                    <small style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 8px; display: flex; align-items: center; gap: 5px;">
-                                        <i class="bi bi-shield-check"></i> Les fichiers sont scannés pour détecter les malwares
+</div>
+<div class="form-group">
+<label class="form-label" for="file_osint">Joindre un fichier (Optionnel)</label>
+<input class="form-input" id="file_osint" name="file" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem;" type="file"/>
+<small style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 8px; display: flex; align-items: center; gap: 5px;">
+<i class="bi bi-shield-check"></i> Les fichiers sont scannés pour détecter les malwares
                                     </small>
-                                </div>
-                            </div>
-
-                            <!-- Security Notice -->
-                            <div class="security-notice" style="padding: 20px; background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 12px; margin-bottom: 2rem; backdrop-filter: blur(10px);">
-                                <p style="margin: 0; color: #ef4444; font-size: 1rem; font-weight: 600; display: flex; align-items: flex-start; gap: 10px;">
-                                    <i class="bi bi-exclamation-triangle-fill" style="font-size: 1.2rem; flex-shrink: 0; margin-top: 2px;"></i>
-                                    <span>Avis de sécurité : Toute tentative de soumettre du contenu malveillant (fichiers, liens ou injection de code) sera détectée et enregistrée comme activité illégale.</span>
-                                </p>
-                            </div>
-
-                            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 18px; font-size: 1.15rem; font-weight: 600; border-radius: 12px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;">
-                                <i class="bi bi-send-fill"></i> Soumettre la demande
+</div>
+</div>
+<!-- Security Notice -->
+<div class="security-notice" style="padding: 20px; background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 12px; margin-bottom: 2rem; backdrop-filter: blur(10px);">
+<p style="margin: 0; color: #ef4444; font-size: 1rem; font-weight: 600; display: flex; align-items: flex-start; gap: 10px;">
+<i class="bi bi-exclamation-triangle-fill" style="font-size: 1.2rem; flex-shrink: 0; margin-top: 2px;"></i>
+<span>Avis de sécurité : Toute tentative de soumettre du contenu malveillant (fichiers, liens ou injection de code) sera détectée et enregistrée comme activité illégale.</span>
+</p>
+</div>
+<button class="btn btn-primary" style="width: 100%; padding: 18px; font-size: 1.15rem; font-weight: 600; border-radius: 12px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;" type="submit">
+<i class="bi bi-send-fill"></i> Soumettre la demande
                             </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+</form>
+</div>
+</div>
+</div>
+</div>
+</div>
 </section>
-
-<style>
-.tab-button:hover {
-    background: rgba(255, 255, 255, 0.05);
-}
-
-.tab-button.active {
-    background: rgba(59, 130, 246, 0.15) !important;
-    border-color: rgba(59, 130, 246, 0.3) !important;
-    color: var(--text-primary) !important;
-}
-
-.form-label {
-    display: block;
-    margin-bottom: 10px;
-    font-weight: 600;
-    font-size: 1rem;
-    color: var(--text-primary);
-}
-
-.form-input:focus {
-    outline: none;
-    border-color: rgba(59, 130, 246, 0.5);
-    background: rgba(255, 255, 255, 0.08);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.form-input::placeholder {
-    color: var(--text-muted);
-}
-
-.row {
-    display: flex;
-    flex-wrap: wrap;
-    margin: 0 -15px;
-}
-
-.col-md-6 {
-    flex: 0 0 50%;
-    max-width: 50%;
-    padding: 0 15px;
-}
-
-.col-md-12 {
-    flex: 0 0 100%;
-    max-width: 100%;
-    padding: 0 15px;
-}
-
-@media (max-width: 768px) {
-    .col-md-6 {
-        flex: 0 0 100%;
-        max-width: 100%;
-    }
-    
-    .tabs-container {
-        flex-direction: column;
-    }
-}
-</style>
-
-<script nonce="{{ csp_nonce }}">
-// Tab switching
-document.querySelectorAll('.tab-button').forEach(button => {
-    button.addEventListener('click', function() {
-        const tab = this.dataset.tab;
-        
-        // Update buttons
-        document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-        this.classList.add('active');
-        
-        // Update content
-        document.querySelectorAll('.tab-content').forEach(content => content.style.display = 'none');
-        document.getElementById(tab + '-content').style.display = 'block';
-    });
-});
-
-// Check URL hash on page load to open specific tab
-window.addEventListener('DOMContentLoaded', function() {
-    if (window.location.hash === '#osint-tab') {
-        const osintButton = document.querySelector('[data-tab="osint"]');
-        if (osintButton) {
-            osintButton.click();
-        }
-    }
-});
-
-// Anonymous toggle for Cyberconsultation
-document.getElementById('is_anonymous_cyber').addEventListener('change', function() {
-    const contactSection = document.getElementById('contact-section-cyber');
-    const inputs = contactSection.querySelectorAll('input');
-    
-    if (this.checked) {
-        contactSection.style.display = 'none';
-        inputs.forEach(input => {
-            input.required = false;
-            input.value = '';
-        });
-    } else {
-        contactSection.style.display = 'block';
-        document.getElementById('name_cyber').required = true;
-        document.getElementById('email_cyber').required = true;
-    }
-});
-
-// Anonymous toggle for OSINT
-document.getElementById('is_anonymous_osint').addEventListener('change', function() {
-    const contactSection = document.getElementById('contact-section-osint');
-    const inputs = contactSection.querySelectorAll('input');
-    
-    if (this.checked) {
-        contactSection.style.display = 'none';
-        inputs.forEach(input => {
-            input.required = false;
-            input.value = '';
-        });
-    } else {
-        contactSection.style.display = 'block';
-        document.getElementById('name_osint').required = true;
-        document.getElementById('email_osint').required = true;
-    }
-});
-</script>
+<link href="{{ url_for('static', filename='css/cyberconsultation_form.css') }}" rel="stylesheet"/>
+<script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/cyberconsultation_form.js') }}"></script>
 {% endblock %}

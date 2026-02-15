@@ -5,7 +5,6 @@
  * Fait par : Aisance KALONJI, www.aisancekalonji.com
  * Auditer par : La CyberConfiance, www.cyberconfiance.com
 -->
-
 <!--
   CyberConfiance
   By MOA Digital Agency LLC
@@ -19,91 +18,88 @@
 
 {% block content %}
 <div class="admin-header">
-    <h1>Logs d'Activité</h1>
-    <p>Historique des actions effectuées sur le site</p>
+<h1>Logs d'Activité</h1>
+<p>Historique des actions effectuées sur le site</p>
 </div>
-
 <div class="admin-toolbar">
-    <div class="toolbar-left">
-        <form method="GET" style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
-            <div class="filter-group">
-                <label for="action_type">Type d'action:</label>
-                <input type="text" id="action_type" name="action_type" value="{{ action_type }}" placeholder="Type d'action..." style="min-width: 180px;">
-            </div>
-            <div class="filter-group">
-                <label for="user_id">ID utilisateur:</label>
-                <input type="text" id="user_id" name="user_id" value="{{ user_id }}" placeholder="ID..." style="width: 100px;">
-            </div>
-            <div class="filter-group">
-                <label for="success">Statut:</label>
-                <select id="success" name="success">
-                    <option value="">Tous les statuts</option>
-                    <option value="true" {% if success_only == 'true' %}selected{% endif %}>Succès uniquement</option>
-                    <option value="false" {% if success_only == 'false' %}selected{% endif %}>Échecs uniquement</option>
-                </select>
-            </div>
-            <button type="submit" class="btn btn-primary btn-sm">Filtrer</button>
-            <a href="{{ url_for('admin_panel.activity_logs') }}" class="btn btn-secondary btn-sm">Réinitialiser</a>
-        </form>
-    </div>
-    <div class="toolbar-right">
-        <button onclick="exportData()" class="btn btn-secondary">Exporter CSV</button>
-    </div>
+<div class="toolbar-left">
+<form method="GET" style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+<div class="filter-group">
+<label for="action_type">Type d'action:</label>
+<input id="action_type" name="action_type" placeholder="Type d'action..." style="min-width: 180px;" type="text" value="{{ action_type }}"/>
 </div>
-
+<div class="filter-group">
+<label for="user_id">ID utilisateur:</label>
+<input id="user_id" name="user_id" placeholder="ID..." style="width: 100px;" type="text" value="{{ user_id }}"/>
+</div>
+<div class="filter-group">
+<label for="success">Statut:</label>
+<select id="success" name="success">
+<option value="">Tous les statuts</option>
+<option %}="" %}selected{%="" 'true'="" endif="" if="" success_only="=" value="true" {%="">Succès uniquement</option>
+<option %}="" %}selected{%="" 'false'="" endif="" if="" success_only="=" value="false" {%="">Échecs uniquement</option>
+</select>
+</div>
+<button class="btn btn-primary btn-sm" type="submit">Filtrer</button>
+<a class="btn btn-secondary btn-sm" href="{{ url_for('admin_panel.activity_logs') }}">Réinitialiser</a>
+</form>
+</div>
+<div class="toolbar-right">
+<button class="btn btn-secondary" onclick="exportData()">Exporter CSV</button>
+</div>
+</div>
 <div class="admin-card">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-        <h3 style="margin: 0;">Logs d'activité ({{ logs.total }})</h3>
-        <div style="color: var(--text-secondary); font-size: 0.9rem;">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+<h3 style="margin: 0;">Logs d'activité ({{ logs.total }})</h3>
+<div style="color: var(--text-secondary); font-size: 0.9rem;">
             Succès: <strong style="color: #10b981;">{{ success_count|default(0) }}</strong> / 
             Échecs: <strong style="color: #ef4444;">{{ failure_count|default(0) }}</strong>
-        </div>
-    </div>
-    
-    <div class="table-container">
-        <table class="admin-table">
-            <thead>
-                <tr>
-                    <th style="width: 60px;">ID</th>
-                    <th style="width: 140px;">Utilisateur</th>
-                    <th style="width: 180px;">Action</th>
-                    <th>Détail</th>
-                    <th style="width: 100px;">Statut</th>
-                    <th style="width: 130px;">IP</th>
-                    <th style="width: 150px;">Date</th>
-                </tr>
-            </thead>
-            <tbody>
+</div>
+</div>
+<div class="table-container">
+<table class="admin-table">
+<thead>
+<tr>
+<th style="width: 60px;">ID</th>
+<th style="width: 140px;">Utilisateur</th>
+<th style="width: 180px;">Action</th>
+<th>Détail</th>
+<th style="width: 100px;">Statut</th>
+<th style="width: 130px;">IP</th>
+<th style="width: 150px;">Date</th>
+</tr>
+</thead>
+<tbody>
                 {% for log in logs.items %}
                 <tr>
-                    <td style="font-family: monospace; font-size: 0.85rem;">{{ log.id }}</td>
-                    <td>
+<td style="font-family: monospace; font-size: 0.85rem;">{{ log.id }}</td>
+<td>
                         {% if log.user %}
                         <strong style="color: var(--text-primary);">{{ log.user.username }}</strong>
                         {% else %}
                         <em style="color: var(--text-muted);">Anonyme</em>
                         {% endif %}
                     </td>
-                    <td><span class="badge badge-info">{{ log.action_type }}</span></td>
-                    <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; font-size: 0.9rem;">
+<td><span class="badge badge-info">{{ log.action_type }}</span></td>
+<td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; font-size: 0.9rem;">
                         {{ log.action_detail or '-' }}
                     </td>
-                    <td>
+<td>
                         {% if log.success %}
                         <span class="badge badge-success">Succès</span>
                         {% else %}
                         <span class="badge badge-danger">Échec</span>
                         {% endif %}
                     </td>
-                    <td style="font-family: monospace; font-size: 0.85rem;">{{ log.ip_address }}</td>
-                    <td style="font-size: 0.85rem;">{{ log.created_at.strftime('%d/%m/%Y %H:%M:%S') }}</td>
-                </tr>
+<td style="font-family: monospace; font-size: 0.85rem;">{{ log.ip_address }}</td>
+<td style="font-size: 0.85rem;">{{ log.created_at.strftime('%d/%m/%Y %H:%M:%S') }}</td>
+</tr>
                 {% endfor %}
             </tbody>
-        </table>
-    </div>
+</table>
+</div>
     
-    {% if logs.pages > 1 %}
+    {% if logs.pages &gt; 1 %}
     <div class="pagination">
         {% if logs.has_prev %}
         <a href="{{ url_for('admin_panel.activity_logs', page=logs.prev_num, action_type=action_type, user_id=user_id, success=success_only) }}">‹ Précédent</a>
@@ -127,29 +123,5 @@
     </div>
     {% endif %}
 </div>
-
-<script nonce="{{ csp_nonce }}">
-function exportData() {
-    let csv = 'ID,Utilisateur,Action,Détail,Statut,IP,Date\n';
-    const rows = document.querySelectorAll('.admin-table tbody tr');
-    
-    rows.forEach(row => {
-        const cells = row.querySelectorAll('td');
-        if (cells.length >= 7) {
-            const values = Array.from(cells).slice(0, 7).map(cell => 
-                '"' + cell.textContent.trim().replace(/"/g, '""') + '"'
-            );
-            csv += values.join(',') + '\n';
-        }
-    });
-    
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'activity_logs_' + new Date().toISOString().split('T')[0] + '.csv';
-    a.click();
-    window.URL.revokeObjectURL(url);
-}
-</script>
+<script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/activity_logs.js') }}"></script>
 {% endblock %}

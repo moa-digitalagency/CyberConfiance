@@ -5,7 +5,6 @@
  * Fait par : Aisance KALONJI, www.aisancekalonji.com
  * Auditer par : La CyberConfiance, www.cyberconfiance.com
 -->
-
 <!--
   CyberConfiance
   By MOA Digital Agency LLC
@@ -19,449 +18,444 @@
 
 {% block content %}
 <section class="page-header-modern">
-    <div class="container">
-        <div class="header-content-centered">
-            <h1 class="page-title-modern">Resultats de l'Analyse</h1>
-            <p class="page-subtitle-modern">Analyse des metadonnees de votre fichier</p>
-        </div>
-    </div>
+<div class="container">
+<div class="header-content-centered">
+<h1 class="page-title-modern">Resultats de l'Analyse</h1>
+<p class="page-subtitle-modern">Analyse des metadonnees de votre fichier</p>
+</div>
+</div>
 </section>
-
 <section class="analyzer-container">
-    <div class="container">
-        <div class="summary-section">
-            <div class="risk-banner risk-{{ analysis.privacy_risk_level or 'low' }}">
-                <div class="risk-icon">
+<div class="container">
+<div class="summary-section">
+<div class="risk-banner risk-{{ analysis.privacy_risk_level or 'low' }}">
+<div class="risk-icon">
                     {% if analysis.privacy_risk_level == 'critical' or analysis.privacy_risk_level == 'high' %}
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                        <line x1="12" y1="9" x2="12" y2="13"/>
-                        <line x1="12" y1="17" x2="12.01" y2="17"/>
-                    </svg>
+                    <svg fill="none" height="28" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="28">
+<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+<line x1="12" x2="12" y1="9" y2="13"></line>
+<line x1="12" x2="12.01" y1="17" y2="17"></line>
+</svg>
                     {% elif analysis.privacy_risk_level == 'medium' %}
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"/>
-                        <line x1="12" y1="8" x2="12" y2="12"/>
-                        <line x1="12" y1="16" x2="12.01" y2="16"/>
-                    </svg>
+                    <svg fill="none" height="28" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="28">
+<circle cx="12" cy="12" r="10"></circle>
+<line x1="12" x2="12" y1="8" y2="12"></line>
+<line x1="12" x2="12.01" y1="16" y2="16"></line>
+</svg>
                     {% else %}
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                        <polyline points="22 4 12 14.01 9 11.01"/>
-                    </svg>
+                    <svg fill="none" height="28" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="28">
+<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+<polyline points="22 4 12 14.01 9 11.01"></polyline>
+</svg>
                     {% endif %}
                 </div>
-                <div class="risk-text">
-                    <span class="risk-label">Risque Vie Privee:</span>
-                    <span class="risk-level">
+<div class="risk-text">
+<span class="risk-label">Risque Vie Privee:</span>
+<span class="risk-level">
                         {% if analysis.privacy_risk_level == 'critical' %}CRITIQUE
                         {% elif analysis.privacy_risk_level == 'high' %}ELEVE
                         {% elif analysis.privacy_risk_level == 'medium' %}MODERE
                         {% else %}FAIBLE{% endif %}
                     </span>
-                </div>
-            </div>
-
-            <div class="summary-grid">
-                <div class="summary-block">
-                    <div class="block-header">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
-                            <polyline points="13 2 13 9 20 9"/>
-                        </svg>
-                        <span>Fichier</span>
-                    </div>
-                    <div class="block-content">
-                        <div class="block-row">
-                            <span class="row-label">Nom:</span>
-                            <span class="row-value">{{ analysis.original_filename }}</span>
-                        </div>
+</div>
+</div>
+<div class="summary-grid">
+<div class="summary-block">
+<div class="block-header">
+<svg fill="none" height="18" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="18">
+<path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+<polyline points="13 2 13 9 20 9"></polyline>
+</svg>
+<span>Fichier</span>
+</div>
+<div class="block-content">
+<div class="block-row">
+<span class="row-label">Nom:</span>
+<span class="row-value">{{ analysis.original_filename }}</span>
+</div>
                         {% if analysis.file_size %}
                         <div class="block-row">
-                            <span class="row-label">Taille:</span>
-                            <span class="row-value">
-                                {% if analysis.file_size >= 1048576 %}
+<span class="row-label">Taille:</span>
+<span class="row-value">
+                                {% if analysis.file_size &gt;= 1048576 %}
                                     {{ "%.2f"|format(analysis.file_size / 1048576) }} Mo
                                 {% else %}
                                     {{ "%.2f"|format(analysis.file_size / 1024) }} Ko
                                 {% endif %}
                             </span>
-                        </div>
+</div>
                         {% endif %}
                         <div class="block-row">
-                            <span class="row-label">Metadonnees:</span>
-                            <span class="row-value">{{ analysis.metadata_count or 0 }} trouvees</span>
-                        </div>
-                    </div>
-                </div>
+<span class="row-label">Metadonnees:</span>
+<span class="row-value">{{ analysis.metadata_count or 0 }} trouvees</span>
+</div>
+</div>
+</div>
 
                 {% if analysis.gps_data %}
                 <div class="summary-block danger">
-                    <div class="block-header">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                            <circle cx="12" cy="10" r="3"/>
-                        </svg>
-                        <span>Localisation GPS</span>
-                    </div>
-                    <div class="block-content">
+<div class="block-header">
+<svg fill="none" height="18" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="18">
+<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+<circle cx="12" cy="10" r="3"></circle>
+</svg>
+<span>Localisation GPS</span>
+</div>
+<div class="block-content">
                         {% for key, value in analysis.gps_data.items() %}
                             {% if 'latitude' in key.lower() and 'ref' not in key.lower() %}
                             <div class="block-row">
-                                <span class="row-label">Latitude:</span>
-                                <span class="row-value">{{ value }}</span>
-                            </div>
+<span class="row-label">Latitude:</span>
+<span class="row-value">{{ value }}</span>
+</div>
                             {% endif %}
                             {% if 'longitude' in key.lower() and 'ref' not in key.lower() %}
                             <div class="block-row">
-                                <span class="row-label">Longitude:</span>
-                                <span class="row-value">{{ value }}</span>
-                            </div>
+<span class="row-label">Longitude:</span>
+<span class="row-value">{{ value }}</span>
+</div>
                             {% endif %}
                             {% if 'altitude' in key.lower() %}
                             <div class="block-row">
-                                <span class="row-label">Altitude:</span>
-                                <span class="row-value">{{ value }}</span>
-                            </div>
+<span class="row-label">Altitude:</span>
+<span class="row-value">{{ value }}</span>
+</div>
                             {% endif %}
                         {% endfor %}
                     </div>
-                </div>
+</div>
                 {% endif %}
 
                 {% if analysis.camera_info %}
                 <div class="summary-block">
-                    <div class="block-header">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-                            <circle cx="12" cy="13" r="4"/>
-                        </svg>
-                        <span>Appareil</span>
-                    </div>
-                    <div class="block-content">
+<div class="block-header">
+<svg fill="none" height="18" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="18">
+<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+<circle cx="12" cy="13" r="4"></circle>
+</svg>
+<span>Appareil</span>
+</div>
+<div class="block-content">
                         {% for key, value in analysis.camera_info.items() %}
                             {% if key == 'Marque' or key == 'Make' %}
                             <div class="block-row">
-                                <span class="row-label">Marque:</span>
-                                <span class="row-value">{{ value }}</span>
-                            </div>
+<span class="row-label">Marque:</span>
+<span class="row-value">{{ value }}</span>
+</div>
                             {% endif %}
                             {% if key == 'Modele' or key == 'Model' %}
                             <div class="block-row">
-                                <span class="row-label">Modele:</span>
-                                <span class="row-value">{{ value }}</span>
-                            </div>
+<span class="row-label">Modele:</span>
+<span class="row-value">{{ value }}</span>
+</div>
                             {% endif %}
                             {% if 'serie' in key.lower() or 'serial' in key.lower() %}
                             <div class="block-row">
-                                <span class="row-label">N Serie:</span>
-                                <span class="row-value">{{ value }}</span>
-                            </div>
+<span class="row-label">N Serie:</span>
+<span class="row-value">{{ value }}</span>
+</div>
                             {% endif %}
                             {% if 'objectif' in key.lower() or 'lens' in key.lower() %}
                             <div class="block-row">
-                                <span class="row-label">Objectif:</span>
-                                <span class="row-value">{{ value }}</span>
-                            </div>
+<span class="row-label">Objectif:</span>
+<span class="row-value">{{ value }}</span>
+</div>
                             {% endif %}
                         {% endfor %}
                     </div>
-                </div>
+</div>
                 {% endif %}
 
                 {% if analysis.datetime_info %}
                 <div class="summary-block">
-                    <div class="block-header">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"/>
-                            <polyline points="12 6 12 12 16 14"/>
-                        </svg>
-                        <span>Dates</span>
-                    </div>
-                    <div class="block-content">
+<div class="block-header">
+<svg fill="none" height="18" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="18">
+<circle cx="12" cy="12" r="10"></circle>
+<polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+<span>Dates</span>
+</div>
+<div class="block-content">
                         {% set creation_shown = namespace(value=false) %}
                         {% set modif_shown = namespace(value=false) %}
                         {% for key, value in analysis.datetime_info.items() %}
                             {% if not creation_shown.value and ('original' in key.lower() or 'prise' in key.lower() or 'create' in key.lower()) %}
                             <div class="block-row">
-                                <span class="row-label">Creation:</span>
-                                <span class="row-value">{{ value }}</span>
-                            </div>
+<span class="row-label">Creation:</span>
+<span class="row-value">{{ value }}</span>
+</div>
                             {% set creation_shown.value = true %}
                             {% endif %}
                             {% if not modif_shown.value and ('modif' in key.lower() or 'modify' in key.lower()) %}
                             <div class="block-row">
-                                <span class="row-label">Modification:</span>
-                                <span class="row-value">{{ value }}</span>
-                            </div>
+<span class="row-label">Modification:</span>
+<span class="row-value">{{ value }}</span>
+</div>
                             {% set modif_shown.value = true %}
                             {% endif %}
                         {% endfor %}
                     </div>
-                </div>
+</div>
                 {% endif %}
 
                 {% if analysis.author_info %}
                 <div class="summary-block">
-                    <div class="block-header">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                            <circle cx="12" cy="7" r="4"/>
-                        </svg>
-                        <span>Auteur</span>
-                    </div>
-                    <div class="block-content">
+<div class="block-header">
+<svg fill="none" height="18" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="18">
+<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+<circle cx="12" cy="7" r="4"></circle>
+</svg>
+<span>Auteur</span>
+</div>
+<div class="block-content">
                         {% for key, value in analysis.author_info.items() %}
                             {% if 'artiste' in key.lower() or 'artist' in key.lower() %}
                             <div class="block-row">
-                                <span class="row-label">Artiste:</span>
-                                <span class="row-value">{{ value }}</span>
-                            </div>
+<span class="row-label">Artiste:</span>
+<span class="row-value">{{ value }}</span>
+</div>
                             {% endif %}
                             {% if 'auteur' in key.lower() or 'author' in key.lower() %}
                             <div class="block-row">
-                                <span class="row-label">Auteur:</span>
-                                <span class="row-value">{{ value }}</span>
-                            </div>
+<span class="row-label">Auteur:</span>
+<span class="row-value">{{ value }}</span>
+</div>
                             {% endif %}
                             {% if 'createur' in key.lower() or 'creator' in key.lower() %}
                             <div class="block-row">
-                                <span class="row-label">Createur:</span>
-                                <span class="row-value">{{ value }}</span>
-                            </div>
+<span class="row-label">Createur:</span>
+<span class="row-value">{{ value }}</span>
+</div>
                             {% endif %}
                             {% if 'copyright' in key.lower() or 'droits' in key.lower() %}
                             <div class="block-row">
-                                <span class="row-label">Copyright:</span>
-                                <span class="row-value">{{ value }}</span>
-                            </div>
+<span class="row-label">Copyright:</span>
+<span class="row-value">{{ value }}</span>
+</div>
                             {% endif %}
                         {% endfor %}
                     </div>
-                </div>
+</div>
                 {% endif %}
 
                 {% if analysis.software_info %}
                 <div class="summary-block">
-                    <div class="block-header">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
-                            <line x1="8" y1="21" x2="16" y2="21"/>
-                            <line x1="12" y1="17" x2="12" y2="21"/>
-                        </svg>
-                        <span>Logiciels</span>
-                    </div>
-                    <div class="block-content">
+<div class="block-header">
+<svg fill="none" height="18" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="18">
+<rect height="14" rx="2" ry="2" width="20" x="2" y="3"></rect>
+<line x1="8" x2="16" y1="21" y2="21"></line>
+<line x1="12" x2="12" y1="17" y2="21"></line>
+</svg>
+<span>Logiciels</span>
+</div>
+<div class="block-content">
                         {% for key, value in analysis.software_info.items() %}
                             {% if 'logiciel' in key.lower() or 'software' in key.lower() %}
                             <div class="block-row">
-                                <span class="row-label">Logiciel:</span>
-                                <span class="row-value">{{ value }}</span>
-                            </div>
+<span class="row-label">Logiciel:</span>
+<span class="row-value">{{ value }}</span>
+</div>
                             {% endif %}
                             {% if 'outil' in key.lower() or 'tool' in key.lower() %}
                             <div class="block-row">
-                                <span class="row-label">Outil:</span>
-                                <span class="row-value">{{ value }}</span>
-                            </div>
+<span class="row-label">Outil:</span>
+<span class="row-value">{{ value }}</span>
+</div>
                             {% endif %}
                             {% if 'program' in key.lower() or 'application' in key.lower() %}
                             <div class="block-row">
-                                <span class="row-label">Application:</span>
-                                <span class="row-value">{{ value }}</span>
-                            </div>
+<span class="row-label">Application:</span>
+<span class="row-value">{{ value }}</span>
+</div>
                             {% endif %}
                         {% endfor %}
                     </div>
-                </div>
+</div>
                 {% endif %}
             </div>
-
-            <div class="actions-section">
-                <a href="{{ url_for('outils.metadata_analyzer') }}" class="btn-primary">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
-                        <path d="M3 3v5h5"/>
-                    </svg>
+<div class="actions-section">
+<a class="btn-primary" href="{{ url_for('outils.metadata_analyzer') }}">
+<svg fill="none" height="18" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="18">
+<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+<path d="M3 3v5h5"></path>
+</svg>
                     Nouvelle Analyse
                 </a>
-                <a href="{{ url_for('outils.metadata_download_clean', analysis_id=analysis.id) }}" class="btn-success">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                        <polyline points="7 10 12 15 17 10"/>
-                        <line x1="12" y1="15" x2="12" y2="3"/>
-                    </svg>
+<a class="btn-success" href="{{ url_for('outils.metadata_download_clean', analysis_id=analysis.id) }}">
+<svg fill="none" height="18" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="18">
+<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+<polyline points="7 10 12 15 17 10"></polyline>
+<line x1="12" x2="12" y1="15" y2="3"></line>
+</svg>
                     Télécharger Version Nettoyée
                 </a>
-                <a href="{{ url_for('outils.metadata_analysis_pdf_summary', analysis_id=analysis.id) }}" class="btn-secondary">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                        <polyline points="14 2 14 8 20 8"/>
-                    </svg>
+<a class="btn-secondary" href="{{ url_for('outils.metadata_analysis_pdf_summary', analysis_id=analysis.id) }}">
+<svg fill="none" height="18" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="18">
+<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+<polyline points="14 2 14 8 20 8"></polyline>
+</svg>
                     Télécharger PDF Résumé
                 </a>
-                <a href="{{ url_for('outils.metadata_analysis_pdf_complete', analysis_id=analysis.id) }}" class="btn-secondary">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                        <polyline points="14 2 14 8 20 8"/>
-                        <line x1="16" y1="13" x2="8" y2="13"/>
-                        <line x1="16" y1="17" x2="8" y2="17"/>
-                    </svg>
+<a class="btn-secondary" href="{{ url_for('outils.metadata_analysis_pdf_complete', analysis_id=analysis.id) }}">
+<svg fill="none" height="18" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="18">
+<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+<polyline points="14 2 14 8 20 8"></polyline>
+<line x1="16" x2="8" y1="13" y2="13"></line>
+<line x1="16" x2="8" y1="17" y2="17"></line>
+</svg>
                     Télécharger PDF Complet
                 </a>
-            </div>
-        </div>
-
-        <div class="details-section">
-            <h3 class="section-title">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"/>
-                    <line x1="12" y1="16" x2="12" y2="12"/>
-                    <line x1="12" y1="8" x2="12.01" y2="8"/>
-                </svg>
+</div>
+</div>
+<div class="details-section">
+<h3 class="section-title">
+<svg fill="none" height="20" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="20">
+<circle cx="12" cy="12" r="10"></circle>
+<line x1="12" x2="12" y1="16" y2="12"></line>
+<line x1="12" x2="12.01" y1="8" y2="8"></line>
+</svg>
                 Toutes les Metadonnees par Categorie
             </h3>
-
-            <div class="accordion-container">
+<div class="accordion-container">
                 {% if analysis.gps_data %}
                 <div class="accordion-item">
-                    <button type="button" class="accordion-header" onclick="toggleAccordion(this)">
-                        <div class="accordion-title">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                                <circle cx="12" cy="10" r="3"/>
-                            </svg>
+<button class="accordion-header" onclick="toggleAccordion(this)" type="button">
+<div class="accordion-title">
+<svg fill="none" height="20" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="20">
+<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+<circle cx="12" cy="10" r="3"></circle>
+</svg>
                             Localisation GPS
                             <span class="badge danger">{{ analysis.gps_data|length }}</span>
-                        </div>
-                        <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="6 9 12 15 18 9"/>
-                        </svg>
-                    </button>
-                    <div class="accordion-content">
-                        <div class="metadata-list">
+</div>
+<svg class="chevron" fill="none" height="20" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="20">
+<polyline points="6 9 12 15 18 9"></polyline>
+</svg>
+</button>
+<div class="accordion-content">
+<div class="metadata-list">
                             {% for key, value in analysis.gps_data.items() %}
                             <div class="metadata-row">
-                                <span class="meta-key">{{ key }}</span>
-                                <span class="meta-value">{{ value }}</span>
-                            </div>
+<span class="meta-key">{{ key }}</span>
+<span class="meta-value">{{ value }}</span>
+</div>
                             {% endfor %}
                         </div>
-                    </div>
-                </div>
+</div>
+</div>
                 {% endif %}
 
                 {% if analysis.camera_info %}
                 <div class="accordion-item">
-                    <button type="button" class="accordion-header" onclick="toggleAccordion(this)">
-                        <div class="accordion-title">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-                                <circle cx="12" cy="13" r="4"/>
-                            </svg>
+<button class="accordion-header" onclick="toggleAccordion(this)" type="button">
+<div class="accordion-title">
+<svg fill="none" height="20" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="20">
+<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+<circle cx="12" cy="13" r="4"></circle>
+</svg>
                             Appareil / Camera
                             <span class="badge warning">{{ analysis.camera_info|length }}</span>
-                        </div>
-                        <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="6 9 12 15 18 9"/>
-                        </svg>
-                    </button>
-                    <div class="accordion-content">
-                        <div class="metadata-list">
+</div>
+<svg class="chevron" fill="none" height="20" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="20">
+<polyline points="6 9 12 15 18 9"></polyline>
+</svg>
+</button>
+<div class="accordion-content">
+<div class="metadata-list">
                             {% for key, value in analysis.camera_info.items() %}
                             <div class="metadata-row">
-                                <span class="meta-key">{{ key }}</span>
-                                <span class="meta-value">{{ value }}</span>
-                            </div>
+<span class="meta-key">{{ key }}</span>
+<span class="meta-value">{{ value }}</span>
+</div>
                             {% endfor %}
                         </div>
-                    </div>
-                </div>
+</div>
+</div>
                 {% endif %}
 
                 {% if analysis.datetime_info %}
                 <div class="accordion-item">
-                    <button type="button" class="accordion-header" onclick="toggleAccordion(this)">
-                        <div class="accordion-title">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="10"/>
-                                <polyline points="12 6 12 12 16 14"/>
-                            </svg>
+<button class="accordion-header" onclick="toggleAccordion(this)" type="button">
+<div class="accordion-title">
+<svg fill="none" height="20" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="20">
+<circle cx="12" cy="12" r="10"></circle>
+<polyline points="12 6 12 12 16 14"></polyline>
+</svg>
                             Dates et Heures
                             <span class="badge">{{ analysis.datetime_info|length }}</span>
-                        </div>
-                        <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="6 9 12 15 18 9"/>
-                        </svg>
-                    </button>
-                    <div class="accordion-content">
-                        <div class="metadata-list">
+</div>
+<svg class="chevron" fill="none" height="20" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="20">
+<polyline points="6 9 12 15 18 9"></polyline>
+</svg>
+</button>
+<div class="accordion-content">
+<div class="metadata-list">
                             {% for key, value in analysis.datetime_info.items() %}
                             <div class="metadata-row">
-                                <span class="meta-key">{{ key }}</span>
-                                <span class="meta-value">{{ value }}</span>
-                            </div>
+<span class="meta-key">{{ key }}</span>
+<span class="meta-value">{{ value }}</span>
+</div>
                             {% endfor %}
                         </div>
-                    </div>
-                </div>
+</div>
+</div>
                 {% endif %}
 
                 {% if analysis.software_info %}
                 <div class="accordion-item">
-                    <button type="button" class="accordion-header" onclick="toggleAccordion(this)">
-                        <div class="accordion-title">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
-                                <line x1="8" y1="21" x2="16" y2="21"/>
-                                <line x1="12" y1="17" x2="12" y2="21"/>
-                            </svg>
+<button class="accordion-header" onclick="toggleAccordion(this)" type="button">
+<div class="accordion-title">
+<svg fill="none" height="20" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="20">
+<rect height="14" rx="2" ry="2" width="20" x="2" y="3"></rect>
+<line x1="8" x2="16" y1="21" y2="21"></line>
+<line x1="12" x2="12" y1="17" y2="21"></line>
+</svg>
                             Logiciels
                             <span class="badge">{{ analysis.software_info|length }}</span>
-                        </div>
-                        <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="6 9 12 15 18 9"/>
-                        </svg>
-                    </button>
-                    <div class="accordion-content">
-                        <div class="metadata-list">
+</div>
+<svg class="chevron" fill="none" height="20" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="20">
+<polyline points="6 9 12 15 18 9"></polyline>
+</svg>
+</button>
+<div class="accordion-content">
+<div class="metadata-list">
                             {% for key, value in analysis.software_info.items() %}
                             <div class="metadata-row">
-                                <span class="meta-key">{{ key }}</span>
-                                <span class="meta-value">{{ value }}</span>
-                            </div>
+<span class="meta-key">{{ key }}</span>
+<span class="meta-value">{{ value }}</span>
+</div>
                             {% endfor %}
                         </div>
-                    </div>
-                </div>
+</div>
+</div>
                 {% endif %}
 
                 {% if analysis.author_info %}
                 <div class="accordion-item">
-                    <button type="button" class="accordion-header" onclick="toggleAccordion(this)">
-                        <div class="accordion-title">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                                <circle cx="12" cy="7" r="4"/>
-                            </svg>
+<button class="accordion-header" onclick="toggleAccordion(this)" type="button">
+<div class="accordion-title">
+<svg fill="none" height="20" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="20">
+<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+<circle cx="12" cy="7" r="4"></circle>
+</svg>
                             Auteur / Copyright
                             <span class="badge info">{{ analysis.author_info|length }}</span>
-                        </div>
-                        <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="6 9 12 15 18 9"/>
-                        </svg>
-                    </button>
-                    <div class="accordion-content">
-                        <div class="metadata-list">
+</div>
+<svg class="chevron" fill="none" height="20" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="20">
+<polyline points="6 9 12 15 18 9"></polyline>
+</svg>
+</button>
+<div class="accordion-content">
+<div class="metadata-list">
                             {% for key, value in analysis.author_info.items() %}
                             <div class="metadata-row">
-                                <span class="meta-key">{{ key }}</span>
-                                <span class="meta-value">{{ value }}</span>
-                            </div>
+<span class="meta-key">{{ key }}</span>
+<span class="meta-value">{{ value }}</span>
+</div>
                             {% endfor %}
                         </div>
-                    </div>
-                </div>
+</div>
+</div>
                 {% endif %}
 
                 {% if analysis.metadata_found %}
@@ -486,449 +480,122 @@
 
                 {% if categorized.image %}
                 <div class="accordion-item">
-                    <button type="button" class="accordion-header" onclick="toggleAccordion(this)">
-                        <div class="accordion-title">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                                <circle cx="8.5" cy="8.5" r="1.5"/>
-                                <polyline points="21 15 16 10 5 21"/>
-                            </svg>
+<button class="accordion-header" onclick="toggleAccordion(this)" type="button">
+<div class="accordion-title">
+<svg fill="none" height="20" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="20">
+<rect height="18" rx="2" ry="2" width="18" x="3" y="3"></rect>
+<circle cx="8.5" cy="8.5" r="1.5"></circle>
+<polyline points="21 15 16 10 5 21"></polyline>
+</svg>
                             Proprietes Image
                             <span class="badge">{{ categorized.image|length }}</span>
-                        </div>
-                        <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="6 9 12 15 18 9"/>
-                        </svg>
-                    </button>
-                    <div class="accordion-content">
-                        <div class="metadata-list">
+</div>
+<svg class="chevron" fill="none" height="20" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="20">
+<polyline points="6 9 12 15 18 9"></polyline>
+</svg>
+</button>
+<div class="accordion-content">
+<div class="metadata-list">
                             {% for key, value in categorized.image %}
                             <div class="metadata-row">
-                                <span class="meta-key">{{ key }}</span>
-                                <span class="meta-value">{{ value }}</span>
-                            </div>
+<span class="meta-key">{{ key }}</span>
+<span class="meta-value">{{ value }}</span>
+</div>
                             {% endfor %}
                         </div>
-                    </div>
-                </div>
+</div>
+</div>
                 {% endif %}
 
                 {% if categorized.file %}
                 <div class="accordion-item">
-                    <button type="button" class="accordion-header" onclick="toggleAccordion(this)">
-                        <div class="accordion-title">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
-                                <polyline points="13 2 13 9 20 9"/>
-                            </svg>
+<button class="accordion-header" onclick="toggleAccordion(this)" type="button">
+<div class="accordion-title">
+<svg fill="none" height="20" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="20">
+<path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+<polyline points="13 2 13 9 20 9"></polyline>
+</svg>
                             Informations Fichier
                             <span class="badge">{{ categorized.file|length }}</span>
-                        </div>
-                        <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="6 9 12 15 18 9"/>
-                        </svg>
-                    </button>
-                    <div class="accordion-content">
-                        <div class="metadata-list">
+</div>
+<svg class="chevron" fill="none" height="20" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="20">
+<polyline points="6 9 12 15 18 9"></polyline>
+</svg>
+</button>
+<div class="accordion-content">
+<div class="metadata-list">
                             {% for key, value in categorized.file %}
                             <div class="metadata-row">
-                                <span class="meta-key">{{ key }}</span>
-                                <span class="meta-value">{{ value }}</span>
-                            </div>
+<span class="meta-key">{{ key }}</span>
+<span class="meta-value">{{ value }}</span>
+</div>
                             {% endfor %}
                         </div>
-                    </div>
-                </div>
+</div>
+</div>
                 {% endif %}
 
                 {% if categorized.technical %}
                 <div class="accordion-item">
-                    <button type="button" class="accordion-header" onclick="toggleAccordion(this)">
-                        <div class="accordion-title">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="3"/>
-                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-                            </svg>
+<button class="accordion-header" onclick="toggleAccordion(this)" type="button">
+<div class="accordion-title">
+<svg fill="none" height="20" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="20">
+<circle cx="12" cy="12" r="3"></circle>
+<path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+</svg>
                             Donnees Techniques
                             <span class="badge">{{ categorized.technical|length }}</span>
-                        </div>
-                        <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="6 9 12 15 18 9"/>
-                        </svg>
-                    </button>
-                    <div class="accordion-content">
-                        <div class="metadata-list">
+</div>
+<svg class="chevron" fill="none" height="20" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="20">
+<polyline points="6 9 12 15 18 9"></polyline>
+</svg>
+</button>
+<div class="accordion-content">
+<div class="metadata-list">
                             {% for key, value in categorized.technical %}
                             <div class="metadata-row">
-                                <span class="meta-key">{{ key }}</span>
-                                <span class="meta-value">{{ value }}</span>
-                            </div>
+<span class="meta-key">{{ key }}</span>
+<span class="meta-value">{{ value }}</span>
+</div>
                             {% endfor %}
                         </div>
-                    </div>
-                </div>
+</div>
+</div>
                 {% endif %}
 
                 {% if categorized.other %}
                 <div class="accordion-item">
-                    <button type="button" class="accordion-header" onclick="toggleAccordion(this)">
-                        <div class="accordion-title">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <ellipse cx="12" cy="5" rx="9" ry="3"/>
-                                <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
-                                <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
-                            </svg>
+<button class="accordion-header" onclick="toggleAccordion(this)" type="button">
+<div class="accordion-title">
+<svg fill="none" height="20" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="20">
+<ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+<path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+<path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+</svg>
                             Autres Metadonnees
                             <span class="badge">{{ categorized.other|length }}</span>
-                        </div>
-                        <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="6 9 12 15 18 9"/>
-                        </svg>
-                    </button>
-                    <div class="accordion-content">
-                        <div class="metadata-list scrollable">
+</div>
+<svg class="chevron" fill="none" height="20" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="20">
+<polyline points="6 9 12 15 18 9"></polyline>
+</svg>
+</button>
+<div class="accordion-content">
+<div class="metadata-list scrollable">
                             {% for key, value in categorized.other %}
                             <div class="metadata-row">
-                                <span class="meta-key">{{ key }}</span>
-                                <span class="meta-value">{{ value }}</span>
-                            </div>
+<span class="meta-key">{{ key }}</span>
+<span class="meta-value">{{ value }}</span>
+</div>
                             {% endfor %}
                         </div>
-                    </div>
-                </div>
+</div>
+</div>
                 {% endif %}
                 {% endif %}
             </div>
-        </div>
-    </div>
+</div>
+</div>
 </section>
-
-<style>
-.summary-section {
-    background: var(--bg-secondary);
-    border-radius: 16px;
-    padding: 30px;
-    margin-bottom: 30px;
-    border: 1px solid var(--border-color);
-}
-
-.risk-banner {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    padding: 16px 24px;
-    border-radius: 12px;
-    margin-bottom: 25px;
-}
-
-.risk-banner.risk-critical,
-.risk-banner.risk-high {
-    background: rgba(239, 68, 68, 0.1);
-    border: 1px solid rgba(239, 68, 68, 0.3);
-}
-
-.risk-banner.risk-critical .risk-icon,
-.risk-banner.risk-high .risk-icon,
-.risk-banner.risk-critical .risk-level,
-.risk-banner.risk-high .risk-level {
-    color: #ef4444;
-}
-
-.risk-banner.risk-medium {
-    background: rgba(245, 158, 11, 0.1);
-    border: 1px solid rgba(245, 158, 11, 0.3);
-}
-
-.risk-banner.risk-medium .risk-icon,
-.risk-banner.risk-medium .risk-level {
-    color: #f59e0b;
-}
-
-.risk-banner.risk-low {
-    background: rgba(34, 197, 94, 0.1);
-    border: 1px solid rgba(34, 197, 94, 0.3);
-}
-
-.risk-banner.risk-low .risk-icon,
-.risk-banner.risk-low .risk-level {
-    color: #22c55e;
-}
-
-.risk-text {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.risk-label {
-    color: var(--text-secondary);
-    font-size: 1rem;
-}
-
-.risk-level {
-    font-weight: 700;
-    font-size: 1.1rem;
-}
-
-.summary-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 16px;
-    margin-bottom: 25px;
-}
-
-.summary-block {
-    background: var(--bg-tertiary);
-    border-radius: 12px;
-    border: 1px solid var(--border-color);
-    overflow: hidden;
-}
-
-.summary-block.danger {
-    border-color: rgba(239, 68, 68, 0.4);
-    background: rgba(239, 68, 68, 0.05);
-}
-
-.summary-block.danger .block-header {
-    background: rgba(239, 68, 68, 0.1);
-    color: #ef4444;
-}
-
-.block-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 16px;
-    background: rgba(var(--primary-rgb), 0.05);
-    border-bottom: 1px solid var(--border-color);
-    font-weight: 600;
-    font-size: 0.9rem;
-    color: var(--primary-color);
-}
-
-.block-content {
-    padding: 12px 16px;
-}
-
-.block-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 10px;
-    padding: 6px 0;
-    font-size: 0.85rem;
-}
-
-.block-row:not(:last-child) {
-    border-bottom: 1px dashed var(--border-color);
-}
-
-.row-label {
-    color: var(--text-muted);
-    flex-shrink: 0;
-}
-
-.row-value {
-    color: var(--text-primary);
-    text-align: right;
-    word-break: break-word;
-    font-weight: 500;
-}
-
-.actions-section {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    justify-content: center;
-}
-
-.actions-section .btn-primary,
-.actions-section .btn-secondary,
-.actions-section .btn-success {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 12px 20px;
-    border-radius: 8px;
-    font-weight: 600;
-    text-decoration: none;
-    transition: all 0.2s ease;
-    font-size: 0.9rem;
-}
-
-.actions-section .btn-success {
-    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-    color: white;
-}
-
-.actions-section .btn-success:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
-}
-
-.details-section {
-    background: var(--bg-secondary);
-    border-radius: 16px;
-    padding: 30px;
-    border: 1px solid var(--border-color);
-}
-
-.section-title {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 1.1rem;
-    color: var(--text-primary);
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.section-title svg {
-    color: var(--primary-color);
-}
-
-.accordion-container {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.accordion-item {
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
-    overflow: hidden;
-}
-
-.accordion-header {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 14px 18px;
-    background: var(--bg-tertiary);
-    border: none;
-    cursor: pointer;
-    color: var(--text-primary);
-    transition: background 0.2s ease;
-}
-
-.accordion-header:hover {
-    background: rgba(var(--primary-rgb), 0.05);
-}
-
-.accordion-title {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-weight: 500;
-    font-size: 0.95rem;
-}
-
-.accordion-title svg {
-    color: var(--primary-color);
-}
-
-.accordion-header .chevron {
-    transition: transform 0.3s ease;
-    color: var(--text-secondary);
-}
-
-.accordion-item.open .accordion-header .chevron {
-    transform: rotate(180deg);
-}
-
-.accordion-content {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease;
-}
-
-.accordion-item.open .accordion-content {
-    max-height: 2000px;
-}
-
-.metadata-list {
-    padding: 16px;
-    background: var(--bg-primary);
-}
-
-.metadata-list.scrollable {
-    max-height: 400px;
-    overflow-y: auto;
-}
-
-.metadata-row {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: 15px;
-    padding: 8px 0;
-    border-bottom: 1px solid var(--border-color);
-    font-size: 0.9rem;
-}
-
-.metadata-row:last-child {
-    border-bottom: none;
-}
-
-.meta-key {
-    color: var(--text-secondary);
-    font-weight: 500;
-}
-
-.meta-value {
-    color: var(--text-primary);
-    word-break: break-word;
-}
-
-.badge {
-    padding: 2px 8px;
-    border-radius: 10px;
-    font-size: 0.7rem;
-    font-weight: 600;
-    background: rgba(var(--primary-rgb), 0.2);
-    color: var(--primary-color);
-}
-
-.badge.danger {
-    background: rgba(239, 68, 68, 0.2);
-    color: #ef4444;
-}
-
-.badge.warning {
-    background: rgba(245, 158, 11, 0.2);
-    color: #f59e0b;
-}
-
-.badge.info {
-    background: rgba(59, 130, 246, 0.2);
-    color: #3b82f6;
-}
-
-@media (max-width: 768px) {
-    .summary-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .actions-section {
-        flex-direction: column;
-    }
-    
-    .actions-section a {
-        justify-content: center;
-    }
-    
-    .metadata-row {
-        grid-template-columns: 1fr;
-        gap: 4px;
-    }
-}
-</style>
-
-<script nonce="{{ csp_nonce }}">
-function toggleAccordion(button) {
-    const item = button.parentElement;
-    item.classList.toggle('open');
-}
-</script>
+<link href="{{ url_for('static', filename='css/metadata_results.css') }}" rel="stylesheet"/>
+<script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/metadata_results.js') }}"></script>
 {% endblock %}

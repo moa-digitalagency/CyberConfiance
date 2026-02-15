@@ -5,7 +5,6 @@
  * Fait par : Aisance KALONJI, www.aisancekalonji.com
  * Auditer par : La CyberConfiance, www.cyberconfiance.com
 -->
-
 <!--
   CyberConfiance
   By MOA Digital Agency LLC
@@ -19,187 +18,112 @@
 
 {% block content %}
 <section class="page-header-modern">
-    <div class="container">
-        <div class="header-content-centered">
-            <h1 class="page-title-modern">Demande de Fact-Checking</h1>
-            <p class="page-subtitle-modern">Soumettez des informations, des liens ou des fichiers pour une analyse de vérification. Toutes les soumissions sont scannées pour détecter les menaces de sécurité.</p>
-        </div>
-    </div>
+<div class="container">
+<div class="header-content-centered">
+<h1 class="page-title-modern">Demande de Fact-Checking</h1>
+<p class="page-subtitle-modern">Soumettez des informations, des liens ou des fichiers pour une analyse de vérification. Toutes les soumissions sont scannées pour détecter les menaces de sécurité.</p>
+</div>
+</div>
 </section>
-
 <section class="section">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-10">
-                <div class="glass-card-enhanced" style="padding: 3rem;">
-                    <form method="POST" enctype="multipart/form-data" class="request-form-modern">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        
-                        <!-- Privacy Disclaimer -->
-                        <div style="padding: 15px; background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%); border-left: 3px solid #3b82f6; border-radius: 8px; margin-bottom: 2rem;">
-                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2.5">
-                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                                    <circle cx="12" cy="12" r="3"/>
-                                </svg>
-                                <h4 style="color: #3b82f6; font-size: 0.95rem; font-weight: 700; margin: 0;">🔒 Vos données sont protégées</h4>
-                            </div>
-                            <p style="margin: 0; color: #94a3b8; font-size: 0.875rem; line-height: 1.5;">
+<div class="container">
+<div class="row justify-content-center">
+<div class="col-lg-10">
+<div class="glass-card-enhanced" style="padding: 3rem;">
+<form class="request-form-modern" enctype="multipart/form-data" method="POST">
+<input name="csrf_token" type="hidden" value="{{ csrf_token() }}"/>
+<!-- Privacy Disclaimer -->
+<div style="padding: 15px; background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%); border-left: 3px solid #3b82f6; border-radius: 8px; margin-bottom: 2rem;">
+<div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+<svg fill="none" height="20" stroke="#3b82f6" stroke-width="2.5" viewbox="0 0 24 24" width="20">
+<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+<circle cx="12" cy="12" r="3"></circle>
+</svg>
+<h4 style="color: #3b82f6; font-size: 0.95rem; font-weight: 700; margin: 0;">🔒 Vos données sont protégées</h4>
+</div>
+<p style="margin: 0; color: #94a3b8; font-size: 0.875rem; line-height: 1.5;">
                                 Aucun marketing ni tracking. Stockage chiffré et anonymisé. Vos informations restent confidentielles.
                             </p>
-                        </div>
-                        
-                        <!-- Anonymous Toggle -->
-                        <div class="form-section" style="margin-bottom: 2.5rem;">
-                            <div class="anonymous-toggle" style="display: flex; align-items: center; gap: 15px; padding: 20px; background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 12px; backdrop-filter: blur(10px);">
-                                <input type="checkbox" id="is_anonymous" name="is_anonymous" style="width: 24px; height: 24px; cursor: pointer; accent-color: var(--accent-blue);">
-                                <label for="is_anonymous" style="margin: 0; cursor: pointer; font-weight: 600; font-size: 1.05rem; color: var(--text-primary);">
-                                    <i class="bi bi-incognito" style="margin-right: 5px;"></i> Soumettre de manière anonyme
+</div>
+<!-- Anonymous Toggle -->
+<div class="form-section" style="margin-bottom: 2.5rem;">
+<div class="anonymous-toggle" style="display: flex; align-items: center; gap: 15px; padding: 20px; background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 12px; backdrop-filter: blur(10px);">
+<input id="is_anonymous" name="is_anonymous" style="width: 24px; height: 24px; cursor: pointer; accent-color: var(--accent-blue);" type="checkbox"/>
+<label for="is_anonymous" style="margin: 0; cursor: pointer; font-weight: 600; font-size: 1.05rem; color: var(--text-primary);">
+<i class="bi bi-incognito" style="margin-right: 5px;"></i> Soumettre de manière anonyme
                                 </label>
-                            </div>
-                        </div>
-
-                        <!-- Contact Information Section -->
-                        <div id="contact-section" class="form-section" style="margin-bottom: 2.5rem;">
-                            <h3 class="section-heading" style="font-size: 1.4rem; margin-bottom: 1.5rem; color: var(--accent-blue); display: flex; align-items: center; gap: 10px;">
-                                <i class="bi bi-person-circle"></i> Informations de contact
+</div>
+</div>
+<!-- Contact Information Section -->
+<div class="form-section" id="contact-section" style="margin-bottom: 2.5rem;">
+<h3 class="section-heading" style="font-size: 1.4rem; margin-bottom: 1.5rem; color: var(--accent-blue); display: flex; align-items: center; gap: 10px;">
+<i class="bi bi-person-circle"></i> Informations de contact
                             </h3>
-                            
-                            <div class="row" style="gap: 1.5rem 0;">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="name" class="form-label">Nom complet <span style="color: #ef4444;">*</span></label>
-                                        <input type="text" id="name" name="name" class="form-input" placeholder="Jean Dupont" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; transition: all 0.3s ease;">
-                                    </div>
-                                </div>
-                                
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="email" class="form-label">Adresse email <span style="color: #ef4444;">*</span></label>
-                                        <input type="email" id="email" name="email" class="form-input" placeholder="jean.dupont@example.com" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; transition: all 0.3s ease;">
-                                    </div>
-                                </div>
-                                
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label for="phone" class="form-label">Numéro de téléphone (Optionnel)</label>
-                                        <input type="tel" id="phone" name="phone" class="form-input" placeholder="+225 XX XX XX XX XX" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; transition: all 0.3s ease;">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Request Details Section -->
-                        <div class="form-section" style="margin-bottom: 2.5rem;">
-                            <h3 class="section-heading" style="font-size: 1.4rem; margin-bottom: 1.5rem; color: var(--accent-blue); display: flex; align-items: center; gap: 10px;">
-                                <i class="bi bi-file-text"></i> Détails de la demande
+<div class="row" style="gap: 1.5rem 0;">
+<div class="col-md-6">
+<div class="form-group">
+<label class="form-label" for="name">Nom complet <span style="color: #ef4444;">*</span></label>
+<input class="form-input" id="name" name="name" placeholder="Jean Dupont" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; transition: all 0.3s ease;" type="text"/>
+</div>
+</div>
+<div class="col-md-6">
+<div class="form-group">
+<label class="form-label" for="email">Adresse email <span style="color: #ef4444;">*</span></label>
+<input class="form-input" id="email" name="email" placeholder="jean.dupont@example.com" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; transition: all 0.3s ease;" type="email"/>
+</div>
+</div>
+<div class="col-md-12">
+<div class="form-group">
+<label class="form-label" for="phone">Numéro de téléphone (Optionnel)</label>
+<input class="form-input" id="phone" name="phone" placeholder="+225 XX XX XX XX XX" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; transition: all 0.3s ease;" type="tel"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Request Details Section -->
+<div class="form-section" style="margin-bottom: 2.5rem;">
+<h3 class="section-heading" style="font-size: 1.4rem; margin-bottom: 1.5rem; color: var(--accent-blue); display: flex; align-items: center; gap: 10px;">
+<i class="bi bi-file-text"></i> Détails de la demande
                             </h3>
-
-                            <div class="form-group" style="margin-bottom: 1.5rem;">
-                                <label for="description" class="form-label">Description détaillée <span style="color: #ef4444;">*</span></label>
-                                <textarea id="description" name="description" required rows="6" class="form-input" placeholder="Décrivez en détail l'information que vous souhaitez faire vérifier..." style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; resize: vertical; transition: all 0.3s ease;"></textarea>
-                                <small style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 8px; display: flex; align-items: center; gap: 5px;">
-                                    <i class="bi bi-shield-check"></i> Le contenu textuel est scanné pour détecter tout contenu malveillant
+<div class="form-group" style="margin-bottom: 1.5rem;">
+<label class="form-label" for="description">Description détaillée <span style="color: #ef4444;">*</span></label>
+<textarea class="form-input" id="description" name="description" placeholder="Décrivez en détail l'information que vous souhaitez faire vérifier..." required="" rows="6" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; resize: vertical; transition: all 0.3s ease;"></textarea>
+<small style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 8px; display: flex; align-items: center; gap: 5px;">
+<i class="bi bi-shield-check"></i> Le contenu textuel est scanné pour détecter tout contenu malveillant
                                 </small>
-                            </div>
-
-                            <div class="form-group" style="margin-bottom: 1.5rem;">
-                                <label for="urls" class="form-label">URLs à vérifier (une par ligne)</label>
-                                <textarea id="urls" name="urls" rows="4" class="form-input" placeholder="https://example.com&#10;https://another-example.com" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; resize: vertical; transition: all 0.3s ease;"></textarea>
-                                <small style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 8px; display: flex; align-items: center; gap: 5px;">
-                                    <i class="bi bi-shield-check"></i> Les URLs sont analysées pour détecter les menaces
+</div>
+<div class="form-group" style="margin-bottom: 1.5rem;">
+<label class="form-label" for="urls">URLs à vérifier (une par ligne)</label>
+<textarea class="form-input" id="urls" name="urls" placeholder="https://example.com
+https://another-example.com" rows="4" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem; resize: vertical; transition: all 0.3s ease;"></textarea>
+<small style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 8px; display: flex; align-items: center; gap: 5px;">
+<i class="bi bi-shield-check"></i> Les URLs sont analysées pour détecter les menaces
                                 </small>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="file" class="form-label">Joindre un fichier (Optionnel)</label>
-                                <input type="file" id="file" name="file" class="form-input" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem;">
-                                <small style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 8px; display: flex; align-items: center; gap: 5px;">
-                                    <i class="bi bi-shield-check"></i> Les fichiers sont scannés pour détecter les malwares
+</div>
+<div class="form-group">
+<label class="form-label" for="file">Joindre un fichier (Optionnel)</label>
+<input class="form-input" id="file" name="file" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 1rem;" type="file"/>
+<small style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 8px; display: flex; align-items: center; gap: 5px;">
+<i class="bi bi-shield-check"></i> Les fichiers sont scannés pour détecter les malwares
                                 </small>
-                            </div>
-                        </div>
-
-                        <!-- Security Notice -->
-                        <div class="security-notice" style="padding: 20px; background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 12px; margin-bottom: 2rem; backdrop-filter: blur(10px);">
-                            <p style="margin: 0; color: #ef4444; font-size: 1rem; font-weight: 600; display: flex; align-items: flex-start; gap: 10px;">
-                                <i class="bi bi-exclamation-triangle-fill" style="font-size: 1.2rem; flex-shrink: 0; margin-top: 2px;"></i>
-                                <span>Avis de sécurité : Toute tentative de soumettre du contenu malveillant (fichiers, liens ou injection de code) sera détectée et enregistrée comme activité illégale.</span>
-                            </p>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 18px; font-size: 1.15rem; font-weight: 600; border-radius: 12px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;">
-                            <i class="bi bi-send-fill"></i> Soumettre la demande
+</div>
+</div>
+<!-- Security Notice -->
+<div class="security-notice" style="padding: 20px; background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 12px; margin-bottom: 2rem; backdrop-filter: blur(10px);">
+<p style="margin: 0; color: #ef4444; font-size: 1rem; font-weight: 600; display: flex; align-items: flex-start; gap: 10px;">
+<i class="bi bi-exclamation-triangle-fill" style="font-size: 1.2rem; flex-shrink: 0; margin-top: 2px;"></i>
+<span>Avis de sécurité : Toute tentative de soumettre du contenu malveillant (fichiers, liens ou injection de code) sera détectée et enregistrée comme activité illégale.</span>
+</p>
+</div>
+<button class="btn btn-primary" style="width: 100%; padding: 18px; font-size: 1.15rem; font-weight: 600; border-radius: 12px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;" type="submit">
+<i class="bi bi-send-fill"></i> Soumettre la demande
                         </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+</form>
+</div>
+</div>
+</div>
+</div>
 </section>
-
-<style>
-.form-label {
-    display: block;
-    margin-bottom: 10px;
-    font-weight: 600;
-    font-size: 1rem;
-    color: var(--text-primary);
-}
-
-.form-input:focus {
-    outline: none;
-    border-color: rgba(59, 130, 246, 0.5);
-    background: rgba(255, 255, 255, 0.08);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.form-input::placeholder {
-    color: var(--text-muted);
-}
-
-.row {
-    display: flex;
-    flex-wrap: wrap;
-    margin: 0 -15px;
-}
-
-.col-md-6 {
-    flex: 0 0 50%;
-    max-width: 50%;
-    padding: 0 15px;
-}
-
-.col-md-12 {
-    flex: 0 0 100%;
-    max-width: 100%;
-    padding: 0 15px;
-}
-
-@media (max-width: 768px) {
-    .col-md-6 {
-        flex: 0 0 100%;
-        max-width: 100%;
-    }
-}
-</style>
-
-<script nonce="{{ csp_nonce }}">
-document.getElementById('is_anonymous').addEventListener('change', function() {
-    const contactSection = document.getElementById('contact-section');
-    const inputs = contactSection.querySelectorAll('input');
-    
-    if (this.checked) {
-        contactSection.style.display = 'none';
-        inputs.forEach(input => {
-            input.required = false;
-            input.value = '';
-        });
-    } else {
-        contactSection.style.display = 'block';
-        document.getElementById('name').required = true;
-        document.getElementById('email').required = true;
-    }
-});
-</script>
+<link href="{{ url_for('static', filename='css/factchecking_form.css') }}" rel="stylesheet"/>
+<script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/factchecking_form.js') }}"></script>
 {% endblock %}

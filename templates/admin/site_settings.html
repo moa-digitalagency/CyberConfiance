@@ -5,7 +5,6 @@
  * Fait par : Aisance KALONJI, www.aisancekalonji.com
  * Auditer par : La CyberConfiance, www.cyberconfiance.com
 -->
-
 <!--
   CyberConfiance
   By MOA Digital Agency LLC
@@ -19,23 +18,21 @@
 
 {% block content %}
 <div class="admin-header">
-    <h1>Paramètres du Site</h1>
-    <p>Configuration technique et paramètres généraux</p>
+<h1>Paramètres du Site</h1>
+<p>Configuration technique et paramètres généraux</p>
 </div>
-
 <div class="admin-toolbar">
-    <div class="toolbar-left">
-        <div class="filter-group">
-            <input type="text" id="search-input" placeholder="Rechercher un paramètre..." style="min-width: 250px;">
-        </div>
-    </div>
-    <div class="toolbar-right">
-        <a href="{{ url_for('admin_panel.content_management') }}" class="btn btn-secondary">Modifier le contenu du site</a>
-    </div>
+<div class="toolbar-left">
+<div class="filter-group">
+<input id="search-input" placeholder="Rechercher un paramètre..." style="min-width: 250px;" type="text"/>
 </div>
-
-<form method="POST" action="{{ url_for('admin_panel.site_settings') }}" enctype="multipart/form-data">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+</div>
+<div class="toolbar-right">
+<a class="btn btn-secondary" href="{{ url_for('admin_panel.content_management') }}">Modifier le contenu du site</a>
+</div>
+</div>
+<form action="{{ url_for('admin_panel.site_settings') }}" enctype="multipart/form-data" method="POST">
+<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
     
     {% set grouped_settings = {} %}
     {% for setting in settings %}
@@ -59,18 +56,17 @@
     {% for category in ['general', 'appearance', 'system', 'seo', 'advanced'] %}
         {% if category in grouped_settings %}
         <div class="admin-card" style="margin-bottom: 1.5rem;">
-            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1);">
-                <span style="font-size: 1.5rem;">{{ category_labels[category].icon }}</span>
-                <div>
-                    <h3 style="margin: 0; color: var(--text-primary);">{{ category_labels[category].label }}</h3>
-                    <p style="margin: 0.25rem 0 0 0; font-size: 0.85rem; color: var(--text-muted);">{{ category_labels[category].description }}</p>
-                </div>
-            </div>
-            
-            <div style="display: grid; gap: 1.25rem;">
+<div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1);">
+<span style="font-size: 1.5rem;">{{ category_labels[category].icon }}</span>
+<div>
+<h3 style="margin: 0; color: var(--text-primary);">{{ category_labels[category].label }}</h3>
+<p style="margin: 0.25rem 0 0 0; font-size: 0.85rem; color: var(--text-muted);">{{ category_labels[category].description }}</p>
+</div>
+</div>
+<div style="display: grid; gap: 1.25rem;">
                 {% for setting in grouped_settings[category] %}
                 <div class="form-group" data-searchable="{{ setting.key }} {{ setting.description }} {{ setting.value }}">
-                    <label for="setting_{{ setting.key }}" style="display: block; color: var(--text-primary); margin-bottom: 0.5rem; font-weight: 600;">
+<label for="setting_{{ setting.key }}" style="display: block; color: var(--text-primary); margin-bottom: 0.5rem; font-weight: 600;">
                         {{ setting.key }}
                         {% if setting.description %}
                         <span style="font-weight: normal; color: var(--text-secondary); font-size: 0.85rem; display: block; margin-top: 0.25rem;">{{ setting.description }}</span>
@@ -81,89 +77,52 @@
                     <div style="display: flex; gap: 1rem; align-items: flex-start; flex-wrap: wrap;">
                         {% if setting.value %}
                         <div style="flex-shrink: 0;">
-                            <img src="{{ setting.value }}" alt="{{ setting.key }}" style="max-width: 150px; max-height: 80px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); padding: 0.5rem;">
-                        </div>
+<img alt="{{ setting.key }}" src="{{ setting.value }}" style="max-width: 150px; max-height: 80px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); padding: 0.5rem;"/>
+</div>
                         {% endif %}
                         <div style="flex-grow: 1;">
-                            <div class="file-upload-wrapper" style="position: relative; display: inline-block; width: 100%;">
-                                <input 
-                                    type="file" 
-                                    id="image_{{ setting.key }}" 
-                                    name="image_{{ setting.key }}" 
-                                    accept="image/*"
-                                    class="file-input"
-                                    style="position: absolute; opacity: 0; width: 100%; height: 100%; cursor: pointer;"
-                                    onchange="updateFileName(this, '{{ setting.key }}')"
-                                >
-                                <div class="file-upload-btn" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; background: rgba(59, 130, 246, 0.1); border: 2px dashed rgba(59, 130, 246, 0.3); border-radius: 8px; cursor: pointer; transition: all 0.2s;">
-                                    <span style="font-size: 1.25rem;">📁</span>
-                                    <span id="filename_{{ setting.key }}" style="color: var(--text-secondary);">Cliquer pour téléverser une nouvelle image</span>
-                                </div>
-                            </div>
-                            <input type="hidden" name="setting_{{ setting.key }}" value="{{ setting.value or '' }}">
-                            <small style="color: var(--text-muted); margin-top: 0.5rem; display: block;">
+<div class="file-upload-wrapper" style="position: relative; display: inline-block; width: 100%;">
+<input accept="image/*" class="file-input" id="image_{{ setting.key }}" name="image_{{ setting.key }}" onchange="updateFileName(this, '{{ setting.key }}')" style="position: absolute; opacity: 0; width: 100%; height: 100%; cursor: pointer;" type="file"/>
+<div class="file-upload-btn" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; background: rgba(59, 130, 246, 0.1); border: 2px dashed rgba(59, 130, 246, 0.3); border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+<span style="font-size: 1.25rem;">📁</span>
+<span id="filename_{{ setting.key }}" style="color: var(--text-secondary);">Cliquer pour téléverser une nouvelle image</span>
+</div>
+</div>
+<input name="setting_{{ setting.key }}" type="hidden" value="{{ setting.value or '' }}"/>
+<small style="color: var(--text-muted); margin-top: 0.5rem; display: block;">
                                 Formats acceptés: PNG, JPG, GIF, SVG, WebP, ICO
                             </small>
-                        </div>
-                    </div>
+</div>
+</div>
                     
                     {% elif setting.value_type == 'boolean' %}
                     <div style="display: flex; align-items: center; gap: 1rem;">
-                        <label class="toggle-switch" style="position: relative; display: inline-block; width: 52px; height: 28px;">
-                            <input type="hidden" name="setting_{{ setting.key }}" value="false">
-                            <input 
-                                type="checkbox" 
-                                name="setting_{{ setting.key }}" 
-                                value="true"
-                                {% if setting.value == 'true' or setting.value == True %}checked{% endif %}
-                                style="opacity: 0; width: 0; height: 0;"
-                            >
-                            <span class="slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255,255,255,0.1); transition: .3s; border-radius: 28px;"></span>
-                        </label>
-                        <span style="color: var(--text-secondary);">
+<label class="toggle-switch" style="position: relative; display: inline-block; width: 52px; height: 28px;">
+<input name="setting_{{ setting.key }}" type="hidden" value="false"/>
+<input %}="" %}checked{%="" 'true'="" endif="" if="" name="setting_{{ setting.key }}" or="" setting.value="=" style="opacity: 0; width: 0; height: 0;" true="" type="checkbox" value="true" {%=""/>
+<span class="slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255,255,255,0.1); transition: .3s; border-radius: 28px;"></span>
+</label>
+<span style="color: var(--text-secondary);">
                             {% if setting.value == 'true' or setting.value == True %}Activé{% else %}Désactivé{% endif %}
                         </span>
-                    </div>
+</div>
                     
-                    {% elif setting.value_type == 'textarea' or (setting.value and setting.value|length > 200) %}
-                    <textarea 
-                        id="setting_{{ setting.key }}" 
-                        name="setting_{{ setting.key }}" 
-                        rows="6" 
-                        class="admin-filter-input" 
-                        style="width: 100%; font-family: 'Monaco', 'Menlo', 'Consolas', monospace; font-size: 0.85rem; resize: vertical;"
-                    >{{ setting.value }}</textarea>
+                    {% elif setting.value_type == 'textarea' or (setting.value and setting.value|length &gt; 200) %}
+                    <textarea class="admin-filter-input" id="setting_{{ setting.key }}" name="setting_{{ setting.key }}" rows="6" style="width: 100%; font-family: 'Monaco', 'Menlo', 'Consolas', monospace; font-size: 0.85rem; resize: vertical;">{{ setting.value }}</textarea>
                     
                     {% elif setting.value_type == 'password' %}
                     <div style="position: relative;">
-                        <input 
-                            type="password" 
-                            id="setting_{{ setting.key }}" 
-                            name="setting_{{ setting.key }}" 
-                            value="{{ setting.value }}" 
-                            class="admin-filter-input"
-                            style="width: 100%; padding-right: 3rem;"
-                            autocomplete="new-password"
-                        >
-                        <button type="button" 
-                            onclick="togglePasswordVisibility('setting_{{ setting.key }}')" 
-                            style="position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; padding: 0.5rem; color: var(--text-secondary);">
+<input autocomplete="new-password" class="admin-filter-input" id="setting_{{ setting.key }}" name="setting_{{ setting.key }}" style="width: 100%; padding-right: 3rem;" type="password" value="{{ setting.value }}"/>
+<button onclick="togglePasswordVisibility('setting_{{ setting.key }}')" style="position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; padding: 0.5rem; color: var(--text-secondary);" type="button">
                             👁️
                         </button>
-                    </div>
-                    <small style="color: var(--accent-red); display: block; margin-top: 0.5rem;">
+</div>
+<small style="color: var(--accent-red); display: block; margin-top: 0.5rem;">
                         ⚠️ Cette valeur est sensible et ne doit jamais être partagée
                     </small>
                     
                     {% else %}
-                    <input 
-                        type="text" 
-                        id="setting_{{ setting.key }}" 
-                        name="setting_{{ setting.key }}" 
-                        value="{{ setting.value }}" 
-                        class="admin-filter-input"
-                        style="width: 100%;"
-                    >
+                    <input class="admin-filter-input" id="setting_{{ setting.key }}" name="setting_{{ setting.key }}" style="width: 100%;" type="text" value="{{ setting.value }}"/>
                     {% endif %}
                     
                     {% if setting.updated_at %}
@@ -174,93 +133,26 @@
                 </div>
                 {% endfor %}
             </div>
-        </div>
+</div>
         {% endif %}
     {% endfor %}
     
     {% if not settings %}
     <div class="admin-card">
-        <div style="text-align: center; padding: 3rem; color: var(--text-secondary);">
-            <p style="margin-bottom: 1rem; font-size: 1.1rem;">Aucun paramètre technique configuré</p>
-            <p style="font-size: 0.9rem;">
+<div style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+<p style="margin-bottom: 1rem; font-size: 1.1rem;">Aucun paramètre technique configuré</p>
+<p style="font-size: 0.9rem;">
                 Les paramètres techniques apparaîtront ici une fois configurés.
             </p>
-        </div>
-    </div>
+</div>
+</div>
     {% else %}
     <div style="position: sticky; bottom: 0; background: linear-gradient(transparent, var(--bg-primary) 20%); padding: 1.5rem 0; display: flex; gap: 1rem;">
-        <button type="submit" class="btn btn-primary" style="padding: 0.75rem 2rem;">Enregistrer les modifications</button>
-        <button type="button" onclick="window.location.reload()" class="btn btn-secondary">Annuler</button>
-    </div>
+<button class="btn btn-primary" style="padding: 0.75rem 2rem;" type="submit">Enregistrer les modifications</button>
+<button class="btn btn-secondary" onclick="window.location.reload()" type="button">Annuler</button>
+</div>
     {% endif %}
-</form>
-
-<style>
-.form-group {
-    background: rgba(255, 255, 255, 0.02);
-    padding: 1.25rem;
-    border-radius: 8px;
-    border: 1px solid rgba(59, 130, 246, 0.1);
-    transition: all 0.2s;
-}
-
-.form-group:hover {
-    background: rgba(255, 255, 255, 0.03);
-    border-color: rgba(59, 130, 246, 0.2);
-}
-
-.file-upload-wrapper:hover .file-upload-btn {
-    background: rgba(59, 130, 246, 0.15);
-    border-color: rgba(59, 130, 246, 0.5);
-}
-
-.toggle-switch input:checked + .slider {
-    background-color: #3b82f6;
-}
-
-.toggle-switch .slider:before {
-    content: "";
-    position: absolute;
-    height: 20px;
-    width: 20px;
-    left: 4px;
-    bottom: 4px;
-    background-color: white;
-    transition: .3s;
-    border-radius: 50%;
-}
-
-.toggle-switch input:checked + .slider:before {
-    transform: translateX(24px);
-}
-</style>
-
-<script nonce="{{ csp_nonce }}">
-document.getElementById('search-input').addEventListener('input', function(e) {
-    const searchTerm = e.target.value.toLowerCase();
-    const formGroups = document.querySelectorAll('.form-group');
-    
-    formGroups.forEach(group => {
-        const searchableText = group.getAttribute('data-searchable').toLowerCase();
-        group.style.display = searchableText.includes(searchTerm) ? 'block' : 'none';
-    });
-});
-
-function updateFileName(input, key) {
-    const filenameSpan = document.getElementById('filename_' + key);
-    if (input.files && input.files[0]) {
-        filenameSpan.textContent = input.files[0].name;
-        filenameSpan.style.color = 'var(--accent-blue)';
-    }
-}
-
-function togglePasswordVisibility(inputId) {
-    const input = document.getElementById(inputId);
-    if (input.type === 'password') {
-        input.type = 'text';
-    } else {
-        input.type = 'password';
-    }
-}
-</script>
+</input></form>
+<link href="{{ url_for('static', filename='css/site_settings.css') }}" rel="stylesheet"/>
+<script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/site_settings.js') }}"></script>
 {% endblock %}

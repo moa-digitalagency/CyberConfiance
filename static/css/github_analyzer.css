@@ -1,0 +1,42 @@
+.analyzer-form .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.analyzer-form .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #e2e8f0;
+}
+
+.analyzer-form .form-control {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid rgba(59, 130, 246, 0.3);
+    border-radius: 8px;
+    background: rgba(15, 23, 42, 0.6);
+    color: #e2e8f0;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.analyzer-form .form-control:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.analyzer-form .form-control::placeholder {
+    color: #64748b;
+}
+
+#analyzeBtn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+    .score-overview {
+        grid-template-columns: 1fr !important;
+    }
+}
