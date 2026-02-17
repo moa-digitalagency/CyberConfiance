@@ -25,18 +25,18 @@
 
 ```mermaid
 graph TD
-    User((User)) -->|HTTPS| WebServer[Web Server (Flask)]
+    User(("User")) -->|HTTPS| WebServer["Web Server (Flask)"]
 
     subgraph "Core System"
-        WebServer -->|SQLAlchemy| DB[(PostgreSQL)]
-        WebServer -->|File I/O| Storage[Secure Storage]
-        WebServer -->|Templates| Jinja[Jinja2 Engine]
+        WebServer -->|SQLAlchemy| DB[("PostgreSQL")]
+        WebServer -->|File I/O| Storage["Secure Storage"]
+        WebServer -->|Templates| Jinja["Jinja2 Engine"]
     end
 
     subgraph "Security Services (APIs)"
-        WebServer -->|REST API| VT[VirusTotal]
-        WebServer -->|REST API| HIBP[Have I Been Pwned]
-        WebServer -->|REST API| GSB[Google Safe Browsing]
+        WebServer -->|REST API| VT["VirusTotal"]
+        WebServer -->|REST API| HIBP["Have I Been Pwned"]
+        WebServer -->|REST API| GSB["Google Safe Browsing"]
     end
 
     style WebServer fill:#f9f,stroke:#333,stroke-width:2px
