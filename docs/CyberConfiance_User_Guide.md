@@ -1,118 +1,55 @@
-# CyberConfiance - Guide Utilisateur Complet
+[ 🇫🇷 Français ] | [ [🇬🇧 English](CyberConfiance_User_Guide_en.md) ]
 
-Ce guide vous accompagne pas à pas dans l'utilisation de tous les outils de sécurité de la plateforme CyberConfiance.
+# Guide Utilisateur - CyberConfiance
 
-**Public cible** : Citoyens, Décideurs, Professionnels.
-**Version** : 2.1
+## 1. Vue d'Ensemble
 
----
-
-## 1. Analyseur de Sécurité Unifié (`/outils/analyseur-securite`)
-
-**Objectif** : Vérifier si un fichier, une adresse web (URL) ou une adresse IP est dangereux avant de cliquer ou d'ouvrir.
-
-### Comment l'utiliser ?
-
-#### 1.1. Analyser un Lien (URL)
-1.  Copiez l'adresse du site web douteux (ex: `http://offre-speciale-kdo.com`).
-2.  Allez dans **Outils > Analyseur de Sécurité**.
-3.  Sélectionnez l'onglet **URL**.
-4.  Collez le lien et cliquez sur **Analyser**.
-5.  **Résultat** : Un score de risque (0-100) s'affiche.
-    *   **Vert** : Site légitime connu.
-    *   **Rouge** : Site de phishing ou malware détecté.
-    *   **Détails** : Cliquez pour voir les redirections suspectes (ex: `bit.ly` -> `site-hacke.com`).
-
-#### 1.2. Analyser un Fichier
-1.  Sélectionnez l'onglet **Fichier**.
-2.  Cliquez sur **Choisir un fichier** (Max 50 Mo).
-3.  L'outil calcule l'empreinte numérique (Hash) du fichier sans l'ouvrir.
-4.  Il interroge 70+ antivirus mondiaux (VirusTotal).
-5.  **Résultat** : Nombre de détections (ex: "3/72 moteurs ont détecté un Trojan").
+CyberConfiance est votre portail unique pour vérifier la sécurité de vos fichiers, liens et données personnelles. L'interface est conçue pour être simple et intuitive.
 
 ---
 
-## 2. Analyseur de QR Code (`/outils/analyseur-qrcode`)
+## 2. Utiliser les Outils d'Analyse
 
-**Objectif** : Scanner un QR code sans risque de se faire pirater via "Quishing" (QR Phishing).
+### 2.1. Analyseur de Liens et Fichiers
+Accessible depuis la page d'accueil ou le menu "Outils".
 
-### Comment l'utiliser ?
-1.  Prenez une photo du QR code suspect ou faites une capture d'écran.
-2.  Allez dans **Outils > Analyseur QR Code**.
-3.  Chargez l'image ou utilisez la caméra de votre appareil.
-4.  **Analyse** :
-    *   L'outil décode le lien caché.
-    *   Il vérifie s'il redirige vers un site malveillant.
-    *   Il détecte les pièges JavaScript.
-5.  **Verdict** : "Sûr" ou "Dangereux" avec l'URL réelle affichée en clair.
+1.  **URL** : Collez un lien suspect dans le champ texte. Cliquez sur "Analyser". Le système vérifiera si le site est connu pour héberger des virus ou du phishing.
+2.  **Fichier** : Cliquez sur "Choisir un fichier" (Max 50Mo). Le fichier est envoyé, scanné par 70 antivirus, puis supprimé de nos serveurs.
+3.  **Résultats** : Un rapport s'affiche avec un code couleur (Vert = Sûr, Rouge = Danger).
 
----
+### 2.2. Analyseur de QR Codes
+1.  Prenez une photo du QR Code ou importez une capture d'écran.
+2.  L'outil décode le lien caché et l'analyse AVANT que vous ne l'ouvriez.
+3.  Si le lien est sûr, vous pouvez cliquer pour l'ouvrir.
 
-## 3. Quiz de Cybersécurité (`/quiz`)
-
-**Objectif** : Évaluer votre niveau de vigilance numérique et recevoir des conseils personnalisés.
-
-### Déroulement
-1.  Répondez à **15 questions** aléatoires sur 3 thèmes :
-    *   **Vigilance** (Phishing, Arnaques).
-    *   **Technique** (Mots de passe, Wifi).
-    *   **Hygiène** (Mises à jour, Sauvegardes).
-2.  Obtenez votre **Score Global** (ex: 75%).
-3.  Consultez les **Recommandations** basées sur vos erreurs.
-4.  (Optionnel) Entrez votre email pour vérifier s'il a déjà fuité.
+### 2.3. Vérification de Fuite d'Email
+1.  Allez dans le menu "Quiz & Fuites".
+2.  Entrez votre adresse email professionnelle ou personnelle.
+3.  Le système interroge la base de données mondiale des fuites (HIBP).
+4.  Si votre email est compromis, la liste des sites concernés s'affiche. **Changez vos mots de passe immédiatement.**
 
 ---
 
-## 4. Vérification de Fuites (`/analyze-breach`)
+## 3. Le Quiz de Cybersécurité
 
-**Objectif** : Savoir si vos mots de passe ont été volés lors d'un piratage de site web (LinkedIn, Adobe, Canva, etc.).
-
-### Comment faire ?
-1.  Entrez votre adresse email professionnelle ou personnelle.
-2.  L'outil interroge la base mondiale **Have I Been Pwned**.
-3.  **Résultat** :
-    *   "Bonne nouvelle" : Aucune fuite connue.
-    *   "Attention" : Votre email apparaît dans X fuites de données.
-4.  **Action requise** : Changez immédiatement les mots de passe des sites listés.
+Testez vos connaissances en 5 minutes.
+*   Répondez à 15 questions à choix multiples.
+*   Chaque réponse est expliquée pour vous aider à apprendre.
+*   À la fin, obtenez votre score et un certificat de réussite (si > 80%).
 
 ---
 
-## 5. Analyseur de Prompt IA (`/outils/analyseur-prompt`)
+## 4. Services Citoyens
 
-**Objectif** : Vérifier qu'un texte envoyé à ChatGPT ou une autre IA ne contient pas de données sensibles ou d'injections.
+### 4.1. Fact-Checking
+Vous avez reçu une information douteuse sur WhatsApp ?
+*   Utilisez le formulaire "Fact-Check".
+*   Copiez le texte ou importez l'image.
+*   Nos experts vérifieront l'information.
 
-### Usage
-1.  Collez votre prompt (texte de commande).
-2.  L'outil détecte :
-    *   Données confidentielles (Clés API, Emails, Noms).
-    *   Tentatives d'injection ("Ignore previous instructions").
-3.  Obtenez une version "nettoyée" à utiliser sans risque.
-
----
-
-## 6. Analyseur GitHub (`/outils/github-analyzer`)
-
-**Objectif** : Auditer rapidement la sécurité d'un projet Open Source avant de l'installer.
-
-### Usage
-1.  Collez l'URL du dépôt GitHub (ex: `https://github.com/user/projet`).
-2.  L'outil scanne le code source (sans l'exécuter).
-3.  Il détecte :
-    *   Mots de passe oubliés dans le code.
-    *   Dépendances périmées.
-    *   Code de mauvaise qualité ("Vibecoding").
-4.  Téléchargez le rapport PDF complet pour votre DSI.
+### 4.2. Signalement
+Pour signaler une arnaque ou un site malveillant, utilisez le formulaire de signalement anonyme. Vos données sont protégées.
 
 ---
 
-## 7. Rapports PDF
-
-Pour chaque outil, un bouton **"Télécharger le Rapport PDF"** est disponible.
-Ces rapports professionnels contiennent :
-*   Le résumé exécutif (pour la direction).
-*   Les détails techniques (pour l'IT).
-*   La preuve d'audit (Date, Heure, ID unique).
-
----
-
-*CyberConfiance - Guide Utilisateur v2.1*
+*Besoin d'aide ? Contactez le support via le bouton WhatsApp en bas de page.*
