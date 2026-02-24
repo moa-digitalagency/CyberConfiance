@@ -172,25 +172,31 @@ def edit_page_content(page):
         return redirect(url_for('admin_panel.content_management'))
     
     if request.method == 'POST':
-        for key, value in request.form.items():
-            if key.startswith('setting_'):
-                setting_key = key.replace('setting_', '')
-                setting = SiteSettings.query.filter_by(key=setting_key, category=page).first()
-                if setting:
-                    setting.value = value
-                    setting.updated_by = current_user.id
-                else:
-                    setting = SiteSettings()
-                    setting.key = setting_key
-                    setting.value = value
-                    setting.category = page
-                    setting.updated_by = current_user.id
-                    db.session.add(setting)
-        
-        db.session.commit()
-        log_activity('ADMIN_PAGE_CONTENT_UPDATE', f'Mise à jour contenu page {page}', success=True)
-        flash(f'Contenu de la page {page_names[page]} mis à jour avec succès', 'success')
-        return redirect(url_for('admin_panel.edit_page_content', page=page))
+        try:
+            for key, value in request.form.items():
+                if key.startswith('setting_'):
+                    setting_key = key.replace('setting_', '')
+                    setting = SiteSettings.query.filter_by(key=setting_key, category=page).first()
+                    if setting:
+                        setting.value = value
+                        setting.updated_by = current_user.id
+                    else:
+                        setting = SiteSettings()
+                        setting.key = setting_key
+                        setting.value = value
+                        setting.category = page
+                        setting.updated_by = current_user.id
+                        db.session.add(setting)
+
+            db.session.commit()
+            log_activity('ADMIN_PAGE_CONTENT_UPDATE', f'Mise à jour contenu page {page}', success=True)
+            flash(f'Contenu de la page {page_names[page]} mis à jour avec succès', 'success')
+            return redirect(url_for('admin_panel.edit_page_content', page=page))
+        except Exception as e:
+            db.session.rollback()
+            log_activity('ADMIN_PAGE_CONTENT_UPDATE', f'Erreur mise à jour page {page}: {str(e)}', success=False)
+            flash(f'Erreur lors de la mise à jour : {str(e)}', 'danger')
+            return redirect(url_for('admin_panel.edit_page_content', page=page))
     
     settings = SiteSettings.query.filter_by(category=page).all()
     log_activity('ADMIN_PAGE_CONTENT_VIEW', f'Consultation contenu page {page}')
