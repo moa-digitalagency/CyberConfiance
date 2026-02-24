@@ -10,7 +10,7 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for,
 from services import ContentService, HaveIBeenPwnedService, QuizService
 from services.security import SecurityAnalyzerService
 from services.pdf import PDFReportService
-from services.qrcode import QRCodeAnalyzerService
+from services.qrcode_analyzer_service import QRCodeAnalyzerService
 from services.prompt import PromptAnalyzerService
 from services.github.analyzer import GitHubCodeAnalyzerService
 from services.metadata import MetadataAnalyzerService
@@ -604,14 +604,14 @@ def qrcode_analyzer():
                         original_filename=filename,
                         extracted_url=results.get('extracted_url'),
                         final_url=results.get('final_url'),
-                        redirect_chain=results.get('redirect_chain', []),
+                        redirect_chain=results.get('redirect_chain') or [],
                         redirect_count=results.get('redirect_count', 0),
                         threat_detected=results.get('threat_detected', False),
                         threat_level=threat_level,
-                        threat_details=results.get('issues', []),
+                        threat_details=results.get('issues') or [],
                         blacklist_matches=results.get('blacklist_result'),
-                        suspicious_patterns=results.get('issues', []),
-                        js_redirects_detected=len(results.get('js_redirects', [])) > 0,
+                        suspicious_patterns=results.get('issues') or [],
+                        js_redirects_detected=len(results.get('js_redirects') or []) > 0,
                         analysis_results=results,
                         document_code=ensure_unique_code(QRCodeAnalysis),
                         ip_address=get_client_ip(request),
