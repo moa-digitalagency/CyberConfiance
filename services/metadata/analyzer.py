@@ -22,6 +22,8 @@ import io
 import subprocess
 import tempfile
 import json
+import shutil
+import logging
 from PIL import Image
 from PIL.ExifTags import TAGS, GPSTAGS
 import exifread
@@ -31,6 +33,8 @@ from mutagen.mp4 import MP4
 from mutagen.id3 import ID3
 from datetime import datetime
 
+
+logger = logging.getLogger(__name__)
 
 class MetadataAnalyzerService:
     
@@ -144,6 +148,18 @@ class MetadataAnalyzerService:
     }
     
     @classmethod
+    def _check_dependencies(cls):
+        """Verifie la presence des outils externes necessaires."""
+        missing_tools = []
+        for tool in ['exiftool', 'ffmpeg', 'ffprobe']:
+            if not shutil.which(tool):
+                missing_tools.append(tool)
+
+        if missing_tools:
+            logger.warning(f"Outils manquants pour l'analyse des metadonnees : {', '.join(missing_tools)}. Certaines analyses seront ignorees.")
+        return missing_tools
+
+    @classmethod
     def get_file_type(cls, filename):
         ext = os.path.splitext(filename.lower())[1]
         if ext in cls.SUPPORTED_IMAGE_EXTENSIONS:
@@ -156,6 +172,7 @@ class MetadataAnalyzerService:
     
     @classmethod
     def analyze_file(cls, file_data, filename):
+        cls._check_dependencies()
         file_type = cls.get_file_type(filename)
         
         if not file_type:
@@ -279,21 +296,26 @@ class MetadataAnalyzerService:
                 tmp_path = tmp.name
             
             try:
-                result = subprocess.run(
-                    ['exiftool', '-json', '-all', tmp_path],
-                    capture_output=True, text=True, timeout=30
-                )
-                if result.returncode == 0 and result.stdout:
-                    exiftool_data = json.loads(result.stdout)
-                    if exiftool_data and len(exiftool_data) > 0:
-                        for key, value in exiftool_data[0].items():
-                            if key not in ('SourceFile', 'Directory', 'FileName'):
-                                try:
-                                    str_value = str(value)
-                                    if len(str_value) < 1000:
-                                        metadata[f'ExifTool_{key}'] = str_value
-                                except:
-                                    pass
+                try:
+                    result = subprocess.run(
+                        ['exiftool', '-json', '-all', tmp_path],
+                        capture_output=True, text=True, timeout=30
+                    )
+                    if result.returncode == 0 and result.stdout:
+                        exiftool_data = json.loads(result.stdout)
+                        if exiftool_data and len(exiftool_data) > 0:
+                            for key, value in exiftool_data[0].items():
+                                if key not in ('SourceFile', 'Directory', 'FileName'):
+                                    try:
+                                        str_value = str(value)
+                                        if len(str_value) < 1000:
+                                            metadata[f'ExifTool_{key}'] = str_value
+                                    except:
+                                        pass
+                except FileNotFoundError:
+                    logger.warning("exiftool non trouve, analyse exiftool ignoree pour l'image.")
+                except Exception as e:
+                    logger.warning(f"Erreur lors de l'analyse exiftool pour l'image: {e}")
             finally:
                 os.unlink(tmp_path)
         except Exception as e:
@@ -335,64 +357,74 @@ class MetadataAnalyzerService:
                 pass
             
             try:
-                result = subprocess.run(
-                    ['exiftool', '-json', '-all', tmp_path],
-                    capture_output=True, text=True, timeout=60
-                )
-                if result.returncode == 0 and result.stdout:
-                    exiftool_data = json.loads(result.stdout)
-                    if exiftool_data and len(exiftool_data) > 0:
-                        for key, value in exiftool_data[0].items():
-                            if key not in ('SourceFile', 'Directory', 'FileName'):
-                                try:
-                                    str_value = str(value)
-                                    if len(str_value) < 1000:
-                                        metadata[f'ExifTool_{key}'] = str_value
-                                except:
-                                    pass
+                try:
+                    result = subprocess.run(
+                        ['exiftool', '-json', '-all', tmp_path],
+                        capture_output=True, text=True, timeout=60
+                    )
+                    if result.returncode == 0 and result.stdout:
+                        exiftool_data = json.loads(result.stdout)
+                        if exiftool_data and len(exiftool_data) > 0:
+                            for key, value in exiftool_data[0].items():
+                                if key not in ('SourceFile', 'Directory', 'FileName'):
+                                    try:
+                                        str_value = str(value)
+                                        if len(str_value) < 1000:
+                                            metadata[f'ExifTool_{key}'] = str_value
+                                    except:
+                                        pass
+                except FileNotFoundError:
+                    logger.warning("exiftool non trouve, analyse exiftool ignoree pour la video.")
+                except Exception as e:
+                    logger.warning(f"Erreur lors de l'analyse exiftool pour la video: {e}")
             except:
                 pass
             
             try:
-                result = subprocess.run(
-                    ['ffprobe', '-v', 'quiet', '-print_format', 'json', '-show_format', '-show_streams', tmp_path],
-                    capture_output=True, text=True, timeout=60
-                )
-                if result.returncode == 0 and result.stdout:
-                    ffprobe_data = json.loads(result.stdout)
-                    
-                    if 'format' in ffprobe_data:
-                        fmt = ffprobe_data['format']
-                        metadata['_format_name'] = fmt.get('format_name', '')
-                        metadata['_format_long_name'] = fmt.get('format_long_name', '')
-                        if 'duration' in fmt:
-                            metadata['_duration'] = f"{float(fmt['duration']):.2f} seconds"
-                        if 'size' in fmt:
-                            metadata['_file_size'] = f"{int(fmt['size'])} bytes"
-                        if 'bit_rate' in fmt:
-                            metadata['_bit_rate'] = f"{int(fmt['bit_rate'])} bps"
+                try:
+                    result = subprocess.run(
+                        ['ffprobe', '-v', 'quiet', '-print_format', 'json', '-show_format', '-show_streams', tmp_path],
+                        capture_output=True, text=True, timeout=60
+                    )
+                    if result.returncode == 0 and result.stdout:
+                        ffprobe_data = json.loads(result.stdout)
                         
-                        if 'tags' in fmt:
-                            for key, value in fmt['tags'].items():
-                                metadata[f'FFprobe_{key}'] = str(value)
-                    
-                    if 'streams' in ffprobe_data:
-                        for i, stream in enumerate(ffprobe_data['streams']):
-                            codec_type = stream.get('codec_type', 'unknown')
-                            metadata[f'_stream_{i}_type'] = codec_type
-                            metadata[f'_stream_{i}_codec'] = stream.get('codec_name', '')
+                        if 'format' in ffprobe_data:
+                            fmt = ffprobe_data['format']
+                            metadata['_format_name'] = fmt.get('format_name', '')
+                            metadata['_format_long_name'] = fmt.get('format_long_name', '')
+                            if 'duration' in fmt:
+                                metadata['_duration'] = f"{float(fmt['duration']):.2f} seconds"
+                            if 'size' in fmt:
+                                metadata['_file_size'] = f"{int(fmt['size'])} bytes"
+                            if 'bit_rate' in fmt:
+                                metadata['_bit_rate'] = f"{int(fmt['bit_rate'])} bps"
                             
-                            if codec_type == 'video':
-                                metadata['_video_width'] = stream.get('width', '')
-                                metadata['_video_height'] = stream.get('height', '')
-                                metadata['_video_codec'] = stream.get('codec_name', '')
-                            elif codec_type == 'audio':
-                                metadata['_audio_codec'] = stream.get('codec_name', '')
-                                metadata['_audio_channels'] = stream.get('channels', '')
-                            
-                            if 'tags' in stream:
-                                for key, value in stream['tags'].items():
-                                    metadata[f'FFprobe_stream{i}_{key}'] = str(value)
+                            if 'tags' in fmt:
+                                for key, value in fmt['tags'].items():
+                                    metadata[f'FFprobe_{key}'] = str(value)
+
+                        if 'streams' in ffprobe_data:
+                            for i, stream in enumerate(ffprobe_data['streams']):
+                                codec_type = stream.get('codec_type', 'unknown')
+                                metadata[f'_stream_{i}_type'] = codec_type
+                                metadata[f'_stream_{i}_codec'] = stream.get('codec_name', '')
+
+                                if codec_type == 'video':
+                                    metadata['_video_width'] = stream.get('width', '')
+                                    metadata['_video_height'] = stream.get('height', '')
+                                    metadata['_video_codec'] = stream.get('codec_name', '')
+                                elif codec_type == 'audio':
+                                    metadata['_audio_codec'] = stream.get('codec_name', '')
+                                    metadata['_audio_channels'] = stream.get('channels', '')
+
+                                if 'tags' in stream:
+                                    for key, value in stream['tags'].items():
+                                        metadata[f'FFprobe_stream{i}_{key}'] = str(value)
+                except FileNotFoundError:
+                    logger.warning("ffprobe non trouve, analyse ffprobe ignoree pour la video.")
+                except Exception as e:
+                    logger.warning(f"Erreur lors de l'analyse ffprobe pour la video: {e}")
             except:
                 pass
             
@@ -439,21 +471,26 @@ class MetadataAnalyzerService:
                 pass
             
             try:
-                result = subprocess.run(
-                    ['exiftool', '-json', '-all', tmp_path],
-                    capture_output=True, text=True, timeout=30
-                )
-                if result.returncode == 0 and result.stdout:
-                    exiftool_data = json.loads(result.stdout)
-                    if exiftool_data and len(exiftool_data) > 0:
-                        for key, value in exiftool_data[0].items():
-                            if key not in ('SourceFile', 'Directory', 'FileName'):
-                                try:
-                                    str_value = str(value)
-                                    if len(str_value) < 1000:
-                                        metadata[f'ExifTool_{key}'] = str_value
-                                except:
-                                    pass
+                try:
+                    result = subprocess.run(
+                        ['exiftool', '-json', '-all', tmp_path],
+                        capture_output=True, text=True, timeout=30
+                    )
+                    if result.returncode == 0 and result.stdout:
+                        exiftool_data = json.loads(result.stdout)
+                        if exiftool_data and len(exiftool_data) > 0:
+                            for key, value in exiftool_data[0].items():
+                                if key not in ('SourceFile', 'Directory', 'FileName'):
+                                    try:
+                                        str_value = str(value)
+                                        if len(str_value) < 1000:
+                                            metadata[f'ExifTool_{key}'] = str_value
+                                    except:
+                                        pass
+                except FileNotFoundError:
+                    logger.warning("exiftool non trouve, analyse exiftool ignoree pour l'audio.")
+                except Exception as e:
+                    logger.warning(f"Erreur lors de l'analyse exiftool pour l'audio: {e}")
             except:
                 pass
             
@@ -664,18 +701,23 @@ class MetadataAnalyzerService:
             tmp_out_path = tempfile.mktemp(suffix=ext)
             
             try:
-                result = subprocess.run(
-                    ['exiftool', '-all=', '-o', tmp_out_path, tmp_in_path],
-                    capture_output=True, text=True, timeout=120
-                )
-                
-                if result.returncode == 0 and os.path.exists(tmp_out_path) and os.path.getsize(tmp_out_path) > 0:
-                    with open(tmp_out_path, 'rb') as f:
-                        clean_data = f.read()
+                try:
+                    result = subprocess.run(
+                        ['exiftool', '-all=', '-o', tmp_out_path, tmp_in_path],
+                        capture_output=True, text=True, timeout=120
+                    )
                     
-                    os.unlink(tmp_in_path)
-                    os.unlink(tmp_out_path)
-                    return clean_data, clean_filename
+                    if result.returncode == 0 and os.path.exists(tmp_out_path) and os.path.getsize(tmp_out_path) > 0:
+                        with open(tmp_out_path, 'rb') as f:
+                            clean_data = f.read()
+
+                        os.unlink(tmp_in_path)
+                        os.unlink(tmp_out_path)
+                        return clean_data, clean_filename
+                except FileNotFoundError:
+                    logger.warning("exiftool non disponible pour le nettoyage.")
+                except Exception as e:
+                    logger.warning(f"Erreur lors du nettoyage avec exiftool: {e}")
                 
                 if file_type == 'image' and ext.lower() not in ['.heic', '.heif']:
                     try:
@@ -704,35 +746,45 @@ class MetadataAnalyzerService:
                         pass
                 
                 elif file_type == 'video':
-                    result = subprocess.run(
-                        ['ffmpeg', '-i', tmp_in_path, '-map_metadata', '-1', 
-                         '-c:v', 'copy', '-c:a', 'copy', '-y', tmp_out_path],
-                        capture_output=True, text=True, timeout=300
-                    )
-                    if result.returncode == 0 and os.path.exists(tmp_out_path):
-                        with open(tmp_out_path, 'rb') as f:
-                            clean_data = f.read()
-                        os.unlink(tmp_in_path)
-                        os.unlink(tmp_out_path)
-                        return clean_data, clean_filename
+                    try:
+                        result = subprocess.run(
+                            ['ffmpeg', '-i', tmp_in_path, '-map_metadata', '-1',
+                             '-c:v', 'copy', '-c:a', 'copy', '-y', tmp_out_path],
+                            capture_output=True, text=True, timeout=300
+                        )
+                        if result.returncode == 0 and os.path.exists(tmp_out_path):
+                            with open(tmp_out_path, 'rb') as f:
+                                clean_data = f.read()
+                            os.unlink(tmp_in_path)
+                            os.unlink(tmp_out_path)
+                            return clean_data, clean_filename
+                    except FileNotFoundError:
+                        logger.warning("ffmpeg non disponible pour le nettoyage video.")
+                    except Exception as e:
+                        logger.warning(f"Erreur lors du nettoyage video avec ffmpeg: {e}")
                         
                 elif file_type == 'audio':
-                    result = subprocess.run(
-                        ['ffmpeg', '-i', tmp_in_path, '-map_metadata', '-1',
-                         '-c:a', 'copy', '-y', tmp_out_path],
-                        capture_output=True, text=True, timeout=120
-                    )
-                    if result.returncode == 0 and os.path.exists(tmp_out_path):
-                        with open(tmp_out_path, 'rb') as f:
-                            clean_data = f.read()
-                        os.unlink(tmp_in_path)
-                        os.unlink(tmp_out_path)
-                        return clean_data, clean_filename
+                    try:
+                        result = subprocess.run(
+                            ['ffmpeg', '-i', tmp_in_path, '-map_metadata', '-1',
+                             '-c:a', 'copy', '-y', tmp_out_path],
+                            capture_output=True, text=True, timeout=120
+                        )
+                        if result.returncode == 0 and os.path.exists(tmp_out_path):
+                            with open(tmp_out_path, 'rb') as f:
+                                clean_data = f.read()
+                            os.unlink(tmp_in_path)
+                            os.unlink(tmp_out_path)
+                            return clean_data, clean_filename
+                    except FileNotFoundError:
+                        logger.warning("ffmpeg non disponible pour le nettoyage audio.")
+                    except Exception as e:
+                        logger.warning(f"Erreur lors du nettoyage audio avec ffmpeg: {e}")
                 
-                raise Exception("Impossible de nettoyer les metadonnees avec les outils disponibles")
+                return None, "Outils de nettoyage non disponibles sur le serveur"
                 
             except Exception as e:
-                raise e
+                return None, f"Erreur inattendue: {str(e)}"
                 
         except Exception as e:
             return None, f"Erreur lors de la suppression des metadonnees: {str(e)}"
