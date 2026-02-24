@@ -7,6 +7,19 @@
 """
 
 from flask import Blueprint, render_template, request, flash, redirect, url_for, session, send_file, Response, abort
+import os
+import requests
+import io
+import traceback
+from urllib.parse import urljoin
+from datetime import datetime
+
+# Services
+try:
+    from services.file_upload_service import FileUploadService
+except ImportError:
+    FileUploadService = None
+
 from services import ContentService, HaveIBeenPwnedService, QuizService
 from services.security import SecurityAnalyzerService
 from services.pdf import PDFReportService
@@ -14,21 +27,16 @@ from services.qrcode_analyzer_service import QRCodeAnalyzerService
 from services.prompt import PromptAnalyzerService
 from services.github.analyzer import GitHubCodeAnalyzerService
 from services.metadata import MetadataAnalyzerService
+
+# Models
 from models import BreachAnalysis, SecurityAnalysis, QRCodeAnalysis, PromptAnalysis, QuizResult, GitHubCodeAnalysis, MetadataAnalysis
+
+# Utils
 from utils.document_code_generator import ensure_unique_code
 from utils.metadata_collector import get_client_ip
 from utils.security_utils import is_safe_url_strict
 from utils.logger import get_logger
 import __init__ as app_module
-import os
-import requests
-try:
-    from services.file_upload_service import FileUploadService
-except ImportError:
-    FileUploadService = None
-import io
-from urllib.parse import urljoin
-from datetime import datetime
 
 logger = get_logger(__name__)
 db = app_module.db
@@ -181,9 +189,10 @@ def security_analyzer():
                     db.session.rollback()
                     flash('Erreur de base de données : impossible de sauvegarder l\'analyse.', 'error')
         except Exception as e:
-            logger.error(f"Critical error in security_analyzer: {str(e)}")
+            logger.error(f"Erreur critique: {str(e)}")
             db.session.rollback()
-            flash('Une erreur critique est survenue lors de l\'analyse. Veuillez réessayer.', 'error')
+            flash(f"Une erreur interne est survenue : {str(e)}", 'danger')
+            return redirect(request.url)
     
     return render_template('outils/security_analyzer.html', 
                          results=results, 
@@ -309,99 +318,6 @@ def quiz_all_results():
     from models import QuizResult
     all_results = QuizResult.query.order_by(QuizResult.created_at.desc()).limit(50).all()
     return render_template('outils/quiz_all_results.html', results=all_results)
-
-
-# @bp.route('/analyze-breach', methods=['POST'])
-# def analyze_breach():
-#     # Deprecated: use main.analyze_breach instead
-#     # Kept commented out to avoid route conflict
-#     try:
-#         email = request.form.get('email')
-        
-#         if not email:
-#             flash('Veuillez fournir une adresse email.', 'error')
-#             return redirect(url_for('main.index'))
-        
-#         result = HaveIBeenPwnedService.check_email_breach(email)
-        
-#         if result.get('error'):
-#             logger.error(f"Analyse de fuite échouée pour {email}: {result['error']}")
-            
-#             error_type = result.get('type', 'unknown_error')
-#             error_title = 'Service temporairement indisponible'
-
-#             if error_type == 'configuration_error':
-#                 error_title = 'Service non configuré'
-#             elif error_type == 'auth_error':
-#                 error_title = 'Erreur d\'authentification'
-#             elif error_type == 'rate_limit_error':
-#                 error_title = 'Limite de requêtes atteinte'
-#             elif error_type == 'timeout_error':
-#                 error_title = 'Délai d\'attente dépassé'
-#             elif error_type == 'connection_error':
-#                 error_title = 'Problème de connexion'
-
-#             recommendations = {
-#                 'level': 'error',
-#                 'title': error_title,
-#                 'message': result['error'],
-#                 'recommendations': [
-#                     'Le service d\'analyse de fuites de données est actuellement indisponible ou rencontre des difficultés.',
-#                     'Veuillez réessayer ultérieurement.',
-#                     'En attendant, nous vous recommandons d\'utiliser des mots de passe forts et uniques pour chaque service.',
-#                     'Activez l\'authentification à deux facteurs (2FA) sur tous vos comptes importants.'
-#                 ]
-#             }
-#             data_scenarios = HaveIBeenPwnedService.get_data_breach_scenarios()
-#             return render_template('breach_analysis.html',
-#                                  email=email,
-#                                  result={'breaches': [], 'count': 0, 'error': result['error']},
-#                                  recommendations=recommendations,
-#                                  data_scenarios=data_scenarios,
-#                                  analysis_id=None)
-        
-#         recommendations = HaveIBeenPwnedService.get_breach_recommendations(result['count'])
-#         data_scenarios = HaveIBeenPwnedService.get_data_breach_scenarios()
-        
-#         analysis_code = None
-#         try:
-#             breach_names = [breach.get('Name', 'Inconnu') for breach in result.get('breaches', [])]
-            
-#             breaches_data_sanitized = {
-#                 'breaches': result.get('breaches', []),
-#                 'count': result.get('count', 0),
-#                 'email': email
-#             }
-            
-#             analysis = BreachAnalysis(
-#                 email=email,
-#                 breach_count=result.get('count', 0),
-#                 risk_level=recommendations.get('level', 'unknown'),
-#                 breaches_found=','.join(breach_names),
-#                 breaches_data=breaches_data_sanitized,
-#                 document_code=ensure_unique_code(BreachAnalysis),
-#                 ip_address=get_client_ip(request),
-#                 user_agent=request.headers.get('User-Agent', '')[:500]
-#             )
-#             db.session.add(analysis)
-#             db.session.commit()
-#             analysis_code = analysis.document_code
-#             logger.info(f"Analyse enregistrée: {email} - {result.get('count', 0)} breach(es) - ID: {analysis_code}")
-#         except Exception as e:
-#             logger.error(f"Erreur lors de l'enregistrement de l'analyse: {str(e)}")
-#             db.session.rollback()
-        
-#         return render_template('breach_analysis.html',
-#                              email=email,
-#                              result=result,
-#                              recommendations=recommendations,
-#                              data_scenarios=data_scenarios,
-#                              analysis_id=analysis_code)
-#     except Exception as e:
-#         logger.error(f"Critical error in analyze_breach: {str(e)}")
-#         db.session.rollback()
-#         flash('Erreur critique lors de l\'analyse. Veuillez réessayer.', 'error')
-#         return redirect(url_for('main.index'))
 
 
 @bp.route("/generate-breach-pdf/<document_code>")
@@ -625,11 +541,12 @@ def qrcode_analyzer():
                     print(f"[ERROR] Failed to save QR analysis: {e}")
             
         except Exception as e:
-            flash(f'Erreur lors de l\'analyse: {str(e)}', 'error')
-            return redirect(url_for('outils.qrcode_analyzer'))
+            logger.error(f"Erreur critique: {str(e)}")
+            db.session.rollback()
+            flash(f"Une erreur interne est survenue : {str(e)}", 'danger')
+            return redirect(request.url)
     
     return render_template('outils/qrcode_analyzer.html', results=results, analysis_id=analysis_id)
-
 
 @bp.route('/outils/analyseur-prompt', methods=['GET', 'POST'])
 def prompt_analyzer():
@@ -687,11 +604,131 @@ def prompt_analyzer():
                     print(f"[ERROR] Failed to save prompt analysis: {e}")
             
         except Exception as e:
-            flash(f'Erreur lors de l\'analyse: {str(e)}', 'error')
-            return redirect(url_for('outils.prompt_analyzer'))
+            logger.error(f"Erreur critique: {str(e)}")
+            db.session.rollback()
+            flash(f"Une erreur interne est survenue : {str(e)}", 'danger')
+            return redirect(request.url)
     
     return render_template('outils/prompt_analyzer.html', results=results, analysis_id=analysis_id)
 
+@bp.route("/generate-qrcode-pdf/<document_code>")
+def generate_qrcode_pdf(document_code):
+    analysis = QRCodeAnalysis.query.filter_by(document_code=document_code).first_or_404()
+
+    user_ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()
+
+    if analysis.pdf_report and analysis.pdf_generated_at:
+        pdf_bytes = analysis.pdf_report
+    else:
+        pdf_service = PDFReportService()
+        pdf_bytes = pdf_service.generate_qrcode_analysis_report(analysis, user_ip)
+
+        analysis.pdf_report = pdf_bytes
+        analysis.pdf_generated_at = datetime.utcnow()
+        db.session.commit()
+
+    return send_file(
+        io.BytesIO(pdf_bytes),
+        mimetype="application/pdf",
+        as_attachment=True,
+        download_name=f"rapport_qrcode_{document_code}.pdf"
+    )
+
+@bp.route("/generate-prompt-pdf/<document_code>")
+def generate_prompt_pdf(document_code):
+    analysis = PromptAnalysis.query.filter_by(document_code=document_code).first_or_404()
+
+    user_ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()
+
+    if analysis.pdf_report and analysis.pdf_generated_at:
+        pdf_bytes = analysis.pdf_report
+    else:
+        pdf_service = PDFReportService()
+        pdf_bytes = pdf_service.generate_prompt_analysis_report(analysis, user_ip)
+
+        analysis.pdf_report = pdf_bytes
+        analysis.pdf_generated_at = datetime.utcnow()
+        db.session.commit()
+
+    return send_file(
+        io.BytesIO(pdf_bytes),
+        mimetype="application/pdf",
+        as_attachment=True,
+        download_name=f"rapport_prompt_{document_code}.pdf"
+    )
+
+@bp.route('/outils/analyseur-github', methods=['GET', 'POST'])
+def github_analyzer():
+    results = None
+    analysis_id = None
+
+    if request.method == 'POST':
+        try:
+            repo_url = request.form.get('repo_url', '').strip()
+            branch = request.form.get('branch', 'main').strip() or 'main'
+
+            if not repo_url:
+                flash('Veuillez entrer une URL de depot GitHub.', 'error')
+                return redirect(url_for('outils.github_analyzer'))
+
+            if 'github.com' not in repo_url:
+                flash('Seuls les depots GitHub sont supportes.', 'error')
+                return redirect(url_for('outils.github_analyzer'))
+
+            analyzer = GitHubCodeAnalyzerService()
+            results = analyzer.analyze(repo_url, branch)
+
+            if results and not results.get('error'):
+                try:
+                    github_analysis = GitHubCodeAnalysis(
+                        repo_url=repo_url,
+                        repo_name=results.get('repo_name'),
+                        repo_owner=results.get('repo_owner'),
+                        branch=results.get('branch'),
+                        commit_hash=results.get('commit_hash'),
+                        overall_score=results.get('overall_score', 0),
+                        security_score=results.get('security_score', 0),
+                        risk_level=results.get('risk_level'),
+                        security_findings=results.get('security_findings', []),
+                        dependency_findings=results.get('dependency_findings', []),
+                        architecture_findings=results.get('architecture_findings', []),
+                        performance_findings=results.get('performance_findings', []),
+                        git_hygiene_findings=results.get('git_hygiene_findings', []),
+                        documentation_findings=results.get('documentation_findings', []),
+                        toxic_ai_patterns=results.get('toxic_ai_patterns', []),
+                        code_quality_findings=results.get('code_quality_findings', []),
+                        total_files_analyzed=results.get('total_files_analyzed', 0),
+                        total_lines_analyzed=results.get('total_lines_analyzed', 0),
+                        total_directories=results.get('total_directories', 0),
+                        file_types_distribution=results.get('file_types_distribution', {}),
+                        total_issues_found=results.get('total_issues_found', 0),
+                        critical_issues=results.get('critical_issues', 0),
+                        high_issues=results.get('high_issues', 0),
+                        medium_issues=results.get('medium_issues', 0),
+                        low_issues=results.get('low_issues', 0),
+                        languages_detected=results.get('languages_detected', {}),
+                        frameworks_detected=results.get('frameworks_detected', []),
+                        analysis_summary=results.get('analysis_summary'),
+                        status='completed',
+                        analysis_duration=results.get('analysis_duration'),
+                        document_code=ensure_unique_code(GitHubCodeAnalysis),
+                        ip_address=get_client_ip(request),
+                        user_agent=request.headers.get('User-Agent', '')[:500]
+                    )
+                    db.session.add(github_analysis)
+                    db.session.commit()
+                    analysis_id = github_analysis.document_code
+                except Exception as e:
+                    db.session.rollback()
+                    logger.error(f"Failed to save GitHub analysis: {e}")
+
+        except Exception as e:
+            logger.error(f"Erreur critique: {str(e)}")
+            db.session.rollback()
+            flash(f"Une erreur interne est survenue : {str(e)}", 'danger')
+            return redirect(request.url)
+
+    return render_template('outils/github_analyzer.html', results=results, analysis_id=analysis_id)
 
 @bp.route("/generate-github-pdf/<document_code>")
 def generate_github_pdf(document_code):
@@ -716,7 +753,6 @@ def generate_github_pdf(document_code):
         download_name=f"rapport_github_{analysis.repo_name}_{document_code}.pdf"
     )
 
-
 @bp.route('/outils/analyseur-metadonnee', methods=['GET', 'POST'])
 def metadata_analyzer():
     results = None
@@ -725,19 +761,19 @@ def metadata_analyzer():
     MAX_FILE_SIZE = 16 * 1024 * 1024
     
     if request.method == 'POST':
-        action = request.form.get('action', 'analyze')
-        
-        if 'file' not in request.files:
-            flash('Veuillez selectionner un fichier a analyser.', 'error')
-            return redirect(url_for('outils.metadata_analyzer'))
-        
-        file = request.files['file']
-        
-        if file.filename == '':
-            flash('Aucun fichier selectionne.', 'error')
-            return redirect(url_for('outils.metadata_analyzer'))
-        
         try:
+            action = request.form.get('action', 'analyze')
+
+            if 'file' not in request.files:
+                flash('Veuillez selectionner un fichier a analyser.', 'error')
+                return redirect(url_for('outils.metadata_analyzer'))
+
+            file = request.files['file']
+
+            if file.filename == '':
+                flash('Aucun fichier selectionne.', 'error')
+                return redirect(url_for('outils.metadata_analyzer'))
+
             file.seek(0, os.SEEK_END)
             file_length = file.tell()
             file.seek(0)
@@ -825,8 +861,10 @@ def metadata_analyzer():
                     return redirect(url_for('outils.metadata_analyzer'))
                     
         except Exception as e:
-            flash(f'Erreur lors du traitement: {str(e)}', 'error')
-            return redirect(url_for('outils.metadata_analyzer'))
+            logger.error(f"Erreur critique: {str(e)}")
+            db.session.rollback()
+            flash(f"Une erreur interne est survenue : {str(e)}", 'danger')
+            return redirect(request.url)
     
     return render_template('outils/metadata_analyzer.html', results=results, analysis_id=analysis_id)
 
