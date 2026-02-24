@@ -227,10 +227,10 @@ class GitHubCodeAnalyzerService:
             
         except Exception as e:
             import traceback
+            logger.error(f"Erreur critique lors de l'analyse: {str(e)}\n{traceback.format_exc()}")
             return {
                 'error': True,
-                'message': f'Erreur lors de l\'analyse: {str(e)}',
-                'traceback': traceback.format_exc()
+                'message': str(e)
             }
         finally:
             self._cleanup()
@@ -352,13 +352,8 @@ class GitHubCodeAnalyzerService:
         Semgrep est plus précis que regex car il comprend le contexte sémantique.
         """
         try:
-            result = subprocess.run(
-                ["which", "semgrep"],
-                capture_output=True,
-                text=True,
-                timeout=5
-            )
-            if result.returncode != 0:
+            if not shutil.which('semgrep'):
+                logger.info("Semgrep non trouvé, analyse AST ignorée")
                 return []
             
             result = subprocess.run(
@@ -577,6 +572,9 @@ class GitHubCodeAnalyzerService:
         if not self.temp_dir:
             return {'error': True, 'message': 'Répertoire temporaire non initialisé'}
         
+        if not shutil.which('git'):
+            return {'error': True, 'message': 'Git n\'est pas installé sur le serveur'}
+
         try:
             api_url = repo_url.replace('github.com', 'api.github.com/repos').rstrip('/')
             if api_url.endswith('.git'):
