@@ -297,6 +297,9 @@ class MetadataAnalyzerService:
             
             try:
                 try:
+                    if not shutil.which('exiftool'):
+                        raise FileNotFoundError("exiftool not found")
+
                     result = subprocess.run(
                         ['exiftool', '-json', '-all', tmp_path],
                         capture_output=True, text=True, timeout=30
@@ -358,6 +361,9 @@ class MetadataAnalyzerService:
             
             try:
                 try:
+                    if not shutil.which('exiftool'):
+                        raise FileNotFoundError("exiftool not found")
+
                     result = subprocess.run(
                         ['exiftool', '-json', '-all', tmp_path],
                         capture_output=True, text=True, timeout=60
@@ -382,6 +388,9 @@ class MetadataAnalyzerService:
             
             try:
                 try:
+                    if not shutil.which('ffprobe'):
+                        raise FileNotFoundError("ffprobe not found")
+
                     result = subprocess.run(
                         ['ffprobe', '-v', 'quiet', '-print_format', 'json', '-show_format', '-show_streams', tmp_path],
                         capture_output=True, text=True, timeout=60
@@ -472,6 +481,9 @@ class MetadataAnalyzerService:
             
             try:
                 try:
+                    if not shutil.which('exiftool'):
+                        raise FileNotFoundError("exiftool not found")
+
                     result = subprocess.run(
                         ['exiftool', '-json', '-all', tmp_path],
                         capture_output=True, text=True, timeout=30
@@ -702,6 +714,9 @@ class MetadataAnalyzerService:
             
             try:
                 try:
+                    if not shutil.which('exiftool'):
+                        raise FileNotFoundError("exiftool not found")
+
                     result = subprocess.run(
                         ['exiftool', '-all=', '-o', tmp_out_path, tmp_in_path],
                         capture_output=True, text=True, timeout=120
@@ -747,6 +762,9 @@ class MetadataAnalyzerService:
                 
                 elif file_type == 'video':
                     try:
+                        if not shutil.which('ffmpeg'):
+                            raise FileNotFoundError("ffmpeg not found")
+
                         result = subprocess.run(
                             ['ffmpeg', '-i', tmp_in_path, '-map_metadata', '-1',
                              '-c:v', 'copy', '-c:a', 'copy', '-y', tmp_out_path],
@@ -765,6 +783,9 @@ class MetadataAnalyzerService:
                         
                 elif file_type == 'audio':
                     try:
+                        if not shutil.which('ffmpeg'):
+                            raise FileNotFoundError("ffmpeg not found")
+
                         result = subprocess.run(
                             ['ffmpeg', '-i', tmp_in_path, '-map_metadata', '-1',
                              '-c:a', 'copy', '-y', tmp_out_path],

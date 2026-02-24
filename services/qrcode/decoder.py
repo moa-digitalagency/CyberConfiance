@@ -48,11 +48,21 @@ except (ImportError, OSError) as e:
 
 def decode_qr_from_image(image_data):
     try:
-        if isinstance(image_data, bytes):
-            image = Image.open(io.BytesIO(image_data))
-        else:
-            image = Image.open(image_data)
-        
+        if not image_data:
+            return None, "Données d'image vides"
+
+        try:
+            if isinstance(image_data, bytes):
+                image = Image.open(io.BytesIO(image_data))
+            else:
+                image = Image.open(image_data)
+
+            # Force load to verify integrity
+            image.load()
+        except (OSError, Exception) as e:
+            logger.warning(f"Image corrompue ou illisible: {e}")
+            return None, "Fichier image corrompu ou format non supporté"
+
         if image.mode != 'RGB':
             image = image.convert('RGB')
         

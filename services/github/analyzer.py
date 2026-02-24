@@ -679,6 +679,9 @@ class GitHubCodeAnalyzerService:
         if not self.temp_dir:
             return 'unknown'
         try:
+            if not shutil.which('git'):
+                return 'unknown'
+
             result = subprocess.run(
                 ['git', 'rev-parse', 'HEAD'],
                 cwd=self.temp_dir,
@@ -1429,6 +1432,9 @@ class GitHubCodeAnalyzerService:
         if not self.temp_dir:
             return
         try:
+            if not shutil.which('git'):
+                return
+
             result = subprocess.run(
                 ['git', 'log', '--oneline', '-n', '100'],
                 cwd=self.temp_dir,
