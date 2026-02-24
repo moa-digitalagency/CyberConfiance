@@ -22,6 +22,10 @@ from utils.logger import get_logger
 import __init__ as app_module
 import os
 import requests
+try:
+    from services.file_upload_service import FileUploadService
+except ImportError:
+    FileUploadService = None
 import io
 from urllib.parse import urljoin
 from datetime import datetime
@@ -136,7 +140,10 @@ def security_analyzer():
             if input_value or uploaded_file:
                 analyzer = SecurityAnalyzerService()
                 if input_type == 'file' and uploaded_file:
-                    from services.file_upload_service import FileUploadService
+                    if FileUploadService is None:
+                        flash('Service de téléchargement indisponible temporairement.', 'error')
+                        return redirect(url_for('outils.security_analyzer'))
+
                     upload_result = FileUploadService.process_upload(uploaded_file)
                     if upload_result.get('success'):
                         results = upload_result.get('scan_result', {})
@@ -172,6 +179,7 @@ def security_analyzer():
                 except Exception as e:
                     logger.error(f"Error saving security analysis: {str(e)}")
                     db.session.rollback()
+                    flash('Erreur de base de données : impossible de sauvegarder l\'analyse.', 'error')
         except Exception as e:
             logger.error(f"Critical error in security_analyzer: {str(e)}")
             db.session.rollback()
@@ -649,7 +657,11 @@ def prompt_analyzer():
                     'error': f"Erreur lors de l'analyse: {str(e)}"
                 }
             
-            if results and results.get('success'):
+            if results is None:
+                flash('Erreur inattendue : le service d\'analyse n\'a renvoyé aucun résultat.', 'error')
+                return redirect(url_for('outils.prompt_analyzer'))
+
+            if results.get('success'):
                 try:
                     prompt_analysis = PromptAnalysis(
                         prompt_text=prompt_text[:10000],
@@ -726,12 +738,16 @@ def metadata_analyzer():
             return redirect(url_for('outils.metadata_analyzer'))
         
         try:
-            file_data = file.read()
-            filename = file.filename
+            file.seek(0, os.SEEK_END)
+            file_length = file.tell()
+            file.seek(0)
             
-            if len(file_data) > MAX_FILE_SIZE:
+            if file_length > MAX_FILE_SIZE:
                 flash('Le fichier est trop volumineux. Taille maximale: 16 Mo.', 'error')
                 return redirect(url_for('outils.metadata_analyzer'))
+
+            file_data = file.read()
+            filename = file.filename
             
             file_type = MetadataAnalyzerService.get_file_type(filename)
             if not file_type:
