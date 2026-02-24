@@ -120,8 +120,15 @@ class PromptAnalyzerService:
     
     def _get_security_analyzer(self):
         if self._security_analyzer is None:
-            from services.security.analyzer import SecurityAnalyzerService
-            self._security_analyzer = SecurityAnalyzerService()
+            try:
+                from services.security.analyzer import SecurityAnalyzerService
+                self._security_analyzer = SecurityAnalyzerService()
+            except ImportError as e:
+                logger.error(f"Impossible d'importer SecurityAnalyzerService (import circulaire probable): {e}")
+                return None
+            except Exception as e:
+                logger.error(f"Erreur lors de l'initialisation de SecurityAnalyzerService: {e}")
+                return None
         return self._security_analyzer
     
     def extract_urls(self, text):
@@ -193,6 +200,10 @@ class PromptAnalyzerService:
         try:
             security_analyzer = self._get_security_analyzer()
             
+            if security_analyzer is None:
+                logger.warning("SecurityAnalyzer non disponible, analyse d'URL ignoree")
+                return results
+
             for url in urls[:max_urls]:
                 logger.info(f"Analyse de securite pour URL: {url}")
                 analysis = security_analyzer.analyze(url, 'url')
@@ -302,9 +313,11 @@ class PromptAnalyzerService:
             
             except SyntaxError:
                 pass
-            except (ValueError, TypeError, RecursionError):
+            except (ValueError, TypeError, RecursionError, MemoryError) as e:
+                logger.warning(f"Erreur AST (complexité/ressources): {str(e)}")
                 pass
-            except Exception:
+            except Exception as e:
+                logger.error(f"Erreur AST inattendue: {str(e)}")
                 pass
         
         return issues
