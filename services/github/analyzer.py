@@ -353,7 +353,7 @@ class GitHubCodeAnalyzerService:
         """
         try:
             if not shutil.which('semgrep'):
-                logger.info("Semgrep non trouvé, analyse AST ignorée")
+                logger.warning("Outil semgrep manquant, analyse AST ignorée")
                 return []
             
             result = subprocess.run(
@@ -573,6 +573,7 @@ class GitHubCodeAnalyzerService:
             return {'error': True, 'message': 'Répertoire temporaire non initialisé'}
         
         if not shutil.which('git'):
+            logger.warning("Outil git manquant, clonage impossible")
             return {'error': True, 'message': 'Git n\'est pas installé sur le serveur'}
 
         try:
@@ -680,6 +681,7 @@ class GitHubCodeAnalyzerService:
             return 'unknown'
         try:
             if not shutil.which('git'):
+                logger.warning("Outil git manquant, impossible de recuperer le hash du commit")
                 return 'unknown'
 
             result = subprocess.run(
@@ -1433,6 +1435,7 @@ class GitHubCodeAnalyzerService:
             return
         try:
             if not shutil.which('git'):
+                logger.warning("Outil git manquant, analyse historique ignorée")
                 return
 
             result = subprocess.run(

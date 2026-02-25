@@ -314,10 +314,10 @@ class PromptAnalyzerService:
             except SyntaxError:
                 pass
             except (ValueError, TypeError, RecursionError, MemoryError) as e:
-                logger.warning(f"Erreur AST (complexité/ressources): {str(e)}")
+                logger.warning(f"Erreur AST (complexité/ressources) - Analyse AST interrompue: {e}")
                 return []
             except Exception as e:
-                logger.error(f"Erreur AST inattendue: {str(e)}")
+                logger.error(f"Erreur AST inattendue - Analyse AST interrompue: {e}")
                 return []
         
         return issues

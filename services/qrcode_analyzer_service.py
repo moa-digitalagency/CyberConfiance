@@ -46,10 +46,10 @@ class QRCodeAnalyzerService(_BaseQRCodeAnalyzerService):
 
         except Exception as e:
             # Catch global des exceptions (y compris celles lancees par cv2/pyzbar wrappees par Python)
-            logger.error(f"Critical error in QRCodeAnalyzerService wrapper: {str(e)}")
+            logger.error(f"Erreur critique dans le wrapper QRCodeAnalyzerService (cv2/PIL/pyzbar): {e}")
             return {
                 'success': False,
-                'error': f"Erreur critique lors de l'analyse QR code: {str(e)}",
+                'error': f"Erreur lors de l'analyse QR code (fichier corrompu ou illisible): {e}",
                 'issues': []
             }
 
