@@ -165,6 +165,11 @@ def security_analyzer():
                 else:
                     results = analyzer.analyze(input_value, input_type)
                 
+                if not results or results.get('error'):
+                    error_msg = results.get('message', 'Une erreur est survenue lors de l\'analyse.') if results else 'Le service a retourné un résultat vide.'
+                    flash(error_msg, 'error')
+                    return redirect(url_for('outils.security_analyzer'))
+
                 try:
                     import json
                     sanitized_results = json.loads(json.dumps(results, default=str))
@@ -189,9 +194,9 @@ def security_analyzer():
                     db.session.rollback()
                     flash('Erreur de base de données : impossible de sauvegarder l\'analyse.', 'error')
         except Exception as e:
-            logger.error(f"Erreur critique: {str(e)}")
+            logger.error(f"Erreur outil: {str(e)}")
             db.session.rollback()
-            flash(f"Une erreur interne est survenue : {str(e)}", 'danger')
+            flash(f"Une erreur technique est survenue : {str(e)}", 'danger')
             return redirect(request.url)
     
     return render_template('outils/security_analyzer.html', 
@@ -512,6 +517,13 @@ def qrcode_analyzer():
                     'error': f"Erreur lors de l'analyse: {str(e)}"
                 }
             
+            if not results or results.get('error'):
+                error_msg = results.get('message') or results.get('error') if results else 'Le service a retourné un résultat vide.'
+                if isinstance(error_msg, bool):
+                    error_msg = results.get('message', 'Une erreur est survenue lors de l\'analyse.')
+                flash(str(error_msg), 'error')
+                return redirect(url_for('outils.qrcode_analyzer'))
+
             if results and results.get('success') and results.get('extracted_url'):
                 try:
                     threat_level = results.get('threat_level', 'safe')
@@ -541,9 +553,9 @@ def qrcode_analyzer():
                     print(f"[ERROR] Failed to save QR analysis: {e}")
             
         except Exception as e:
-            logger.error(f"Erreur critique: {str(e)}")
+            logger.error(f"Erreur outil: {str(e)}")
             db.session.rollback()
-            flash(f"Une erreur interne est survenue : {str(e)}", 'danger')
+            flash(f"Une erreur technique est survenue : {str(e)}", 'danger')
             return redirect(request.url)
     
     return render_template('outils/qrcode_analyzer.html', results=results, analysis_id=analysis_id)
@@ -574,8 +586,11 @@ def prompt_analyzer():
                     'error': f"Erreur lors de l'analyse: {str(e)}"
                 }
             
-            if results is None:
-                flash('Erreur inattendue : le service d\'analyse n\'a renvoyé aucun résultat.', 'error')
+            if not results or results.get('error'):
+                error_msg = results.get('message') or results.get('error') if results else 'Le service a retourné un résultat vide.'
+                if isinstance(error_msg, bool):
+                    error_msg = results.get('message', 'Une erreur est survenue lors de l\'analyse.')
+                flash(str(error_msg), 'error')
                 return redirect(url_for('outils.prompt_analyzer'))
 
             if results.get('success'):
@@ -604,9 +619,9 @@ def prompt_analyzer():
                     print(f"[ERROR] Failed to save prompt analysis: {e}")
             
         except Exception as e:
-            logger.error(f"Erreur critique: {str(e)}")
+            logger.error(f"Erreur outil: {str(e)}")
             db.session.rollback()
-            flash(f"Une erreur interne est survenue : {str(e)}", 'danger')
+            flash(f"Une erreur technique est survenue : {str(e)}", 'danger')
             return redirect(request.url)
     
     return render_template('outils/prompt_analyzer.html', results=results, analysis_id=analysis_id)
@@ -678,6 +693,13 @@ def github_analyzer():
             analyzer = GitHubCodeAnalyzerService()
             results = analyzer.analyze(repo_url, branch)
 
+            if not results or results.get('error'):
+                error_msg = results.get('message') or results.get('error') if results else 'Le service a retourné un résultat vide.'
+                if isinstance(error_msg, bool):
+                    error_msg = results.get('message', 'Une erreur est survenue lors de l\'analyse.')
+                flash(str(error_msg), 'error')
+                return redirect(url_for('outils.github_analyzer'))
+
             if results and not results.get('error'):
                 try:
                     github_analysis = GitHubCodeAnalysis(
@@ -723,9 +745,9 @@ def github_analyzer():
                     logger.error(f"Failed to save GitHub analysis: {e}")
 
         except Exception as e:
-            logger.error(f"Erreur critique: {str(e)}")
+            logger.error(f"Erreur outil: {str(e)}")
             db.session.rollback()
-            flash(f"Une erreur interne est survenue : {str(e)}", 'danger')
+            flash(f"Une erreur technique est survenue : {str(e)}", 'danger')
             return redirect(request.url)
 
     return render_template('outils/github_analyzer.html', results=results, analysis_id=analysis_id)
@@ -793,6 +815,13 @@ def metadata_analyzer():
             if action == 'analyze':
                 results = MetadataAnalyzerService.analyze_file(file_data, filename)
                 
+                if not results or results.get('error'):
+                    error_msg = results.get('message') or results.get('error') if results else 'Le service a retourné un résultat vide.'
+                    if isinstance(error_msg, bool):
+                        error_msg = results.get('message', 'Une erreur est survenue lors de l\'analyse.')
+                    flash(str(error_msg), 'error')
+                    return redirect(url_for('outils.metadata_analyzer'))
+
                 if results.get('success'):
                     try:
                         clean_data, clean_filename = MetadataAnalyzerService.remove_metadata(file_data, filename)
@@ -861,9 +890,9 @@ def metadata_analyzer():
                     return redirect(url_for('outils.metadata_analyzer'))
                     
         except Exception as e:
-            logger.error(f"Erreur critique: {str(e)}")
+            logger.error(f"Erreur outil: {str(e)}")
             db.session.rollback()
-            flash(f"Une erreur interne est survenue : {str(e)}", 'danger')
+            flash(f"Une erreur technique est survenue : {str(e)}", 'danger')
             return redirect(request.url)
     
     return render_template('outils/metadata_analyzer.html', results=results, analysis_id=analysis_id)
