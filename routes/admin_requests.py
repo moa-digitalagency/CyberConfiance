@@ -28,35 +28,40 @@ bp = Blueprint('admin_requests', __name__, url_prefix='/my4dm1n/requests')
 @admin_required
 def requests_dashboard():
     """View all request submissions"""
-    page = request.args.get('page', 1, type=int)
-    filter_type = request.args.get('type', 'all')
-    
-    query = RequestSubmission.query
-    
-    if filter_type != 'all':
-        if filter_type == 'osint':
-            query = query.filter(RequestSubmission.request_type.in_(['osint', 'osint-investigation']))
-        else:
-            query = query.filter_by(request_type=filter_type)
-    
-    submissions = query.order_by(desc(RequestSubmission.created_at)).paginate(
-        page=page, per_page=20, error_out=False
-    )
-    
-    stats = {
-        'total': RequestSubmission.query.count(),
-        'fact_checking': RequestSubmission.query.filter_by(request_type='fact-checking').count(),
-        'osint': RequestSubmission.query.filter(RequestSubmission.request_type.in_(['osint', 'osint-investigation'])).count(),
-        'cyberconsultation': RequestSubmission.query.filter_by(request_type='cyberconsultation').count(),
-        'cybercrime': RequestSubmission.query.filter_by(request_type='cybercrime-report').count(),
-        'threats_detected': RequestSubmission.query.filter_by(threat_detected=True).count(),
-        'pending': RequestSubmission.query.filter_by(status='pending').count(),
-    }
-    
-    return render_template('admin/requests_dashboard.html', 
-                         submissions=submissions,
-                         stats=stats,
-                         filter_type=filter_type)
+    try:
+        page = request.args.get('page', 1, type=int)
+        filter_type = request.args.get('type', 'all')
+
+        query = RequestSubmission.query
+
+        if filter_type != 'all':
+            if filter_type == 'osint':
+                query = query.filter(RequestSubmission.request_type.in_(['osint', 'osint-investigation']))
+            else:
+                query = query.filter_by(request_type=filter_type)
+
+        submissions = query.order_by(desc(RequestSubmission.created_at)).paginate(
+            page=page, per_page=20, error_out=False
+        )
+
+        stats = {
+            'total': RequestSubmission.query.count(),
+            'fact_checking': RequestSubmission.query.filter_by(request_type='fact-checking').count(),
+            'osint': RequestSubmission.query.filter(RequestSubmission.request_type.in_(['osint', 'osint-investigation'])).count(),
+            'cyberconsultation': RequestSubmission.query.filter_by(request_type='cyberconsultation').count(),
+            'cybercrime': RequestSubmission.query.filter_by(request_type='cybercrime-report').count(),
+            'threats_detected': RequestSubmission.query.filter_by(threat_detected=True).count(),
+            'pending': RequestSubmission.query.filter_by(status='pending').count(),
+        }
+
+        return render_template('admin/requests_dashboard.html',
+                             submissions=submissions,
+                             stats=stats,
+                             filter_type=filter_type)
+    except Exception as e:
+        from flask import flash, redirect, url_for
+        flash(f'Une erreur est survenue lors du chargement du tableau de bord: {str(e)}', 'danger')
+        return redirect(url_for('admin_panel.dashboard'))
 
 @bp.route('/<int:submission_id>')
 @admin_required
@@ -69,26 +74,37 @@ def request_detail(submission_id):
 @admin_required
 def update_status(submission_id):
     """Update submission status"""
-    submission = RequestSubmission.query.get_or_404(submission_id)
-    submission.status = request.form.get('status', 'pending')
-    submission.admin_notes = request.form.get('admin_notes', '')
-    db.session.commit()
-    
-    from flask import flash, redirect, url_for
-    flash('Submission status updated', 'success')
-    return redirect(url_for('admin_requests.request_detail', submission_id=submission_id))
+    try:
+        submission = RequestSubmission.query.get_or_404(submission_id)
+        submission.status = request.form.get('status', 'pending')
+        submission.admin_notes = request.form.get('admin_notes', '')
+        db.session.commit()
+
+        from flask import flash, redirect, url_for
+        flash('Submission status updated', 'success')
+        return redirect(url_for('admin_requests.request_detail', submission_id=submission_id))
+    except Exception as e:
+        db.session.rollback()
+        from flask import flash, redirect, url_for
+        flash(f'Une erreur est survenue lors de la mise à jour: {str(e)}', 'danger')
+        return redirect(url_for('admin_requests.request_detail', submission_id=submission_id))
 
 @bp.route('/<int:submission_id>/download-file')
 @admin_required
 def download_file(submission_id):
     """Download the attached file for a submission"""
-    submission = RequestSubmission.query.get_or_404(submission_id)
-    
-    if not submission.file_path or not os.path.exists(submission.file_path):
-        abort(404, "Fichier non trouvé")
-    
-    return send_file(
-        submission.file_path,
-        as_attachment=True,
-        download_name=submission.file_name or 'fichier_joint'
-    )
+    try:
+        submission = RequestSubmission.query.get_or_404(submission_id)
+
+        if not submission.file_path or not os.path.exists(submission.file_path):
+            abort(404, "Fichier non trouvé")
+
+        return send_file(
+            submission.file_path,
+            as_attachment=True,
+            download_name=submission.file_name or 'fichier_joint'
+        )
+    except Exception as e:
+        from flask import flash, redirect, url_for
+        flash(f'Une erreur est survenue lors du téléchargement: {str(e)}', 'danger')
+        return redirect(url_for('admin_requests.request_detail', submission_id=submission_id))
