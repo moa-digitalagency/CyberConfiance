@@ -172,6 +172,9 @@ class MetadataAnalyzerService:
     
     @classmethod
     def analyze_file(cls, file_data, filename):
+        if not shutil.which('exiftool'):
+            return {'error': True, 'message': 'Outil système non installé sur le serveur.'}
+
         cls._check_dependencies()
         file_type = cls.get_file_type(filename)
         
