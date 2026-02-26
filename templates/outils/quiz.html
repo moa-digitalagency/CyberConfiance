@@ -52,7 +52,7 @@
             </div>
         </div>
 
-        <form method="POST" action="{{ url_for('main.quiz') }}" id="quizForm" class="quiz-form">
+        <form method="POST" action="{{ url_for('outils.quiz') }}" id="quizForm" class="quiz-form">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <div class="quiz-progress">
                 <div class="progress-bar">

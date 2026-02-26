@@ -34,7 +34,7 @@
                 Nous allons analyser votre adresse email avec Have I Been Pwned pour vérifier si elle apparaît dans des fuites de données connues, et vous fournir des recommandations personnalisées.
             </p>
 
-            <form method="POST" action="{{ url_for('main.quiz_submit_email') }}">
+            <form method="POST" action="{{ url_for('outils.quiz_submit_email') }}">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                 <div class="form-group">
                     <label for="email" style="display: block; color: var(--text-primary); margin-bottom: 0.5rem; font-weight: 500;">

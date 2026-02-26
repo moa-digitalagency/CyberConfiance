@@ -103,23 +103,23 @@
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" role="button" aria-haspopup="true" aria-expanded="false">Outils <span class="arrow">▼</span></a>
                         <ul class="dropdown-menu">
-                            <li><a href="{{ url_for('main.security_analyzer') }}">Analyseur de Securite</a></li>
-                            <li><a href="{{ url_for('main.breach_analyzer') }}">Analyseur de Fuite d'Email</a></li>
-                            <li><a href="{{ url_for('main.qrcode_analyzer') }}">Analyseur QR Code (Anti-Quishing)</a></li>
-                            <li><a href="{{ url_for('main.prompt_analyzer') }}">Analyseur de Prompt (Anti-Injection)</a></li>
+                            <li><a href="{{ url_for('outils.security_analyzer') }}">Analyseur de Securite</a></li>
+                            <li><a href="{{ url_for('outils.breach_analyzer') }}">Analyseur de Fuite d'Email</a></li>
+                            <li><a href="{{ url_for('outils.qrcode_analyzer') }}">Analyseur QR Code (Anti-Quishing)</a></li>
+                            <li><a href="{{ url_for('outils.prompt_analyzer') }}">Analyseur de Prompt (Anti-Injection)</a></li>
                             <li><a href="{{ url_for('outils.metadata_analyzer') }}">Analyseur de Metadonnees</a></li>
-                            <li><a href="{{ url_for('main.github_analyzer') }}">Analyseur de Code GitHub <span class="badge-beta">Beta</span></a></li>
+                            <li><a href="{{ url_for('outils.github_analyzer') }}">Analyseur de Code GitHub <span class="badge-beta">Beta</span></a></li>
                         </ul>
                     </li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" role="button" aria-haspopup="true" aria-expanded="false">Ressources <span class="arrow">▼</span></a>
                         <ul class="dropdown-menu">
-                            <li><a href="{{ url_for('main.quiz') }}">Quiz de Securite</a></li>
+                            <li><a href="{{ url_for('outils.quiz') }}">Quiz de Securite</a></li>
                             <li><a href="{{ url_for('content.rules') }}">20 Regles d'Or</a></li>
                             <li><a href="{{ url_for('content.scenarios') }}">Scenarios de Cybermenaces</a></li>
                             <li><a href="{{ url_for('content.glossary') }}">Glossaire</a></li>
                             <li><a href="{{ url_for('content.tools') }}">Outils Essentiels</a></li>
-                            <li><a href="{{ url_for('main.attack_types') }}">Types d'Attaques</a></li>
+                            <li><a href="{{ url_for('outils.attack_types') }}">Types d'Attaques</a></li>
                             <li><a href="{{ url_for('pages.osint_methodology') }}">Methodologie OSINT</a></li>
                         </ul>
                     </li>

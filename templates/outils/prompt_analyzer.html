@@ -34,7 +34,7 @@
                 Analysez les prompts et textes pour détecter les tentatives d'injection, le code caché ou obfusqué, 
                 et les patterns malveillants. Protégez vos systèmes IA contre les attaques par manipulation de prompt.
             </p>
-<form action="{{ url_for('main.prompt_analyzer') }}" class="analyzer-form" method="POST">
+<form action="{{ url_for('outils.prompt_analyzer') }}" class="analyzer-form" method="POST">
 <input name="csrf_token" type="hidden" value="{{ csrf_token() }}"/>
 <div class="textarea-wrapper">
 <textarea id="promptText" maxlength="50000" name="prompt_text" placeholder="Collez ici le prompt ou texte à analyser..." required="" rows="10"></textarea>
@@ -208,7 +208,7 @@
 
                 <div style="margin-top: 2rem; text-align: center; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
                     {% if analysis_id %}
-                    <a class="btn-primary" href="{{ url_for('main.generate_prompt_pdf', analysis_id=analysis_id) }}" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; text-decoration: none;">
+                <a class="btn-primary" href="{{ url_for('outils.generate_prompt_pdf', document_code=analysis_id) }}" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; text-decoration: none;">
 <svg fill="none" height="18" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="18">
 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
 <polyline points="14 2 14 8 20 8"></polyline>
@@ -218,7 +218,7 @@
 <span>Télécharger le Rapport PDF</span>
 </a>
                     {% endif %}
-                    <a class="btn-secondary" href="{{ url_for('main.prompt_analyzer') }}" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; text-decoration: none;">
+                <a class="btn-secondary" href="{{ url_for('outils.prompt_analyzer') }}" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; text-decoration: none;">
 <svg fill="none" height="18" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="18">
 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
 <path d="M9 12l2 2 4-4"></path>

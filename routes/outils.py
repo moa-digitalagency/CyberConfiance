@@ -775,6 +775,76 @@ def generate_github_pdf(document_code):
         download_name=f"rapport_github_{analysis.repo_name}_{document_code}.pdf"
     )
 
+@bp.route('/outils/analyseur-fuite', methods=['GET', 'POST'])
+def breach_analyzer():
+    results = None
+    analysis_id = None
+
+    if request.method == 'POST':
+        try:
+            email = request.form.get('email', '').strip()
+
+            if not email:
+                flash('Veuillez fournir une adresse email.', 'error')
+                return redirect(url_for('outils.breach_analyzer'))
+
+            # Check breach using service
+            hibp_result = HaveIBeenPwnedService.check_email_breach(email)
+
+            if not hibp_result:
+                hibp_result = {'error': 'Erreur interne du service', 'count': 0, 'breaches': []}
+
+            # Add email to result for template
+            results = hibp_result
+            results['email'] = email
+
+            if results.get('error'):
+                flash(results['error'], 'error')
+            else:
+                # Save analysis to DB
+                try:
+                    breaches_list = results.get('breaches') or []
+                    if not isinstance(breaches_list, list):
+                        breaches_list = []
+
+                    breach_names = [breach.get('Name', 'Inconnu') for breach in breaches_list]
+
+                    # Calculate risk level based on count
+                    risk_level = 'safe'
+                    if results.get('count', 0) > 0:
+                        risk_level = 'warning' if results.get('count', 0) < 5 else 'danger'
+
+                    analysis = BreachAnalysis(
+                        email=email,
+                        breach_count=results.get('count', 0),
+                        risk_level=risk_level,
+                        breaches_found=','.join(breach_names)[:1000] if breach_names else '',
+                        breaches_data={'breaches': breaches_list, 'count': results.get('count', 0), 'email': email},
+                        document_code=ensure_unique_code(BreachAnalysis),
+                        ip_address=get_client_ip(request),
+                        user_agent=request.headers.get('User-Agent', '')[:500]
+                    )
+                    db.session.add(analysis)
+                    db.session.commit()
+                    analysis_id = analysis.document_code
+
+                    # Store ID in results for PDF generation link
+                    results['analysis_id'] = analysis_id
+
+                except Exception as e:
+                    logger.error(f"Erreur lors de l'enregistrement de l'analyse de fuite: {str(e)}")
+                    db.session.rollback()
+                    # Continue to show results even if saving failed
+
+        except Exception as e:
+            logger.error(f"Erreur outil: {str(e)}")
+            db.session.rollback()
+            flash(f"Une erreur technique est survenue : {str(e)}", 'danger')
+            return redirect(request.url)
+
+    return render_template('outils/breach_analyzer.html', results=results, analysis_id=analysis_id)
+
+
 @bp.route('/outils/analyseur-metadonnee', methods=['GET', 'POST'])
 def metadata_analyzer():
     results = None
