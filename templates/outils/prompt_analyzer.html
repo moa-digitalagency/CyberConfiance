@@ -170,7 +170,7 @@
 <span class="issue-category">{{ issue.category|default('detection')|upper }}</span>
 </div>
 <span class="issue-message">{{ issue.message }}</span>
-                            {% if issue.matches and issue.matches &gt; 1 %}
+                            {% if issue.matches and issue.matches > 1 %}
                             <span class="issue-count">{{ issue.matches }} occurrences</span>
                             {% endif %}
                         </div>
@@ -184,7 +184,7 @@
 <h4>Texte Nettoyé</h4>
 <p class="cleaned-info">Des caractères cachés ou obfusqués ont été détectés et nettoyés :</p>
 <div class="cleaned-preview">
-<code>{{ results.cleaned_text[:500] }}{% if results.cleaned_text|length &gt; 500 %}...{% endif %}</code>
+<code>{{ results.cleaned_text[:500] }}{% if results.cleaned_text|length > 500 %}...{% endif %}</code>
 </div>
 </div>
                 {% endif %}

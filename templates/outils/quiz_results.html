@@ -136,9 +136,9 @@
 <p style="font-size: 0.95rem;">Votre adresse email n'apparaît dans aucune base de données de fuites connues. C'est excellent pour votre sécurité!</p>
 </div>
             {% else %}
-            <div class="alert alert-{{ 'danger' if hibp_result.breach_count &gt; 5 else 'warning' }}">
-<h3 style="font-size: 1.1rem;">{{ hibp_result.breach_count }} fuite{% if hibp_result.breach_count &gt; 1 %}s{% endif %} de données détectée{% if hibp_result.breach_count &gt; 1 %}s{% endif %}</h3>
-<p style="font-size: 0.95rem;">Votre adresse email apparaît dans {{ hibp_result.breach_count }} base{% if hibp_result.breach_count &gt; 1 %}s{% endif %} de données compromises.</p>
+            <div class="alert alert-{{ 'danger' if hibp_result.breach_count > 5 else 'warning' }}">
+<h3 style="font-size: 1.1rem;">{{ hibp_result.breach_count }} fuite{% if hibp_result.breach_count > 1 %}s{% endif %} de données détectée{% if hibp_result.breach_count > 1 %}s{% endif %}</h3>
+<p style="font-size: 0.95rem;">Votre adresse email apparaît dans {{ hibp_result.breach_count }} base{% if hibp_result.breach_count > 1 %}s{% endif %} de données compromises.</p>
 </div>
 
             {% if hibp_result.breaches %}

@@ -175,7 +175,7 @@
 </div>
 <div class="threat-meter">
 <div class="meter-bar">
-<div class="meter-fill" style="width: {{ (results.malicious / results.total * 100) if results.total &gt; 0 else 0 }}%"></div>
+<div class="meter-fill" style="width: {{ (results.malicious / results.total * 100) if results.total > 0 else 0 }}%"></div>
 </div>
 <p class="meter-text">
                         {{ results.malicious }} sur {{ results.total }} moteurs de sécurité ont détecté une menace
@@ -300,10 +300,10 @@
                             </div>
 </div>
                         
-                        {% if results.url_shortener.redirect_chain and results.url_shortener.redirect_chain|length &gt; 0 %}
+                        {% if results.url_shortener.redirect_chain and results.url_shortener.redirect_chain|length > 0 %}
                         <div class="redirect-chain-timeline" style="margin-top: 1rem;">
 <h5 style="color: #e2e8f0; margin: 0 0 0.75rem 0; font-size: 0.9rem;">
-                                Chaine de Redirection Complete ({{ results.url_shortener.redirect_count }} redirection{{ 's' if results.url_shortener.redirect_count &gt; 1 else '' }})
+                                Chaine de Redirection Complete ({{ results.url_shortener.redirect_count }} redirection{{ 's' if results.url_shortener.redirect_count > 1 else '' }})
                             </h5>
 <div style="position: relative; padding-left: 1.5rem; border-left: 2px solid rgba(217, 119, 6, 0.4);">
                                 {% for redirect in results.url_shortener.redirect_chain %}
@@ -312,7 +312,7 @@
 <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
 <span style="background: rgba(59, 130, 246, 0.2); color: #60a5fa; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 600;">{{ loop.index }}</span>
                                         {% if redirect.status_code %}
-                                        <span style="background: {% if redirect.status_code &gt;= 300 and redirect.status_code &lt; 400 %}rgba(217, 119, 6, 0.3){% else %}rgba(34, 197, 94, 0.3){% endif %}; color: {% if redirect.status_code &gt;= 300 and redirect.status_code &lt; 400 %}#fbbf24{% else %}#4ade80{% endif %}; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem;">{{ redirect.status_code }}</span>
+                                        <span style="background: {% if redirect.status_code >= 300 and redirect.status_code < 400 %}rgba(217, 119, 6, 0.3){% else %}rgba(34, 197, 94, 0.3){% endif %}; color: {% if redirect.status_code >= 300 and redirect.status_code < 400 %}#fbbf24{% else %}#4ade80{% endif %}; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem;">{{ redirect.status_code }}</span>
                                         {% endif %}
                                         {% if redirect.redirect_type %}
                                         <span style="color: #94a3b8; font-size: 0.75rem;">{{ redirect.redirect_type }}</span>
@@ -461,7 +461,7 @@
                             {% endif %}
                         </div>
                         
-                        {% if results.all_threats and results.all_threats|length &gt; 0 %}
+                        {% if results.all_threats and results.all_threats|length > 0 %}
                         <div class="threats-summary" style="margin-top: 1.5rem; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 12px; padding: 1rem;">
 <h5 style="color: #ef4444; margin: 0 0 0.75rem 0; display: flex; align-items: center; gap: 0.5rem;">
 <svg fill="none" height="18" stroke="#ef4444" stroke-width="2" viewbox="0 0 24 24" width="18">

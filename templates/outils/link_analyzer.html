@@ -44,7 +44,7 @@
 <input name="csrf_token" type="hidden" value="{{ csrf_token() }}"/>
 <div class="form-group">
 <label for="url">URL à analyser:</label>
-<input %}="" %}value="{{ analyzed_url }}" analyzed_url="" class="url-input" endif="" id="url" if="" name="url" placeholder="https://example.com ou bit.ly/abc123" required="" type="text" {%=""/>
+<input type="text" id="url" name="url" class="url-input" placeholder="https://example.com ou bit.ly/abc123" value="{{ analyzed_url if analyzed_url else "" }}" required>
 </div>
 <button class="btn-primary" type="submit">Analyser</button>
 </form>
@@ -64,9 +64,9 @@
 </div>
 <div class="summary-item">
 <strong>Nombre de redirections:</strong>
-<span class="redirect-count {% if redirect_count &gt; 3 %}warning{% endif %}">
+<span class="redirect-count {% if redirect_count > 3 %}warning{% endif %}">
                         {{ redirect_count }}
-                        {% if redirect_count &gt; 3 %}(Attention: Nombreuses redirections!){% endif %}
+                        {% if redirect_count > 3 %}(Attention: Nombreuses redirections!){% endif %}
                     </span>
 </div>
 </div>
