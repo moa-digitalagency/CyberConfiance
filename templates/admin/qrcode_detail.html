@@ -25,7 +25,7 @@
 </div>
 <div style="display: flex; gap: 1rem;">
 <a class="btn btn-secondary" href="{{ url_for('admin_panel.qrcode_history') }}">Retour a l'historique</a>
-<a class="btn btn-primary" href="{{ url_for('main.generate_qrcode_pdf', analysis_id=analysis.id) }}">Generer/Telecharger PDF</a>
+<a class="btn btn-primary" href="{{ url_for('outils.generate_qrcode_pdf', document_code=analysis.document_code) }}">Generer/Telecharger PDF</a>
 </div>
 </div>
 </div>

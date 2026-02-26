@@ -197,7 +197,7 @@
             </p>
 </div>
 <div class="actions-card">
-<a class="btn-pdf" href="{{ url_for('main.generate_quiz_pdf', document_code=quiz_result.document_code) }}">
+<a class="btn-pdf" href="{{ url_for('outils.generate_quiz_pdf', document_code=quiz_result.document_code) }}">
 <svg fill="none" height="20" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 0.5rem;" viewbox="0 0 24 24" width="20">
 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
 <polyline points="7 10 12 15 17 10"></polyline>
@@ -205,7 +205,7 @@
 </svg>
                 Télécharger le rapport PDF
             </a>
-<a class="btn-secondary" href="{{ url_for('main.quiz') }}">Refaire le quiz</a>
+<a class="btn-secondary" href="{{ url_for('outils.quiz') }}">Refaire le quiz</a>
 <a class="btn-primary" href="{{ url_for('content.rules') }}">Consulter les 20 Règles d'Or</a>
 </div>
 </div>

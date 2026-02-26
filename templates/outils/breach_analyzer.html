@@ -34,7 +34,7 @@
                 Entrez votre adresse email pour vérifier si elle a été exposée dans des violations de données connues. 
                 Nous utilisons la base de données Have I Been Pwned (HIBP) qui recense des milliards de comptes compromis.
             </p>
-<form action="{{ url_for('main.breach_analyzer') }}" class="analyzer-form" method="POST">
+<form action="{{ url_for('outils.breach_analyzer') }}" class="analyzer-form" method="POST">
 <input name="csrf_token" type="hidden" value="{{ csrf_token() }}"/>
 <div class="input-group">
 <input class="analyzer-input" id="email" name="email" placeholder="exemple@email.com" required="" type="email"/>
@@ -87,7 +87,8 @@
 <p>{{ results.error }}</p>
 </div>
 <div class="action-buttons">
-<a class="btn btn-secondary" href="{{ url_for('main.breach_analyzer') }}">
+<a class="btn btn-secondary" href="{{ url_for('outils.breach_analyzer') }}">
+<a class="btn btn-secondary" href="{{ url_for('outils.breach_analyzer') }}">
 <svg fill="none" height="18" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="18">
 <polyline points="1 4 1 10 7 10"></polyline>
 <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
@@ -207,7 +208,7 @@
             {% endif %}
             
             <div class="action-buttons">
-<a class="btn btn-secondary" href="{{ url_for('main.breach_analyzer') }}">
+<a class="btn btn-secondary" href="{{ url_for('outils.breach_analyzer') }}">
 <svg fill="none" height="18" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="18">
 <polyline points="1 4 1 10 7 10"></polyline>
 <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
@@ -215,7 +216,7 @@
 <span>Nouvelle Vérification</span>
 </a>
                 {% if analysis_id %}
-                <a class="btn btn-primary" href="{{ url_for('main.generate_breach_pdf', analysis_id=analysis_id) }}">
+                <a class="btn btn-primary" href="{{ url_for('outils.generate_breach_pdf', document_code=analysis_id) }}">
 <svg fill="none" height="18" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="18">
 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
 <polyline points="14 2 14 8 20 8"></polyline>

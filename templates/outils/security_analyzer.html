@@ -33,7 +33,7 @@
 <p class="analyzer-description">
                 Vérifiez la réputation et la sécurité de différents éléments numériques en utilisant notre base de données de menaces.
             </p>
-<form action="{{ url_for('main.security_analyzer') }}" class="analyzer-form" enctype="multipart/form-data" method="POST">
+<form action="{{ url_for('outils.security_analyzer') }}" class="analyzer-form" enctype="multipart/form-data" method="POST">
 <input name="csrf_token" type="hidden" value="{{ csrf_token() }}"/>
 <div class="input-type-selector">
 <label class="type-option">
@@ -121,7 +121,7 @@
 <p>{{ results.message }}</p>
 </div>
 <div style="margin-top: 1.5rem; text-align: center;">
-<a class="btn-secondary" href="{{ url_for('main.security_analyzer') }}" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; text-decoration: none;">
+<a class="btn-secondary" href="{{ url_for('outils.security_analyzer') }}" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; text-decoration: none;">
 <svg fill="none" height="18" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="18">
 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
 </svg>
@@ -136,11 +136,11 @@
 </div>
 <div style="margin-top: 2rem; text-align: center; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
                 {% if analysis_id %}
-                <a class="btn-primary" href="{{ url_for('main.generate_security_pdf', analysis_id=analysis_id) }}" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; text-decoration: none;">
+                <a class="btn-primary" href="{{ url_for('outils.generate_security_pdf', document_code=analysis_id) }}" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; text-decoration: none;">
 <span>📄 Télécharger le Rapport PDF</span>
 </a>
                 {% endif %}
-                <a class="btn-secondary" href="{{ url_for('main.security_analyzer') }}" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; text-decoration: none;">
+                <a class="btn-secondary" href="{{ url_for('outils.security_analyzer') }}" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; text-decoration: none;">
 <svg fill="none" height="18" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="18">
 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
 </svg>
@@ -487,11 +487,11 @@
                 </div>
 <div style="margin-top: 2rem; text-align: center; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
                     {% if analysis_id %}
-                    <a class="btn-primary" href="{{ url_for('main.generate_security_pdf', analysis_id=analysis_id) }}" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; text-decoration: none;">
+                    <a class="btn-primary" href="{{ url_for('outils.generate_security_pdf', document_code=analysis_id) }}" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; text-decoration: none;">
 <span>📄 Télécharger le Rapport PDF</span>
 </a>
                     {% endif %}
-                    <a class="btn-secondary" href="{{ url_for('main.security_analyzer') }}" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; text-decoration: none;">
+                    <a class="btn-secondary" href="{{ url_for('outils.security_analyzer') }}" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; text-decoration: none;">
 <svg fill="none" height="18" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="18">
 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
 </svg>

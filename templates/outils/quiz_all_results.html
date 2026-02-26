@@ -75,7 +75,7 @@
                             {% endif %}
                         </td>
 <td>
-<a class="btn-view" href="{{ url_for('main.quiz_result_detail', result_id=result.id) }}">Voir détails</a>
+<a class="btn-view" href="{{ url_for('outils.quiz_result_detail', document_code=result.document_code) }}">Voir détails</a>
 </td>
 </tr>
                     {% endfor %}
@@ -86,7 +86,7 @@
         <div class="no-results-message">
 <h2>Aucun résultat de quiz disponible</h2>
 <p>Les résultats des quiz apparaîtront ici une fois que des utilisateurs auront complété le quiz de sécurité.</p>
-<a class="btn-primary" href="{{ url_for('main.quiz') }}">Passer le Quiz</a>
+<a class="btn-primary" href="{{ url_for('outils.quiz') }}">Passer le Quiz</a>
 </div>
         {% endif %}
     </div>

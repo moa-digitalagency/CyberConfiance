@@ -42,7 +42,7 @@
         </div>
         
         <div class="hero-newsletter">
-            <form action="/analyze-breach" method="post" class="hero-newsletter-form">
+            <form action="{{ url_for('outils.breach_analyzer') }}" method="post" class="hero-newsletter-form">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                 <input type="email" name="email" placeholder="Vérifiez si votre email a été compromis" required>
                 <button type="submit" class="btn btn-primary">Analyser</button>
@@ -200,7 +200,7 @@
                         <p class="tool-description">
                             Analysez des fichiers, URLs et hash pour detecter les menaces potentielles
                         </p>
-                        <a href="{{ url_for('main.security_analyzer') }}" class="tool-link tool-link-security">Analyser →</a>
+                        <a href="{{ url_for('outils.security_analyzer') }}" class="tool-link tool-link-security">Analyser →</a>
                     </div>
                 </div>
             </div>
@@ -218,7 +218,7 @@
                         <p class="tool-description">
                             Verifiez si votre email a ete compromis dans des fuites de donnees
                         </p>
-                        <a href="{{ url_for('main.breach_analyzer') }}" class="tool-link tool-link-breach">Verifier →</a>
+                        <a href="{{ url_for('outils.breach_analyzer') }}" class="tool-link tool-link-breach">Verifier →</a>
                     </div>
                 </div>
             </div>
@@ -238,7 +238,7 @@
                         <p class="tool-description">
                             Analysez les QR codes pour detecter les tentatives de phishing
                         </p>
-                        <a href="{{ url_for('main.qrcode_analyzer') }}" class="tool-link tool-link-qrcode">Analyser →</a>
+                        <a href="{{ url_for('outils.qrcode_analyzer') }}" class="tool-link tool-link-qrcode">Analyser →</a>
                     </div>
                 </div>
             </div>
@@ -256,7 +256,7 @@
                         <p class="tool-description">
                             Detectez les tentatives d'injection de prompt et le code malveillant
                         </p>
-                        <a href="{{ url_for('main.prompt_analyzer') }}" class="tool-link tool-link-prompt">Analyser →</a>
+                        <a href="{{ url_for('outils.prompt_analyzer') }}" class="tool-link tool-link-prompt">Analyser →</a>
                     </div>
                 </div>
             </div>
@@ -294,7 +294,7 @@
                         <p class="tool-description">
                             Analysez les depots GitHub pour detecter les vulnerabilites de securite
                         </p>
-                        <a href="{{ url_for('main.github_analyzer') }}" class="tool-link tool-link-github">Analyser →</a>
+                        <a href="{{ url_for('outils.github_analyzer') }}" class="tool-link tool-link-github">Analyser →</a>
                     </div>
                 </div>
             </div>
