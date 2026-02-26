@@ -220,7 +220,7 @@
             <div class="alert alert-info">
 <h3>Contenu Texte Detecte</h3>
 <p>{{ results.message }}</p>
-<p><strong>Donnees extraites:</strong> {{ results.extracted_data[:200] }}{% if results.extracted_data|length &gt; 200 %}...{% endif %}</p>
+<p><strong>Donnees extraites:</strong> {{ results.extracted_data[:200] }}{% if results.extracted_data|length > 200 %}...{% endif %}</p>
 </div>
 <div style="margin-top: 1.5rem; text-align: center;">
 <a class="btn-secondary" href="{{ url_for('outils.qrcode_analyzer') }}" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; text-decoration: none;">
@@ -261,17 +261,17 @@
 <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
 <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
 </svg>
-                        Chaine de Redirection Complete {% if results.redirect_count &gt; 0 %}({{ results.redirect_count }} redirection{{ 's' if results.redirect_count &gt; 1 else '' }}){% else %}(acces direct){% endif %}
+                        Chaine de Redirection Complete {% if results.redirect_count > 0 %}({{ results.redirect_count }} redirection{{ 's' if results.redirect_count > 1 else '' }}){% else %}(acces direct){% endif %}
                     </h4>
 <div class="redirect-timeline" style="position: relative; padding-left: 1.5rem; border-left: 2px solid rgba(217, 119, 6, 0.4);">
                         {% for redirect in results.redirect_chain %}
                         <div class="redirect-step" style="position: relative; padding: 0.5rem 0 0.75rem 1rem; margin-bottom: 0.25rem;">
-<div style="position: absolute; left: -1.75rem; top: 0.6rem; width: 12px; height: 12px; background: {% if redirect.js_redirect_detected %}#ef4444{% elif redirect.status_code and redirect.status_code &gt;= 300 and redirect.status_code &lt; 400 %}#f59e0b{% else %}#3b82f6{% endif %}; border-radius: 50%; border: 2px solid rgba(15, 31, 53, 1);"></div>
+<div style="position: absolute; left: -1.75rem; top: 0.6rem; width: 12px; height: 12px; background: {% if redirect.js_redirect_detected %}#ef4444{% elif redirect.status_code and redirect.status_code >= 300 and redirect.status_code < 400 %}#f59e0b{% else %}#3b82f6{% endif %}; border-radius: 50%; border: 2px solid rgba(15, 31, 53, 1);"></div>
 <div class="step-content" style="display: flex; flex-direction: column; gap: 0.25rem;">
 <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
 <span style="background: rgba(59, 130, 246, 0.2); color: #60a5fa; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 600;">{{ loop.index }}</span>
                                     {% if redirect.status_code %}
-                                    <span class="status-code" style="background: {% if redirect.status_code &gt;= 300 and redirect.status_code &lt; 400 %}rgba(217, 119, 6, 0.3){% elif redirect.status_code &gt;= 200 and redirect.status_code &lt; 300 %}rgba(34, 197, 94, 0.3){% else %}rgba(239, 68, 68, 0.3){% endif %}; color: {% if redirect.status_code &gt;= 300 and redirect.status_code &lt; 400 %}#fbbf24{% elif redirect.status_code &gt;= 200 and redirect.status_code &lt; 300 %}#4ade80{% else %}#f87171{% endif %}; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem;">{{ redirect.status_code }}</span>
+                                    <span class="status-code" style="background: {% if redirect.status_code >= 300 and redirect.status_code < 400 %}rgba(217, 119, 6, 0.3){% elif redirect.status_code >= 200 and redirect.status_code < 300 %}rgba(34, 197, 94, 0.3){% else %}rgba(239, 68, 68, 0.3){% endif %}; color: {% if redirect.status_code >= 300 and redirect.status_code < 400 %}#fbbf24{% elif redirect.status_code >= 200 and redirect.status_code < 300 %}#4ade80{% else %}#f87171{% endif %}; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem;">{{ redirect.status_code }}</span>
                                     {% endif %}
                                     {% if redirect.redirect_type %}
                                     <span class="redirect-type" style="color: #94a3b8; font-size: 0.75rem;">{{ redirect.redirect_type }}</span>
@@ -318,7 +318,7 @@
 <path d="M9 11l3 3L22 4"></path>
 <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
 </svg>
-                        Resultats de l'Analyse ({{ summary.key_findings|length }} element{{ 's' if summary.key_findings|length &gt; 1 else '' }})
+                        Resultats de l'Analyse ({{ summary.key_findings|length }} element{{ 's' if summary.key_findings|length > 1 else '' }})
                     </h4>
 <div class="findings-grid" style="display: grid; gap: 0.75rem;">
                         {% for finding in summary.key_findings %}

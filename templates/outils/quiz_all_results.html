@@ -58,16 +58,16 @@
 <td>{{ result.email }}</td>
 <td>
 <div class="score-badge" style="background:
-                                {% if result.overall_score &gt;= 80 %}#10b981
-                                {% elif result.overall_score &gt;= 60 %}#3b82f6
-                                {% elif result.overall_score &gt;= 40 %}#f59e0b
+                                {% if result.overall_score >= 80 %}#10b981
+                                {% elif result.overall_score >= 60 %}#3b82f6
+                                {% elif result.overall_score >= 40 %}#f59e0b
                                 {% else %}#ef4444{% endif %}">
                                 {{ result.overall_score }}%
                             </div>
 </td>
 <td>
                             {% if result.hibp_summary and result.hibp_summary.breach_count %}
-                            <span class="breach-count breach-{{ 'danger' if result.hibp_summary.breach_count &gt; 5 else 'warning' }}">
+                            <span class="breach-count breach-{{ 'danger' if result.hibp_summary.breach_count > 5 else 'warning' }}">
                                 {{ result.hibp_summary.breach_count }} fuite(s)
                             </span>
                             {% else %}

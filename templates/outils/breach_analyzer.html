@@ -97,9 +97,9 @@
 </a>
 </div>
             {% else %}
-            <div class="result-summary-card {% if results.count &gt; 0 %}danger{% else %}safe{% endif %}">
+            <div class="result-summary-card {% if results.count > 0 %}danger{% else %}safe{% endif %}">
 <div class="result-icon">
-                    {% if results.count &gt; 0 %}
+                    {% if results.count > 0 %}
                     <svg fill="none" height="64" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="64">
 <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
 <line x1="12" x2="12" y1="9" y2="13"></line>
@@ -114,14 +114,14 @@
                 </div>
 <div class="result-content">
 <h3 class="result-title">
-                        {% if results.count &gt; 0 %}
+                        {% if results.count > 0 %}
                         {{ results.count }} fuite(s) détectée(s)
                         {% else %}
                         Aucune fuite détectée
                         {% endif %}
                     </h3>
 <p class="result-subtitle">
-                        {% if results.count &gt; 0 %}
+                        {% if results.count > 0 %}
                         Votre email <strong>{{ results.email }}</strong> a été trouvé dans {{ results.count }} violation(s) de données.
                         {% else %}
                         Votre email <strong>{{ results.email }}</strong> n'apparaît dans aucune fuite de données connue.
@@ -134,7 +134,7 @@
 </div>
 </div>
             
-            {% if results.count &gt; 0 and results.breaches %}
+            {% if results.count > 0 and results.breaches %}
             <div class="breaches-section">
 <h4 class="section-subtitle">
 <svg fill="none" height="20" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="20">
