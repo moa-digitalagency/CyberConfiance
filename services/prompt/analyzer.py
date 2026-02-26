@@ -18,6 +18,7 @@ Analyseur de prompts anti-injection avec detection de patterns malveillants.
 
 import re
 import ast
+import shutil
 import unicodedata
 from urllib.parse import urlparse
 from utils.logger import get_logger

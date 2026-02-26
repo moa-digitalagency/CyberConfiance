@@ -133,6 +133,9 @@ class GitHubCodeAnalyzerService:
             mode: 'full' (clone+scan), 'quick' (API only), ou 'hybrid'
             github_token: Token GitHub optionnel pour API Code Scanning
         """
+        if not shutil.which('git'):
+            return {'error': True, 'message': 'Outil système non installé sur le serveur.'}
+
         start_time = time.time()
         
         if github_token:

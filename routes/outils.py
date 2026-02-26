@@ -57,20 +57,20 @@ def link_analyzer():
     redirect_count = 0
     
     if request.method == 'POST':
-        url = request.form.get('url')
-        
-        if not url:
-            flash('Veuillez fournir une URL à analyser.', 'error')
-            return redirect(url_for('outils.link_analyzer'))
-        
-        if not url.startswith('http://') and not url.startswith('https://'):
-            url = 'https://' + url
-        
-        if not is_safe_url_strict(url):
-            flash('Cette URL n\'est pas autorisée pour des raisons de sécurité.', 'error')
-            return redirect(url_for('outils.link_analyzer'))
-        
         try:
+            url = request.form.get('url')
+
+            if not url:
+                flash('Veuillez fournir une URL à analyser.', 'error')
+                return redirect(url_for('outils.link_analyzer'))
+
+            if not url.startswith('http://') and not url.startswith('https://'):
+                url = 'https://' + url
+
+            if not is_safe_url_strict(url):
+                flash('Cette URL n\'est pas autorisée pour des raisons de sécurité.', 'error')
+                return redirect(url_for('outils.link_analyzer'))
+
             analyzed_url = url
             redirects = []
             current_url = url
@@ -115,10 +115,11 @@ def link_analyzer():
                     break
             
             final_url = current_url
-                                 
         except Exception as e:
-            flash(f'Erreur lors de l\'analyse: {str(e)}', 'error')
-            return redirect(url_for('outils.link_analyzer'))
+            db.session.rollback()
+            logger.error(f"Crash outil: {str(e)}")
+            flash(f"Erreur lors de l'analyse : {str(e)}", 'error')
+            return redirect(request.url)
     
     return render_template('outils/link_analyzer.html',
                          analyzed_url=analyzed_url,
@@ -170,33 +171,28 @@ def security_analyzer():
                     flash(error_msg, 'error')
                     return redirect(url_for('outils.security_analyzer'))
 
-                try:
-                    import json
-                    sanitized_results = json.loads(json.dumps(results, default=str))
-                    
-                    analysis_record = SecurityAnalysis(
-                        input_value=input_value,
-                        input_type=input_type,
-                        analysis_results=sanitized_results,
-                        threat_detected=results.get('threat_detected', False),
-                        threat_level=results.get('threat_level'),
-                        malicious_count=results.get('malicious', 0),
-                        total_engines=results.get('total', 0),
-                        document_code=ensure_unique_code(SecurityAnalysis),
-                        ip_address=get_client_ip(request),
-                        user_agent=request.headers.get('User-Agent', '')
-                    )
-                    db.session.add(analysis_record)
-                    db.session.commit()
-                    analysis_code = analysis_record.document_code
-                except Exception as e:
-                    logger.error(f"Error saving security analysis: {str(e)}")
-                    db.session.rollback()
-                    flash('Erreur de base de données : impossible de sauvegarder l\'analyse.', 'error')
+                import json
+                sanitized_results = json.loads(json.dumps(results, default=str))
+
+                analysis_record = SecurityAnalysis(
+                    input_value=input_value,
+                    input_type=input_type,
+                    analysis_results=sanitized_results,
+                    threat_detected=results.get('threat_detected', False),
+                    threat_level=results.get('threat_level'),
+                    malicious_count=results.get('malicious', 0),
+                    total_engines=results.get('total', 0),
+                    document_code=ensure_unique_code(SecurityAnalysis),
+                    ip_address=get_client_ip(request),
+                    user_agent=request.headers.get('User-Agent', '')
+                )
+                db.session.add(analysis_record)
+                db.session.commit()
+                analysis_code = analysis_record.document_code
         except Exception as e:
-            logger.error(f"Erreur outil: {str(e)}")
             db.session.rollback()
-            flash(f"Une erreur technique est survenue : {str(e)}", 'danger')
+            logger.error(f"Crash outil: {str(e)}")
+            flash(f"Erreur lors de l'analyse : {str(e)}", 'error')
             return redirect(request.url)
     
     return render_template('outils/security_analyzer.html', 
@@ -470,22 +466,18 @@ def qrcode_analyzer():
             
             camera_capture = request.form.get('camera_capture', '').strip()
             if camera_capture and camera_capture.startswith('data:image'):
-                try:
-                    header, encoded = camera_capture.split(',', 1)
-                    image_data = base64.b64decode(encoded)
-                    
-                    if 'png' in header:
-                        filename = 'camera_capture.png'
-                    elif 'jpeg' in header or 'jpg' in header:
-                        filename = 'camera_capture.jpg'
-                    elif 'webp' in header:
-                        filename = 'camera_capture.webp'
-                    
-                    if len(image_data) > 10 * 1024 * 1024:
-                        flash('L\'image capturee est trop volumineuse. Taille maximale: 10 MB.', 'error')
-                        return redirect(url_for('outils.qrcode_analyzer'))
-                except Exception as e:
-                    flash(f'Erreur lors du traitement de l\'image capturee: {str(e)}', 'error')
+                header, encoded = camera_capture.split(',', 1)
+                image_data = base64.b64decode(encoded)
+
+                if 'png' in header:
+                    filename = 'camera_capture.png'
+                elif 'jpeg' in header or 'jpg' in header:
+                    filename = 'camera_capture.jpg'
+                elif 'webp' in header:
+                    filename = 'camera_capture.webp'
+
+                if len(image_data) > 10 * 1024 * 1024:
+                    flash('L\'image capturee est trop volumineuse. Taille maximale: 10 MB.', 'error')
                     return redirect(url_for('outils.qrcode_analyzer'))
             else:
                 uploaded_file = request.files.get('qrcode_image')
@@ -509,13 +501,7 @@ def qrcode_analyzer():
                     return redirect(url_for('outils.qrcode_analyzer'))
             
             analyzer = QRCodeAnalyzerService()
-            try:
-                results = analyzer.analyze_qr_image(image_data, filename)
-            except Exception as e:
-                results = {
-                    'success': False,
-                    'error': f"Erreur lors de l'analyse: {str(e)}"
-                }
+            results = analyzer.analyze_qr_image(image_data, filename)
             
             if not results or results.get('error'):
                 error_msg = results.get('message') or results.get('error') if results else 'Le service a retourné un résultat vide.'
@@ -525,37 +511,32 @@ def qrcode_analyzer():
                 return redirect(url_for('outils.qrcode_analyzer'))
 
             if results and results.get('success') and results.get('extracted_url'):
-                try:
-                    threat_level = results.get('threat_level', 'safe')
-                    
-                    qr_analysis = QRCodeAnalysis(
-                        original_filename=filename,
-                        extracted_url=results.get('extracted_url'),
-                        final_url=results.get('final_url'),
-                        redirect_chain=results.get('redirect_chain') or [],
-                        redirect_count=results.get('redirect_count', 0),
-                        threat_detected=results.get('threat_detected', False),
-                        threat_level=threat_level,
-                        threat_details=results.get('issues') or [],
-                        blacklist_matches=results.get('blacklist_result'),
-                        suspicious_patterns=results.get('issues') or [],
-                        js_redirects_detected=len(results.get('js_redirects') or []) > 0,
-                        analysis_results=results,
-                        document_code=ensure_unique_code(QRCodeAnalysis),
-                        ip_address=get_client_ip(request),
-                        user_agent=request.headers.get('User-Agent', '')[:500]
-                    )
-                    db.session.add(qr_analysis)
-                    db.session.commit()
-                    analysis_id = qr_analysis.document_code
-                except Exception as e:
-                    db.session.rollback()
-                    print(f"[ERROR] Failed to save QR analysis: {e}")
-            
+                threat_level = results.get('threat_level', 'safe')
+
+                qr_analysis = QRCodeAnalysis(
+                    original_filename=filename,
+                    extracted_url=results.get('extracted_url'),
+                    final_url=results.get('final_url'),
+                    redirect_chain=results.get('redirect_chain') or [],
+                    redirect_count=results.get('redirect_count', 0),
+                    threat_detected=results.get('threat_detected', False),
+                    threat_level=threat_level,
+                    threat_details=results.get('issues') or [],
+                    blacklist_matches=results.get('blacklist_result'),
+                    suspicious_patterns=results.get('issues') or [],
+                    js_redirects_detected=len(results.get('js_redirects') or []) > 0,
+                    analysis_results=results,
+                    document_code=ensure_unique_code(QRCodeAnalysis),
+                    ip_address=get_client_ip(request),
+                    user_agent=request.headers.get('User-Agent', '')[:500]
+                )
+                db.session.add(qr_analysis)
+                db.session.commit()
+                analysis_id = qr_analysis.document_code
         except Exception as e:
-            logger.error(f"Erreur outil: {str(e)}")
             db.session.rollback()
-            flash(f"Une erreur technique est survenue : {str(e)}", 'danger')
+            logger.error(f"Crash outil: {str(e)}")
+            flash(f"Erreur lors de l'analyse : {str(e)}", 'error')
             return redirect(request.url)
     
     return render_template('outils/qrcode_analyzer.html', results=results, analysis_id=analysis_id)
@@ -578,13 +559,7 @@ def prompt_analyzer():
                 return redirect(url_for('outils.prompt_analyzer'))
             
             analyzer = PromptAnalyzerService()
-            try:
-                results = analyzer.analyze_prompt(prompt_text)
-            except Exception as e:
-                results = {
-                    'success': False,
-                    'error': f"Erreur lors de l'analyse: {str(e)}"
-                }
+            results = analyzer.analyze_prompt(prompt_text)
             
             if not results or results.get('error'):
                 error_msg = results.get('message') or results.get('error') if results else 'Le service a retourné un résultat vide.'
@@ -594,34 +569,29 @@ def prompt_analyzer():
                 return redirect(url_for('outils.prompt_analyzer'))
 
             if results.get('success'):
-                try:
-                    prompt_analysis = PromptAnalysis(
-                        prompt_text=prompt_text[:10000],
-                        prompt_length=len(prompt_text),
-                        threat_detected=results.get('threat_detected', False),
-                        threat_level=results.get('threat_level', 'safe'),
-                        injection_detected=results.get('injection_detected', False),
-                        code_detected=results.get('code_detected', False),
-                        obfuscation_detected=results.get('obfuscation_detected', False),
-                        dangerous_patterns=results.get('issues', []),
-                        analysis_results=results,
-                        cleaned_text=results.get('cleaned_text', '')[:10000] if results.get('cleaned_text') else None,
-                        detected_issues=results.get('issues', []),
-                        document_code=ensure_unique_code(PromptAnalysis),
-                        ip_address=get_client_ip(request),
-                        user_agent=request.headers.get('User-Agent', '')[:500]
-                    )
-                    db.session.add(prompt_analysis)
-                    db.session.commit()
-                    analysis_id = prompt_analysis.document_code
-                except Exception as e:
-                    db.session.rollback()
-                    print(f"[ERROR] Failed to save prompt analysis: {e}")
-            
+                prompt_analysis = PromptAnalysis(
+                    prompt_text=prompt_text[:10000],
+                    prompt_length=len(prompt_text),
+                    threat_detected=results.get('threat_detected', False),
+                    threat_level=results.get('threat_level', 'safe'),
+                    injection_detected=results.get('injection_detected', False),
+                    code_detected=results.get('code_detected', False),
+                    obfuscation_detected=results.get('obfuscation_detected', False),
+                    dangerous_patterns=results.get('issues', []),
+                    analysis_results=results,
+                    cleaned_text=results.get('cleaned_text', '')[:10000] if results.get('cleaned_text') else None,
+                    detected_issues=results.get('issues', []),
+                    document_code=ensure_unique_code(PromptAnalysis),
+                    ip_address=get_client_ip(request),
+                    user_agent=request.headers.get('User-Agent', '')[:500]
+                )
+                db.session.add(prompt_analysis)
+                db.session.commit()
+                analysis_id = prompt_analysis.document_code
         except Exception as e:
-            logger.error(f"Erreur outil: {str(e)}")
             db.session.rollback()
-            flash(f"Une erreur technique est survenue : {str(e)}", 'danger')
+            logger.error(f"Crash outil: {str(e)}")
+            flash(f"Erreur lors de l'analyse : {str(e)}", 'error')
             return redirect(request.url)
     
     return render_template('outils/prompt_analyzer.html', results=results, analysis_id=analysis_id)
@@ -701,53 +671,49 @@ def github_analyzer():
                 return redirect(url_for('outils.github_analyzer'))
 
             if results and not results.get('error'):
-                try:
-                    github_analysis = GitHubCodeAnalysis(
-                        repo_url=repo_url,
-                        repo_name=results.get('repo_name'),
-                        repo_owner=results.get('repo_owner'),
-                        branch=results.get('branch'),
-                        commit_hash=results.get('commit_hash'),
-                        overall_score=results.get('overall_score', 0),
-                        security_score=results.get('security_score', 0),
-                        risk_level=results.get('risk_level'),
-                        security_findings=results.get('security_findings', []),
-                        dependency_findings=results.get('dependency_findings', []),
-                        architecture_findings=results.get('architecture_findings', []),
-                        performance_findings=results.get('performance_findings', []),
-                        git_hygiene_findings=results.get('git_hygiene_findings', []),
-                        documentation_findings=results.get('documentation_findings', []),
-                        toxic_ai_patterns=results.get('toxic_ai_patterns', []),
-                        code_quality_findings=results.get('code_quality_findings', []),
-                        total_files_analyzed=results.get('total_files_analyzed', 0),
-                        total_lines_analyzed=results.get('total_lines_analyzed', 0),
-                        total_directories=results.get('total_directories', 0),
-                        file_types_distribution=results.get('file_types_distribution', {}),
-                        total_issues_found=results.get('total_issues_found', 0),
-                        critical_issues=results.get('critical_issues', 0),
-                        high_issues=results.get('high_issues', 0),
-                        medium_issues=results.get('medium_issues', 0),
-                        low_issues=results.get('low_issues', 0),
-                        languages_detected=results.get('languages_detected', {}),
-                        frameworks_detected=results.get('frameworks_detected', []),
-                        analysis_summary=results.get('analysis_summary'),
-                        status='completed',
-                        analysis_duration=results.get('analysis_duration'),
-                        document_code=ensure_unique_code(GitHubCodeAnalysis),
-                        ip_address=get_client_ip(request),
-                        user_agent=request.headers.get('User-Agent', '')[:500]
-                    )
-                    db.session.add(github_analysis)
-                    db.session.commit()
-                    analysis_id = github_analysis.document_code
-                except Exception as e:
-                    db.session.rollback()
-                    logger.error(f"Failed to save GitHub analysis: {e}")
+                github_analysis = GitHubCodeAnalysis(
+                    repo_url=repo_url,
+                    repo_name=results.get('repo_name'),
+                    repo_owner=results.get('repo_owner'),
+                    branch=results.get('branch'),
+                    commit_hash=results.get('commit_hash'),
+                    overall_score=results.get('overall_score', 0),
+                    security_score=results.get('security_score', 0),
+                    risk_level=results.get('risk_level'),
+                    security_findings=results.get('security_findings', []),
+                    dependency_findings=results.get('dependency_findings', []),
+                    architecture_findings=results.get('architecture_findings', []),
+                    performance_findings=results.get('performance_findings', []),
+                    git_hygiene_findings=results.get('git_hygiene_findings', []),
+                    documentation_findings=results.get('documentation_findings', []),
+                    toxic_ai_patterns=results.get('toxic_ai_patterns', []),
+                    code_quality_findings=results.get('code_quality_findings', []),
+                    total_files_analyzed=results.get('total_files_analyzed', 0),
+                    total_lines_analyzed=results.get('total_lines_analyzed', 0),
+                    total_directories=results.get('total_directories', 0),
+                    file_types_distribution=results.get('file_types_distribution', {}),
+                    total_issues_found=results.get('total_issues_found', 0),
+                    critical_issues=results.get('critical_issues', 0),
+                    high_issues=results.get('high_issues', 0),
+                    medium_issues=results.get('medium_issues', 0),
+                    low_issues=results.get('low_issues', 0),
+                    languages_detected=results.get('languages_detected', {}),
+                    frameworks_detected=results.get('frameworks_detected', []),
+                    analysis_summary=results.get('analysis_summary'),
+                    status='completed',
+                    analysis_duration=results.get('analysis_duration'),
+                    document_code=ensure_unique_code(GitHubCodeAnalysis),
+                    ip_address=get_client_ip(request),
+                    user_agent=request.headers.get('User-Agent', '')[:500]
+                )
+                db.session.add(github_analysis)
+                db.session.commit()
+                analysis_id = github_analysis.document_code
 
         except Exception as e:
-            logger.error(f"Erreur outil: {str(e)}")
             db.session.rollback()
-            flash(f"Une erreur technique est survenue : {str(e)}", 'danger')
+            logger.error(f"Crash outil: {str(e)}")
+            flash(f"Erreur lors de l'analyse : {str(e)}", 'error')
             return redirect(request.url)
 
     return render_template('outils/github_analyzer.html', results=results, analysis_id=analysis_id)
@@ -802,44 +768,38 @@ def breach_analyzer():
                 flash(results['error'], 'error')
             else:
                 # Save analysis to DB
-                try:
-                    breaches_list = results.get('breaches') or []
-                    if not isinstance(breaches_list, list):
-                        breaches_list = []
+                breaches_list = results.get('breaches') or []
+                if not isinstance(breaches_list, list):
+                    breaches_list = []
 
-                    breach_names = [breach.get('Name', 'Inconnu') for breach in breaches_list]
+                breach_names = [breach.get('Name', 'Inconnu') for breach in breaches_list]
 
-                    # Calculate risk level based on count
-                    risk_level = 'safe'
-                    if results.get('count', 0) > 0:
-                        risk_level = 'warning' if results.get('count', 0) < 5 else 'danger'
+                # Calculate risk level based on count
+                risk_level = 'safe'
+                if results.get('count', 0) > 0:
+                    risk_level = 'warning' if results.get('count', 0) < 5 else 'danger'
 
-                    analysis = BreachAnalysis(
-                        email=email,
-                        breach_count=results.get('count', 0),
-                        risk_level=risk_level,
-                        breaches_found=','.join(breach_names)[:1000] if breach_names else '',
-                        breaches_data={'breaches': breaches_list, 'count': results.get('count', 0), 'email': email},
-                        document_code=ensure_unique_code(BreachAnalysis),
-                        ip_address=get_client_ip(request),
-                        user_agent=request.headers.get('User-Agent', '')[:500]
-                    )
-                    db.session.add(analysis)
-                    db.session.commit()
-                    analysis_id = analysis.document_code
+                analysis = BreachAnalysis(
+                    email=email,
+                    breach_count=results.get('count', 0),
+                    risk_level=risk_level,
+                    breaches_found=','.join(breach_names)[:1000] if breach_names else '',
+                    breaches_data={'breaches': breaches_list, 'count': results.get('count', 0), 'email': email},
+                    document_code=ensure_unique_code(BreachAnalysis),
+                    ip_address=get_client_ip(request),
+                    user_agent=request.headers.get('User-Agent', '')[:500]
+                )
+                db.session.add(analysis)
+                db.session.commit()
+                analysis_id = analysis.document_code
 
-                    # Store ID in results for PDF generation link
-                    results['analysis_id'] = analysis_id
-
-                except Exception as e:
-                    logger.error(f"Erreur lors de l'enregistrement de l'analyse de fuite: {str(e)}")
-                    db.session.rollback()
-                    # Continue to show results even if saving failed
+                # Store ID in results for PDF generation link
+                results['analysis_id'] = analysis_id
 
         except Exception as e:
-            logger.error(f"Erreur outil: {str(e)}")
             db.session.rollback()
-            flash(f"Une erreur technique est survenue : {str(e)}", 'danger')
+            logger.error(f"Crash outil: {str(e)}")
+            flash(f"Erreur lors de l'analyse : {str(e)}", 'error')
             return redirect(request.url)
 
     return render_template('outils/breach_analyzer.html', results=results, analysis_id=analysis_id)
@@ -893,37 +853,33 @@ def metadata_analyzer():
                     return redirect(url_for('outils.metadata_analyzer'))
 
                 if results.get('success'):
-                    try:
-                        clean_data, clean_filename = MetadataAnalyzerService.remove_metadata(file_data, filename)
-                        
-                        metadata_analysis = MetadataAnalysis(
-                            original_filename=filename,
-                            file_type=results.get('file_type'),
-                            file_size=results.get('file_size'),
-                            mime_type=file.content_type,
-                            metadata_found=results.get('metadata'),
-                            metadata_count=results.get('metadata_count', 0),
-                            privacy_risk_level=results.get('privacy_risk'),
-                            sensitive_data_found=results.get('sensitive_data'),
-                            gps_data=results.get('gps_data'),
-                            camera_info=results.get('camera_info'),
-                            software_info=results.get('software_info'),
-                            datetime_info=results.get('datetime_info'),
-                            author_info=results.get('author_info'),
-                            original_file=file_data,
-                            cleaned_file=clean_data if clean_data else None,
-                            cleaned_filename=clean_filename if clean_data else None,
-                            document_code=ensure_unique_code(MetadataAnalysis),
-                            ip_address=get_client_ip(request),
-                            user_agent=request.headers.get('User-Agent', '')[:500]
-                        )
-                        db.session.add(metadata_analysis)
-                        db.session.commit()
-                        analysis_id = metadata_analysis.document_code
-                        return redirect(url_for('outils.metadata_results', document_code=analysis_id))
-                    except Exception as e:
-                        db.session.rollback()
-                        print(f"[ERROR] Failed to save metadata analysis: {e}")
+                    clean_data, clean_filename = MetadataAnalyzerService.remove_metadata(file_data, filename)
+
+                    metadata_analysis = MetadataAnalysis(
+                        original_filename=filename,
+                        file_type=results.get('file_type'),
+                        file_size=results.get('file_size'),
+                        mime_type=file.content_type,
+                        metadata_found=results.get('metadata'),
+                        metadata_count=results.get('metadata_count', 0),
+                        privacy_risk_level=results.get('privacy_risk'),
+                        sensitive_data_found=results.get('sensitive_data'),
+                        gps_data=results.get('gps_data'),
+                        camera_info=results.get('camera_info'),
+                        software_info=results.get('software_info'),
+                        datetime_info=results.get('datetime_info'),
+                        author_info=results.get('author_info'),
+                        original_file=file_data,
+                        cleaned_file=clean_data if clean_data else None,
+                        cleaned_filename=clean_filename if clean_data else None,
+                        document_code=ensure_unique_code(MetadataAnalysis),
+                        ip_address=get_client_ip(request),
+                        user_agent=request.headers.get('User-Agent', '')[:500]
+                    )
+                    db.session.add(metadata_analysis)
+                    db.session.commit()
+                    analysis_id = metadata_analysis.document_code
+                    return redirect(url_for('outils.metadata_results', document_code=analysis_id))
                 else:
                     flash(results.get('error', 'Erreur lors de l\'analyse'), 'error')
                     
@@ -960,9 +916,9 @@ def metadata_analyzer():
                     return redirect(url_for('outils.metadata_analyzer'))
                     
         except Exception as e:
-            logger.error(f"Erreur outil: {str(e)}")
             db.session.rollback()
-            flash(f"Une erreur technique est survenue : {str(e)}", 'danger')
+            logger.error(f"Crash outil: {str(e)}")
+            flash(f"Erreur lors de l'analyse : {str(e)}", 'error')
             return redirect(request.url)
     
     return render_template('outils/metadata_analyzer.html', results=results, analysis_id=analysis_id)
